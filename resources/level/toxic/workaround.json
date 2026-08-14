@@ -58,8 +58,8 @@
     ],
     "interior": false,
     "metagrid": [
-      69,
-      29
+      -9,
+      11
     ],
     "minimap": false,
     "music": "",
@@ -81,7 +81,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

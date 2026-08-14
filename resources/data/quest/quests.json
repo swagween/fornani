@@ -217,9 +217,8 @@
   {
     "title": "Main",
     "tag": "main",
-    "target": 1,
-    "displayed": false,
-    "id": 11
+    "target": 10,
+    "displayed": false
   },
   {
     "title": "Pioneer Trail",

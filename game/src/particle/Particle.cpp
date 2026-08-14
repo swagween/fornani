@@ -53,7 +53,10 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 	}
 
 	if (in_data["fader"].as_bool()) { m_fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
-	if (m_fader) { m_fader->get_sprite().setScale(dim); }
+	if (m_fader) {
+		m_fader->get_sprite().setScale(dim);
+		m_fader->get_sprite().setOrigin(dim * 0.5f);
+	}
 
 	m_physics->apply_force_at_angle(expulsion, angle);
 	m_physics->position = position;
@@ -104,13 +107,13 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (debug::is_production()) { return; }
+	if (!debug::is_production()) { return; }
 	if (m_collider) { m_collider->get_circle()->render(win, cam); }
 	render(win, cam);
 }
 
 void Particle::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	if (debug::is_production()) { return; }
+	if (!debug::is_production()) { return; }
 	auto render_position = m_collider ? m_collider->get_circle()->physics.position - cam : m_physics ? m_physics->position - cam : sf::Vector2f{};
 	if (m_animatable) {
 		m_animatable->set_position(render_position);

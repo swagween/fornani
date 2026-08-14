@@ -6,7 +6,7 @@
 namespace fornani::player {
 class Dash : public Ability {
   public:
-	Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool omni);
+	Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool omni, bool second);
 	void update(shape::Collider& collider, PlayerController& controller) override;
 
   private:

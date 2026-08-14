@@ -36,6 +36,20 @@
     ],
     "responses": []
   },
+  "old_ivory_amulet": {
+    "suite": [
+      [
+        {
+          "message": "An amulet dropped by the Hoarder. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
+        },
+        {
+          "codes": [[10, 52, 9]],
+          "message": "It allows you to dash forward in midair by pressing  ."
+        }
+      ]
+    ],
+    "responses": []
+  },
   "carises_soul": {
     "suite": [
       [
@@ -202,6 +216,20 @@
           {
             "codes": [[10, 79, 6]],
             "message": "This charm grants you the ability to cling to walls whilst not sprinting (hold   if auto-sprint is enabled). You can cling to walls indefinitely."
+          }
+        ]
+      ],
+      "responses": []
+    },
+    "old_ivory_amulet": {
+      "suite": [
+        [
+          {
+            "message": "An amulet dropped by the Hoarder. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
+          },
+          {
+            "codes": [[10, 52, 9]],
+            "message": "It allows you to dash forward in midair by pressing  ."
           }
         ]
       ],

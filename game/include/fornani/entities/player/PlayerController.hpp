@@ -42,6 +42,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 	void stop();
 	void restrict_movement();
 	void unrestrict();
+	void stall_input();
 	void uninspect();
 	void reset_vertical_movement();
 	void walljump();
@@ -131,6 +132,7 @@ class PlayerController final : public Flaggable<PlayerControllerFlags> {
 		util::Cooldown left_pressed{};
 		util::Cooldown right_pressed{};
 		util::Cooldown walljump_request{};
+		util::Cooldown input_stall{};
 	} cooldowns{};
 
 	Player* m_player;

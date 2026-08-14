@@ -72,7 +72,7 @@ void Ticker::reset_dt() {
 auto Ticker::global_tick_rate() const -> float { return ft.count() * tick_multiplier; }
 
 void Ticker::manage_slowdowns() {
-	dt_scalar = 1.f;
+	dt_scalar = global_scalar;
 	if (freezeframe.running()) { dt_scalar = std::max(0.01f, freezeframe.cubic_inverse_normalized()); }
 	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.normalized()), 0.f, global_scalar); }
 

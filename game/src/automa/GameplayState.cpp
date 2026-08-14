@@ -1,6 +1,7 @@
 
 #include <fornani/automa/GameplayState.hpp>
 #include <fornani/core/Debug.hpp>
+#include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 
 namespace fornani::automa {
@@ -11,6 +12,11 @@ GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, int r
 	svc.events.pause_event.attach_to(p_slot, &GameplayState::pause, this);
 	p_context.transition.set(graphics::TransitionState::black);
 	svc.app_flags.set(AppFlags::in_game);
+
+	// create shaders
+	p_world_shader = LightShader(svc.finder);
+	p_entity_shader = LightShader(svc.finder);
+	p_gui_shader = LightShader(svc.finder);
 }
 
 void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -88,6 +94,44 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	}
 
 	svc.notifications.render(win);
+}
+
+void GameplayState::reload(ServiceProvider& svc, int target_state) {
+	m_map->clear();
+	m_map->load(svc, p_context, target_state);
+
+	svc.soundboard.clear_sounds(audio::SoundBus::gameplay);
+	// set_flag(GameplayStateFlags::transitioned_in, false);
+	player->reset_flags();
+
+	if (p_context.console) { p_context.console.reset(); }
+
+	p_context.biome.emplace(m_map->get_biome_string());
+
+	// toxic haze
+	p_haze_shader.reset();
+	if (m_map->is_toxic()) { p_haze_shader.emplace(svc.finder, sf::Vector2u{svc.window->get().getSize()}, 2.1f); }
+
+	hud.reset_position(); // reset hud position to corner
+	svc.soundboard.turn_on();
+
+	hud.reset_position();
+	svc.soundboard.turn_on();
+
+	player->set_camera_bounds(m_map->real_dimensions);
+	player->map_reset();
+
+	svc.camera_controller.constrain();
+
+	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
+	player->visit_history.push_room(target_state);
+
+	if (m_map->has_property(world::MapProperties::lighting)) { m_palette.emplace(m_map->get_biome_string(), svc.finder); }
+	p_world_shader->set_darken(m_map->darken_factor);
+	p_entity_shader->set_darken(m_map->darken_factor);
+	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
+	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
+	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 }
 
 void GameplayState::pause(ServiceProvider& svc) { p_pause_window = std::make_unique<gui::PauseWindow>(svc); }

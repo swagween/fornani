@@ -144,6 +144,19 @@
       [0, 32]
     ]
   },
+  "very_slow_activated_up_down": {
+    "sticky": true,
+    "loop": true,
+    "repeating": false,
+    "player_activated": true,
+    "player_controlled": false,
+    "ease": true,
+    "speed": 0.00015,
+    "track": [
+      [0, 0],
+      [0, 32]
+    ]
+  },
   "standard_up_down_repeater": {
     "sticky": true,
     "loop": true,

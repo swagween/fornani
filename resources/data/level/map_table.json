@@ -56,6 +56,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "mineshaft.json",
+      "region": "ashtown",
+      "room_id": 1401
+    },
+    {
+      "folder": "ashtown",
       "label": "pipers_house.json",
       "region": "ashtown",
       "room_id": 1302
@@ -239,12 +245,6 @@
       "label": "store_room.json",
       "region": "firstwind",
       "room_id": 109
-    },
-    {
-      "folder": "firstwind",
-      "label": "straightaway.json",
-      "region": "firstwind",
-      "room_id": 9902
     },
     {
       "folder": "firstwind",
@@ -473,6 +473,12 @@
       "label": "obstacle_course.json",
       "region": "nightside",
       "room_id": 904
+    },
+    {
+      "folder": "nightside",
+      "label": "outlook.json",
+      "region": "nightside",
+      "room_id": 907
     },
     {
       "folder": "nightside",
@@ -973,6 +979,24 @@
       "room_id": 303
     },
     {
+      "folder": "shadow",
+      "label": "east_death_road.json",
+      "region": "shadow",
+      "room_id": 1700
+    },
+    {
+      "folder": "shadow",
+      "label": "entry.json",
+      "region": "shadow",
+      "room_id": 1701
+    },
+    {
+      "folder": "shadow",
+      "label": "west_death_road.json",
+      "region": "shadow",
+      "room_id": 1702
+    },
+    {
       "folder": "test",
       "label": "border_test.json",
       "region": "kariba",
@@ -1088,9 +1112,21 @@
     },
     {
       "folder": "trials",
+      "label": "facility.json",
+      "region": "junkyard",
+      "room_id": 9903
+    },
+    {
+      "folder": "trials",
       "label": "mayhem.json",
       "region": "firstwind",
       "room_id": 9900
+    },
+    {
+      "folder": "trials",
+      "label": "meadow.json",
+      "region": "overturned",
+      "room_id": 9902
     },
     {
       "folder": "trials",

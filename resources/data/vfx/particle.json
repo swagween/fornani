@@ -581,6 +581,24 @@
     "color": "yellow"
   },
 
+  "double_dash": {
+    "load": 10,
+    "rate": 100.0,
+    "expulsion": 50.0,
+    "expulsion_variance": 40.0,
+    "cone": 6.28,
+    "friction": 0.995,
+    "elasticity": 0.9,
+    "gravity": 0.0,
+    "lifespan": 200,
+    "lifespan_variance": 180,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "yellow"
+  },
+
   "breakable": {
     "load": 20,
     "rate": 100.0,

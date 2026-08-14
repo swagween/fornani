@@ -21,6 +21,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 
 	virtual void tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine& engine);
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win);
+	void reload(ServiceProvider& svc, int target_state) override;
 	std::optional<std::reference_wrapper<world::Map>> get_map() override { return m_map.value(); }
 
   protected:

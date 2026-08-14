@@ -6,6 +6,8 @@
 
 namespace fornani::automa {
 
+enum class TrialFlags { player_death };
+
 class Trial final : public GameplayState {
   public:
 	Trial(ServiceProvider& svc, player::Player& player, int room_number);
@@ -17,6 +19,7 @@ class Trial final : public GameplayState {
   private:
 	virtual void pause(ServiceProvider& svc) override;
 	util::Cooldown m_reset;
+	util::BitFlags<TrialFlags> m_flags{};
 };
 
 } // namespace fornani::automa

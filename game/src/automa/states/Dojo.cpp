@@ -52,11 +52,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	m_map_markers.insert({5, "hoarders_cave"});
 	m_map_markers.insert({6, "junkyard"});
 
-	// create shaders
-	p_world_shader = LightShader(svc.finder);
-	p_entity_shader = LightShader(svc.finder);
-	p_gui_shader = LightShader(svc.finder);
-
 	reload(svc, room_number);
 
 	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
@@ -299,47 +294,23 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 }
 
 void Dojo::reload(ServiceProvider& svc, int target_state) {
-	svc.soundboard.clear_sounds(audio::SoundBus::gameplay);
-	m_map->clear();
+	GameplayState::reload(svc, target_state);
+
 	set_flag(GameplayStateFlags::transitioned_in, false);
 	m_flags.reset(GameplayFlags::transitioning);
 	p_context.transition.set(graphics::TransitionState::black);
 	p_context.transition.hang();
+
 	svc.menu_controller.reset_vendor_dialog();
 	if (!svc.data.is_room_discovered(target_state)) {
 		svc.data.discovered_rooms.add(target_state);
 		svc.stats.world.rooms_discovered.update();
 	}
-	player->reset_flags();
-	player->cooldowns.suffocate.start();
 
-	if (p_context.console) { p_context.console.reset(); }
-
-	// the following should only happen for the editor demo
-	if (!svc.data.exists(target_state)) {
-		svc.data.rooms.push_back(target_state);
-		svc.data.load_data();
-	} else {
-		m_map->load(svc, p_context, target_state);
-		NANI_LOG_INFO(m_logger, "Map loaded.");
-	}
-
-	p_context.biome.emplace(m_map->get_biome_string());
-
-	// toxic haze
-	p_haze_shader.reset();
-	if (m_map->is_toxic()) { p_haze_shader.emplace(svc.finder, sf::Vector2u{svc.window->get().getSize()}, 2.1f); }
-
-	hud.reset_position(); // reset hud position to corner
-	svc.soundboard.turn_on();
-
-	// TODO: refactor player initialization
-	player->get_collider().physics.zero();
-	player->set_camera_bounds(m_map->real_dimensions);
-
-	bool found_one{};
+	bool found_one = false;
 	// only search for door entry if room was not loaded from main menu and player didn't die
 	if (!svc.state_controller.actions.test(Actions::save_loaded) && !svc.state_controller.actions.test(Actions::player_death)) { found_one = m_map->handle_entry(*player, m_enter_room); }
+
 	if (!found_one && !svc.state_controller.actions.test(Actions::custom_player_position)) {
 		float ppx = svc.data.get_save()["player_data"]["position"]["x"].as<float>();
 		float ppy = svc.data.get_save()["player_data"]["position"]["y"].as<float>();
@@ -350,23 +321,11 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		player->set_position(svc.state_controller.player_position);
 		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
 	}
-	svc.camera_controller.constrain();
-	player->force_camera_center();
 	svc.camera_controller.set_position(player->get_camera_focus_point());
 
-	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
-	svc.state_controller.actions.reset(Actions::save_loaded);
-	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 	player->visit_history.push_room(target_state);
 
-	player->controller.prevent_movement();
 	m_loading.start();
-	if (m_map->has_property(world::MapProperties::lighting)) { m_palette.emplace(m_map->get_biome_string(), svc.finder); }
-	p_world_shader->set_darken(m_map->darken_factor);
-	p_entity_shader->set_darken(m_map->darken_factor);
-	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
-	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
-	svc.app_flags.reset(automa::AppFlags::custom_map_start);
 
 	if (svc.data.get_file().has_inspect_hint()) {
 		m_inspect_hint = util::Cooldown{2000};
@@ -374,6 +333,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	}
 
 	m_flags.reset(GameplayFlags::death_console_launched);
+	svc.state_controller.actions.reset(Actions::save_loaded);
 }
 
 void Dojo::acquire_item_from_console(ServiceProvider& svc, int id) { acquire_item(svc, svc.data.item_label_from_id(id)); }

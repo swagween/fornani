@@ -264,7 +264,7 @@ void Player::update(world::Map& map) {
 
 	// check for fall
 	if (map.off_the_bottom(get_collider().physics.position)) {
-		m_death_type = PlayerDeathType::fallen;
+		m_death_type = map.is_interior() ? PlayerDeathType::abyss : PlayerDeathType::fallen;
 		hurt(64.f);
 		freeze_position();
 	}
@@ -809,6 +809,10 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	m_sprite_position = new_pos;
 	get_collider().physics.position = new_pos - offset;
 	get_collider().sync_components();
+	controller.flush_ability();
+	get_collider().physics.zero();
+	accumulated_forces.clear();
+	accumulated_momentum.clear();
 	update_direction();
 	sync_antennae();
 	health_indicator.set_position(new_pos);
@@ -1155,7 +1159,10 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 void Player::give_item(std::string_view label, int amount, bool from_save) {
 	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data.item, label); }
 	if (label == "cridium_shard" && !from_save) { set_flag(PlayerFlags::health_increase); }
-	if (label == "dog_leash" && !from_save) { m_services->quest_table.set_quest_progression("rescue_justin", 0, QuestRequirementType::loose); }
+	if (label == "dog_leash" && !from_save) {
+		// m_services->quest_table.set_quest_progression("rescue_justin", 0, QuestRequirementType::loose);
+		m_services->events.set_quest_progression_event.dispatch(5, 0);
+	}
 	if (m_services->data.get_item_json_from_tag(label)["category"].as<int>() == 0 && !from_save) { set_flag(PlayerFlags::ability_acquisition); }
 }
 
@@ -1225,6 +1232,12 @@ void Player::map_reset() {
 	if (arsenal) { arsenal.value().reset(); }
 	health.invincibility.cancel();
 	controller.flush_ability();
+	if (has_collider()) {
+		get_collider().physics.zero();
+		force_camera_center();
+	}
+	accumulated_forces.clear();
+	cooldowns.suffocate.start();
 }
 
 void Player::exit_water() { cooldowns.water_exit.start(); }

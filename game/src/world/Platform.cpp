@@ -54,10 +54,10 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	animation.set_params({0, 4, 16, -1});
 	auto scaled_dim = dimensions / constants::f_cell_size;
 	if (scaled_dim.x == 1) { offset = {0, 0}; }
-	if (scaled_dim.x == 2) { offset = {16, 0}; }
-	if (scaled_dim.x == 3) { offset = {0, 16}; }
-	if (scaled_dim.y == 2) { offset = {0, 32}; }
-	if (scaled_dim.y == 3) { offset = {0, 64}; }
+	if (scaled_dim.x == 2) { offset = {18, 0}; }
+	if (scaled_dim.x == 3) { offset = {0, 18}; }
+	if (scaled_dim.y == 2) { offset = {0, 36}; }
+	if (scaled_dim.y == 3) { offset = {0, 70}; }
 	switch_up.start();
 
 	auto edge_start = 0.f;
@@ -91,14 +91,11 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 			t->set_flag(TurretFlags::platform);
 		}
 	}
+
+	Animatable::set_origin({1.f, 1.f});
 }
 
 void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	auto const u = state * 48;
-	auto v = animation.get_frame() * 112;
-	v = 0;
-	auto lookup = sf::Vector2<int>{u, v} + offset;
-	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
 	auto edge_start = 0.f;
 	switch_up.update();
 
@@ -205,10 +202,10 @@ void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player
 
 void Platform::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
 	Animatable::set_position(get_collider().physics.position);
-	auto const u = state * 48;
-	auto const v = animation.get_frame() * 112;
+	auto const u = state * 52;
+	auto const v = animation.get_frame() * 120;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
-	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
+	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions + sf::Vector2f{4.f, 4.f}) / 2));
 	if (!debug::is_production()) {
 	} else {
 		tex.draw(*this);
@@ -219,10 +216,10 @@ void Platform::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::
 void Platform::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	track_shape.setPosition(-cam);
 	Animatable::set_position(get_collider().physics.position - cam);
-	auto const u = state * 48;
-	auto const v = animation.get_frame() * 112;
+	auto const u = state * 52;
+	auto const v = animation.get_frame() * 120;
 	auto lookup = sf::Vector2<int>{u, v} + offset;
-	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions) / 2));
+	set_texture_rect(sf::IntRect(sf::Vector2<int>(lookup), sf::Vector2<int>(get_collider().dimensions + sf::Vector2f{4.f, 4.f}) / 2));
 	if (!debug::is_production()) {
 		win.draw(track_shape);
 		get_collider().render(win, cam);

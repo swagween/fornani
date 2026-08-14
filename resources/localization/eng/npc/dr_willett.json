@@ -109,7 +109,10 @@
       ],
       [
         {
-          "codes": [[4, 6], [27, 33, 1]],
+          "codes": [
+            [4, 6],
+            [27, 33, 1]
+          ],
           "message": "That would be excellent. Despite what it may seem, these old knees aren't much fit for spelunking!"
         },
         {
@@ -482,7 +485,10 @@
           "message": "Best of luck to you, Nani."
         },
         {
-          "codes": [[8, 0], [27, 8, 1]],
+          "codes": [
+            [8, 0],
+            [27, 8, 1]
+          ],
           "message": "The fate of this island lies in your hands..."
         }
       ],
@@ -496,7 +502,10 @@
           "message": "Best of luck to you, Nani."
         },
         {
-          "codes": [[8, 0], [27, 8, 1]],
+          "codes": [
+            [8, 0],
+            [27, 8, 1]
+          ],
           "message": "The fate of this island lies in your hands..."
         }
       ]
@@ -688,7 +697,8 @@
         {
           "codes": [
             [1, 0],
-            [4, 2]
+            [4, 2],
+            [27, 11, 1]
           ],
           "message": "Hmm... I think I see a slight resemblance...?"
         }
@@ -958,7 +968,10 @@
           "message": "Beyond the Mother lies a series of caverns full of toxic waste. Whether that waste is a byproduct of Skycorps development projects or the Mother herself, I cannot say."
         },
         {
-          "codes": [[1, 2], [27, 35, 1]],
+          "codes": [
+            [1, 2],
+            [27, 35, 1]
+          ],
           "message": "Either way, you'll need a gas mask if you've any hope of getting through them."
         }
       ],

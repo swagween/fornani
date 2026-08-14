@@ -99,7 +99,7 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen };
+enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen, abyss, annihilated };
 enum class PlayerFlags {
 	killed,
 	dir_switch,

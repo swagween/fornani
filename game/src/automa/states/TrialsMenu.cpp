@@ -5,14 +5,26 @@
 namespace fornani::automa {
 
 TrialsMenu::TrialsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "trials"), m_loading{8}, m_stars{svc, "tt_stars", {12, 12}} {
-	for (auto const& map : svc.data.map_table["rooms"].as_array()) {
-		if (map["folder"].as_string() == "trials") {
-			auto label = map["label"].as_string();
-			auto dot = std::distance(label.begin(), std::find(label.begin(), label.end(), '.'));
-			auto name = label.substr(0, dot);
-			m_courses.push_back(CourseListing{name, map["room_id"].as<int>()});
-			NANI_LOG_INFO(m_logger, "Added trial course [{}]", map["label"].as_string());
+
+	auto room_path = std::filesystem::path{svc.finder.resource_path()};
+	auto room_list = room_path / "level" / "trials";
+	for (auto const& entry : std::filesystem::recursive_directory_iterator{room_list}) {
+		if (!entry.is_regular_file() || entry.path().extension() != ".json") { continue; }
+
+		auto label = entry.path().stem().string();
+		auto dot = label.find('.');
+		auto name = label.substr(0, dot);
+
+		auto room_data_result = dj::Json::from_file(entry.path().string());
+		if (!room_data_result) {
+			NANI_LOG_ERROR(m_logger, "Failed to load room data for path {}.", entry.path().string());
+			continue;
 		}
+		auto room_data = std::move(*room_data_result);
+		auto this_id = room_data["meta"]["room_id"].as<int>();
+
+		m_courses.push_back(CourseListing{name, this_id});
+		NANI_LOG_INFO(m_logger, "Added trial course [{}]", entry.path().string());
 	}
 
 	// maually set options based on contents of trials folder

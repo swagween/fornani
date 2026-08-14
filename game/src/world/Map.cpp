@@ -288,7 +288,6 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 
 	generate_layer_textures(svc);
 	cooldowns.fade_obscured.start();
-	player->map_reset();
 	cooldowns.loading.start();
 
 	player->register_with_map(*this);
@@ -478,6 +477,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj, *player); }
 		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
+		for (auto& brittle : brittle_blocks) { brittle->on_hit(svc, *this, proj); }
 		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
 		proj.handle_collision(svc, *this);
 		proj.on_player_hit(svc, *this, *player);
@@ -534,6 +534,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& breakable : breakables) { breakable->update(svc, *this, *player); }
 	for (auto& waterfall : waterfalls) { waterfall->update(svc, *this, *player); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->update(svc, *this, *player); }
+	for (auto& brittle : brittle_blocks) { brittle->update(svc, *this, *player); }
 	if (test_mobile) { test_mobile->update(*this); }
 
 	for (auto& pushable : pushables) { pushable->post_update(svc, *this, *player); }
@@ -613,6 +614,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
+	for (auto& brittle : brittle_blocks) { brittle->render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam); }
@@ -927,6 +929,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
 		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
 		if (cell.is_incinerite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id)); }
+		if (cell.is_brittle()) { brittle_blocks.push_back(std::make_unique<BrittleBlock>(*m_services, *this, cell.position(), chunk_id)); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) { fire.push_back(Fire(*m_services, cell.position(), cell.value)); }
 		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index, m_attributes.sky_limit)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
@@ -1104,6 +1107,7 @@ void Map::clear() {
 	switch_blocks.clear();
 	switch_buttons.clear();
 	incinerite_blocks.clear();
+	brittle_blocks.clear();
 	chests.clear();
 	checkpoints.clear();
 	atmosphere.clear();

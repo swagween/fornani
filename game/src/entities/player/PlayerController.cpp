@@ -17,7 +17,8 @@ namespace fornani::player {
 constexpr static float crawl_speed_v{0.32f};
 
 PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
-	: m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{60}, .left_pressed{20}, .right_pressed{20}, .walljump_request{12}}, post_slide{80}, post_wallslide{16}, post_walljump{20}, wallslide_slowdown{64} {
+	: m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{60}, .left_pressed{20}, .right_pressed{20}, .walljump_request{12}, .input_stall{200}}, post_slide{80}, post_wallslide{16}, post_walljump{20},
+	  wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::shoot, 0.f));
@@ -29,7 +30,10 @@ PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
 }
 
 void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Player& player) {
-
+	if (cooldowns.input_stall.running()) {
+		cooldowns.input_stall.update();
+		return;
+	}
 	auto sprint = svc.input_system.digital(input::DigitalAction::sprint).held;
 	if (svc.input_system.is_gamepad()) { sprint = std::abs(svc.input_system.get_joystick_throttle().x) > walk_speed_v; }
 	auto sprint_release = svc.input_system.digital(input::DigitalAction::sprint).released;
@@ -123,7 +127,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.input_system.digital(input::DigitalAction::dash).triggered) {
 		auto const dj_guard = (dash_and_jump_combined && any_direction_held) || !dash_and_jump_combined;
 		if (player.can_dash() && !is_wallsliding() && dj_guard) {
-			m_ability = std::make_unique<Dash>(svc, map, player.get_collider(), m_dash_direction, player.can_omnidirectional_dash());
+			m_ability = std::make_unique<Dash>(svc, map, player.get_collider(), m_dash_direction, player.can_omnidirectional_dash(), player.m_ability_usage.dash.get_count() > 0);
 			player.m_ability_usage.dash.update();
 		}
 	}
@@ -294,6 +298,8 @@ void PlayerController::unrestrict() {
 	flags.reset(MovementState::restricted);
 	hard_state.reset(HardState::no_move);
 }
+
+void PlayerController::stall_input() { cooldowns.input_stall.start(); }
 
 void PlayerController::uninspect() { key_map[ControllerInput::inspect] = 0.f; }
 

@@ -7,22 +7,28 @@
 
 namespace fornani::player {
 
-Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool omni)
-	: Ability(svc, map, collider, direction), m_horizontal_multiplier{14.f}, m_vertical_multiplier{2.f}, m_rate{2}, m_omni{omni} {
+Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool omni, bool second)
+	: Ability(svc, map, collider, direction), m_horizontal_multiplier{16.5f}, m_vertical_multiplier{2.f}, m_rate{2}, m_omni{omni} {
 	m_type = AbilityType::dash;
-	m_state = AnimState::dash;
-	if (omni) { m_state = direction.up() ? AnimState::dash_up : direction.down() ? AnimState::dash_down : AnimState::dash; }
-	m_duration.start(64);
-	map.effects.push_back(entity::Effect(svc, "small_flash", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.5f, 0.f}));
-	svc.soundboard.flags.player.set(audio::Player::dash);
+	m_state = second ? AnimState::dash : AnimState::dash;
+	if (omni) { m_state = direction.up() ? AnimState::dash_up : direction.down() ? AnimState::dash_down : m_state; }
+	m_duration.start(70);
+	second ? map.spawn_effect(svc, "dash", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.5f, 0.f})
+		   : map.spawn_effect(svc, "small_flash", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.5f, 0.f});
+	second ? svc.soundboard.play_sound("nani_double_dash") : svc.soundboard.play_sound("nani_dash");
+	if (second) { map.spawn_emitter(svc, "double_dash", collider.get_center(), {}); }
 }
 
 void Dash::update(shape::Collider& collider, PlayerController& controller) {
 	auto water_multiplier = collider.has_flag_set(shape::ColliderFlags::in_water) ? 0.8f : 1.f;
-	if (m_direction.lnr != controller.last_requested_direction().as<LNR>() && collider.grounded()) {
-		m_state = AnimState::turn_slide;
-		m_horizontal_multiplier *= 0.99f;
-		m_animation_trigger.start();
+	if (!m_direction.up_or_down()) {
+		if (m_direction.lnr != controller.last_requested_direction().as<LNR>()) {
+			if (collider.grounded() && m_state != AnimState::dash_down) {
+				m_state = AnimState::turn_slide;
+				m_animation_trigger.start();
+			}
+			m_horizontal_multiplier *= 0.98f;
+		}
 	}
 	Ability::update(collider, controller);
 	collider.flags.state.reset(shape::State::just_landed);
@@ -43,6 +49,7 @@ void Dash::update(shape::Collider& collider, PlayerController& controller) {
 		collider.physics.velocity.y = m_direction.down() ? m_direction.as_float_und() * horiz * terminal_vel : m_direction.as_float_und() * horiz;
 		if (m_duration.is_complete() && !m_direction.down()) { collider.physics.acceleration.y = 0.f; }
 	} else {
+		if (m_direction.up_or_down()) { m_direction.lnr = controller.last_requested_direction().as<LNR>(); }
 		collider.physics.velocity.y = 0.f;
 		collider.physics.acceleration.y = controller.vertical_movement() * vert;
 		collider.physics.velocity.y = controller.vertical_movement() * vert;
