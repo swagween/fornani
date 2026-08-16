@@ -22,7 +22,7 @@
   },
   "meta": {
     "ambience": "firstwind",
-    "background": "dusk",
+    "background": "yellow",
     "biome": "shadow",
     "camera_effects": {
       "shake": {
@@ -55,7 +55,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,

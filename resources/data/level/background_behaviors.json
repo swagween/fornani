@@ -221,6 +221,34 @@
       }
     ]
   },
+  "yellow": {
+    "dimensions": [960, 270],
+    "lock": {
+      "vertical": true
+    },
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": -0.18,
+        "parallax": 0.007
+      },
+      {
+        "scroll_speed": -0.25,
+        "parallax": 0.019
+      },
+      {
+        "scroll_speed": -0.5,
+        "parallax": 0.03
+      },
+      {
+        "scroll_speed": -0.73,
+        "parallax": 0.1
+      }
+    ]
+  },
   "opensky": {
     "dimensions": [960, 270],
     "lock": {

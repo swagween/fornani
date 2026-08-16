@@ -35,6 +35,7 @@ void Trial::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (has_flag_set(GameplayStateFlags::early_tick_return)) { return; }
 
 	m_reset.update();
+	svc.world_timer.update();
 
 	if (!m_map) { return; }
 

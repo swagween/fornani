@@ -38,8 +38,8 @@
     ]
   },
   "meta": {
-    "ambience": "",
-    "background": "duskcloud_sea",
+    "ambience": "firstwind",
+    "background": "yellow",
     "biome": "shadow",
     "camera_effects": {
       "shake": {
@@ -72,7 +72,7 @@
       0
     ],
     "properties": {
-      "day_night_shift": false,
+      "day_night_shift": true,
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
@@ -85,7 +85,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

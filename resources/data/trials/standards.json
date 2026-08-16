@@ -2,11 +2,11 @@
   "trials": [
     {
       "course_id": 9899,
-      "standards": [3.55, 3.5, 3.45]
+      "standards": [3.5, 3.45, 3.4]
     },
     {
       "course_id": 9901,
-      "standards": [8.0, 7.0, 6.5]
+      "standards": [8.0, 7.0, 6.0]
     },
     {
       "course_id": 9900,
