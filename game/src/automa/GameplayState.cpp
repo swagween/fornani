@@ -123,9 +123,6 @@ void GameplayState::reload(ServiceProvider& svc, int target_state) {
 
 	svc.camera_controller.constrain();
 
-	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
-	player->visit_history.push_room(target_state);
-
 	if (m_map->has_property(world::MapProperties::lighting)) { m_palette.emplace(m_map->get_biome_string(), svc.finder); }
 	p_world_shader->set_darken(m_map->darken_factor);
 	p_entity_shader->set_darken(m_map->darken_factor);

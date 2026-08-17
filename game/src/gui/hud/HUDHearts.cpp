@@ -8,15 +8,15 @@ namespace fornani::gui {
 
 HUDHearts::HUDHearts(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f root, sf::Vector2f dimensions) : HUDWidget{svc, player, root, dimensions}, m_dimensions{dimensions} {
 	svc.events.health_increase_event.attach_to(p_slot, &HUDHearts::refresh, this);
-	m_health_bar.emplace(svc, static_cast<int>(player.health.get_capacity()), sf::Vector2i{dimensions}, "heads_up_display_hearts", root, -2.f);
+	refresh(svc, player);
 }
 
 void HUDHearts::update(automa::ServiceProvider& svc, player::Player& player) {
 	HUDWidget::update(svc, player);
 	auto& hp = player.health;
 	if (m_health_bar) {
-		m_health_bar->set_quantity(hp.get_i_capacity());
 		m_health_bar->update(svc, hp, hp.has_flag_set(HealthFlags::hit));
+		if (m_health_bar->has_flag_set(WidgetBarFlags::needs_resize)) { refresh(svc, player); }
 		if (p_rect) { m_health_bar->set_origin({0.f, p_rect->size.y}); }
 	}
 	player.health.set_flag(HealthFlags::hit, false);

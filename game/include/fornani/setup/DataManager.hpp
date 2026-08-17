@@ -190,6 +190,8 @@ class DataManager final {
 	bool load_save_binary(fs::path const& path, player::Player& player);
 	bool load_save_json(fs::path const& path, player::Player& player, bool reload = false);
 	bool load_time_trials_binary(fs::path const& path);
+	void generate_save_jsons();
+	void generate_save_binaries();
 
   private:
 	Register<StableID::underlying_type> opened_chests{};

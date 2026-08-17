@@ -114,9 +114,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		while (true) {
 			auto start = std::chrono::steady_clock::now();
 			auto event = window.pollEvent();
-			auto us = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count();
-
-			if (us > 10000) { NANI_LOG_WARN(m_logger, "pollEvent blocked for {} us (has event = {})", us, event.has_value()); }
 
 			if (!event) { break; }
 			if (event->is<sf::Event::Closed>()) {
@@ -365,6 +362,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					services.world_clock.set_speed(clock_speed);
 					ImGui::Separator();
 
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Save")) {
+					if (ImGui::Button("Generate save jsons")) { services.data.generate_save_jsons(); }
+					if (ImGui::Button("Generate save binaries")) { services.data.generate_save_binaries(); }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("World")) {

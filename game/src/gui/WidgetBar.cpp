@@ -8,13 +8,13 @@
 namespace fornani::gui {
 
 WidgetBar::WidgetBar(automa::ServiceProvider& svc, int amount, sf::Vector2i dimensions, std::string_view tag, sf::Vector2f origin, float pad, bool compress)
-	: m_text{svc.text.fonts.title.font}, m_quantity{amount}, m_compress{compress}, m_position{origin}, m_dimensions{dimensions}, m_pad{pad} {
+	: m_text{svc.text.fonts.title.font}, m_compress{compress}, m_position{origin}, m_dimensions{dimensions}, m_pad{pad} {
 	m_text.setCharacterSize(16);
 	for (auto i{0}; i < amount; ++i) { m_widgets.push_back(Widget(svc, tag, dimensions, i, origin + sf::Vector2f{i * dimensions.x * constants::f_scale_factor + i * pad, 0.f})); }
 }
 
 void WidgetBar::update(automa::ServiceProvider& svc, Health& health, bool shake) {
-	m_quantity = health.get_i_capacity();
+	if (health.get_i_capacity() != m_widgets.size()) { set_flag(WidgetBarFlags::needs_resize); }
 	auto qty = "x" + std::to_string(health.get_i_quantity());
 	m_text.setString(qty);
 	for (auto [i, widget] : std::views::enumerate(m_widgets)) {
@@ -34,7 +34,7 @@ void WidgetBar::update(automa::ServiceProvider& svc, Health& health, bool shake)
 }
 
 void WidgetBar::render(sf::RenderWindow& win) {
-	if (m_quantity > 16 && m_compress) {
+	if (m_widgets.size() > 16 && m_compress) {
 		auto& widget = m_widgets.at(0);
 		widget.render(win);
 		m_text.setPosition(m_position + sf::Vector2f{16.f, -24.f});

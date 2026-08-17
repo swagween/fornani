@@ -323,6 +323,9 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	}
 	svc.camera_controller.set_position(player->get_camera_focus_point());
 
+	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
+	svc.state_controller.actions.reset(Actions::save_loaded);
+	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 	player->visit_history.push_room(target_state);
 
 	m_loading.start();

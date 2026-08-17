@@ -111,30 +111,31 @@ void JournalGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [
 }
 
 bool JournalGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (m_selector) {
-		if (controller.menu_move(input::MoveDirection::up)) {
-			if (m_selector->move_direction({0, -1}).up()) {}
-			refresh();
-		}
-		if (controller.menu_move(input::MoveDirection::down)) {
-			if (m_selector->move_direction({0, 1}).down()) {}
-			refresh();
-		}
-		if (controller.digital(input::DigitalAction::menu_select).triggered && is_quest()) {
-			m_services->data.active_quest = m_services->quest_registry.get_index_from_tag(m_text.listing.at(m_selector->get_current_selection()).tag);
-			m_selected_quest = m_selector->get_current_selection();
-			soundboard.play_sound("menu_select");
-		}
 
-		constexpr int count = static_cast<int>(JournalSection::END);
-		if (controller.digital(input::DigitalAction::menu_tab_right).triggered) {
-			m_section = static_cast<JournalSection>((static_cast<int>(m_section) + 1) % count);
-			switch_sections(*m_services);
-		}
-		if (controller.digital(input::DigitalAction::menu_tab_left).triggered) {
-			m_section = static_cast<JournalSection>((static_cast<int>(m_section) + count - 1) % count);
-			switch_sections(*m_services);
-		}
+	constexpr int count = static_cast<int>(JournalSection::END);
+	if (controller.digital(input::DigitalAction::menu_tab_right).triggered) {
+		m_section = static_cast<JournalSection>((static_cast<int>(m_section) + 1) % count);
+		switch_sections(*m_services);
+	}
+	if (controller.digital(input::DigitalAction::menu_tab_left).triggered) {
+		m_section = static_cast<JournalSection>((static_cast<int>(m_section) + count - 1) % count);
+		switch_sections(*m_services);
+	}
+
+	if (!m_selector) { return Gizmo::handle_inputs(controller, soundboard); }
+	if (m_text.listing.empty()) { return Gizmo::handle_inputs(controller, soundboard); }
+	if (controller.menu_move(input::MoveDirection::up)) {
+		if (m_selector->move_direction({0, -1}).up()) {}
+		refresh();
+	}
+	if (controller.menu_move(input::MoveDirection::down)) {
+		if (m_selector->move_direction({0, 1}).down()) {}
+		refresh();
+	}
+	if (controller.digital(input::DigitalAction::menu_select).triggered && is_quest() && !m_text.listing.empty()) {
+		m_services->data.active_quest = m_services->quest_registry.get_index_from_tag(m_text.listing.at(m_selector->get_current_selection()).tag);
+		m_selected_quest = m_selector->get_current_selection();
+		soundboard.play_sound("menu_select");
 	}
 	return Gizmo::handle_inputs(controller, soundboard);
 }
@@ -232,15 +233,16 @@ void JournalGizmo::switch_sections(automa::ServiceProvider& svc) {
 			entry.title.setFillColor(colors::pioneer_dark_red);
 			m_text.listing.push_back(entry);
 		}
-
 		break;
 	}
 	m_text.readout.setOrigin({10.f, m_text.readout.getLocalBounds().size.y * 1.5f});
-	if (!m_text.listing.empty()) { m_selector.emplace(InventorySelector{{1, static_cast<int>(m_text.listing.size())}, {0.f, m_spacing}}); }
-	for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
-		if (svc.data.active_quest == svc.quest_registry.get_index_from_tag(entry.tag)) {
-			if (m_selector) { m_selector->set_selection({0, static_cast<int>(i)}); }
-			m_selected_quest = i;
+	if (!m_text.listing.empty()) {
+		m_selector.emplace(InventorySelector{{1, static_cast<int>(m_text.listing.size())}, {0.f, m_spacing}});
+		for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
+			if (svc.data.active_quest == svc.quest_registry.get_index_from_tag(entry.tag)) {
+				if (m_selector) { m_selector->set_selection({0, static_cast<int>(i)}); }
+				m_selected_quest = i;
+			}
 		}
 	}
 	m_text.objective.emplace(svc);

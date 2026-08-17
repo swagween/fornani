@@ -92,6 +92,8 @@ void Trial::reload(ServiceProvider& svc, int target_state) {
 	svc.camera_controller.set_position(player->get_camera_focus_point());
 	player->controller.stall_input();
 	svc.input_system.flush_inputs();
+	svc.state_controller.actions.reset(Actions::save_loaded);
+	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 }
 
 void Trial::pause(ServiceProvider& svc) {

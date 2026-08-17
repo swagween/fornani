@@ -839,4 +839,78 @@ bool DataManager::load_time_trials_binary(fs::path const& path) {
 	return true;
 }
 
+void DataManager::generate_save_jsons() {
+	auto const save_dir = m_services->finder.paths.save;
+	auto const temp_dir = save_dir / "temp";
+
+	fs::create_directories(temp_dir);
+
+	for (auto const& entry : fs::directory_iterator(save_dir)) {
+		if (!entry.is_regular_file() || entry.path().extension() != ".sav") { continue; }
+
+		auto const json_path = temp_dir / entry.path().filename().replace_extension(".json");
+
+		std::ifstream in(entry.path(), std::ios::binary);
+		if (!in) {
+			NANI_LOG_ERROR(m_logger, "Failed to open save file: {}", entry.path().string());
+			continue;
+		}
+
+		std::string json;
+		if (!codec::decode(in, json)) {
+			NANI_LOG_ERROR(m_logger, "Failed to decode save file: {}", entry.path().string());
+			continue;
+		}
+
+		std::ofstream out(json_path);
+		if (!out) {
+			NANI_LOG_ERROR(m_logger, "Failed to open JSON file for writing: {}", json_path.string());
+			continue;
+		}
+
+		out << json;
+
+		if (!out) {
+			NANI_LOG_ERROR(m_logger, "Failed to write JSON file: {}", json_path.string());
+			continue;
+		}
+
+		NANI_LOG_INFO(m_logger, "Generated JSON: {}", json_path.string());
+	}
+}
+
+void DataManager::generate_save_binaries() {
+	auto const temp_dir = m_services->finder.paths.save / "temp";
+
+	fs::create_directories(temp_dir);
+
+	for (auto const& entry : fs::directory_iterator(temp_dir)) {
+		if (!entry.is_regular_file() || entry.path().extension() != ".json") { continue; }
+
+		auto sav_path = entry.path();
+		sav_path.replace_extension(".sav");
+
+		auto result = dj::Json::from_file(entry.path().string());
+		if (!result) {
+			NANI_LOG_ERROR(m_logger, "Failed to parse JSON file: {}", entry.path().string());
+			continue;
+		}
+
+		auto const json = result->serialize();
+
+		std::ofstream out(sav_path, std::ios::binary);
+		if (!out) {
+			NANI_LOG_ERROR(m_logger, "Failed to open save file for writing: {}", sav_path.string());
+			continue;
+		}
+
+		if (!codec::encode(json, out)) {
+			NANI_LOG_ERROR(m_logger, "Failed to encode save file: {}", sav_path.string());
+			continue;
+		}
+
+		NANI_LOG_INFO(m_logger, "Generated save: {}", sav_path.string());
+	}
+}
+
 } // namespace fornani::data
