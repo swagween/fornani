@@ -20,7 +20,7 @@ constexpr float TERMINAL_VELOCITY = 1.8f;
 constexpr float default_grav = 1.0f;
 constexpr float elastic_threshold{-0.01f};
 
-enum class State { grounded };
+enum class State : std::uint8_t { grounded };
 
 class PhysicsComponent {
   public:

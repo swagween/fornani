@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-enum class HealthFlags { hurt, hit };
+enum class HealthFlags : std::uint8_t { hurt, hit };
 
 constexpr auto critical_threshold{0.34f};
 

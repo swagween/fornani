@@ -15,7 +15,7 @@ struct ServiceProvider;
 
 namespace fornani::audio {
 
-enum class SoundBus { gameplay, gui };
+enum class SoundBus : std::uint8_t { gameplay, gui };
 
 constexpr auto default_min_distance_v = 512.f;
 constexpr auto default_max_distance_v = 2048.f;

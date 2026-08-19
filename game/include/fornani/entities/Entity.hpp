@@ -15,7 +15,7 @@ class Map;
 
 namespace fornani::entity {
 
-enum class State { flip };
+enum class State : std::uint8_t { flip };
 
 class Entity : public Polymorphic {
   public:

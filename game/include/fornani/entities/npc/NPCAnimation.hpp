@@ -8,8 +8,8 @@
 
 namespace fornani::npc {
 
-enum class NPCAnimState { idle, turn, walk, inspect };
-enum class NPCCommunication { sprite_flip };
+enum class NPCAnimState : std::uint8_t { idle, turn, walk, inspect };
+enum class NPCCommunication : std::uint8_t { sprite_flip };
 
 class NPCAnimation {
   public:

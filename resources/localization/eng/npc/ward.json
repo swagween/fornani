@@ -60,7 +60,7 @@
           "message": "If you want me to grant you passage, I'll need written permission from him."
         },
         {
-          "codes": [[3, 12, 1, 416]],
+          "codes": [[27, 12, 1]],
           "message": "Shouldn't be too hard to get, eh? After all, he is your dad."
         }
       ],
@@ -74,7 +74,7 @@
         },
         {
           "codes": [
-            [3, 12, 1, 225],
+            [27, 12, 3],
             [13, 30, 225]
           ],
           "message": "Go on ahead. But be careful out there. The path is blocked for a good reason!"

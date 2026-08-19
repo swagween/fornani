@@ -21,7 +21,7 @@ class Player;
 
 namespace fornani::gui {
 
-enum class HUDWidgetFlags { hide };
+enum class HUDWidgetFlags : std::uint8_t { hide };
 
 class HUDWidget : public UniquePolymorphic, public Flaggable<HUDWidgetFlags> {
   public:

@@ -15,7 +15,7 @@ namespace player {
 class Player;
 }
 
-enum class MobileState { flip };
+enum class MobileState : std::uint8_t { flip };
 
 struct MobileSound {
 	std::string tag{};

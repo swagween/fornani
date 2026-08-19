@@ -22,9 +22,9 @@
 
 namespace fornani {
 
-enum class NPCFlags { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle };
-enum class NPCState { engaged, force_interact, introduced, talking, cutscene, piggybacking, hidden, distant_interact, just_engaged, random_walk, invisible, interacting };
-enum class NPCAnimationState { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
+enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle };
+enum class NPCState : std::uint8_t { overlapping_player, force_interact, talking, cutscene, piggybacking, hidden, random_walk, invisible, player_walked_away };
+enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
 
 struct NPCSpawn {
 	NPCSpawn(dj::Json const& in) {
@@ -107,7 +107,6 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 
 	[[nodiscard]] auto is_hidden() const -> bool { return m_state.test(NPCState::hidden); }
 	[[nodiscard]] auto is_background() const -> bool { return has_flag_set(NPCFlags::background); }
-	[[nodiscard]] auto was_introduced() const -> bool { return m_state.test(NPCState::introduced); }
 	[[nodiscard]] auto is_force_interact() const -> bool { return m_state.test(NPCState::force_interact); }
 	[[nodiscard]] auto get_number_of_suites() const -> int { return static_cast<int>(conversations.size()); }
 	[[nodiscard]] auto get_tag() const -> std::string { return m_label; }
@@ -123,7 +122,6 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 
   protected:
 	void set_force_interact(bool to) { to ? m_state.set(NPCState::force_interact) : m_state.reset(NPCState::force_interact); }
-	void set_distant_interact(bool to) { to ? m_state.set(NPCState::distant_interact) : m_state.reset(NPCState::distant_interact); }
 
 	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 
@@ -140,6 +138,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	util::BitFlags<NPCState> m_state{};
 	util::Circuit m_current_conversation;
 	util::Cooldown m_busy_timer{};
+	util::Cooldown m_indicator_timer;
 	util::Cooldown m_disappear;
 	std::deque<int> conversations{};
 	Animatable m_indicator;

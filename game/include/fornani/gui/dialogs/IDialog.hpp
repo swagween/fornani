@@ -28,9 +28,9 @@ class Transition;
 
 namespace fornani::gui {
 
-enum class DialogStatus { opened, made_sale, closed, intro_done, waiting_to_enter, entered };
-enum class DialogState { buy, sell, build };
-enum class IDialogFlags { early_render_return, early_tick_return };
+enum class DialogStatus : std::uint8_t { opened, made_sale, closed, intro_done, waiting_to_enter, entered };
+enum class DialogState : std::uint8_t { buy, sell, build };
+enum class IDialogFlags : std::uint8_t { early_render_return, early_tick_return };
 
 class IDialog : public UniquePolymorphic {
   public:

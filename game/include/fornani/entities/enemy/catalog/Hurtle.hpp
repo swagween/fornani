@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-enum class HurtleState { run, sleep, turn };
+enum class HurtleState : std::uint8_t { run, sleep, turn };
 
 class Hurtle final : public Enemy, public StateMachine<HurtleState> {
 

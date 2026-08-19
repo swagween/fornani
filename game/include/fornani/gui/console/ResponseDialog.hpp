@@ -30,7 +30,7 @@ class TextManager;
 
 namespace fornani::gui {
 
-enum class ResponseDialogFlags { hide_portrait };
+enum class ResponseDialogFlags : std::uint8_t { hide_portrait };
 
 struct ResponseIndicator {
 	sf::Vector2f position{};

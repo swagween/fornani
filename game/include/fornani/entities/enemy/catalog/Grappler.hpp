@@ -7,8 +7,8 @@
 
 namespace fornani::enemy {
 
-enum class GrapplerState { idle, leap, snag, release, whiff, turn };
-enum class GrapplerFlags { caught_player, released_player };
+enum class GrapplerState : std::uint8_t { idle, leap, snag, release, whiff, turn };
+enum class GrapplerFlags : std::uint8_t { caught_player, released_player };
 
 class Grappler final : public Enemy, public StateMachine<GrapplerState> {
 

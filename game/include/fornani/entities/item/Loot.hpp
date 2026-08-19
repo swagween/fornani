@@ -19,7 +19,7 @@ class Map;
 
 namespace fornani::item {
 
-enum class LootState { heart_dropped };
+enum class LootState : std::uint8_t { heart_dropped };
 
 struct LootProperties {
 	sf::Vector2<int> drop_range;

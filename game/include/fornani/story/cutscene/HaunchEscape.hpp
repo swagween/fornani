@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-enum class HaunchEscapeFlags { done, over };
+enum class HaunchEscapeFlags : std::uint8_t { done, over };
 
 class HaunchEscape final : public Cutscene {
   public:

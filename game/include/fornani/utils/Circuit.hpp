@@ -7,7 +7,7 @@
 
 namespace fornani::util {
 
-enum class CircuitIterator { previous, current, next };
+enum class CircuitIterator : std::uint8_t { previous, current, next };
 
 class Circuit {
   public:

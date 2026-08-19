@@ -1329,8 +1329,10 @@ void Map::update_balance(automa::ServiceProvider& svc) {
 	ambience_balance.update(svc.ticker.dt.count());
 	if (m_attributes.properties.test(MapProperties::interior)) {
 		set_target_balance(0.f, audio::BalanceTarget::ambience);
-	} else {
+	} else if (has_obscuring_layer()) {
 		set_target_balance(cooldowns.fade_obscured.get_normalized(), audio::BalanceTarget::ambience);
+	} else {
+		set_target_balance(1.f, audio::BalanceTarget::ambience);
 	}
 }
 

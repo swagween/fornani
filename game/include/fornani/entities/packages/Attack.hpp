@@ -7,7 +7,7 @@
 
 namespace fornani::player {
 class Player;
-enum class PlayerDeathType;
+enum class PlayerDeathType : std::uint8_t;
 } // namespace fornani::player
 
 namespace fornani::entity {

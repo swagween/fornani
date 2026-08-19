@@ -6,15 +6,15 @@
 
 namespace fornani {
 
-enum class LR { left, right };
-enum class LNR { left, right, neutral };
-enum class UND { up, down, neutral };
-enum class UDLR { up, down, left, right };
-enum class Inter { north, south, east, west, northeast, northwest, southeast, southwest };
-enum class HV { horizontal, vertical };
-enum class RotationType { clockwise, counterclockwise };
+enum class LR : std::uint8_t { left, right };
+enum class LNR : std::uint8_t { left, right, neutral };
+enum class UND : std::uint8_t { up, down, neutral };
+enum class UDLR : std::uint8_t { up, down, left, right };
+enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
+enum class HV : std::uint8_t { horizontal, vertical };
+enum class RotationType : std::uint8_t { clockwise, counterclockwise };
 
-enum class DirectionFlags { locked };
+enum class DirectionFlags : std::uint8_t { locked };
 
 class Direction;
 class CardinalDirection;

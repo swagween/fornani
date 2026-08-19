@@ -9,9 +9,9 @@
 
 namespace fornani::enemy {
 
-enum class JunkerState { idle, turn, toss, hide };
-enum class JunkerVariant { grenade };
-enum class JunkerFlags { toss };
+enum class JunkerState : std::uint8_t { idle, turn, toss, hide };
+enum class JunkerVariant : std::uint8_t { grenade };
+enum class JunkerFlags : std::uint8_t { toss };
 
 class Junker final : public Enemy, public StateMachine<JunkerState>, public Flaggable<JunkerFlags> {
   public:

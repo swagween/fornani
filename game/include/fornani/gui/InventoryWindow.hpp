@@ -27,8 +27,8 @@ class Map;
 
 namespace fornani::gui {
 
-enum class InventoryView { dashboard, focused, exit };
-enum class InventoryWindowFlags { exit };
+enum class InventoryView : std::uint8_t { dashboard, focused, exit };
+enum class InventoryWindowFlags : std::uint8_t { exit };
 
 class InventoryWindow {
   public:

@@ -22,7 +22,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class BreakableAttributes { bulletproof };
+enum class BreakableAttributes : std::uint8_t { bulletproof };
 
 class Breakable : public Animatable {
   public:
@@ -45,8 +45,8 @@ class Breakable : public Animatable {
 	util::BitFlags<BreakableAttributes> attributes{};
 	Health m_health;
 	float energy{};
+	float m_flash_energy{};
 	float dampen{0.1f};
-	float hit_energy{8.f};
 	sf::Vector2f random_offset{};
 };
 

@@ -16,7 +16,7 @@ class Player;
 
 namespace fornani::graphics {
 
-enum class IndicatorType { health, orb };
+enum class IndicatorType : std::uint8_t { health, orb };
 
 class Indicator {
   public:

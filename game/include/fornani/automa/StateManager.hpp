@@ -18,7 +18,7 @@ namespace fornani::automa {
 
 struct ServiceProvider;
 
-enum class StateManagerFlags { return_to_main_menu, retry };
+enum class StateManagerFlags : std::uint8_t { return_to_main_menu, retry };
 
 class StateManager {
 

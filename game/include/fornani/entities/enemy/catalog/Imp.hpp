@@ -8,8 +8,8 @@
 
 namespace fornani::enemy {
 
-enum class ImpState { idle, turn, run, jump, fall, attack, dormant };
-enum class ImpVariant { fork, knife };
+enum class ImpState : std::uint8_t { idle, turn, run, jump, fall, attack, dormant };
+enum class ImpVariant : std::uint8_t { fork, knife };
 
 class Imp final : public Enemy {
 

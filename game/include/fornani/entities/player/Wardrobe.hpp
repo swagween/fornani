@@ -14,11 +14,11 @@ class TextureUpdater;
 
 namespace fornani::player {
 
-enum class ApparelType { hairstyle, accessory, shirt, pants, END };
-enum class ApparelPants { standard, red_jeans, chalcedony_skirt, punk_pants, ceremonial_skirt };
-enum class ApparelShirt { standard, skycorps_tee, chalcedony_shirt, punk_shirt, ceremonial_garb };
-enum class ApparelHeadgear { standard, head_lamp, gas_mask, sporty_cap };
-enum class ApparelHairstyle { standard, bob_cut, ponytail, punk_hair };
+enum class ApparelType : std::uint8_t { hairstyle, accessory, shirt, pants, END };
+enum class ApparelPants : std::uint8_t { standard, red_jeans, chalcedony_skirt, punk_pants, ceremonial_skirt };
+enum class ApparelShirt : std::uint8_t { standard, skycorps_tee, chalcedony_shirt, punk_shirt, ceremonial_garb };
+enum class ApparelHeadgear : std::uint8_t { standard, head_lamp, gas_mask, sporty_cap };
+enum class ApparelHairstyle : std::uint8_t { standard, bob_cut, ponytail, punk_hair };
 
 class Apparel : public Polymorphic {
   public:

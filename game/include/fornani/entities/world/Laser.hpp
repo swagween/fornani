@@ -25,8 +25,8 @@ namespace world {
 
 class Map;
 
-enum class LaserType { turret, magic };
-enum class LaserAttributes { transcendent, infinite, player, no_collision };
+enum class LaserType : std::uint8_t { turret, magic };
+enum class LaserAttributes : std::uint8_t { transcendent, infinite, player, no_collision };
 
 class Laser {
   public:

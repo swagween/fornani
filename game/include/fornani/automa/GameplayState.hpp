@@ -13,7 +13,7 @@
 
 namespace fornani::automa {
 
-enum class GameplayStateFlags { early_tick_return, transitioned_in };
+enum class GameplayStateFlags : std::uint8_t { early_tick_return, transitioned_in };
 
 class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
   public:

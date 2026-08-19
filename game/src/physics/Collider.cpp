@@ -472,13 +472,6 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		flags.external_state.test(ExternalState::grounded) ? box.setFillColor(sf::Color::Blue) : box.setFillColor(sf::Color::Yellow);
 		// win.draw(box);
 
-		// draw hurtbox
-		draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
-		draw_hurtbox.setPosition(hurtbox.get_position() - cam);
-		draw_hurtbox.setOutlineColor(colors::ui_white);
-		draw_hurtbox.setOutlineThickness(-1.f);
-		// win.draw(draw_hurtbox);
-
 		// draw vicinity
 		box.setSize(sf::Vector2f{p_vicinity.get_dimensions()});
 		box.setPosition(p_vicinity.get_position() - cam);
@@ -510,6 +503,13 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		box.setOutlineThickness(0);
 		// win.draw(box);
 	}
+
+	// draw hurtbox
+	draw_hurtbox.setSize(sf::Vector2f{hurtbox.get_dimensions()});
+	draw_hurtbox.setPosition(hurtbox.get_position() - cam);
+	draw_hurtbox.setOutlineColor(colors::ui_white);
+	draw_hurtbox.setOutlineThickness(-1.f);
+	win.draw(draw_hurtbox);
 
 	if (debug::is_greyblock()) { return; }
 

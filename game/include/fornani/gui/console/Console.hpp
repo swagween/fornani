@@ -24,9 +24,9 @@ class ControllerMap;
 
 namespace fornani::gui {
 
-enum class ConsoleMode { writing, responding, off };
-enum class ConsoleFlags { no_exit, close_after_process, hologram };
-enum class ConsoleTriggers { response_created };
+enum class ConsoleMode : std::uint8_t { writing, responding, off };
+enum class ConsoleFlags : std::uint8_t { no_exit, close_after_process, hologram };
+enum class ConsoleTriggers : std::uint8_t { response_created };
 
 class Console {
   public:

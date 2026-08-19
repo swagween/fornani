@@ -1,9 +1,11 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace fornani::debug {
 
-enum class PresentationMode { production, greyblock, debug, END };
+enum class PresentationMode : std::uint8_t { production, greyblock, debug, END };
 
 constexpr inline auto presentation_mode_count = static_cast<int>(debug::PresentationMode::END);
 

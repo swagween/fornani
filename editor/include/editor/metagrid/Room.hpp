@@ -14,7 +14,7 @@ struct ServiceProvider;
 }
 namespace pi {
 
-enum class RoomFlags { include_in_minimap, use_template, interior, day_night_shift };
+enum class RoomFlags : std::uint8_t { include_in_minimap, use_template, interior, day_night_shift };
 
 constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};

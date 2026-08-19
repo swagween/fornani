@@ -1,9 +1,10 @@
 
 #pragma once
+#include <cstdint>
 
 namespace pi {
 
-enum class ToolType { brush, fill, marquee, erase, hand, entity_editor, eyedropper, END };
+enum class ToolType : std::uint8_t { brush, fill, marquee, erase, hand, entity_editor, eyedropper, END };
 
 }
 

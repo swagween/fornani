@@ -12,8 +12,8 @@
 
 namespace fornani::enemy {
 
-enum class MiaagState { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
-enum class MiaagFlags { gone, seek_player };
+enum class MiaagState : std::uint8_t { idle, hurt, closed, dying, blinking, dormant, chomp, turn, awaken, spellcast };
+enum class MiaagFlags : std::uint8_t { gone, seek_player };
 
 class Miaag : public Boss, public StateMachine<MiaagState> {
   public:

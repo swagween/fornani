@@ -14,7 +14,7 @@ class Projectile;
 
 namespace fornani::entity {
 
-enum class TreasureContainerState { neutral, shine };
+enum class TreasureContainerState : std::uint8_t { neutral, shine };
 
 class TreasureContainer : public Animatable {
   public:

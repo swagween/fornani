@@ -99,7 +99,7 @@ namespace fornani::io::logger {
 /**
  * \brief Log Level.
  */
-enum class Level { eError, eWarn, eInfo, eDebug, eCOUNT_ };
+enum class Level : std::uint8_t { eError, eWarn, eInfo, eDebug, eCOUNT_ };
 
 /**
  * \brief char representation of Level.
@@ -143,7 +143,7 @@ inline constexpr Target all_v{.value = 0xffffffff};
 /**
  * \brief Timestamp mode.
  */
-enum class Timestamp { eLocal, eUtc };
+enum class Timestamp : std::uint8_t { eLocal, eUtc };
 
 struct Config {
 	/**

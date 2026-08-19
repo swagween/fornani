@@ -5,7 +5,7 @@
 
 namespace pi {
 
-enum class SelectionType { neutral, palette, canvas };
+enum class SelectionType : std::uint8_t { neutral, palette, canvas };
 
 class SelectBox {
   public:

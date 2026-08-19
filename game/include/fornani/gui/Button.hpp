@@ -7,7 +7,7 @@
 
 namespace fornani::gui {
 
-enum class ButtonState { neutral, hovered, clicked };
+enum class ButtonState : std::uint8_t { neutral, hovered, clicked };
 
 class Button {
   public:

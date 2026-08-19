@@ -10,7 +10,7 @@
 
 namespace fornani {
 
-enum class AmbientPropAttributes { foreground, destructible, audio };
+enum class AmbientPropAttributes : std::uint8_t { foreground, destructible, audio };
 
 struct AmbientPropParameters {
 	AmbientPropParameters(automa::ServiceProvider& svc, dj::Json const& in);

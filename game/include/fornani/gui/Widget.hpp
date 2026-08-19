@@ -17,8 +17,8 @@ class Player;
 
 namespace fornani::gui {
 
-enum class WidgetState { added, neutral, taken, gone };
-enum class WidgetType { basic, secondary };
+enum class WidgetState : std::uint8_t { added, neutral, taken, gone };
+enum class WidgetType : std::uint8_t { basic, secondary };
 
 class Widget : public Animatable, public StateMachine<WidgetState> {
   public:

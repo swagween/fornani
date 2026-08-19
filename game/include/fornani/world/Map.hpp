@@ -55,10 +55,10 @@ class InventoryWindow;
 
 namespace fornani::world {
 
-enum class LevelState { camera_shake, spawn_enemy };
-enum class MapState { unobscure };
-enum class LayerProperties { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic };
+enum class LevelState : std::uint8_t { camera_shake, spawn_enemy };
+enum class MapState : std::uint8_t { unobscure };
+enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
+enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};

@@ -7,7 +7,7 @@
 
 namespace fornani {
 
-enum class ReturnToBaseFlags { done };
+enum class ReturnToBaseFlags : std::uint8_t { done };
 
 class ReturnToBase final : public Cutscene {
   public:

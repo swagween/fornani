@@ -22,8 +22,8 @@
 
 namespace pi {
 
-enum class GlobalFlags { shutdown, palette_mode };
-enum class EditorFlags { create_new_room };
+enum class GlobalFlags : std::uint8_t { shutdown, palette_mode };
+enum class EditorFlags : std::uint8_t { create_new_room };
 
 constexpr static std::uint8_t max_layers_v{32};
 

@@ -12,7 +12,7 @@
 
 namespace fornani::entity {
 
-enum class SpawnablePlatformState { open, opening, fading, closing, dormant };
+enum class SpawnablePlatformState : std::uint8_t { open, opening, fading, closing, dormant };
 
 class SpawnablePlatform {
   public:

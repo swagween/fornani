@@ -8,7 +8,7 @@
 
 namespace fornani::vfx {
 
-enum class EmitterFlags { map };
+enum class EmitterFlags : std::uint8_t { map };
 
 struct EmitterParameters {
 	std::string tag{};

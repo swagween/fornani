@@ -25,10 +25,10 @@ constexpr auto vicinity_pad_v = 31.f;
 class Collider;
 class CircleCollider;
 
-enum class ColliderFlags { custom_properties, changed, intangible, simple, no_physics, registered, crushed, landed, in_water, submerged, sinking, no_update, left_walljump, right_walljump, gravity, in_goo, momentum, encumbered, sink };
-enum class ColliderType { rectangle, circle };
-enum class ColliderAttributes { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
-enum class ColliderTrait { circle, player, enemy, npc, secondary, block, particle, platform, pushable, chest, prop };
+enum class ColliderFlags : std::uint8_t { custom_properties, changed, intangible, simple, no_physics, registered, crushed, landed, in_water, submerged, sinking, no_update, left_walljump, right_walljump, gravity, in_goo, momentum, encumbered, sink };
+enum class ColliderType : std::uint8_t { rectangle, circle };
+enum class ColliderAttributes : std::uint8_t { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
+enum class ColliderTrait : std::uint8_t { circle, player, enemy, npc, secondary, block, particle, platform, pushable, chest, prop };
 
 class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   public:

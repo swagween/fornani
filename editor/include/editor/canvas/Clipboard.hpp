@@ -11,7 +11,7 @@
 
 namespace pi {
 
-enum class SelectMode { none, select, clipboard };
+enum class SelectMode : std::uint8_t { none, select, clipboard };
 
 class Canvas;
 class Tool;

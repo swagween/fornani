@@ -13,8 +13,8 @@
 
 namespace fornani::enemy {
 
-enum class NimbusState { idle, jump, land, get_up, prepare_forward_slash, forward_slash, prepare_twirl_cut, twirl_cut, flourish, downward_cut, upward_cut, turn, parry, begin_levitate, levitate, spellcast, double_aerial_slash };
-enum class NimbusFlags {};
+enum class NimbusState : std::uint8_t { idle, jump, land, get_up, prepare_forward_slash, forward_slash, prepare_twirl_cut, twirl_cut, flourish, downward_cut, upward_cut, turn, parry, begin_levitate, levitate, spellcast, double_aerial_slash };
+enum class NimbusFlags : std::uint8_t {};
 
 class Nimbus final : public Boss, public StateMachine<NimbusState> {
   public:

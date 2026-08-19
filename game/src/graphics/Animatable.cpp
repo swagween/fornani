@@ -54,6 +54,8 @@ void Animatable::random_start() {
 
 void Animatable::random_frame_start() { animation.frame_timer.randomize(); }
 
+auto Animatable::frame_action(int frame) -> bool { return animation.get_frame_count() == frame && animation.keyframe_started(); }
+
 void Animatable::set_rect() {
 	auto u = m_channel * m_dimensions.x;
 	auto v = animation.get_frame() * m_dimensions.y;

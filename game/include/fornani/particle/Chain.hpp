@@ -11,7 +11,7 @@
 
 namespace fornani::vfx {
 
-enum class ChainFlags { ignore_player_collision, linked, broken, no_collision };
+enum class ChainFlags : std::uint8_t { ignore_player_collision, linked, broken, no_collision };
 
 struct ChainParameters {
 	float resistance{};

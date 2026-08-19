@@ -6,7 +6,7 @@
 class Animatable;
 
 namespace fornani::vfx {
-enum class AnimatableAxis { frame, channel };
+enum class AnimatableAxis : std::uint8_t { frame, channel };
 class SpriteRotator {
   public:
 	void handle_rotation(Animatable& sprite, sf::Vector2f direction, AnimatableAxis axis, int num_angles, bool radial = true);

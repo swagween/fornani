@@ -8,9 +8,9 @@
 
 namespace fornani::enemy {
 
-enum class MacrophageVariant { monocyte, epithelioid, lamina };
-enum class MacrophageState { idle };
-enum class MacrophageFlags { caught_player, swallowed_player, released_player, broken };
+enum class MacrophageVariant : std::uint8_t { monocyte, epithelioid, lamina };
+enum class MacrophageState : std::uint8_t { idle };
+enum class MacrophageFlags : std::uint8_t { caught_player, swallowed_player, released_player, broken };
 
 class Macrophage final : public Enemy, public StateMachine<MacrophageState> {
 

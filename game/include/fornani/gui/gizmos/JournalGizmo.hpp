@@ -14,7 +14,7 @@ struct QuestEntry {
 	sf::Vector2f offset{};
 };
 
-enum class JournalSection { quest, bestiary, END };
+enum class JournalSection : std::uint8_t { quest, bestiary, END };
 
 class JournalGizmo : public Gizmo {
   public:

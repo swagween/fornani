@@ -17,7 +17,7 @@ struct DotInticator {
 	sf::RectangleShape rect{};
 };
 
-enum class MenuStateFlags { option_hovered };
+enum class MenuStateFlags : std::uint8_t { option_hovered };
 
 class MenuState : public GameState {
   public:

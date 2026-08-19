@@ -23,8 +23,8 @@ namespace fornani::world {
 
 class SwitchBlock;
 
-enum class SwitchType { toggler, permanent, movable, alternator };
-enum class SwitchButtonState { unpressed, pressed, triggered };
+enum class SwitchType : std::uint8_t { toggler, permanent, movable, alternator };
+enum class SwitchButtonState : std::uint8_t { unpressed, pressed, triggered };
 
 class SwitchButton {
   public:

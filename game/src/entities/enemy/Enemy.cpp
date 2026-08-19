@@ -292,9 +292,9 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	if (debug::is_debug()) { debug(); }
 
-	if (debug::is_production()) { p_animatable.draw(win); }
+	if (!debug::is_greyblock()) { p_animatable.draw(win); }
 
-	if (!debug::is_production()) {
+	if (debug::is_greyblock()) {
 		get_collider().render(win, cam);
 		if (secondary_collider) { get_secondary_collider().render(win, cam); }
 		if (debug::is_debug()) {

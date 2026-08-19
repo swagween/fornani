@@ -12,7 +12,7 @@ namespace fornani::player {
 
 class Player;
 
-enum class AnimState {
+enum class AnimState : std::uint8_t {
 	idle,
 	turn,
 	sharp_turn,
@@ -61,7 +61,7 @@ enum class AnimState {
 	knock_over
 };
 
-enum class AnimTriggers { end_death };
+enum class AnimTriggers : std::uint8_t { end_death };
 
 class PlayerAnimation : public StateMachine<AnimState> {
 

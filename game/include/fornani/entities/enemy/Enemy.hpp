@@ -36,9 +36,9 @@ namespace fornani::enemy {
 
 using EntityHandle = std::uint64_t;
 
-enum class EnemyChannel { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
-enum class EnemySize { tiny, small, medium, large, giant };
-enum class GeneralFlags {
+enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
+enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
+enum class GeneralFlags : std::uint8_t {
 	mobile,
 	gravity,
 	player_collision,
@@ -64,7 +64,7 @@ enum class GeneralFlags {
 	kick_immune,
 	tick_slowdown
 };
-enum class StateFlags {
+enum class StateFlags : std::uint8_t {
 	alive,
 	alert,
 	hostile,
@@ -84,8 +84,8 @@ enum class StateFlags {
 	special_event,
 	blocked_projectile
 };
-enum class Triggers { hostile, alert };
-enum class Variant { beast, soldier, elemental, worker, guardian };
+enum class Triggers : std::uint8_t { hostile, alert };
+enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 
 struct Attributes {
 	float base_hp{};

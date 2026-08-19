@@ -18,7 +18,7 @@ class Vendor;
 
 namespace fornani::gui {
 
-enum class VendorConstituentType { portrait, wares, description, name, core, selection, nani };
+enum class VendorConstituentType : std::uint8_t { portrait, wares, description, name, core, selection, nani };
 
 struct VendorItem {
 	int id{};

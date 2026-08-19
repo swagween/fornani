@@ -12,8 +12,29 @@
 
 namespace fornani::enemy {
 
-enum class LynxState { sit, get_up, idle, jump, forward_slash, levitate, run, downward_slam, prepare_shuriken, toss_shuriken, upward_slash, triple_slash, turn, aerial_slash, prepare_slash, defeat, second_phase, laugh, stagger, fall_over };
-enum class LynxFlags { conversing, just_levitated, player_defeated, slammed };
+enum class LynxState : std::uint8_t {
+	sit,
+	get_up,
+	idle,
+	jump,
+	forward_slash,
+	levitate,
+	run,
+	downward_slam,
+	prepare_shuriken,
+	toss_shuriken,
+	upward_slash,
+	triple_slash,
+	turn,
+	aerial_slash,
+	prepare_slash,
+	defeat,
+	second_phase,
+	laugh,
+	stagger,
+	fall_over
+};
+enum class LynxFlags : std::uint8_t { conversing, just_levitated, player_defeated, slammed };
 
 class Lynx final : public Boss {
   public:

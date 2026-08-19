@@ -7,8 +7,8 @@
 
 namespace fornani::enemy {
 
-enum class AntibodyState { idle, stun };
-enum class AntibodyVariant { igg, igm };
+enum class AntibodyState : std::uint8_t { idle, stun };
+enum class AntibodyVariant : std::uint8_t { igg, igm };
 
 class Antibody final : public Enemy, public StateMachine<AntibodyState> {
   public:

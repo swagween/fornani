@@ -6,8 +6,8 @@
 
 namespace fornani::audio {
 
-enum class BalanceSource { scene, world, instant, obscure };
-enum class BalanceTarget { music, ambience };
+enum class BalanceSource : std::uint8_t { scene, world, instant, obscure };
+enum class BalanceTarget : std::uint8_t { music, ambience };
 
 class SoundBalance {
   public:

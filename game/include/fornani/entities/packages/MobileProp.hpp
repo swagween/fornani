@@ -8,7 +8,7 @@
 
 namespace fornani {
 
-enum class MobilePropFlags { dropped };
+enum class MobilePropFlags : std::uint8_t { dropped };
 
 class MobileProp final : public Mobile, public Flaggable<MobilePropFlags> {
   public:

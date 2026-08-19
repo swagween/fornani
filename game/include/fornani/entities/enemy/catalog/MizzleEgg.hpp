@@ -8,8 +8,8 @@
 
 namespace fornani::enemy {
 
-enum class MizzleEggState { closed, open, in_between, hatch };
-enum class MizzleEggFlags { detached, hatched };
+enum class MizzleEggState : std::uint8_t { closed, open, in_between, hatch };
+enum class MizzleEggFlags : std::uint8_t { detached, hatched };
 
 class MizzleEgg final : public Enemy, public StateMachine<MizzleEggState> {
   public:

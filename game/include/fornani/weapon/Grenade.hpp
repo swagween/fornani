@@ -21,6 +21,6 @@ class Map;
 }
 
 namespace fornani::arms {
-enum class GrenadeFlags { detonated };
+enum class GrenadeFlags : std::uint8_t { detonated };
 // TODO: re-implement grenade to fit into new weapons system
 } // namespace fornani::arms

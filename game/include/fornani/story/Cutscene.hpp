@@ -18,7 +18,7 @@ class Console;
 
 namespace fornani {
 
-enum class CutsceneFlags { complete, started, delete_me, initialized };
+enum class CutsceneFlags : std::uint8_t { complete, started, delete_me, initialized };
 
 class Cutscene : public UniquePolymorphic {
   public:

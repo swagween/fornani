@@ -7,7 +7,7 @@
 #include <fornani/physics/Shape.hpp>
 
 namespace fornani::entity {
-enum class BedFlags { active, engaged, slept_in };
+enum class BedFlags : std::uint8_t { active, engaged, slept_in };
 class Bed {
   public:
 	Bed(automa::ServiceProvider& svc, sf::Vector2f position, int style = 0, bool flipped = false);

@@ -28,10 +28,10 @@ class Player;
 namespace fornani::arms {
 
 class Weapon;
-enum class ProjectileType { bullet, missile, melee, laser };
-enum class RenderType { animated, single_sprite, multi_sprite };
+enum class ProjectileType : std::uint8_t { bullet, missile, melee, laser };
+enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic };
+enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic };
 struct ProjectileSpecifications {
 	float base_damage{};
 	float power{};
@@ -61,7 +61,7 @@ struct ExplosionAttributes {
 	bool stun{};
 };
 
-enum class ProjectileState { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
+enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
 
 class Projectile : public Animatable {
   public:

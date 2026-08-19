@@ -10,10 +10,10 @@
 
 namespace fornani::enemy {
 
-enum class SentinelState { idle, run, turn, jump, land, swipe, slash, charge_swipe, charge_slash, prepare_dash, dash, summon };
-enum class SentinelFlags { show_weapon, shorthop };
-enum class SentinelVariant { knight, duelist };
-enum class SentinelMode { neutral, hostile };
+enum class SentinelState : std::uint8_t { idle, run, turn, jump, land, swipe, slash, charge_swipe, charge_slash, prepare_dash, dash, summon };
+enum class SentinelFlags : std::uint8_t { show_weapon, shorthop };
+enum class SentinelVariant : std::uint8_t { knight, duelist };
+enum class SentinelMode : std::uint8_t { neutral, hostile };
 
 class Sentinel final : public Enemy, public StateMachine<SentinelState>, public Flaggable<SentinelFlags> {
 

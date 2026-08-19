@@ -35,8 +35,8 @@ struct hash<fornani::Subquest> {
 
 namespace fornani {
 
-enum class QuestRequirementType { strict, loose };
-enum class QuestAttributes { dialogue };
+enum class QuestRequirementType : std::uint8_t { strict, loose };
+enum class QuestAttributes : std::uint8_t { dialogue };
 
 using ProgressionState = int;
 using QuestIdentifier = int;

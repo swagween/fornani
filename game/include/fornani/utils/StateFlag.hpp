@@ -2,7 +2,7 @@
 #include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::util {
-enum class Flags { state, trigger };
+enum class Flags : std::uint8_t { state, trigger };
 class StateFlag {
 	constexpr void set() {
 		flags.set(Flags::trigger);

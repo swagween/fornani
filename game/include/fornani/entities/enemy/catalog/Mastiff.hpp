@@ -9,7 +9,7 @@
 
 namespace fornani::enemy {
 
-enum class MastiffState { idle, run, bite, turn };
+enum class MastiffState : std::uint8_t { idle, run, bite, turn };
 
 class Mastiff final : public Enemy, public StateMachine<MastiffState> {
   public:

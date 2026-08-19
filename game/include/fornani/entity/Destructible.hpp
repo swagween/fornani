@@ -8,8 +8,8 @@
 
 namespace fornani {
 
-enum class DestructibleState { solid, destroyed };
-enum class DestructibleAttributes { inverse, enemy_clear, unlit };
+enum class DestructibleState : std::uint8_t { solid, destroyed };
+enum class DestructibleAttributes : std::uint8_t { inverse, enemy_clear, unlit };
 
 class Destructible : public Entity {
   public:

@@ -23,13 +23,13 @@ constexpr static float walk_speed_v{0.62f};
 constexpr static float sprint_speed_v{1.0f};
 constexpr static float sprint_threshold_v{0.01f};
 
-enum class PlayerControllerFlags { shot_weapon, firing_weapon, released_weapon, slide_jump, super_slide, wallcling };
-enum class ControllerInput { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
-enum class MovementState { restricted, walljumping, crouch };
-enum class HardState { no_move, has_arsenal, walking_autonomously };
-enum class InputState { slide_in_air, sprint };
+enum class PlayerControllerFlags : std::uint8_t { shot_weapon, firing_weapon, released_weapon, slide_jump, super_slide, wallcling };
+enum class ControllerInput : std::uint8_t { move_x, sprint, shoot, arms_switch, inspect, move_y, slide };
+enum class MovementState : std::uint8_t { restricted, walljumping, crouch };
+enum class HardState : std::uint8_t { no_move, has_arsenal, walking_autonomously };
+enum class InputState : std::uint8_t { slide_in_air, sprint };
 
-enum class Sprint { released };
+enum class Sprint : std::uint8_t { released };
 
 class PlayerController final : public Flaggable<PlayerControllerFlags> {
 

@@ -15,22 +15,25 @@ Breakable::Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f positi
 	get_collider().sync_components();
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
+	get_collider().hurtbox.set_dimensions({38.f, 38.f});
 	NANI_LOG_DEBUG(m_logger, "Breakable Position: {:.3f}, {:.3f}", get_collider().physics.position.x / 32.f, get_collider().physics.position.y / 32.f);
 }
 
 void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
 	if (is_destroyed()) { return; }
 	tick();
-	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
+	energy = std::clamp(energy - dampen, 0.f, energy);
+	m_flash_energy = std::clamp(m_flash_energy - dampen * 3.f, 0.f, m_flash_energy);
 	if (energy < 0.2f) {
 		energy = 0.f;
+		m_flash_energy = 0.f;
 		random_offset = {};
 	} else {
 		if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
 	}
 	handle_collision(player.get_collider());
 	set_channel(map.get_style_id());
-	set_frame(m_health.get_i_quantity() - 1);
+	set_frame((m_health.get_i_quantity() - 1) + 4 * static_cast<int>(std::ceil(m_flash_energy / 4.f)));
 }
 
 void Breakable::handle_collision(shape::Collider& other) const {
@@ -53,12 +56,13 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
 	if (is_destroyed()) { return; }
-	if (proj.get_collider().collides_with(get_collider().bounding_box)) {
+	if (proj.get_collider().collides_with(get_collider().hurtbox)) {
 		if (!proj.destruction_initiated()) {
 			on_smash(svc, map, proj.get_power());
 			proj.on_explode(svc, map);
 		}
 		proj.destroy(false);
+		map.spawn_effect(svc, "hit_flash", proj.get_position());
 	}
 }
 
@@ -66,7 +70,9 @@ void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, float po
 	if (is_destroyed()) { return; }
 	auto diff = m_health.get_i_quantity();
 	m_health.inflict(power);
+	auto const hit_energy = 8.f;
 	energy = hit_energy;
+	m_flash_energy = hit_energy;
 	svc.soundboard.flags.world.set(audio::World::breakable_hit);
 	if (is_destroyed()) {
 		map.spawn_effect(svc, "small_explosion", get_collider().get_center());

@@ -7,8 +7,8 @@
 
 namespace fornani::enemy {
 
-enum class GruntState { idle, drink };
-enum class GruntVariant { typist };
+enum class GruntState : std::uint8_t { idle, drink };
+enum class GruntVariant : std::uint8_t { typist };
 
 class Grunt final : public Enemy, public StateMachine<GruntState> {
   public:

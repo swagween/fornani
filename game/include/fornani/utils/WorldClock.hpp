@@ -17,7 +17,7 @@ namespace fornani {
 constexpr int dawn_time{6};
 constexpr int dusk_time{18};
 
-enum class WorldClockInterval { week, day, hour };
+enum class WorldClockInterval : std::uint8_t { week, day, hour };
 
 class WorldClock {
   public:

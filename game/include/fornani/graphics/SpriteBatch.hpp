@@ -6,8 +6,8 @@
 
 namespace fornani {
 
-enum class SpriteTransform { none, horizontal, vertical, rotate };
-enum class RenderLayer { background, scenery, background_entities, player, platforms, projectiles, atmosphere, middleground, particles, foreground_entities, effects, foreground, hud };
+enum class SpriteTransform : std::uint8_t { none, horizontal, vertical, rotate };
+enum class RenderLayer : std::uint8_t { background, scenery, background_entities, player, platforms, projectiles, atmosphere, middleground, particles, foreground_entities, effects, foreground, hud };
 
 struct RenderCommand {
 	sf::Texture const* texture{};

@@ -13,8 +13,8 @@
 
 namespace fornani::enemy {
 
-enum class HaunchState { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss, whistle, triple_down_toss, struggle, stalk, rage_turn, rage_struggle };
-enum class HaunchFlags { laser_fired, jumped, show_gun, escape_cutscene_launched, started_struggle };
+enum class HaunchState : std::uint8_t { idle, airborne, turn, shoot_high, shoot_low, get_up, walk, pull_grenade, throw_grenade, throw_grenade_down, triple_toss, whistle, triple_down_toss, struggle, stalk, rage_turn, rage_struggle };
+enum class HaunchFlags : std::uint8_t { laser_fired, jumped, show_gun, escape_cutscene_launched, started_struggle };
 
 class Haunch final : public Boss, public StateMachine<HaunchState> {
   public:

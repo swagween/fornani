@@ -22,7 +22,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class SwitchBlockState { full, top, bottom, empty };
+enum class SwitchBlockState : std::uint8_t { full, top, bottom, empty };
 
 class SwitchBlock : public Animatable {
   public:

@@ -167,8 +167,8 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 		physical.collider.physics.acceleration = {};
 		return;
 	}
-	if (map.check_cell_collision_circle(physical.collider, false)) {
-		if (!destruction_initiated()) {
+	if (map.check_cell_collision_circle(physical.collider, false) && lifetime.get() < lifetime.get_native_time() - 2) {
+		if (!destroyed()) {
 			auto spot = physical.direction.as_vector() * physical.collider.get_radius();
 			if (omnidirectional()) {
 				map.effects.push_back(entity::Effect(svc, "wall_hit", physical.collider.get_global_center(), {}, effect_type()));

@@ -19,7 +19,7 @@ class Health;
 
 namespace fornani::gui {
 
-enum class WidgetBarFlags { needs_resize };
+enum class WidgetBarFlags : std::uint8_t { needs_resize };
 
 class WidgetBar : public Flaggable<WidgetBarFlags> {
   public:

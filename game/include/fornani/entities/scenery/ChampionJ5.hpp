@@ -10,8 +10,8 @@
 
 namespace fornani {
 
-enum class ChampionJ5State { flying, land, grounded, take_off };
-enum class ChampionJ5Flags { interactable, landed };
+enum class ChampionJ5State : std::uint8_t { flying, land, grounded, take_off };
+enum class ChampionJ5Flags : std::uint8_t { interactable, landed };
 
 class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
   public:

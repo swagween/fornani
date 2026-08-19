@@ -10,7 +10,7 @@
 
 namespace fornani::gui {
 
-enum class RotaryGizmoFlags { push_to_hotbar };
+enum class RotaryGizmoFlags : std::uint8_t { push_to_hotbar };
 
 class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
   public:

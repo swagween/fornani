@@ -6,7 +6,7 @@
 
 namespace fornani::automa {
 
-enum class MenuStatus { vendor };
+enum class MenuStatus : std::uint8_t { vendor };
 
 class MenuController {
   public:

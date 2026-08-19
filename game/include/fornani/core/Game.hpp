@@ -19,7 +19,7 @@
 namespace fornani {
 
 class WindowManager;
-enum class GameFlags { playtest, in_game, draw_cursor, waited };
+enum class GameFlags : std::uint8_t { playtest, in_game, draw_cursor, waited };
 
 class Game final {
   public:

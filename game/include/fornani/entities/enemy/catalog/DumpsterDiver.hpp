@@ -11,9 +11,9 @@
 
 namespace fornani::enemy {
 
-enum class DumpsterDiverState { idle };
-enum class DumpsterDiverVariant { breacher };
-enum class DumpsterDiverFlags { emerging };
+enum class DumpsterDiverState : std::uint8_t { idle };
+enum class DumpsterDiverVariant : std::uint8_t { breacher };
+enum class DumpsterDiverFlags : std::uint8_t { emerging };
 
 struct SurfacePoint {
 	sf::Vector2f point{};

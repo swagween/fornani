@@ -224,7 +224,10 @@
           "message": "It is not safe to tell you - especially not here. Even better is if I simply show you."
         },
         {
-          "codes": [[1, 3], [27, 18, 1]],
+          "codes": [
+            [1, 3],
+            [27, 18, 1]
+          ],
           "message": "Find me at the heart of the Pixiote Temple. There, you will learn the whole truth."
         }
       ],
@@ -234,7 +237,7 @@
           "message": "The Mother Worm is ever in conference with your spirit. You need only listen, and she will show you the way."
         },
         {
-          "codes": [[2, 74]],
+          "codes": [[2, 75]],
           "message": "Take this as a small token of my guidance. I pray you will find it useful."
         },
         {

@@ -6,7 +6,7 @@
 
 namespace pi {
 
-enum class EditorContextFlags { new_room };
+enum class EditorContextFlags : std::uint8_t { new_room };
 
 struct EditorContext {
 	fornani::util::BitFlags<EditorContextFlags> flags{};

@@ -20,7 +20,7 @@ namespace fornani::shape {
 
 class Collider;
 
-enum class CircleColliderFlags { collided };
+enum class CircleColliderFlags : std::uint8_t { collided };
 
 class CircleCollider : public ICollider {
   public:

@@ -33,7 +33,7 @@ namespace fornani::util {
 
 constexpr auto f_pi{static_cast<float>(std::numbers::pi)};
 
-enum class InterpolationType { linear, quadratic, cubic, ease };
+enum class InterpolationType : std::uint8_t { linear, quadratic, cubic, ease };
 
 static float dot(sf::Vector2f a, sf::Vector2f b) { return a.x * b.x + a.y * b.y; }
 inline float magnitude(sf::Vector2f vec) { return std::sqrt((vec.x * vec.x) + (vec.y * vec.y)); }

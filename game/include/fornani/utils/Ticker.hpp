@@ -19,8 +19,8 @@ using Clk = std::chrono::steady_clock;
 using Sec = std::chrono::duration<float>;
 using Mil = std::chrono::milliseconds;
 
-enum class TickerFlags { forced_slowdown, paused };
-enum class Period { second, twenty_minutes };
+enum class TickerFlags : std::uint8_t { forced_slowdown, paused };
+enum class Period : std::uint8_t { second, twenty_minutes };
 struct PeriodicBool {
 	explicit PeriodicBool(Sec const period) : period(period) {}
 	Sec period{};

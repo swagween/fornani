@@ -6,7 +6,7 @@
 
 namespace fornani {
 
-Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "turrets", constants::i_resolution_vec), m_rate{560}, m_shoot{600} {
+Turret::Turret(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "turrets", constants::i_resolution_vec), m_rate{560}, m_shoot{600}, m_load{200}, m_firing{} {
 	unserialize(in);
 	init(svc);
 }
@@ -79,6 +79,7 @@ void Turret::expose() {
 	m_type = static_cast<TurretType>(type);
 	m_pattern = static_cast<TurretPattern>(patt);
 	m_direction = CardinalDirection{dir};
+	m_load.start();
 }
 
 void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
@@ -86,13 +87,14 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	m_firing.update();
 	m_rate.update();
 	m_shoot.update();
+	m_load.update();
 
 	if (m_type == TurretType::laser) { p_animatable.set_rotation(sf::degrees(m_direction.as_degrees())); }
 	auto attributes = util::BitFlags<world::LaserAttributes>{};
 	if (m_pattern == TurretPattern::constant) { attributes.set(world::LaserAttributes::infinite); }
 	auto target = player.get_collider().get_center() - get_position();
 
-	if (m_type == TurretType::laser) {
+	if (m_type == TurretType::laser && m_load.is_complete()) {
 		if (m_firing.running() || m_pattern == TurretPattern::constant) {
 			svc.soundboard.repeat_sound("laser_hum", get_handle(), get_global_center());
 			svc.soundboard.repeat_sound("deep_laser_hum", get_handle(), get_global_center());

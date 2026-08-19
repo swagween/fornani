@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-enum class MizzleState { idle, turn };
+enum class MizzleState : std::uint8_t { idle, turn };
 
 class Mizzle final : public Enemy, public StateMachine<MizzleState> {
   public:

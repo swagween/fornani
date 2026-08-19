@@ -9,7 +9,7 @@
 
 namespace fornani::gui {
 
-enum class DescriptionGizmoFlags { text_only };
+enum class DescriptionGizmoFlags : std::uint8_t { text_only };
 
 class DescriptionGizmo : public Gizmo {
   public:

@@ -17,8 +17,8 @@
 
 namespace fornani::gui {
 
-enum class BuilderConstituentType { docket, stage, inventory };
-enum class BuilderZoneType { docket, stage, inventory, COUNT };
+enum class BuilderConstituentType : std::uint8_t { docket, stage, inventory };
+enum class BuilderZoneType : std::uint8_t { docket, stage, inventory, COUNT };
 
 class BuilderDialog final : public IDialog {
   public:

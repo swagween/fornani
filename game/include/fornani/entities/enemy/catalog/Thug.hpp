@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-enum class ThugState { idle, turn, run, jump, alert, rush, punch };
+enum class ThugState : std::uint8_t { idle, turn, run, jump, alert, rush, punch };
 
 class Thug final : public Enemy {
   public:

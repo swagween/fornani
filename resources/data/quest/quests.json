@@ -223,13 +223,23 @@
   {
     "title": "Pioneer Trail",
     "tag": "pioneer_trail",
-    "target": 4,
-    "displayed": false
+    "target": 3,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Get permission from dad to unblock Pioneer Trail."
+      },
+      {
+        "index": 2,
+        "readout": "Show Ward the Permission Slip."
+      }
+    ],
+    "displayed": true
   },
   {
     "title": "Grand Mastiff Mystery",
     "tag": "grand_mastiff_mystery",
-    "target": 1,
+    "target": 2,
     "displayed": false
   },
   {

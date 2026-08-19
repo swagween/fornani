@@ -29,9 +29,9 @@ class InputSystem;
 
 namespace fornani::gui {
 
-enum class DashboardState { home, hovering, gizmo };
-enum class GizmoButtonState { off, hovered, clicked };
-enum class DashboardFlags { exiting };
+enum class DashboardState : std::uint8_t { home, hovering, gizmo };
+enum class GizmoButtonState : std::uint8_t { off, hovered, clicked };
+enum class DashboardFlags : std::uint8_t { exiting };
 
 struct GizmoButton {
 	sf::RectangleShape box{};

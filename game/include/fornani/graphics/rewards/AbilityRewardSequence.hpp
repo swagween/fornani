@@ -11,7 +11,7 @@
 
 namespace fornani::graphics {
 
-enum class AbilityRewardSequenceFlags {};
+enum class AbilityRewardSequenceFlags : std::uint8_t {};
 
 class AbilityRewardSequence : public IRewardSequence, public Flaggable<AbilityRewardSequenceFlags> {
   public:

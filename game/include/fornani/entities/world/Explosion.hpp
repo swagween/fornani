@@ -18,7 +18,7 @@ namespace fornani::world {
 
 class Map;
 
-enum class ExplosionFlags { exhausted, stun };
+enum class ExplosionFlags : std::uint8_t { exhausted, stun };
 
 struct ExplosionSpecifications {
 	std::string tag{};

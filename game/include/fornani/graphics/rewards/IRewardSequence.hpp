@@ -9,7 +9,7 @@
 
 namespace fornani::graphics {
 
-enum class RewardSequenceFlags { show_player, console_after_exit, health_get, finished };
+enum class RewardSequenceFlags : std::uint8_t { show_player, console_after_exit, health_get, finished };
 
 class IRewardSequence : public Polymorphic {
   public:

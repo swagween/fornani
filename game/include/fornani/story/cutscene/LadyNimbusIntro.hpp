@@ -9,7 +9,7 @@
 
 namespace fornani {
 
-enum class LadyNimbusIntroFlags { pre_intro, intro_done, hang, main_scene };
+enum class LadyNimbusIntroFlags : std::uint8_t { pre_intro, intro_done, hang, main_scene };
 
 class LadyNimbusIntro final : public Cutscene {
   public:

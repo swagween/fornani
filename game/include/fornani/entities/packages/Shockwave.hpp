@@ -36,6 +36,7 @@ class Shockwave {
 	bool hurt_player(player::Player& player, float amount = 1.f, sf::Vector2f knockback = {});
 	void handle_player(player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
+	void set_speed(sf::Vector2f const to) { m_parameters.speed = to; }
 
 	components::CircleSensor hit{};
 	sf::Vector2f position{};

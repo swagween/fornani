@@ -40,6 +40,7 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		svc.quest_table.progress_quest("defeat_miaag", 1, 509);
 		svc.music_player.play_looped();
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 2, {300, 509}, 2);
+		map.clear_enemies({14});
 	}
 
 	if (health.is_dead() && !m_flags.test(MiaagFlags::gone)) {

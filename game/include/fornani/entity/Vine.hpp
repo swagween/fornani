@@ -13,7 +13,7 @@
 
 namespace fornani {
 
-enum class VineFlags { foreground, reverse };
+enum class VineFlags : std::uint8_t { foreground, reverse };
 
 class Vine : public Entity {
   public:

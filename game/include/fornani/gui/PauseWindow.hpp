@@ -17,7 +17,7 @@ namespace fornani::gui {
 
 class Console;
 
-enum class PauseWindowState { active, settings, controls, exit, quit };
+enum class PauseWindowState : std::uint8_t { active, settings, controls, exit, quit };
 
 class PauseWindow {
   public:

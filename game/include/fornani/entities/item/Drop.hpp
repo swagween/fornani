@@ -28,10 +28,10 @@ namespace fornani::item {
 
 using EntityHandle = std::uint64_t;
 
-enum class DropType { heart, orb, gem };
-enum class DropState { neutral, shining };
-enum class GemType { rhenite, sapphire };
-enum class DropFlags { neutral, shining };
+enum class DropType : std::uint8_t { heart, orb, gem };
+enum class DropState : std::uint8_t { neutral, shining };
+enum class GemType : std::uint8_t { rhenite, sapphire };
+enum class DropFlags : std::uint8_t { neutral, shining };
 
 class Drop : public Animatable {
 

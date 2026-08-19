@@ -26,9 +26,9 @@ struct ItemStats {
 	int stack_limit{1};
 };
 
-enum class ItemType { ability, key, collectible, useable, gizmo, apparel, plugin };
-enum class ItemFlags { sellable, readable, equippable, wearable, invisible, useable, buildable, ingredient };
-enum class ItemState { revealed, equipped };
+enum class ItemType : std::uint8_t { ability, key, collectible, useable, gizmo, apparel, plugin };
+enum class ItemFlags : std::uint8_t { sellable, readable, equippable, wearable, invisible, useable, buildable, ingredient };
+enum class ItemState : std::uint8_t { revealed, equipped };
 
 class Item : public Polymorphic {
   public:

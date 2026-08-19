@@ -15,7 +15,7 @@ namespace fornani {
 
 using EntityHandle = std::uint64_t;
 
-enum class EntityFlags { spawn_denied };
+enum class EntityFlags : std::uint8_t { spawn_denied };
 
 class Entity : public IWorldPositionable, Polymorphic {
   public:

@@ -25,7 +25,7 @@ class Soundboard;
 }
 
 namespace fornani::player {
-enum class AbilityFlags { failed, active, cancelled };
+enum class AbilityFlags : std::uint8_t { failed, active, cancelled };
 class PlayerController;
 class Ability : public Polymorphic {
   public:

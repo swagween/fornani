@@ -11,13 +11,13 @@
 
 namespace fornani {
 
-enum class PortalAttributes { activate_on_contact, already_open };
-enum class PortalState { activated, ready, locked, unlocked, transitioning };
-enum class PortalRenderState { closed, open, locked };
-enum class PortalOrientation { top, bottom, left, right, central };
+enum class PortalAttributes : std::uint8_t { activate_on_contact, already_open };
+enum class PortalState : std::uint8_t { activated, ready, locked, unlocked, transitioning };
+enum class PortalRenderState : std::uint8_t { closed, open, locked };
+enum class PortalOrientation : std::uint8_t { top, bottom, left, right, central };
 
-enum class CustomPortalAttributes { open_for_player, gravitate };
-enum class CustomPortalFlags { opened, closed };
+enum class CustomPortalAttributes : std::uint8_t { open_for_player, gravitate };
+enum class CustomPortalFlags : std::uint8_t { opened, closed };
 
 class Portal;
 

@@ -24,8 +24,8 @@ class Soundboard;
 
 namespace fornani::gui {
 
-enum class MiniMenuAttributes { no_ease };
-enum class MiniMenuFlags { selected, closed, option_hovered };
+enum class MiniMenuAttributes : std::uint8_t { no_ease };
+enum class MiniMenuFlags : std::uint8_t { selected, closed, option_hovered };
 
 class MiniMenu {
   public:

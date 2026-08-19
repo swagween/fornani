@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-enum class EyebitState { idle, turn };
+enum class EyebitState : std::uint8_t { idle, turn };
 
 class Eyebit final : public Enemy, public StateMachine<EyebitState> {
 

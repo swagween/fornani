@@ -11,10 +11,10 @@
 
 namespace fornani {
 
-enum class TurretType { laser, projectile, stun };
-enum class TurretPattern { constant, repeater, triggerable, opportunistic };
-enum class TurretState { off, charging, firing, cooling_down, quick_fire };
-enum class TurretFlags { platform };
+enum class TurretType : std::uint8_t { laser, projectile, stun };
+enum class TurretPattern : std::uint8_t { constant, repeater, triggerable, opportunistic };
+enum class TurretState : std::uint8_t { off, charging, firing, cooling_down, quick_fire };
+enum class TurretFlags : std::uint8_t { platform };
 
 struct TurretSettings {
 	float delay{};
@@ -79,9 +79,10 @@ class Turret : public Entity, public Flaggable<TurretFlags> {
 
 	sf::Vector2f m_position{};
 
-	util::Cooldown m_rate{};
-	util::Cooldown m_firing{};
-	util::Cooldown m_shoot{};
+	util::Cooldown m_rate;
+	util::Cooldown m_firing;
+	util::Cooldown m_shoot;
+	util::Cooldown m_load;
 };
 
 } // namespace fornani

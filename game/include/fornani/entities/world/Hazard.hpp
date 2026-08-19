@@ -16,7 +16,7 @@ namespace player {
 class Player;
 }
 
-enum class HazardFlags { reset };
+enum class HazardFlags : std::uint8_t { reset };
 
 class Hazard : public Flaggable<HazardFlags> {
   public:

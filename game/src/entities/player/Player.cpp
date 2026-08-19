@@ -91,8 +91,8 @@ void Player::unserialize(dj::Json const& in) {
 	wallet.set_balance(in["orbs"].as<int>());
 
 	// load player's arsenal
-	arsenal = {};
-	hotbar = {};
+	arsenal.reset();
+	hotbar.reset();
 	for (auto& gun_tag : in["arsenal"].as_array()) { push_to_loadout(gun_tag.as_string(), true); }
 	if (!in["hotbar"].as_array().empty()) {
 		if (!hotbar) { hotbar = arms::Hotbar(1); }

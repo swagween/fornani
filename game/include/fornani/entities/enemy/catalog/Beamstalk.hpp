@@ -8,8 +8,8 @@
 
 namespace fornani::enemy {
 
-enum class BeamstalkState { idle, charge, shoot, relax };
-enum class BeamstalkFlags { spit };
+enum class BeamstalkState : std::uint8_t { idle, charge, shoot, relax };
+enum class BeamstalkFlags : std::uint8_t { spit };
 
 class Beamstalk final : public Enemy, public Flaggable<BeamstalkFlags>, public StateMachine<BeamstalkState> {
 

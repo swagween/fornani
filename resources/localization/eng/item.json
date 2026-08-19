@@ -40,7 +40,7 @@
     "suite": [
       [
         {
-          "message": "An amulet dropped by the Hoarder. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
+          "message": "An amulet your brother gave to you. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
         },
         {
           "codes": [[10, 52, 9]],
@@ -225,7 +225,7 @@
       "suite": [
         [
           {
-            "message": "An amulet dropped by the Hoarder. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
+            "message": "An amulet your brother gave to you. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
           },
           {
             "codes": [[10, 52, 9]],

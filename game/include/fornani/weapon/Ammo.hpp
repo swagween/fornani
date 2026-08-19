@@ -14,7 +14,7 @@ class Player;
 }
 
 namespace fornani::arms {
-enum class AmmoFlags { infinite };
+enum class AmmoFlags : std::uint8_t { infinite };
 class Ammo {
   public:
 	void update();

@@ -5,7 +5,7 @@
 
 namespace fornani::enemy {
 
-enum class AnimState { idle, turn, run, hurt, charge, bark, spew, sit, sleep };
+enum class AnimState : std::uint8_t { idle, turn, run, hurt, charge, bark, spew, sit, sleep };
 
 class Frdog final : public Enemy {
 

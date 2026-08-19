@@ -99,8 +99,8 @@ struct Counters {
 	int invincibility{};
 };
 
-enum class PlayerDeathType { normal, crushed, drowned, swallowed, fallen, abyss, annihilated };
-enum class PlayerFlags {
+enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated };
+enum class PlayerFlags : std::uint8_t {
 	killed,
 	dir_switch,
 	show_weapon,
@@ -133,7 +133,7 @@ enum class PlayerFlags {
 	heavy,
 	flat_shaded
 };
-enum class Triggers { hurt };
+enum class Triggers : std::uint8_t { hurt };
 
 struct Flags {
 	util::BitFlags<Triggers> triggers{};

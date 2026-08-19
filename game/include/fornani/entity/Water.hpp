@@ -8,8 +8,8 @@
 
 namespace fornani {
 
-enum class WaterType { normal, curative, toxic };
-enum class WaterFlags { splashed, touched };
+enum class WaterType : std::uint8_t { normal, curative, toxic };
+enum class WaterFlags : std::uint8_t { splashed, touched };
 
 class Water : public Entity, public Flaggable<WaterFlags> {
   public:

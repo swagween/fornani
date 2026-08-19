@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-enum class SpencerRevealFlags { player_stopped };
+enum class SpencerRevealFlags : std::uint8_t { player_stopped };
 
 class SpencerReveal final : public Cutscene {
   public:

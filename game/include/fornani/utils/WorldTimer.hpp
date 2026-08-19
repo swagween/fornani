@@ -12,7 +12,7 @@ namespace automa {
 struct ServiceProvider;
 }
 
-enum class WorldTimerFlags { running, paused };
+enum class WorldTimerFlags : std::uint8_t { running, paused };
 
 class WorldTimer {
   public:

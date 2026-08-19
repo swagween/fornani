@@ -7,7 +7,7 @@
 
 namespace pi {
 
-enum class MetagridFlags { context_menu, hide_cell, move_mode };
+enum class MetagridFlags : std::uint8_t { context_menu, hide_cell, move_mode };
 
 struct MetamapSettings {
 	sf::Vector2f position{-1195.2f, -1439.8f};

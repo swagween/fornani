@@ -7,8 +7,8 @@
 
 namespace fornani::enemy {
 
-enum class ArcherState { idle, turn, run, jump, shoot };
-enum class ArcherVariant { huntress, defender };
+enum class ArcherState : std::uint8_t { idle, turn, run, jump, shoot };
+enum class ArcherVariant : std::uint8_t { huntress, defender };
 
 class Archer final : public Enemy {
 

@@ -6,7 +6,7 @@
 
 namespace fornani::enemy {
 
-enum class HellionState { run, sleep, awaken, turn };
+enum class HellionState : std::uint8_t { run, sleep, awaken, turn };
 
 class Hellion final : public Enemy, public StateMachine<HellionState> {
 

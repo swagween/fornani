@@ -6,7 +6,7 @@
 
 namespace fornani::automa {
 
-enum class TrialFlags { player_death };
+enum class TrialFlags : std::uint8_t { player_death };
 
 class Trial final : public GameplayState {
   public:

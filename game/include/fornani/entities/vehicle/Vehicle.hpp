@@ -10,7 +10,7 @@
 
 namespace fornani {
 
-enum class VehicleFlags { airborne, idling };
+enum class VehicleFlags : std::uint8_t { airborne, idling };
 
 struct VehiclePart {
 	VehiclePart(automa::ServiceProvider& svc, dj::Json const& in, sf::Vector2i dimensions);

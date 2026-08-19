@@ -5,16 +5,16 @@
 
 namespace fornani::input {
 
-enum class AnalogAction : int { move, pan, map_pan, END };
+enum class AnalogAction : std::uint8_t { move, pan, map_pan, END };
 
-enum class MoveDirection {
+enum class MoveDirection : std::uint8_t {
 	up,
 	down,
 	left,
 	right,
 };
 
-enum class DigitalAction : int {
+enum class DigitalAction : std::uint8_t {
 	up,
 	down,
 	left,

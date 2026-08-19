@@ -12,7 +12,7 @@ struct ServiceProvider;
 
 namespace fornani::gui {
 
-enum class ItemWidgetType { gun, item };
+enum class ItemWidgetType : std::uint8_t { gun, item };
 
 class ItemWidget {
   public:

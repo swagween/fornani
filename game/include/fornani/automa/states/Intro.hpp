@@ -11,7 +11,7 @@
 
 namespace fornani::automa {
 
-enum class IntroFlags { complete, established, cutscene_started, cutscene_over, console_message };
+enum class IntroFlags : std::uint8_t { complete, established, cutscene_started, cutscene_over, console_message };
 
 struct Nighthawk final : public Animatable {
 	Nighthawk(ServiceProvider& svc) : Animatable(svc, "scenery_distant_nighthawk", {11, 11}) {}

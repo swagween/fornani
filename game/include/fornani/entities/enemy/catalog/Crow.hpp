@@ -8,8 +8,8 @@
 
 namespace fornani::enemy {
 
-enum class CrowVariant { common, mythic };
-enum class CrowState { idle, peck, fly, turn, hop };
+enum class CrowVariant : std::uint8_t { common, mythic };
+enum class CrowState : std::uint8_t { idle, peck, fly, turn, hop };
 
 class Crow final : public Enemy, public StateMachine<CrowState> {
   public:

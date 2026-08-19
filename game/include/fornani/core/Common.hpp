@@ -15,8 +15,8 @@ constexpr int default_framerate_limit_v = 120;
 
 namespace gui {
 
-enum class OutputType { gradual, instant, no_exit, no_skip };
-enum class MessageCodeType {
+enum class OutputType : std::uint8_t { gradual, instant, no_exit, no_skip };
+enum class MessageCodeType : std::uint8_t {
 	none,
 	response,
 	item,
@@ -47,7 +47,7 @@ enum class MessageCodeType {
 	set_quest_progression
 };
 
-enum class CodeSource { suite, response };
+enum class CodeSource : std::uint8_t { suite, response };
 
 constexpr auto null_key = "null";
 
@@ -63,11 +63,11 @@ constexpr int floor_single_ramp = 496;
 } // namespace world
 
 namespace arms {
-enum class Team { nani, skycorps, guardian, pioneer, beast };
+enum class Team : std::uint8_t { nani, skycorps, guardian, pioneer, beast };
 }
 
 namespace item {
-enum class Rarity { common, uncommon, rare, priceless };
+enum class Rarity : std::uint8_t { common, uncommon, rare, priceless };
 }
 
 constexpr auto gem_chance_v = 0.08f;
@@ -75,10 +75,10 @@ constexpr auto heart_chance_v = 8.f;
 constexpr auto enemy_limit_v = 64;
 constexpr auto max_damage_v = 32.f;
 
-enum class DrawOrder { back, front };
+enum class DrawOrder : std::uint8_t { back, front };
 
-enum class TimeOfDay { dawn, day, dusk, night, END };
-enum class ClockMode { standard, military };
+enum class TimeOfDay : std::uint8_t { dawn, day, dusk, night, END };
+enum class ClockMode : std::uint8_t { standard, military };
 
 [[nodiscard]] constexpr static auto num_cycles() -> int { return static_cast<int>(TimeOfDay::END); }
 

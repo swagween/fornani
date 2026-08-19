@@ -11,7 +11,7 @@
 
 namespace fornani {
 
-enum class TrainFlags { away, approaching, stopped, leaving };
+enum class TrainFlags : std::uint8_t { away, approaching, stopped, leaving };
 
 struct TrainCar {
 	int index{};

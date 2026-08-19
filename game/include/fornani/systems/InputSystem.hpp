@@ -33,11 +33,11 @@ class Loader;
 
 namespace fornani::input {
 
-enum class ActionSet { Platformer, Menu, END };
-enum class DigitalActionQueryType { held, triggered, released };
-enum class InputDevice { none, keyboard, gamepad };
-enum class InputSystemSettings { gamepad_input_enabled, auto_sprint };
-enum class InputSystemFlags { gamepad_disconnected, keyboard_input_detected, changed_action_sets, key_was_pressed, any_key_pressed };
+enum class ActionSet : std::uint8_t { Platformer, Menu, END };
+enum class DigitalActionQueryType : std::uint8_t { held, triggered, released };
+enum class InputDevice : std::uint8_t { none, keyboard, gamepad };
+enum class InputSystemSettings : std::uint8_t { gamepad_input_enabled, auto_sprint };
+enum class InputSystemFlags : std::uint8_t { gamepad_disconnected, keyboard_input_detected, changed_action_sets, key_was_pressed, any_key_pressed };
 
 // raw input
 struct RawDigitalState {

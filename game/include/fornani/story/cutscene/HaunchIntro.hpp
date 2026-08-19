@@ -7,7 +7,7 @@
 
 namespace fornani {
 
-enum class HaunchIntroFlags { done, over };
+enum class HaunchIntroFlags : std::uint8_t { done, over };
 
 class HaunchIntro final : public Cutscene {
   public:

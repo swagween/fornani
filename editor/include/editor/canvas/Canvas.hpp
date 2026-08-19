@@ -29,8 +29,8 @@ class ResourceFinder;
 
 namespace pi {
 
-enum class CanvasProperties { editable };
-enum class CanvasState { hovered, available };
+enum class CanvasProperties : std::uint8_t { editable };
+enum class CanvasState : std::uint8_t { hovered, available };
 
 constexpr inline int chunk_size_v{16};
 constexpr inline int default_num_layers_v{3};

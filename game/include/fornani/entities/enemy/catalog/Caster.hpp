@@ -9,8 +9,8 @@
 
 namespace fornani::enemy {
 
-enum class CasterState { idle, turn, signal, dormant, prepare };
-enum class CasterVariant { apprentice, tyrant };
+enum class CasterState : std::uint8_t { idle, turn, signal, dormant, prepare };
+enum class CasterVariant : std::uint8_t { apprentice, tyrant };
 
 class Caster final : public Enemy, StateMachine<CasterState> {
 

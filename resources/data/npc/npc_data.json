@@ -610,7 +610,7 @@
     "id": 38,
     "dimensions": [32, 32],
     "sprite_dimensions": [32, 32],
-    "sprite_offset": [0, -15],
+    "sprite_offset": [0, -13],
     "animation": [
       {
         "label": "idle",

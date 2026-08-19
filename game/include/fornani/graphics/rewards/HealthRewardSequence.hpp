@@ -12,7 +12,7 @@
 
 namespace fornani::graphics {
 
-enum class HealthRewardSequenceFlags { slotted, cinematic, show_heart, finished };
+enum class HealthRewardSequenceFlags : std::uint8_t { slotted, cinematic, show_heart, finished };
 
 class HealthRewardSequence : public IRewardSequence, public Animatable, public Flaggable<HealthRewardSequenceFlags> {
   public:

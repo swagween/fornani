@@ -16,9 +16,9 @@ class Player;
 
 namespace fornani::automa {
 
-enum class StateType { menu, game, dojo };
-enum class GameStateFlags { playtest, settings_request, controls_request, ready };
-enum class MenuSelection { play, options, quit, controls, tutorial, credits, settings, themes };
+enum class StateType : std::uint8_t { menu, game, dojo };
+enum class GameStateFlags : std::uint8_t { playtest, settings_request, controls_request, ready };
+enum class MenuSelection : std::uint8_t { play, options, quit, controls, tutorial, credits, settings, themes };
 
 struct ServiceProvider;
 

@@ -5,7 +5,7 @@
 
 namespace fornani {
 
-enum class PioneerBaseDebriefFlags { start, end };
+enum class PioneerBaseDebriefFlags : std::uint8_t { start, end };
 
 class PioneerBaseDebrief final : public Cutscene {
   public:

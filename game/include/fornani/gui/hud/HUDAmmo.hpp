@@ -5,7 +5,7 @@
 
 namespace fornani::gui {
 
-enum class HUDAmmoFlags { switched };
+enum class HUDAmmoFlags : std::uint8_t { switched };
 
 class HUDAmmo final : public HUDWidget, public Flaggable<HUDAmmoFlags> {
   public:

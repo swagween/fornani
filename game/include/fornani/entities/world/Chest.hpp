@@ -27,9 +27,9 @@ class Player;
 
 namespace fornani::entity {
 
-enum class ChestState { activated, open };
-enum class ChestType { gun, orbs, item };
-enum class ChestAttributes { mythic };
+enum class ChestState : std::uint8_t { activated, open };
+enum class ChestType : std::uint8_t { gun, orbs, item };
+enum class ChestAttributes : std::uint8_t { mythic };
 
 class Chest final : public Animatable {
   public:

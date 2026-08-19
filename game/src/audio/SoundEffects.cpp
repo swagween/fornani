@@ -155,7 +155,7 @@ class Tone : public sf::SoundStream, public Effect {
 		// It doesn't make sense to seek in a tone generator
 	}
 
-	enum class Type { Sine, Square, Triangle, Sawtooth };
+	enum class Type : std::uint8_t { Sine, Square, Triangle, Sawtooth };
 
 	static constexpr unsigned int sampleRate{44100};
 	static constexpr std::size_t chunkSize{sampleRate / 100};

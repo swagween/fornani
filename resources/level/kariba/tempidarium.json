@@ -7,12 +7,12 @@
           1
         ],
         "id": 15735,
-        "modifier": 0,
+        "modifier": 17,
         "position": [
           42,
           12
         ],
-        "tag": "mythic_rhenite",
+        "tag": "pirag_charm",
         "type": 2
       }
     ],
@@ -28,7 +28,8 @@
         "position": [
           35,
           12
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -41,7 +42,8 @@
         "position": [
           35,
           11
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -54,7 +56,8 @@
         "position": [
           35,
           10
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -111,38 +114,6 @@
           1,
           1
         ],
-        "id": 8,
-        "position": [
-          27,
-          18
-        ],
-        "start_direction": [
-          0,
-          0
-        ],
-        "variant": 1
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 8,
-        "position": [
-          20,
-          18
-        ],
-        "start_direction": [
-          0,
-          0
-        ],
-        "variant": 1
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
         "id": 16,
         "position": [
           25,
@@ -153,6 +124,70 @@
           0
         ],
         "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 8,
+        "position": [
+          23,
+          18
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 8,
+        "position": [
+          18,
+          18
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 9,
+        "position": [
+          29,
+          9
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 9,
+        "position": [
+          14,
+          9
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "portals": [
@@ -179,11 +214,6 @@
     "ambience": "none",
     "background": "pale_garden",
     "biome": "kariba",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -219,7 +249,9 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": true,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 515,
     "shader": {
@@ -5124,12 +5156,12 @@
         0,
         0,
         0,
-        0,
-        0,
         452,
         453,
         454,
         455,
+        2,
+        3,
         54,
         55,
         56,
@@ -5368,7 +5400,7 @@
         0,
         0,
         0,
-        0,
+        71,
         0,
         0,
         0,
@@ -7482,7 +7514,7 @@
         0,
         0,
         0,
-        0,
+        382,
         0,
         0,
         0,
@@ -7530,7 +7562,7 @@
         0,
         0,
         0,
-        0,
+        398,
         0,
         0,
         0,
@@ -7578,7 +7610,7 @@
         0,
         0,
         0,
-        0,
+        398,
         0,
         0,
         0,
@@ -7626,7 +7658,7 @@
         0,
         0,
         0,
-        0,
+        399,
         0,
         0,
         0,

@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <cstdint>
+
 namespace fornani {
 
 namespace automa {
@@ -20,7 +22,7 @@ class Console;
 }
 
 namespace arms {
-enum class Team;
+enum class Team : std::uint8_t;
 }
 
 namespace input {

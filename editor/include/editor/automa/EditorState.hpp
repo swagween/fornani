@@ -34,7 +34,7 @@ struct EditorInput {
 	}
 };
 
-enum class EditorStateType { editor, metagrid, dialogue_editor };
+enum class EditorStateType : std::uint8_t { editor, metagrid, dialogue_editor };
 
 class EditorState {
   public:

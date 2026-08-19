@@ -13,7 +13,7 @@ constexpr float default_walk_speed_v = 0.8f;
 
 NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	: Entity(svc, in, "npcs"), Mobile(svc, "npc_" + std::string{in["label"].as_string()}, {svc.data.npc[in["label"].as_string()]["sprite_dimensions"][0].as<int>(), svc.data.npc[in["label"].as_string()]["sprite_dimensions"][1].as<int>()}),
-	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc}, m_disappear{100} {
+	  m_label(in["label"].as_string()), m_indicator(svc, "arrow_indicator", {16, 16}), m_id{svc.data.npc[in["label"].as_string()]["id"].as<int>()}, m_current_conversation{1}, m_services{&svc}, m_disappear{100}, m_indicator_timer{800} {
 	unserialize(in);
 	repeatable = false;
 	copyable = false;
@@ -284,7 +284,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	m_disappear.update();
 	if (m_disappear.is_almost_complete()) { hide(); }
 
-	context.console ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
+	context.console.has_value() && m_state.test(NPCState::overlapping_player) ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
 
 	if (collider.has_value()) {
 		get_collider().update(svc);
@@ -293,22 +293,24 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		get_collider().physics.acceleration = {};
 	}
 	auto overlap = collider.has_value() ? player.get_collider().bounding_box.overlaps(get_collider().bounding_box) : false;
-	if (overlap || (m_state.test(NPCState::distant_interact) && m_state.test(NPCState::force_interact))) {
-		if (!m_state.test(NPCState::engaged)) { m_state.set(NPCState::just_engaged); }
-		m_state.set(NPCState::engaged);
-		if ((player.controller.inspecting() || m_state.test(NPCState::force_interact)) && !conversations.empty() && !player.has_flag_set(player::PlayerFlags::in_front_of_door)) {
+	overlap ? m_state.set(NPCState::overlapping_player) : m_state.reset(NPCState::overlapping_player);
+	if ((overlap && player.controller.inspecting()) || m_state.test(NPCState::force_interact)) {
+		if (!conversations.empty() && !player.has_flag_set(player::PlayerFlags::in_front_of_door)) {
+			m_state.set(NPCState::talking);
 			start_conversation(svc, context.console);
 			player.set_busy(true);
 			if (is_state(NPCAnimationState::busy)) { request(NPCAnimationState::respond); }
-			m_state.set(NPCState::interacting);
 		}
-	} else {
-		m_state.reset(NPCState::engaged);
 	}
-	if (m_state.test(NPCState::engaged) && m_state.consume(NPCState::just_engaged)) { m_indicator.set_parameters(anim::Parameters{0, 15, 16, 0, true}); }
+	if (m_state.test(NPCState::overlapping_player) && m_state.test(NPCState::player_walked_away)) {
+		m_indicator.set_parameters(anim::Parameters{0, 15, 16, 0, true});
+		m_state.reset(NPCState::player_walked_away);
+	}
+
+	if (!overlap) { m_state.set(NPCState::player_walked_away); }
 
 	if (!has_flag_set(NPCFlags::custom_camera)) {
-		if (m_state.test(NPCState::interacting)) {
+		if (m_state.test(NPCState::talking)) {
 			svc.camera_controller.free();
 		} else if (!has_flag_set(NPCFlags::cutscene) && overlap) {
 			svc.camera_controller.constrain();
@@ -328,7 +330,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	}
 	if (directions.actual.lnr != directions.desired.lnr && (!has_flag_set(NPCFlags::busy) || m_busy_timer.running()) && !was_requested(NPCAnimationState::special_2)) { request(NPCAnimationState::turn); }
 
-	if (!context.console.has_value()) { m_state.reset(NPCState::interacting); }
+	if (!context.console.has_value()) { m_state.reset(NPCState::talking); }
 
 	if (!has_flag_set(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }
@@ -377,7 +379,6 @@ void NPC::render_props(sf::RenderWindow& win, sf::Vector2f cam, DrawOrder order)
 }
 
 void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::unique_ptr<gui::Console>>& console) {
-	m_state.set(NPCState::introduced);
 	std::string name = std::string(m_label);
 	std::string target = std::to_string(conversations.at(m_current_conversation.get()));
 	if (!svc.text.npc[name][target].is_object()) {
@@ -400,7 +401,7 @@ void NPC::pop_conversation() {
 }
 
 void NPC::play_voice_cue(automa::ServiceProvider& svc, int which) const {
-	if (!m_state.test(NPCState::interacting)) { return; }
+	if (!m_state.test(NPCState::talking)) { return; }
 	if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(which); }
 	if (auto it = m_voice_cues.find(which); it != m_voice_cues.end()) { svc.soundboard.play_sound(it->second.tag); }
 }
@@ -423,17 +424,12 @@ void NPC::flush_and_push(int convo) {
 }
 
 void NPC::force_engage() {
-	m_state.set(NPCState::engaged);
-	m_state.set(NPCState::interacting);
 	m_state.set(NPCState::cutscene);
-	m_state.set(NPCState::distant_interact);
 	m_state.set(NPCState::force_interact);
 }
 
 void NPC::disengage() {
-	m_state.reset(NPCState::engaged);
 	m_state.reset(NPCState::cutscene);
-	m_state.reset(NPCState::distant_interact);
 	m_state.reset(NPCState::force_interact);
 }
 

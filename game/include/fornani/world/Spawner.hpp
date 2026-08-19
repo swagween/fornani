@@ -17,7 +17,7 @@ class Projectile;
 
 namespace fornani::world {
 
-enum class SpawnerAttributes {};
+enum class SpawnerAttributes : std::uint8_t {};
 
 class Spawner {
   public:

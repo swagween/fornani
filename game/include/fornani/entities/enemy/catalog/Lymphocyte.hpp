@@ -7,8 +7,8 @@
 
 namespace fornani::enemy {
 
-enum class LymphocyteState { spawn, idle, make_antibody, turn, dormant };
-enum class LymphocyteFlags { alerted };
+enum class LymphocyteState : std::uint8_t { spawn, idle, make_antibody, turn, dormant };
+enum class LymphocyteFlags : std::uint8_t { alerted };
 
 class Lymphocyte final : public Enemy, public StateMachine<LymphocyteState> {
   public:

@@ -13,7 +13,7 @@ class MenuTheme;
 
 namespace fornani::automa {
 
-enum class TextJustification { left, center, right };
+enum class TextJustification : std::uint8_t { left, center, right };
 
 struct ServiceProvider;
 struct Option {
