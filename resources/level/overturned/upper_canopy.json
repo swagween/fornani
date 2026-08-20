@@ -86,6 +86,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 211,
         "dimensions": [
           1,
@@ -102,6 +103,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 235,
         "dimensions": [
           1,
@@ -118,6 +120,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 202,
         "dimensions": [
           1,
@@ -396,11 +399,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -420,6 +418,7 @@
       112,
       64
     ],
+    "interior": false,
     "metagrid": [
       33,
       10
@@ -433,8 +432,11 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 203,
     "shader": {
@@ -444,6 +446,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false
@@ -34380,8 +34392,8 @@
         96,
         96,
         96,
-        96,
-        0,
+        460,
+        461,
         0,
         0,
         0,
@@ -34833,10 +34845,10 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        96,
+        452,
+        453,
+        454,
+        455,
         96,
         96,
         96,
@@ -34949,10 +34961,10 @@
         0,
         0,
         0,
-        0,
-        96,
-        96,
-        96,
+        452,
+        453,
+        454,
+        455,
         96,
         96,
         96,
@@ -35065,11 +35077,11 @@
         0,
         0,
         0,
-        96,
-        96,
+        481,
+        460,
+        461,
         0,
-        0,
-        0,
+        481,
         96,
         96,
         96,
@@ -35182,7 +35194,7 @@
         0,
         0,
         0,
-        0,
+        481,
         96,
         96,
         96,
@@ -35295,8 +35307,8 @@
         0,
         0,
         0,
-        0,
-        96,
+        462,
+        463,
         96,
         96,
         96,
@@ -35512,9 +35524,10 @@
         96,
         96,
         96,
-        96,
-        96,
-        96,
+        464,
+        465,
+        466,
+        467,
         0,
         0,
         0,
@@ -35523,7 +35536,6 @@
         0,
         0,
         0,
-        0,
         96,
         96,
         96,
@@ -35630,10 +35642,10 @@
         96,
         96,
         96,
-        96,
-        0,
-        0,
-        0,
+        464,
+        465,
+        466,
+        467,
         0,
         0,
         96,

@@ -285,10 +285,10 @@ void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::P
 
 void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
-	if (flags.state.test(StateFlags::invisible)) { return; }
 	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	p_animatable.set_position(sprite_position);
+	if (flags.state.test(StateFlags::invisible)) { return; }
 
 	if (debug::is_debug()) { debug(); }
 

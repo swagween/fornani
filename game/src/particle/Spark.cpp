@@ -49,7 +49,7 @@ void Spark::update(automa::ServiceProvider& svc) {
 }
 
 void Spark::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	if (debug::is_production()) { return; }
+	if (!debug::is_production()) { return; }
 	box.setPosition(position - cam);
 	if (fader) {
 		fader.value().get_sprite().setPosition(position - cam);

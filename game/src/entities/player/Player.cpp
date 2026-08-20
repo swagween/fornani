@@ -817,6 +817,7 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sync_antennae();
 	health_indicator.set_position(new_pos);
 	orb_indicator.set_position(new_pos);
+	m_ear.physics.position = new_pos;
 	m_lighting.physics.position = get_collider().get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
 	if (arsenal && hotbar) { equipped_weapon().force_position(m_weapon_socket); }
 }

@@ -177,7 +177,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	// crouching, rolling, and sliding
 	if (svc.input_system.digital(input::DigitalAction::slide).held) {
 		if (!grounded()) { input_flags.set(InputState::slide_in_air); }
-		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.get_collider(), player.get_actual_direction()); }
+		if (!m_ability && player.can_slide() && sprint && !post_slide.running() && moving()) { m_ability = std::make_unique<Slide>(svc, map, player.get_collider(), m_last_requested_direction); }
 	}
 	flags.reset(MovementState::crouch);
 	if (svc.input_system.digital(input::DigitalAction::crouch).held) {

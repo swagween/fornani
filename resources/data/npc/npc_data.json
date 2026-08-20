@@ -602,6 +602,13 @@
             { "room": 213, "weight": 0.5 },
             { "room": 248, "weight": 0.5 }
           ]
+        },
+        {
+          "interval": 1,
+          "distributions": [
+            { "room": 213, "weight": 0.5 },
+            { "room": 248, "weight": 0.5 }
+          ]
         }
       ]
     }

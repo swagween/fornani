@@ -4,12 +4,15 @@
 #include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
+#include <fornani/particle/Sparkler.hpp>
+#include <fornani/shader/FlatShader.hpp>
 
 #define GRAND_MASTIFF_BIND(f) std::bind(&GrandMastiff::f, this)
 
 namespace fornani::enemy {
 
-enum class GrandMastiffState : std::uint8_t { idle, run, turn, slash, bite, growl, wag, die, howl, pound, begin_howl };
+enum class GrandMastiffState : std::uint8_t { intro, idle, run, turn, slash, bite, growl, wag, die, howl, pound, begin_howl };
+enum class GrandMastiffFlags : std::uint8_t { spawned_in, flat_shaded };
 
 class GrandMastiff final : public Boss, public StateMachine<GrandMastiffState> {
   public:
@@ -18,7 +21,8 @@ class GrandMastiff final : public Boss, public StateMachine<GrandMastiffState> {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
-	fsm::StateFunction state_function = std::bind(&GrandMastiff::update_idle, this);
+	fsm::StateFunction state_function = std::bind(&GrandMastiff::update_intro, this);
+	fsm::StateFunction update_intro();
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_run();
 	fsm::StateFunction update_turn();
@@ -44,10 +48,17 @@ class GrandMastiff final : public Boss, public StateMachine<GrandMastiffState> {
 	GrandMastiffState m_last_move{};
 	std::vector<GrandMastiffState> m_moveset{};
 	std::unordered_map<GrandMastiffState, std::size_t> m_move_counts;
+	util::BitFlags<GrandMastiffFlags> m_flags{};
+
+	FlatShader m_flat_shader;
+	sf::Color m_color;
+	vfx::Sparkler m_sparkler;
 
 	util::Cooldown m_post_slash;
 	util::Cooldown m_post_bite;
 	util::Cooldown m_post_howl;
+	util::Cooldown m_fade_in;
+	util::Cooldown m_hurt_sound;
 	util::Counter m_howl_count;
 	util::Cooldown m_attack_timer{500};
 

@@ -322,6 +322,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		svc.state_controller.actions.reset(automa::Actions::custom_player_position);
 	}
 	svc.camera_controller.set_position(player->get_camera_focus_point());
+	svc.soundboard.set_listener_position(player->get_ear_position());
 
 	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
 	svc.state_controller.actions.reset(Actions::save_loaded);

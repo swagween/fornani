@@ -172,5 +172,22 @@
     "speed": 0.1,
     "lifespan": 320,
     "lifespan_variance": 100
+  },
+
+  "grand_mastiff": {
+    "rate": 100.0,
+    "volatility": 0.01,
+    "wobble": 0.1,
+    "frequency": 0.1,
+    "speed": 0.8,
+    "lifespan": 320,
+    "lifespan_variance": 100,
+    "animation": {
+      "label": "drop",
+      "variants": 6,
+      "num_frames": 6,
+      "framerate": 24,
+      "dimensions": [7, 7]
+    }
   }
 }

@@ -854,6 +854,12 @@
     },
     {
       "folder": "overturned",
+      "label": "sump.json",
+      "region": "overturned",
+      "room_id": 253
+    },
+    {
+      "folder": "overturned",
       "label": "thicket.json",
       "region": "overturned",
       "room_id": 229

@@ -8,6 +8,7 @@ nani_add_headers(
   BrynPostMiaag.hpp
   EncounterMinigus.hpp
   EncounterLynx.hpp
+  EncounterMastiff.hpp
         LadyNimbusIntro.hpp
         LothAtWorm.hpp
         NightsideStation.hpp

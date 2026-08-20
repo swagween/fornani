@@ -282,6 +282,12 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "grand_mastiff_hurt",
+    "bus": "gameplay",
+    "volume": 0.6,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "nani_wallslide",
     "bus": "gameplay",
     "volume": 1.0,

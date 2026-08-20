@@ -11,9 +11,11 @@ namespace fornani::enemy {
 constexpr auto grand_mastiff_framerate = 12;
 
 GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map)
-	: Boss{svc, map, "grand_mastiff"}, m_demon_star(svc, "demon_star"), m_post_slash{400}, m_post_bite{1600}, m_post_howl{1800}, m_moveset{GrandMastiffState::growl, GrandMastiffState::begin_howl, GrandMastiffState::slash},
+	: Boss{svc, map, "grand_mastiff"}, m_demon_star(svc, "demon_star"), m_flat_shader{svc.finder}, m_sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::periwinkle, "grand_mastiff"), m_post_slash{400}, m_post_bite{1600},
+	  m_post_howl{1800}, m_fade_in{400}, m_hurt_sound{10}, m_color{colors::blue}, m_moveset{GrandMastiffState::growl, GrandMastiffState::begin_howl, GrandMastiffState::slash},
 	  m_move_counts{{GrandMastiffState::growl, 0}, {GrandMastiffState::begin_howl, 0}, {GrandMastiffState::slash, 0}, {GrandMastiffState::pound, 0}} {
-	p_animatable.set_animations({{"idle", {0, 4, grand_mastiff_framerate * 3, -1}},
+	p_animatable.set_animations({{"intro", {26, 4, grand_mastiff_framerate * 4, -1}},
+								 {"idle", {0, 4, grand_mastiff_framerate * 3, -1}},
 								 {"run", {4, 4, grand_mastiff_framerate * 2, 2}},
 								 {"growl", {15, 4, grand_mastiff_framerate * 7, 3}},
 								 {"turn", {10, 4, grand_mastiff_framerate * 2, 0}},
@@ -22,13 +24,18 @@ GrandMastiff::GrandMastiff(automa::ServiceProvider& svc, world::Map& map)
 								 {"pound", {30, 4, grand_mastiff_framerate * 5, 3}},
 								 {"slash", {15, 7, grand_mastiff_framerate * 3, 0}}});
 
-	p_animatable.animation.set_params(get_params("idle"));
+	p_animatable.animation.set_params(get_params("intro"));
 	m_bite.hit.bounds.setRadius(48.f);
 	m_demon_star.get().set_team(arms::Team::guardian);
 
 	get_collider().physics.set_friction_componentwise({0.9f, 0.99f});
 	flags.state.set(StateFlags::no_shake);
+	flags.state.set(StateFlags::invisible);
 	if (secondary_collider) { get_secondary_collider().set_dimensions({160.f, 100.f}); }
+	m_flags.set(GrandMastiffFlags::flat_shaded);
+	m_sparkler.set_dimensions(Enemy::get_collider().get_vicinity_rect().size);
+	m_sparkler.set_rate(6.f);
+	m_sparkler.deactivate();
 }
 
 void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -38,6 +45,7 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 		svc.data.switch_destructible_state(4013, true);
 		svc.music_player.load(svc.finder, "tumult");
 		svc.music_player.play_looped();
+		flags.state.reset(StateFlags::invisible);
 	}
 	if (has_flag_set(BossFlags::end_battle) && !has_flag_set(BossFlags::post_death)) {
 		svc.data.switch_destructible_state(4013, true);
@@ -49,7 +57,22 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 		m_shockwaves.clear();
 		map.clear_projectiles();
 	}
-	if (!has_flag_set(BossFlags::battle_mode)) { return; }
+	m_fade_in.update();
+	m_sparkler.update(svc);
+	m_sparkler.set_position(Enemy::get_collider().get_vicinity_rect().position);
+	auto cvec = std::vector{colors::periwinkle, colors::transparent, colors::periwinkle, colors::transparent, colors::periwinkle, colors::transparent};
+	m_color = gradient_color(cvec, m_fade_in.get_inverse_normalized());
+	if (flags.state.test(StateFlags::special_event)) {
+		if (!m_flags.test(GrandMastiffFlags::spawned_in)) {
+			m_fade_in.start();
+			m_sparkler.activate();
+		}
+		m_flags.set(GrandMastiffFlags::spawned_in);
+	}
+	if (!m_flags.test(GrandMastiffFlags::spawned_in)) {
+		state_function = state_function();
+		return;
+	}
 
 	if (secondary_collider) {
 		get_secondary_collider().physics.position = get_collider().get_top() - get_secondary_collider().dimensions * 0.5f;
@@ -58,6 +81,7 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 
 	m_post_bite.update();
 	m_post_howl.update();
+	m_hurt_sound.update();
 	m_demon_star.update(svc, map, *this);
 
 	// shockwaves
@@ -109,6 +133,7 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 	if (svc.ticker.every_second()) {
 		if (random::percent_chance(30)) { request(GrandMastiffState::run); }
 	}
+	if (directions.actual.lnr != directions.desired.lnr) { request(GrandMastiffState::turn); }
 	if (half_health()) {
 		if (!std::ranges::contains(m_moveset, GrandMastiffState::pound)) { m_moveset.push_back(GrandMastiffState::pound); }
 	}
@@ -142,10 +167,12 @@ void GrandMastiff::update(automa::ServiceProvider& svc, world::Map& map, player:
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
 		if (!hurt_effect.running()) { hurt_effect.start(128); }
+		if (m_hurt_sound.is_complete()) {
+			svc.soundboard.play_sound("grand_mastiff_hurt", get_collider().get_center());
+			m_hurt_sound.start();
+		}
 		flags.state.reset(StateFlags::hurt);
 	}
-
-	if (directions.actual.lnr != directions.desired.lnr) { request(GrandMastiffState::turn); }
 
 	state_function = state_function();
 
@@ -162,14 +189,35 @@ void GrandMastiff::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 }
 
 void GrandMastiff::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (!has_flag_set(BossFlags::battle_mode)) { return; }
-	Enemy::render(svc, win, cam);
+	if (!m_flags.test(GrandMastiffFlags::spawned_in)) {
+		m_sparkler.render(win, cam);
+		return;
+	}
+	if (m_flags.test(GrandMastiffFlags::flat_shaded)) {
+		Enemy::render(svc, win, cam);
+		m_flat_shader.finalize(m_color);
+		m_flat_shader.submit(win, p_animatable.get_sprite());
+	} else {
+		Enemy::render(svc, win, cam);
+	}
+	m_sparkler.render(win, cam);
 	if (!debug::is_production()) {
 		m_bite.render(win, cam);
 		for (auto [i, attack] : std::views::enumerate(m_attacks)) {
 			if (attack.hit.active()) { attack.render(win, cam); }
 		}
 	}
+}
+
+fsm::StateFunction GrandMastiff::update_intro() {
+	p_state.actual = GrandMastiffState::intro;
+	if (m_fade_in.is_almost_complete()) {
+		m_flags.reset(GrandMastiffFlags::flat_shaded);
+		m_sparkler.deactivate();
+		request(GrandMastiffState::idle);
+		if (change_state(GrandMastiffState::idle, get_params("idle"))) { return GRAND_MASTIFF_BIND(update_idle); }
+	}
+	return GRAND_MASTIFF_BIND(update_intro);
 }
 
 fsm::StateFunction GrandMastiff::update_idle() {
@@ -281,7 +329,7 @@ fsm::StateFunction GrandMastiff::update_howl() {
 		m_howl_count.cancel();
 		p_services->soundboard.play_sound("grand_mastiff_howl", get_collider().get_center());
 	}
-	auto fire_rate = 30;
+	auto fire_rate = 40;
 	if (m_howl_count.get_count() % fire_rate == 0) {
 		auto xoffset = random::random_range_float(-480.f, 680.f) * directions.actual.as_float();
 		auto yoffset = random::random_range_float(-260.f, -220.f);

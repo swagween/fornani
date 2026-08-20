@@ -8,6 +8,7 @@ nani_add_sources(
   BrynPostMiaag.cpp
   EncounterMinigus.cpp
   EncounterLynx.cpp
+  EncounterMastiff.cpp
   FamilyReunion.cpp
   HaunchIntro.cpp
   HaunchEscape.cpp
