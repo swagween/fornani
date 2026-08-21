@@ -921,8 +921,7 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_breakable()) { breakables.push_back(std::make_unique<Breakable>(*m_services, *this, cell.position())); }
 		if (cell.is_pushable()) { pushables.push_back(std::make_unique<Pushable>(*m_services, *this, cell.position() + pushable_offset, get_style_id(), cell.value - 483)); }
 		if (cell.is_spike()) {
-			spikes.push_back(Spike(*m_services, m_services->assets.get_tileset(std::string{get_biome_string()}), cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), m_biome.get_id(),
-								   m_attributes.properties.test(MapProperties::environmental_randomness)));
+			spikes.push_back(Spike(*m_services, cell.position(), get_middleground()->grid.get_solid_neighbors(cell.one_d_index), m_biome.get_label(), m_biome.get_id()));
 			m_static_entity_texture.draw(spikes.back());
 		}
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.get_global_center(), 5)); }

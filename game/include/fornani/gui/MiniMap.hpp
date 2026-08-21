@@ -6,9 +6,11 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/graphics/MapTexture.hpp>
 #include <fornani/gui/DottedLine.hpp>
+#include <fornani/gui/Tooltip.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/shader/FlatShader.hpp>
 #include <fornani/world/Map.hpp>
+#include <optional>
 
 namespace fornani::player {
 class Player;
@@ -20,15 +22,19 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MiniMapFlags : std::uint8_t { open, moving };
-enum class MapIconFlags : std::uint8_t { nani, gunsmith, save, chest, bed, door, boss, gobe, vendor, quest };
+enum class MiniMapFlags : std::uint8_t { open, moving, marker_hovered };
+enum class MapIconFlags : std::uint8_t { nani, landmark, save, chest, bed, door, boss, gobe, vendor, quest };
 enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 enum class QuestMarkerType : std::uint8_t { main };
+enum class MapPinType : std::uint8_t { treasure, landmark, boss };
 
 struct MapIcon {
 	MapIconFlags type{};
 	sf::Vector2f position{};
 	int room_id{};
+	sf::Vector2f window_position{};
+	std::optional<std::string> tag{};
+	bool hidden{};
 };
 
 struct DoorConnection {
@@ -43,6 +49,8 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	void set_textures(automa::ServiceProvider& svc);
 	void set_markers(world::Map& map, player::Player& player);
 	void add_quest_marker(QuestMarkerType type, int room_id);
+	void add_pin(automa::ServiceProvider& svc, MapPinType type);
+	void remove_pin(automa::ServiceProvider& svc, MapPinType type);
 	void bake(automa::ServiceProvider& svc, dj::Json const& in);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
 	void update();
@@ -94,12 +102,15 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	components::PhysicsComponent m_physics{};
 	components::SteeringBehavior m_steering{};
 	MapTexture m_texture;
-	std::optional<sf::Sprite> m_cursor;
+	std::optional<Animatable> m_reticle;
 	std::optional<sf::Sprite> m_map_sprite;
+	std::optional<Tooltip> m_tooltip{};
 	sf::RectangleShape m_border{};
 	std::vector<MapIcon> m_markers{};
 	std::vector<DoorConnection> m_dotted_lines{};
 	std::vector<std::unique_ptr<MapTexture>> m_atlas{};
+
+	automa::ServiceProvider* m_services;
 
 	io::Logger m_logger{"MiniMap"};
 };

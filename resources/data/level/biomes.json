@@ -6,7 +6,8 @@
       "black": [12, 12, 20]
     },
     "overturned": {
-      "black": [12, 12, 20]
+      "black": [12, 12, 20],
+      "spike_variations": 3
     },
     "pioneer": {
       "black": [16, 8, 28],

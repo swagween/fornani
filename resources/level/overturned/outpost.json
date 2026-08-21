@@ -57,8 +57,8 @@
       16
     ],
     "metagrid": [
-      47,
-      12
+      39,
+      9
     ],
     "minimap": true,
     "music": "none",
@@ -78,9 +78,20 @@
       "darken_factor": 0
     },
     "style": 1,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

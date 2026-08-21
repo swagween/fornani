@@ -9,7 +9,8 @@ namespace fornani::gui {
 
 MiniMap::MiniMap(automa::ServiceProvider& svc)
 	: m_texture(svc), m_speed{64.f}, m_scale{32.f}, m_flat_shader{svc.finder},
-	  m_colors{.tile{colors::pioneer_dark_red}, .border{201, 9, 42}, .hovered_center{136, 19, 43}, .hovered_border{colors::pioneer_red}, .undiscovered_center{colors::pioneer_black}, .undiscovered_border{colors::navy_blue}} {
+	  m_colors{.tile{colors::pioneer_dark_red}, .border{201, 9, 42}, .hovered_center{136, 19, 43}, .hovered_border{colors::pioneer_red}, .undiscovered_center{colors::pioneer_black}, .undiscovered_border{colors::navy_blue}},
+	  m_services{&svc} {
 	m_border.setOutlineColor(colors::pioneer_dark_red);
 	m_border.setOutlineThickness(-4.f);
 	m_border.setFillColor(sf::Color::Transparent);
@@ -17,9 +18,9 @@ MiniMap::MiniMap(automa::ServiceProvider& svc)
 }
 
 void MiniMap::set_textures(automa::ServiceProvider& svc) {
-	m_cursor = sf::Sprite{svc.assets.get_texture("map_cursor")};
-	m_cursor->setScale(constants::f_scale_vec);
-	m_cursor->setOrigin({5.5f, 5.5f});
+	m_reticle.emplace(svc, "map_reticle", sf::Vector2i{12, 12});
+	m_reticle->center();
+	m_reticle->push_and_set_animation("basic", {0, 4, 40, -1});
 	m_border.setSize(svc.window->f_screen_dimensions());
 }
 
@@ -35,7 +36,7 @@ void MiniMap::set_markers(world::Map& map, player::Player& player) {
 	if (mit != m_markers.end()) {
 		mit->position = m_player_position;
 	} else {
-		m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id});
+		m_markers.push_back({MapIconFlags::nani, m_player_position, map.room_id, {}, "nani"});
 	}
 
 	if (player.has_item("gobe_plugin")) {
@@ -54,6 +55,32 @@ void MiniMap::add_quest_marker(QuestMarkerType type, int room_id) {
 	if (it == m_atlas.end()) { return; }
 	auto room_pos = (*it)->get_center();
 	m_markers.push_back(MapIcon{MapIconFlags::quest, room_pos, room_id});
+}
+
+void MiniMap::add_pin(automa::ServiceProvider& svc, MapPinType type) {
+	auto scaled_port = m_port_dimensions.componentWiseDiv(m_view.getSize());
+	auto pos = (m_view.getCenter().componentWiseMul(scaled_port) - m_physics.position) / get_ratio();
+	switch (type) {
+	case MapPinType::treasure: m_markers.push_back(MapIcon{MapIconFlags::chest, pos}); break;
+	case MapPinType::boss: m_markers.push_back(MapIcon{MapIconFlags::boss, pos}); break;
+	case MapPinType::landmark: m_markers.push_back(MapIcon{MapIconFlags::landmark, pos}); break;
+	}
+	svc.data.add_map_pin(static_cast<int>(type), pos);
+}
+
+void MiniMap::remove_pin(automa::ServiceProvider& svc, MapPinType type) {
+	auto scaled_port = m_port_dimensions.componentWiseDiv(m_view.getSize());
+	auto pos = (m_view.getCenter().componentWiseMul(scaled_port) - m_physics.position) / get_ratio();
+	if (m_reticle) {
+		auto itype = MapIconFlags{};
+		switch (type) {
+		case MapPinType::treasure: itype = MapIconFlags::chest; break;
+		case MapPinType::boss: itype = MapIconFlags::boss; break;
+		case MapPinType::landmark: itype = MapIconFlags::landmark; break;
+		}
+		std::erase_if(m_markers, [&](auto const& marker) { return marker.type == itype && m_reticle->get_sprite().getGlobalBounds().contains(marker.window_position); });
+	}
+	svc.data.remove_map_pin(static_cast<int>(type), pos);
 }
 
 void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
@@ -184,18 +211,32 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	icon_sprite.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
 	auto icon_dim{8};
 	for (auto& element : m_markers) {
-		if (!svc.data.is_room_discovered(element.room_id) && element.type != MapIconFlags::quest) { continue; }
+		auto skip = element.type != MapIconFlags::quest && element.type != MapIconFlags::chest && element.type != MapIconFlags::landmark;
+		if (!svc.data.is_room_discovered(element.room_id) && skip) { continue; }
 		icon_sprite.setTextureRect(sf::IntRect{{icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
 		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
+		element.window_position = (element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size);
 		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
 		win.draw(icon_sprite);
 	}
-	if (m_cursor && has_flag_set(MiniMapFlags::open)) {
-		m_cursor->setScale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
-		m_cursor->setPosition(svc.window->f_center_screen());
-		win.draw(*m_cursor);
+	if (m_reticle && has_flag_set(MiniMapFlags::open)) {
+		m_reticle->set_scale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
+		m_reticle->set_position(svc.window->f_center_screen());
+		win.draw(*m_reticle);
+		if (has_flag_set(MiniMapFlags::marker_hovered)) {
+			if (m_tooltip) { m_tooltip->render(win, cam, constants::f_scale_vec.componentWiseDiv(port.size)); }
+		}
 	}
 	svc.window->restore_view();
+
+	if (!debug::is_production()) {
+		ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
+		if (ImGui::Begin("Map Debug")) {
+			ImGui::Text("m_texture_scale: %.2f", m_texture_scale);
+			ImGui::Text("position: (%.2f, %.2f)", get_position().x, get_position().y);
+			ImGui::End();
+		}
+	}
 }
 
 void MiniMap::update() {
@@ -219,6 +260,19 @@ void MiniMap::update() {
 	}
 	set_flag(MiniMapFlags::moving, false);
 	m_physics.simple_update();
+	if (m_reticle) {
+		set_flag(MiniMapFlags::marker_hovered, false);
+		for (auto const& m : m_markers) {
+			if (m_reticle->get_sprite().getGlobalBounds().contains(m.window_position)) {
+				set_flag(MiniMapFlags::marker_hovered);
+				if (m.tag && !m_tooltip) { m_tooltip.emplace(*m_services, "dark", *m.tag, m.window_position + sf::Vector2f{16.f, 16.f}); }
+			}
+		}
+		m_reticle->tick();
+		has_flag_set(MiniMapFlags::marker_hovered) ? m_reticle->set_channel(0) : m_reticle->set_channel(1);
+	}
+	if (!has_flag_set(MiniMapFlags::marker_hovered)) { m_tooltip.reset(); }
+	if (m_tooltip) { m_tooltip->update(); }
 }
 
 void MiniMap::clear_atlas() { m_atlas.clear(); }

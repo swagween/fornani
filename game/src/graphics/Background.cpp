@@ -47,8 +47,13 @@ void Background::update(automa::ServiceProvider& svc) {
 void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	if (!debug::is_production()) { return; }
 	if (m_attributes.test(BackgroundAttributes::no_draw)) { return; }
+	auto const& in_data = svc.data.background[m_label];
 	auto epsilon = 0.9999f;
 	for (auto [i, layer] : std::views::enumerate(layers)) {
+		auto lock_me_vert = in_data["layers"][i]["lock"]["vertical"].as_bool();
+		auto lock_me_horiz = in_data["layers"][i]["lock"]["horizontal"].as_bool();
+		if (lock_me_vert) { m_attributes.set(BackgroundAttributes::vertical_lock); }
+		if (lock_me_horiz) { m_attributes.set(BackgroundAttributes::horizontal_lock); }
 		// backtrack sprites for infinite scroll effect
 		if (layer.physics.position.x < -scroll_pane.x && !locked_horizontally()) { layer.physics.position.x = 0.f; }
 		if (layer.physics.position.x > 0.f && !locked_horizontally()) { layer.physics.position.x = static_cast<float>(-scroll_pane.x); }
@@ -83,6 +88,8 @@ void Background::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf:
 			sprite.setPosition(fpos);
 			shifter.render(svc, win, sprite, tod);
 		}
+		if (lock_me_vert) { m_attributes.reset(BackgroundAttributes::vertical_lock); }
+		if (lock_me_horiz) { m_attributes.reset(BackgroundAttributes::horizontal_lock); }
 	}
 	// debug();
 }

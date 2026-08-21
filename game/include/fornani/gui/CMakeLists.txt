@@ -17,6 +17,7 @@ nani_add_headers(
         Portrait.hpp
         InventorySelector.hpp
         StatusBar.hpp
+        Tooltip.hpp
         WardrobeWidget.hpp
         Widget.hpp
         WidgetBar.hpp

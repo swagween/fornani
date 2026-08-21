@@ -215,6 +215,12 @@ void DataManager::load_game_data(ResourceFinder& finder) {
 	assert(!menu.is_null());
 	background = *dj::Json::from_file((finder.resource_path() + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
+	auto tooltips_data = dj::Json::from_file((finder.resource_path() + "/data/gui/tooltips.json"));
+	if (!tooltips_data) {
+		NANI_LOG_ERROR(m_logger, "Failed to load tooltips.");
+	} else {
+		tooltips = std::move(*tooltips_data);
+	}
 
 	// load marketplace
 	for (auto const& entry : npc.as_object()) {
@@ -279,7 +285,9 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["activated_switches"] = dj::Json::empty_array();
 	save["destroyed_blocks"] = dj::Json::empty_array();
 	save["destroyed_inspectables"] = dj::Json::empty_array();
+	save["map_pins"] = dj::Json::empty_array();
 	save["bestiary"] = dj::Json::empty_array();
+
 	for (auto& enemy : fallen_enemies) {
 		auto entry = dj::Json::empty_array();
 		entry.push_back(enemy.code.first);
@@ -306,6 +314,14 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 		save["destroyed_blocks"].push_back(state);
 	}
 	for (auto& i : destroyed_inspectables) { save["destroyed_inspectables"].push_back(i); }
+	for (auto& p : m_map_pins) {
+		auto record = dj::Json{};
+		record["type"] = p.type;
+		record["position"] = dj::Json::empty_array();
+		record["position"].push_back(p.position.x);
+		record["position"].push_back(p.position.y);
+		save["map_pins"].push_back(record);
+	}
 
 	player.serialize(save["player_data"]);
 
@@ -541,6 +557,10 @@ void DataManager::register_enemy(std::string_view tag) {
 	m_bestiary.add(EnemyRecord{tag.data(), 1});
 }
 
+void DataManager::add_map_pin(int type, sf::Vector2f position) { m_map_pins.add(MapPinRecord{type, position}); }
+
+void DataManager::remove_map_pin(int type, sf::Vector2f position) { m_map_pins.remove({type, position}); }
+
 bool data::DataManager::is_duplicate_room(int id) const {
 	for (auto& json : map_jsons) {
 		if (json.id == id) { return true; }
@@ -745,6 +765,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	npc_locations.clear();
 	fallen_enemies.clear();
 	m_bestiary.clear();
+	m_map_pins.clear();
 
 	m_services->quest_table.unserialize(save);
 	active_quest = save["active_quest"].as<int>();
@@ -756,6 +777,9 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 
 	auto const& bestiary_data = save["bestiary"].as_array();
 	for (auto const& enemy : bestiary_data) { m_bestiary.add(EnemyRecord{enemy["tag"].as_string(), enemy["fallen"].as<int>()}); }
+
+	auto const& map_pin_data = save["map_pins"].as_array();
+	for (auto const& pin : map_pin_data) { m_map_pins.add(MapPinRecord{pin["type"].as<int>(), {pin["position"][0].as<float>(), pin["position"][1].as<float>()}}); }
 
 	auto const& unlocked_doors_data = save["unlocked_doors"].as_array();
 	for (auto const& door : unlocked_doors_data) { unlocked_doors.add(door.as_string()); }

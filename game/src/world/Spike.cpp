@@ -7,13 +7,10 @@
 
 namespace fornani::world {
 
-Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, NeighborSet neighbors, int style, bool random)
-	: Animatable{svc, "spike", constants::i_resolution_vec}, hitbox({28.f, 28.f}), facing{neighbors.get_direction_via(special_index_v + 62)}, grid_position{position}, collider{constants::f_cell_vec} {
+Spike::Spike(automa::ServiceProvider& svc, sf::Vector2f position, NeighborSet neighbors, std::string_view biome, int style)
+	: Animatable{svc, "spike", constants::i_resolution_vec_padded}, hitbox({28.f, 28.f}), facing{neighbors.get_direction_via(special_index_v + 62)}, grid_position{position}, collider{constants::f_cell_vec} {
 	center();
 	rotate(facing.as_angle());
-	if (random) {
-		if (random::percent_chance(50)) { scale({-1.f, 1.f}); }
-	}
 	auto x_off = -2.f;
 	auto y_off = -2.f;
 	offset = sf::Vector2f{x_off, y_off};
@@ -29,6 +26,9 @@ Spike::Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vecto
 	collider.sync_components();
 	collider.fix();
 	push_and_set_animation("basic", {style, 1, 24, -1});
+	auto v = svc.data.biomes["properties"][biome]["spike_variations"].as<int>() + 1;
+	auto variant = (static_cast<int>(grid_position.x / constants::f_cell_size) * 7493 + static_cast<int>(grid_position.y / constants::f_cell_size) * 9573) % v;
+	set_channel(variant);
 	tick();
 	auto tweak = constants::f_resolution_vec;
 	set_position(grid_position + tweak);

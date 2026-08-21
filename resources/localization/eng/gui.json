@@ -18,6 +18,15 @@
     "build": "build",
     "cancel": "cancel"
   },
+  "minimap_menu": {
+    "pin": "pin",
+    "center": "center",
+    "cancel": "cancel"
+  },
+  "map_icon_menu": {
+    "remove": "remove",
+    "cancel": "cancel"
+  },
   "notifications": {
     "equipped": "Equipped ",
     "unequipped": "Unequipped ",

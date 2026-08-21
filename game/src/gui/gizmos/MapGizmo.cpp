@@ -18,13 +18,16 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 							.bottom_left{.lookup{{13, 55}, {54, 54}}, .position{26.f, 110.f}},
 							.bottom_right{.lookup{{67, 55}, {61, 55}}, .position{134.f, 110.f}},
 							.motherboard{.lookup{{0, 151}, {89, 126}}, .position{0.f, 0.f}}}},
-	  m_lookups{.plugin{89, 173}, .icon{130, 0}}, m_chain_offsets{
-													  sf::Vector2f{-35.f, 74.f},
-													  sf::Vector2f{-35.f, -108.f},
-													  sf::Vector2f{-100.f, -20.f},
-													  sf::Vector2f{80.f, -20.f},
-												  } {
+	  m_lookups{.plugin{89, 173}, .icon{130, 0}},
+	  m_chain_offsets{
+		  sf::Vector2f{-35.f, 74.f},
+		  sf::Vector2f{-35.f, -108.f},
+		  sf::Vector2f{-100.f, -20.f},
+		  sf::Vector2f{80.f, -20.f},
+	  },
+	  m_services{&svc} {
 	m_dashboard_port = DashboardPort::minimap;
+	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
 	m_icon_sprite.setOrigin({3.f, 3.f});
 	m_icon_sprite.setScale(constants::f_scale_vec);
@@ -148,6 +151,8 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 
 	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
+	if (m_menu) { m_menu->update(svc, {100.f, 100.f}, svc.window->f_center_screen()); }
+	if (!is_selected()) { m_menu.reset(); }
 }
 
 void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -171,42 +176,86 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position, sf::Vector2f{53.f, 1.f}, shader, palette);
 	m_constituents.gizmo.bottom_right.position = m_path.get_position() + m_path.get_dimensions();
 	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
+
+	if (m_menu) { m_menu->render(win); }
 }
 
 bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
-	auto zoom_factor{0.005f};
-	zoom_factor *= m_minimap->get_scale();
-	if (controller.digital(input::DigitalAction::menu_tab_left).held) {
-		m_minimap->zoom(zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
-	} else if (controller.digital(input::DigitalAction::menu_tab_right).held) {
-		m_minimap->zoom(-zoom_factor);
-		if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
-	}
-	if (controller.is_gamepad() && controller.is_any_direction_held(input::AnalogAction::map_pan)) {
-		m_minimap->move(controller.get_joystick_throttle(input::AnalogAction::map_pan) * 2.f); // idk why I have to multiply this by 2
-		if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
-	} else {
-		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::held)) {
-			m_minimap->move({0.f, -1.f});
+	if (is_selected()) {
+		if (m_menu) {
+			m_menu->handle_inputs(controller, soundboard);
+			if (m_menu->was_selected()) {
+				switch (m_menu->get_selection()) {
+				case 0: {
+					if (m_minimap->has_flag_set(MiniMapFlags::marker_hovered)) {
+						m_minimap->remove_pin(*m_services, MapPinType::treasure);
+						soundboard.flags.pioneer.set(audio::Pioneer::unhover);
+						m_menu.reset();
+					} else {
+						m_minimap->add_pin(*m_services, MapPinType::treasure);
+						soundboard.flags.pioneer.set(audio::Pioneer::forward);
+						m_menu.reset();
+					}
+					break;
+				}
+				case 1: {
+					m_minimap->center();
+					soundboard.flags.pioneer.set(audio::Pioneer::click);
+					m_menu.reset();
+					break;
+				}
+				}
+				if (m_menu->was_last_option()) { m_menu.reset(); }
+			}
+			if (m_menu) {
+				if (m_menu->was_closed()) { m_menu.reset(); }
+			}
+			return Gizmo::handle_inputs(controller, soundboard);
+		}
+		auto zoom_factor{0.005f};
+		zoom_factor *= m_minimap->get_scale();
+		if (controller.digital(input::DigitalAction::menu_tab_left).held) {
+			m_minimap->zoom(zoom_factor);
+			if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
+		} else if (controller.digital(input::DigitalAction::menu_tab_right).held) {
+			m_minimap->zoom(-zoom_factor);
+			if (!m_minimap->hit_zoom_limit()) { soundboard.repeat_sound("pioneer_buzz"); }
+		}
+		if (controller.is_gamepad() && controller.is_any_direction_held(input::AnalogAction::map_pan)) {
+			m_minimap->move(controller.get_joystick_throttle(input::AnalogAction::map_pan) * 2.f); // idk why I have to multiply this by 2
 			if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		} else {
+			if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::held)) {
+				m_minimap->move({0.f, -1.f});
+				if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+			}
+			if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::held)) {
+				m_minimap->move({0.f, 1.f});
+				if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+			}
+			if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held)) {
+				m_minimap->move({-1.f, 0.f});
+				if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+			}
+			if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held)) {
+				m_minimap->move({1.f, 0.f});
+				if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+			}
 		}
-		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::held)) {
-			m_minimap->move({0.f, 1.f});
-			if (!m_minimap->hit_vert_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
+		if (controller.digital(input::DigitalAction::menu_select).triggered) {
+			if (p_theme) {
+				if (m_minimap->has_flag_set(MiniMapFlags::marker_hovered)) {
+					m_menu.emplace(
+						MiniMenu{*m_services, {m_services->data.gui_text["map_icon_menu"]["remove"].as_string(), m_services->data.gui_text["map_icon_menu"]["cancel"].as_string()}, m_services->window->f_center_screen(), *p_theme});
+				} else {
+					m_menu.emplace(MiniMenu{*m_services,
+											{m_services->data.gui_text["minimap_menu"]["pin"].as_string(), m_services->data.gui_text["minimap_menu"]["center"].as_string(), m_services->data.gui_text["minimap_menu"]["cancel"].as_string()},
+											m_services->window->f_center_screen(),
+											*p_theme});
+				}
+				m_services->soundboard.flags.console.set(audio::Console::menu_open);
+			}
 		}
-		if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held)) {
-			m_minimap->move({-1.f, 0.f});
-			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
-		}
-		if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held)) {
-			m_minimap->move({1.f, 0.f});
-			if (!m_minimap->hit_horiz_pan_limit()) { soundboard.repeat_sound("pioneer_scan"); }
-		}
-	}
-	if (controller.digital(input::DigitalAction::menu_select).triggered) {
-		m_minimap->center();
-		soundboard.flags.pioneer.set(audio::Pioneer::click);
 	}
 	return Gizmo::handle_inputs(controller, soundboard);
 }

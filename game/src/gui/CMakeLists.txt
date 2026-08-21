@@ -17,6 +17,7 @@ nani_add_sources(
         Portrait.cpp
         InventorySelector.cpp
         StatusBar.cpp
+        Tooltip.cpp
         WardrobeWidget.cpp
         Widget.cpp
         WidgetBar.cpp

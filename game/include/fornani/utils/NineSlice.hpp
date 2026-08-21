@@ -19,6 +19,7 @@ class NineSlice {
 	void set_position(sf::Vector2f to_position) { m_steering.physics.position = to_position; }
 	void set_dimensions(sf::Vector2f to_dimensions) { m_dimensions = to_dimensions; }
 	void set_offset(sf::Vector2f to_offset) { m_render_offset = to_offset; }
+	void set_scale(sf::Vector2f to) { m_native_scale = to; }
 
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return m_dimensions * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return m_steering.physics.position + m_dimensions * 0.5f; }

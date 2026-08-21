@@ -440,23 +440,25 @@
     ]
   },
   "canopy": {
-    "dimensions": [960, 896],
+    "dimensions": [960, 512],
     "layers": [
       {
         "scroll_speed": 0.0,
         "parallax": 0.0
       },
       {
-        "scroll_speed": 0.0,
-        "parallax": -0.07
+        "scroll_speed": -0.2,
+        "parallax": 0.01,
+        "lock": {
+          "vertical": true
+        }
       },
       {
-        "scroll_speed": 0.0,
-        "parallax": -0.1
-      },
-      {
-        "scroll_speed": 0.0,
-        "parallax": 0.108
+        "scroll_speed": -0.4,
+        "parallax": 0.02,
+        "lock": {
+          "vertical": true
+        }
       },
       {
         "scroll_speed": 0.0,

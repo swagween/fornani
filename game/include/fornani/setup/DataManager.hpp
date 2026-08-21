@@ -42,6 +42,12 @@ struct EnemyRecord {
 	auto operator==(EnemyRecord const&) const -> bool = default;
 };
 
+struct MapPinRecord {
+	int type{};
+	sf::Vector2f position{};
+	auto operator==(MapPinRecord const& pin) const -> bool { return (pin.position - position).length() < constants::tiny_value && pin.type == type; }
+};
+
 class DataManager final {
 
   public:
@@ -88,6 +94,8 @@ class DataManager final {
 	void respawn_all();
 	void register_loot(dj::Json const& chest);
 	void register_enemy(std::string_view tag);
+	void add_map_pin(int type, sf::Vector2f position);
+	void remove_map_pin(int type, sf::Vector2f position);
 
 	bool is_duplicate_room(int id) const;
 	bool is_door_unlocked(std::string_view tag) const;
@@ -130,6 +138,7 @@ class DataManager final {
 	dj::Json m_console_paths{};
 	dj::Json gui_text{};
 	dj::Json menu_themes{};
+	dj::Json tooltips{};
 
 	dj::Json weapon{};
 	dj::Json enemy_weapon{};
@@ -199,6 +208,7 @@ class DataManager final {
 	std::unordered_map<std::string, int> m_loot{};
 	Register<std::string> unlocked_doors{};
 	Register<EnemyRecord> m_bestiary{};
+	Register<MapPinRecord> m_map_pins{};
 	Register<int> activated_switches{};
 	Register<DestructibleRecord> destructible_states{};
 	std::vector<util::QuestKey> quest_progressions{};

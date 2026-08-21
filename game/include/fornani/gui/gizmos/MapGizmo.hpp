@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/gui/MiniMenu.hpp>
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/MiniMap.hpp"
 #include "fornani/gui/gizmos/MapInfoGizmo.hpp"
@@ -35,6 +36,7 @@ class MapGizmo : public Gizmo {
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	std::vector<MapPlugin> m_plugins;
 	std::unique_ptr<MapInfoGizmo> m_info{};
+	std::optional<MiniMenu> m_menu{};
 	MiniMap* m_minimap;
 	std::vector<std::unique_ptr<vfx::Chain>> m_chains{};
 	util::NineSlice m_map_screen;
@@ -62,6 +64,8 @@ class MapGizmo : public Gizmo {
 		sf::Vector2i plugin;
 		sf::Vector2i icon;
 	} m_lookups;
+
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace fornani::gui

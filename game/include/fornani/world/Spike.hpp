@@ -24,7 +24,7 @@ namespace fornani::world {
 
 class Spike : public Animatable {
   public:
-	Spike(automa::ServiceProvider& svc, sf::Texture const& texture, sf::Vector2f position, NeighborSet neighbors, int style, bool random = false);
+	Spike(automa::ServiceProvider& svc, sf::Vector2f position, NeighborSet neighbors, std::string_view biome, int style);
 	void update(automa::ServiceProvider& svc, player::Player& player, world::Map& map);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, std::optional<Palette>& palette, sf::Vector2f cam);
