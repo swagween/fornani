@@ -26,21 +26,23 @@ void MiniMenu::update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector
 	auto spacing = 22.f;
 	auto span = options.size();
 	auto top_buffer = (span - 1) * spacing / 2.f;
-	auto largest_option = sf::Vector2f{};
 	m_flags.reset(MiniMenuFlags::option_hovered);
+	auto enclosing_rect = sf::FloatRect{};
 	for (auto [i, option] : std::views::enumerate(options)) {
+
+		enclosing_rect.size.x = std::max(enclosing_rect.size.x, option.label.getGlobalBounds().size.x);
+		enclosing_rect.size.y = std::max(enclosing_rect.size.y, option.label.getGlobalBounds().size.y);
+
 		auto ypos = m_nineslice.get_position().y + i * spacing - top_buffer;
 		option.position = {m_nineslice.get_global_center().x, ypos};
 		option.update(selection.get());
-		if (auto to = option.label.getLocalBounds().size.x > largest_option.x) { largest_option.x = to; }
-		if (i > 2) { largest_option.y += option.label.getLocalBounds().size.y; }
 		if (option.label.getGlobalBounds().contains(svc.input_system.get_mouse_position()) && svc.input_system.is_mouse_active()) {
 			if (selection.get() != i) { svc.soundboard.play_sound("menu_shift"); }
 			selection.set(i);
 			m_flags.set(MiniMenuFlags::option_hovered);
 		}
 	}
-	m_nineslice.set_dimensions(largest_option);
+	m_nineslice.set_dimensions(enclosing_rect.size - sf::Vector2f{m_nineslice.get_f_corner_dimensions().x, 0.f});
 }
 
 void MiniMenu::render(sf::RenderWindow& win, bool bg) {

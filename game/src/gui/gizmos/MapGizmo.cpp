@@ -1,5 +1,6 @@
 
 #include "fornani/gui/gizmos/MapGizmo.hpp"
+#include <fornani/systems/InputSystem.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/gui/gizmos/MapInfoGizmo.hpp"
 #include "fornani/service/ServiceProvider.hpp"
@@ -25,7 +26,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 		  sf::Vector2f{-100.f, -20.f},
 		  sf::Vector2f{80.f, -20.f},
 	  },
-	  m_services{&svc} {
+	  m_services{&svc}, m_legend{svc} {
 	m_dashboard_port = DashboardPort::minimap;
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
@@ -152,7 +153,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 
 	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
 	if (m_menu) { m_menu->update(svc, {100.f, 100.f}, svc.window->f_center_screen()); }
-	if (!is_selected()) { m_menu.reset(); }
+	if (!is_selected()) { close_menu(); }
 }
 
 void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -177,6 +178,26 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_constituents.gizmo.bottom_right.position = m_path.get_position() + m_path.get_dimensions();
 	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
 
+	if (m_minimap->get_mode() == MiniMapMode::full) {
+		// draw legend
+		auto previous = 0.f;
+		for (auto [i, instruction] : std::views::enumerate(m_legend.instructions)) {
+			auto action = instruction.action;
+			auto& text = instruction.text;
+			auto lookup = m_services->input_system.get_icon_lookup_by_action(action);
+			if (instruction.control == MapGizmoControls::pan && svc.input_system.is_keyboard()) { lookup = {5, 23}; }
+			if (instruction.control == MapGizmoControls::pan && svc.input_system.is_gamepad()) { lookup = {11, 2}; }
+			text.setPosition(sf::Vector2f{20.f + previous, -svc.window->f_screen_dimensions().y + 8.f} - cam);
+			previous = text.getGlobalBounds().position.x + text.getGlobalBounds().size.x + m_legend.control_icon.get_dimensions().x * 2.f;
+			m_legend.control_icon.set_texture_rect(sf::IntRect{lookup * 18, m_legend.control_icon.get_dimensions()});
+			m_legend.control_icon.set_position(sf::Vector2f{text.getGlobalBounds().position.x + text.getGlobalBounds().size.x + 2.f, -svc.window->f_screen_dimensions().y - cam.y});
+			if (is_selected()) {
+				win.draw(m_legend.control_icon);
+				win.draw(text);
+			}
+		}
+	}
+
 	if (m_menu) { m_menu->render(win); }
 }
 
@@ -185,30 +206,48 @@ bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& 
 		if (m_menu) {
 			m_menu->handle_inputs(controller, soundboard);
 			if (m_menu->was_selected()) {
-				switch (m_menu->get_selection()) {
-				case 0: {
-					if (m_minimap->has_flag_set(MiniMapFlags::marker_hovered)) {
-						m_minimap->remove_pin(*m_services, MapPinType::treasure);
-						soundboard.flags.pioneer.set(audio::Pioneer::unhover);
-						m_menu.reset();
-					} else {
-						m_minimap->add_pin(*m_services, MapPinType::treasure);
-						soundboard.flags.pioneer.set(audio::Pioneer::forward);
-						m_menu.reset();
+				if (m_flags.general.test(MapGizmoFlags::pin_menu)) {
+					m_minimap->add_pin(*m_services, static_cast<MapPinType>(m_menu->get_selection()));
+					soundboard.flags.pioneer.set(audio::Pioneer::forward);
+					close_menu();
+				} else {
+					switch (m_menu->get_selection()) {
+					case 0: {
+						if (m_minimap->has_flag_set(MiniMapFlags::marker_hovered)) {
+							m_minimap->remove_pin(*m_services);
+							soundboard.flags.pioneer.set(audio::Pioneer::unhover);
+							close_menu();
+						} else {
+							if (p_theme) {
+								m_menu.emplace(MiniMenu{*m_services,
+														{m_services->data.gui_text["pin_menu"]["treasure"].as_string(), m_services->data.gui_text["pin_menu"]["landmark"].as_string(),
+														 m_services->data.gui_text["pin_menu"]["boss"].as_string(), m_services->data.gui_text["map_icon_menu"]["cancel"].as_string()},
+														m_services->window->f_center_screen(),
+														*p_theme});
+								m_services->soundboard.flags.console.set(audio::Console::menu_open);
+								m_flags.general.set(MapGizmoFlags::pin_menu);
+							}
+						}
+						break;
 					}
-					break;
+					case 1: {
+						m_minimap->center();
+						soundboard.flags.pioneer.set(audio::Pioneer::click);
+						close_menu();
+						break;
+					}
+					case 2: {
+						m_minimap->toggle_mode();
+						soundboard.flags.pioneer.set(audio::Pioneer::close);
+						close_menu();
+						break;
+					}
+					}
 				}
-				case 1: {
-					m_minimap->center();
-					soundboard.flags.pioneer.set(audio::Pioneer::click);
-					m_menu.reset();
-					break;
-				}
-				}
-				if (m_menu->was_last_option()) { m_menu.reset(); }
+				if (m_menu->was_last_option()) { close_menu(); }
 			}
 			if (m_menu) {
-				if (m_menu->was_closed()) { m_menu.reset(); }
+				if (m_menu->was_closed()) { close_menu(); }
 			}
 			return Gizmo::handle_inputs(controller, soundboard);
 		}
@@ -244,12 +283,13 @@ bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& 
 		}
 		if (controller.digital(input::DigitalAction::menu_select).triggered) {
 			if (p_theme) {
-				if (m_minimap->has_flag_set(MiniMapFlags::marker_hovered)) {
+				if (m_minimap->can_remove_pin()) {
 					m_menu.emplace(
 						MiniMenu{*m_services, {m_services->data.gui_text["map_icon_menu"]["remove"].as_string(), m_services->data.gui_text["map_icon_menu"]["cancel"].as_string()}, m_services->window->f_center_screen(), *p_theme});
 				} else {
 					m_menu.emplace(MiniMenu{*m_services,
-											{m_services->data.gui_text["minimap_menu"]["pin"].as_string(), m_services->data.gui_text["minimap_menu"]["center"].as_string(), m_services->data.gui_text["minimap_menu"]["cancel"].as_string()},
+											{m_services->data.gui_text["minimap_menu"]["pin"].as_string(), m_services->data.gui_text["minimap_menu"]["center"].as_string(), m_services->data.gui_text["minimap_menu"]["mode"].as_string(),
+											 m_services->data.gui_text["minimap_menu"]["cancel"].as_string()},
 											m_services->window->f_center_screen(),
 											*p_theme});
 				}
@@ -292,6 +332,11 @@ void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	m_motherboard_path.set_section("start");
 }
 
+void MapGizmo::close_menu() {
+	m_menu.reset();
+	m_flags.general.reset(MapGizmoFlags::pin_menu);
+}
+
 MapPlugin::MapPlugin(ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)
 	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 48, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{random::random_range(0, 128)}, m_sound(sound) {
 	m_path.set_section("start");
@@ -306,5 +351,35 @@ void MapPlugin::update(audio::Soundboard& soundboard) {
 }
 
 void MapPlugin::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f cam, sf::Vector2f origin, LightShader& shader, Palette& palette) const { constituent.render(win, sprite, cam, origin, shader, palette); }
+
+MiniMapLegend::MiniMapLegend(automa::ServiceProvider& svc) : control_icon{svc, "pioneer_controller_icons", {18, 18}} {
+	for (int i = 0; i < static_cast<int>(MapGizmoControls::END); ++i) {
+		instructions.push_back(MapControl{.text{svc.text.fonts.basic.font}, .control{static_cast<MapGizmoControls>(i)}});
+		switch (instructions.back().control) {
+		case MapGizmoControls::pan: {
+			instructions.back().action = input::DigitalAction::menu_up;
+			instructions.back().text.setString(svc.data.gui_text["minimap_legend"]["pan"].as_string());
+			break;
+		}
+		case MapGizmoControls::zoom_in: {
+			instructions.back().action = input::DigitalAction::menu_tab_right;
+			instructions.back().text.setString(svc.data.gui_text["minimap_legend"]["zoom_in"].as_string());
+			break;
+		}
+		case MapGizmoControls::zoom_out: {
+			instructions.back().action = input::DigitalAction::menu_tab_left;
+			instructions.back().text.setString(svc.data.gui_text["minimap_legend"]["zoom_out"].as_string());
+			break;
+		}
+		case MapGizmoControls::menu: {
+			instructions.back().action = input::DigitalAction::menu_select;
+			instructions.back().text.setString(svc.data.gui_text["minimap_legend"]["menu"].as_string());
+			break;
+		}
+		}
+		instructions.back().text.setFillColor(colors::navy_blue);
+		instructions.back().text.setCharacterSize(16);
+	}
+}
 
 } // namespace fornani::gui

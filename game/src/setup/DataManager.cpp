@@ -766,6 +766,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	fallen_enemies.clear();
 	m_bestiary.clear();
 	m_map_pins.clear();
+	minimap.clear_custom_pins();
 
 	m_services->quest_table.unserialize(save);
 	active_quest = save["active_quest"].as<int>();
@@ -779,7 +780,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	for (auto const& enemy : bestiary_data) { m_bestiary.add(EnemyRecord{enemy["tag"].as_string(), enemy["fallen"].as<int>()}); }
 
 	auto const& map_pin_data = save["map_pins"].as_array();
-	for (auto const& pin : map_pin_data) { m_map_pins.add(MapPinRecord{pin["type"].as<int>(), {pin["position"][0].as<float>(), pin["position"][1].as<float>()}}); }
+	for (auto const& pin : map_pin_data) { minimap.set_pin(*m_services, static_cast<gui::MapPinType>(pin["type"].as<int>()), {pin["position"][0].as<float>(), pin["position"][1].as<float>()}); }
 
 	auto const& unlocked_doors_data = save["unlocked_doors"].as_array();
 	for (auto const& door : unlocked_doors_data) { unlocked_doors.add(door.as_string()); }

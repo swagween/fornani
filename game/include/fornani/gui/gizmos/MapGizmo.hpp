@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/gui/MiniMenu.hpp>
+#include <fornani/systems/InputActionMap.hpp>
 #include "fornani/gui/Gizmo.hpp"
 #include "fornani/gui/MiniMap.hpp"
 #include "fornani/gui/gizmos/MapInfoGizmo.hpp"
@@ -10,6 +11,9 @@
 #include "fornani/utils/NineSlice.hpp"
 
 namespace fornani::gui {
+
+enum class MapGizmoFlags : std::uint8_t { pin_menu };
+enum class MapGizmoControls : std::uint8_t { pan, menu, zoom_out, zoom_in, END };
 
 class MapPlugin {
   public:
@@ -24,6 +28,19 @@ class MapPlugin {
 	audio::Pioneer m_sound;
 };
 
+struct MapControl {
+	sf::Text text;
+	MapGizmoControls control{};
+	input::DigitalAction action{};
+};
+
+struct MiniMapLegend {
+	MiniMapLegend(automa::ServiceProvider& svc);
+	sf::Vector2f position{};
+	std::vector<MapControl> instructions{};
+	Animatable control_icon;
+};
+
 class MapGizmo : public Gizmo {
   public:
 	MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
@@ -34,6 +51,7 @@ class MapGizmo : public Gizmo {
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
+	void close_menu();
 	std::vector<MapPlugin> m_plugins;
 	std::unique_ptr<MapInfoGizmo> m_info{};
 	std::optional<MiniMenu> m_menu{};
@@ -49,6 +67,7 @@ class MapGizmo : public Gizmo {
 	sf::Sprite m_icon_sprite;
 	struct {
 		bool toggled{};
+		util::BitFlags<MapGizmoFlags> general{};
 		util::BitFlags<MapIconFlags> icon{};
 	} m_flags{};
 	struct {
@@ -64,6 +83,8 @@ class MapGizmo : public Gizmo {
 		sf::Vector2i plugin;
 		sf::Vector2i icon;
 	} m_lookups;
+
+	MiniMapLegend m_legend;
 
 	automa::ServiceProvider* m_services;
 };

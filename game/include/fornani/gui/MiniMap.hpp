@@ -26,7 +26,8 @@ enum class MiniMapFlags : std::uint8_t { open, moving, marker_hovered };
 enum class MapIconFlags : std::uint8_t { nani, landmark, save, chest, bed, door, boss, gobe, vendor, quest };
 enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 enum class QuestMarkerType : std::uint8_t { main };
-enum class MapPinType : std::uint8_t { treasure, landmark, boss };
+enum class MapPinType : std::uint8_t { treasure, landmark, boss, NONE };
+enum class MiniMapMode : std::uint8_t { full, icons_only, minimal, END };
 
 struct MapIcon {
 	MapIconFlags type{};
@@ -50,16 +51,20 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	void set_markers(world::Map& map, player::Player& player);
 	void add_quest_marker(QuestMarkerType type, int room_id);
 	void add_pin(automa::ServiceProvider& svc, MapPinType type);
-	void remove_pin(automa::ServiceProvider& svc, MapPinType type);
+	void set_pin(automa::ServiceProvider& svc, MapPinType type, sf::Vector2f pos);
+	void remove_pin(automa::ServiceProvider& svc);
+	void clear_custom_pins();
 	void bake(automa::ServiceProvider& svc, dj::Json const& in);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, sf::Vector2f cam, sf::Sprite& icon_sprite);
 	void update();
 	void clear_atlas();
 	void move(sf::Vector2f direction);
 	void zoom(float amount);
+	void toggle_mode();
 	void center();
 	void set_port_position(sf::Vector2f to_position);
 	void set_port_dimensions(sf::Vector2f to_dimensions);
+
 	[[nodiscard]] auto hit_zoom_limit() const -> bool { return m_zoom_limit; }
 	[[nodiscard]] auto hit_horiz_pan_limit() const -> bool { return m_pan_limit_x; }
 	[[nodiscard]] auto hit_vert_pan_limit() const -> bool { return m_pan_limit_y; }
@@ -70,6 +75,8 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	[[nodiscard]] auto get_ratio() const -> float { return 32.f / m_scale; }
 	[[nodiscard]] auto get_ratio_vec2() const -> sf::Vector2f { return sf::Vector2f{get_ratio(), get_ratio()}; }
 	[[nodiscard]] auto get_currently_hovered_room() const -> int { return m_currently_hovered_room; }
+	[[nodiscard]] auto can_remove_pin() const -> bool { return has_flag_set(MiniMapFlags::marker_hovered) && m_hovered_pin != MapPinType::NONE; }
+	[[nodiscard]] auto get_mode() const -> MiniMapMode { return m_mode; }
 
   private:
 	FlatShader m_flat_shader;
@@ -109,6 +116,8 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	std::vector<MapIcon> m_markers{};
 	std::vector<DoorConnection> m_dotted_lines{};
 	std::vector<std::unique_ptr<MapTexture>> m_atlas{};
+	MapPinType m_hovered_pin{};
+	MiniMapMode m_mode{};
 
 	automa::ServiceProvider* m_services;
 

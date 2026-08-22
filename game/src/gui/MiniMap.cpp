@@ -68,19 +68,37 @@ void MiniMap::add_pin(automa::ServiceProvider& svc, MapPinType type) {
 	svc.data.add_map_pin(static_cast<int>(type), pos);
 }
 
-void MiniMap::remove_pin(automa::ServiceProvider& svc, MapPinType type) {
+void MiniMap::set_pin(automa::ServiceProvider& svc, MapPinType type, sf::Vector2f pos) {
+	auto scaled_port = m_port_dimensions.componentWiseDiv(m_view.getSize());
+	switch (type) {
+	case MapPinType::treasure: m_markers.push_back(MapIcon{MapIconFlags::chest, pos}); break;
+	case MapPinType::boss: m_markers.push_back(MapIcon{MapIconFlags::boss, pos}); break;
+	case MapPinType::landmark: m_markers.push_back(MapIcon{MapIconFlags::landmark, pos}); break;
+	}
+	svc.data.add_map_pin(static_cast<int>(type), pos);
+}
+
+void MiniMap::remove_pin(automa::ServiceProvider& svc) {
 	auto scaled_port = m_port_dimensions.componentWiseDiv(m_view.getSize());
 	auto pos = (m_view.getCenter().componentWiseMul(scaled_port) - m_physics.position) / get_ratio();
 	if (m_reticle) {
 		auto itype = MapIconFlags{};
-		switch (type) {
+		switch (m_hovered_pin) {
 		case MapPinType::treasure: itype = MapIconFlags::chest; break;
 		case MapPinType::boss: itype = MapIconFlags::boss; break;
 		case MapPinType::landmark: itype = MapIconFlags::landmark; break;
+		default: return; // ignore static pin types
 		}
-		std::erase_if(m_markers, [&](auto const& marker) { return marker.type == itype && m_reticle->get_sprite().getGlobalBounds().contains(marker.window_position); });
+		std::erase_if(m_markers, [&](auto const& marker) {
+			auto delete_me = marker.type == itype && m_reticle->get_sprite().getGlobalBounds().contains(marker.window_position);
+			if (delete_me) { svc.data.remove_map_pin(static_cast<int>(m_hovered_pin), marker.position); }
+			return delete_me;
+		});
 	}
-	svc.data.remove_map_pin(static_cast<int>(type), pos);
+}
+
+void MiniMap::clear_custom_pins() {
+	std::erase_if(m_markers, [&](auto const& marker) { return marker.type == MapIconFlags::chest || marker.type == MapIconFlags::landmark || marker.type == MapIconFlags::boss; });
 }
 
 void MiniMap::bake(automa::ServiceProvider& svc, dj::Json const& in) {
@@ -210,21 +228,23 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 	}
 	icon_sprite.setScale(constants::f_scale_vec.componentWiseDiv(port.size));
 	auto icon_dim{8};
-	for (auto& element : m_markers) {
-		auto skip = element.type != MapIconFlags::quest && element.type != MapIconFlags::chest && element.type != MapIconFlags::landmark;
-		if (!svc.data.is_room_discovered(element.room_id) && skip) { continue; }
-		icon_sprite.setTextureRect(sf::IntRect{{icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
-		icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
-		element.window_position = (element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size);
-		if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
-		win.draw(icon_sprite);
-	}
-	if (m_reticle && has_flag_set(MiniMapFlags::open)) {
-		m_reticle->set_scale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
-		m_reticle->set_position(svc.window->f_center_screen());
-		win.draw(*m_reticle);
-		if (has_flag_set(MiniMapFlags::marker_hovered)) {
-			if (m_tooltip) { m_tooltip->render(win, cam, constants::f_scale_vec.componentWiseDiv(port.size)); }
+	if (m_mode != MiniMapMode::minimal) {
+		for (auto& element : m_markers) {
+			auto skip = element.type != MapIconFlags::quest && element.type != MapIconFlags::chest && element.type != MapIconFlags::landmark && element.type != MapIconFlags::boss;
+			if (!svc.data.is_room_discovered(element.room_id) && skip) { continue; }
+			icon_sprite.setTextureRect(sf::IntRect{{icon_dim * flash_frame.get(), static_cast<int>(element.type) * icon_dim}, {icon_dim, icon_dim}});
+			icon_sprite.setPosition((element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size));
+			element.window_position = (element.position * get_ratio() + m_physics.position).componentWiseDiv(scaled_port.size);
+			if (element.type == MapIconFlags::nani) { icon_sprite.setScale(icon_sprite.getScale().componentWiseMul(player.get_facing_scale())); }
+			win.draw(icon_sprite);
+		}
+		if (m_reticle && has_flag_set(MiniMapFlags::open)) {
+			m_reticle->set_scale(constants::f_scale_vec.componentWiseDiv(scaled_port.size));
+			m_reticle->set_position(svc.window->f_center_screen());
+			win.draw(*m_reticle);
+			if (has_flag_set(MiniMapFlags::marker_hovered)) {
+				if (m_tooltip) { m_tooltip->render(win, cam, constants::f_scale_vec.componentWiseDiv(port.size)); }
+			}
 		}
 	}
 	svc.window->restore_view();
@@ -240,12 +260,15 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 }
 
 void MiniMap::update() {
-	auto bounds{sf::FloatRect{{-(m_extent.size.x) * get_ratio() + m_view.getCenter().x, -(m_extent.size.y) * get_ratio() + m_view.getCenter().y},
-							  {-(m_extent.position.x) * get_ratio() + m_view.getCenter().x, -(m_extent.position.y) * get_ratio() + m_view.getCenter().y}}};
-	m_physics.position.x = std::clamp(m_physics.position.x, bounds.position.x, bounds.size.x);
-	m_physics.position.y = std::clamp(m_physics.position.y, bounds.position.y, bounds.size.y);
-	m_pan_limit_x = m_physics.position.x == bounds.position.x || m_physics.position.x == bounds.size.x;
-	m_pan_limit_y = m_physics.position.y == bounds.position.y || m_physics.position.y == bounds.size.y;
+	auto min = sf::Vector2f{-m_extent.size.x * get_ratio() + m_view.getCenter().x, -m_extent.size.y * get_ratio() + m_view.getCenter().y};
+	auto max = sf::Vector2f{-m_extent.position.x * get_ratio() + m_view.getCenter().x, -m_extent.position.y * get_ratio() + m_view.getCenter().y};
+
+	m_physics.position.x = std::clamp(m_physics.position.x, min.x, max.x);
+	m_physics.position.y = std::clamp(m_physics.position.y, min.y, max.y);
+
+	m_pan_limit_x = m_physics.position.x == min.x || m_physics.position.x == max.x;
+	m_pan_limit_y = m_physics.position.y == min.y || m_physics.position.y == max.y;
+
 	m_resolution = m_scale < 32.f ? Resolution::high : m_scale < 128.f ? Resolution::medium : Resolution::low;
 	if (has_flag_set(MiniMapFlags::moving)) {
 		m_physics.set_global_friction(0.9f);
@@ -264,6 +287,12 @@ void MiniMap::update() {
 		set_flag(MiniMapFlags::marker_hovered, false);
 		for (auto const& m : m_markers) {
 			if (m_reticle->get_sprite().getGlobalBounds().contains(m.window_position)) {
+				switch (m.type) {
+				case MapIconFlags::chest: m_hovered_pin = MapPinType::treasure; break;
+				case MapIconFlags::landmark: m_hovered_pin = MapPinType::landmark; break;
+				case MapIconFlags::boss: m_hovered_pin = MapPinType::boss; break;
+				default: m_hovered_pin = MapPinType::NONE; break;
+				}
 				set_flag(MiniMapFlags::marker_hovered);
 				if (m.tag && !m_tooltip) { m_tooltip.emplace(*m_services, "dark", *m.tag, m.window_position + sf::Vector2f{16.f, 16.f}); }
 			}
@@ -295,6 +324,14 @@ void MiniMap::zoom(float amount) {
 	m_center_position = (m_physics.position - m_view.getCenter().componentWiseMul(sz)) / prev_ratio;
 	if (std::abs(r_delta) > 0.f) { m_physics.position += m_center_position * r_delta; }
 	m_target_position = m_physics.position;
+}
+
+void MiniMap::toggle_mode() {
+	switch (m_mode) {
+	case MiniMapMode::full: m_mode = MiniMapMode::icons_only; break;
+	case MiniMapMode::icons_only: m_mode = MiniMapMode::minimal; break;
+	case MiniMapMode::minimal: m_mode = MiniMapMode::full; break;
+	}
 }
 
 void MiniMap::center() {
