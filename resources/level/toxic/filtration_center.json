@@ -85,6 +85,7 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       32,
       16
@@ -105,6 +106,7 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

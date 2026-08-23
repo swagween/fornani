@@ -294,6 +294,15 @@ void Projectile::bounce_off_surface(sf::Vector2i direction) {
 	}
 }
 
+void Projectile::set_direction(CardinalDirection to) {
+	auto rot = get_rotation_from_directions(physical.direction, to);
+	auto const angle = sf::radians(rot);
+
+	physical.collider.physics.velocity = physical.collider.physics.velocity.rotatedBy(angle);
+	physical.collider.physics.acceleration = physical.collider.physics.acceleration.rotatedBy(angle);
+	set_firing_direction(to);
+}
+
 void Projectile::handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
 		on_explode(svc, map);

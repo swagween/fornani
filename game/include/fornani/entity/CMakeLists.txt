@@ -16,6 +16,7 @@ nani_add_headers(
         Enemy.hpp
         SwitchBlock.hpp
         SwitchButton.hpp
+        Teleporter.hpp
         TimerBlock.hpp
         Turret.hpp
         Train.hpp

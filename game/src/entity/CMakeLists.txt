@@ -16,6 +16,7 @@ nani_add_sources(
         Enemy.cpp
         SwitchBlock.cpp
         SwitchButton.cpp
+        Teleporter.cpp
         TimerBlock.cpp
         Train.cpp
         Turret.cpp

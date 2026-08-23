@@ -20,6 +20,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 243,
         "dimensions": [
           1,
@@ -39,11 +40,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -59,10 +55,12 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       39,
       27
@@ -78,26 +76,27 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 245,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": false,
@@ -1212,7 +1211,7 @@
         96,
         96,
         96,
-        96,
+        198,
         0,
         0,
         0,
@@ -1303,14 +1302,14 @@
         0,
         0,
         0,
+        118,
         96,
         96,
         96,
         96,
         96,
         96,
-        96,
-        96,
+        166,
         0,
         0,
         0,
@@ -1319,7 +1318,7 @@
         0,
         0,
         0,
-        96,
+        134,
         96,
         96,
         96,
@@ -1442,7 +1441,7 @@
         0,
         0,
         0,
-        0,
+        148,
         0,
         0,
         0,
@@ -1477,6 +1476,7 @@
         124,
         0,
         0,
+        119,
         0,
         0,
         0,
@@ -1490,7 +1490,9 @@
         0,
         0,
         0,
+        184,
         0,
+        119,
         0,
         0,
         0,
@@ -1534,12 +1536,14 @@
         0,
         0,
         0,
+        184,
         0,
         0,
         0,
         0,
         0,
         0,
+        183,
         0,
         0,
         0,
@@ -1548,12 +1552,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        200,
         0,
         0,
         0,

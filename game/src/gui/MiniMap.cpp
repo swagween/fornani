@@ -45,7 +45,7 @@ void MiniMap::set_markers(world::Map& map, player::Player& player) {
 		if (git != npcs.end()) {
 			auto& gobe = *git;
 			auto gobepos = gobe->get_world_position() * m_texture_scale / constants::f_cell_size + room_pos;
-			m_markers.push_back({MapIconFlags::gobe, gobepos, map.room_id});
+			m_markers.push_back({MapIconFlags::gobe, gobepos, map.room_id, {}, "gobe"});
 		}
 	}
 }
@@ -54,7 +54,7 @@ void MiniMap::add_quest_marker(QuestMarkerType type, int room_id) {
 	auto it = std::find_if(m_atlas.begin(), m_atlas.end(), [room_id](auto const& e) { return e->get_id() == room_id; });
 	if (it == m_atlas.end()) { return; }
 	auto room_pos = (*it)->get_center();
-	m_markers.push_back(MapIcon{MapIconFlags::quest, room_pos, room_id});
+	m_markers.push_back(MapIcon{MapIconFlags::quest, room_pos, room_id, {}, "quest"});
 }
 
 void MiniMap::add_pin(automa::ServiceProvider& svc, MapPinType type) {

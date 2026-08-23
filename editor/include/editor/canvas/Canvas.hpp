@@ -77,6 +77,7 @@ class Canvas {
 	Map& get_layers();
 	Layer& get_active_layer();
 	sf::Vector2<int> get_tile_coord(int lookup);
+	int& get_status() { return m_status; }
 
 	void set_property(fornani::world::MapProperties to_set) { m_attributes.properties.set(to_set); }
 	void reset_property(fornani::world::MapProperties to_reset) { m_attributes.properties.reset(to_reset); }
@@ -165,6 +166,7 @@ class Canvas {
 
 	sf::Vector2u player_start{};
 	int active_layer{};
+	int m_status{};
 
 	std::uint32_t room_id{};
 

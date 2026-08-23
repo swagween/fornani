@@ -17,7 +17,7 @@ namespace fornani::player {
 constexpr static float crawl_speed_v{0.32f};
 
 PlayerController::PlayerController(automa::ServiceProvider& svc, Player& player)
-	: m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{60}, .left_pressed{20}, .right_pressed{20}, .walljump_request{12}, .input_stall{200}}, post_slide{80}, post_wallslide{16}, post_walljump{20},
+	: m_player(&player), cooldowns{.inspect{64}, .dash_kick{134}, .movement{60}, .left_pressed{20}, .right_pressed{20}, .walljump_request{12}, .input_stall{200}}, post_slide{40}, post_wallslide{16}, post_walljump{20},
 	  wallslide_slowdown{64} {
 	key_map.insert(std::make_pair(ControllerInput::move_x, 0.f));
 	key_map.insert(std::make_pair(ControllerInput::sprint, 0.f));

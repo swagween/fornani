@@ -305,13 +305,10 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		m_player->request_flip();
 		return PA_BIND(update_rise);
 	}
-	if (change_state(AnimState::slide, get_params("slide"))) {
-		m_player->request_flip();
-		return PA_BIND(update_slide);
-	}
 	if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
 	if (m_player->p_animatable.animation.complete()) {
 		m_player->request_flip();
+		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 		if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 		if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }

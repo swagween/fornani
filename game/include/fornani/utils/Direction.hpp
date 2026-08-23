@@ -1,7 +1,9 @@
 
 #pragma once
+
 #include <SFML/Graphics.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <numbers>
 #include <string>
 
 namespace fornani {
@@ -202,5 +204,20 @@ struct CardinalDirection {
 constexpr static auto get_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) >= std::abs(from.y) ? HV::horizontal : HV::vertical; }
 
 constexpr static auto get_inverse_hv_from_vector(sf::Vector2f const from) -> HV { return std::abs(from.x) < std::abs(from.y) ? HV::horizontal : HV::vertical; }
+
+constexpr static auto get_rotation_from_directions(CardinalDirection from, CardinalDirection to) -> float {
+	constexpr auto pi = std::numbers::pi;
+	constexpr auto half_pi = pi / 2.f;
+	constexpr auto two_pi = pi * 2.f;
+
+	auto const from_angle = from.as_degrees() * pi / 180.f;
+	auto const to_angle = to.as_degrees() * pi / 180.f;
+
+	auto rotation = to_angle - from_angle;
+
+	if (rotation < 0.f) { rotation += two_pi; }
+
+	return rotation;
+}
 
 } // namespace fornani

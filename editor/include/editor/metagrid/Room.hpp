@@ -15,6 +15,7 @@ struct ServiceProvider;
 namespace pi {
 
 enum class RoomFlags : std::uint8_t { include_in_minimap, use_template, interior, day_night_shift };
+enum class RoomStatus : std::uint8_t { unfinished, prototype, production };
 
 constexpr auto spacing_v = 32.f;
 constexpr sf::Color excluded_room_color_v{120, 80, 80, 20};
@@ -28,6 +29,7 @@ class Room : public fornani::Flaggable<RoomFlags> {
 
 	void update(sf::Vector2f mouse_position, bool window_hovered) { m_highlighted = m_box.getGlobalBounds().contains(mouse_position) && !window_hovered; }
 	bool serialize(fornani::automa::ServiceProvider& svc);
+	void increment_status(fornani::automa::ServiceProvider& svc);
 
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_position(sf::Vector2i const to) { m_position = to; }
@@ -46,6 +48,7 @@ class Room : public fornani::Flaggable<RoomFlags> {
 	bool show_tags{};
 
   private:
+	RoomStatus m_status{};
 	sf::RectangleShape m_box{};
 	sf::RenderTexture m_texture{};
 	sf::Vector2i m_position{};

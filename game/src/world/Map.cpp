@@ -582,6 +582,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		}
 		renderer.flush();
 
+		for (auto t : get_entities<Teleporter>()) { t->render(win, cam, 1.f); }
 		for (auto i : get_entities<Inspectable>()) { i->render(win, cam, 1.f); }
 		// for (auto n : get_entities<NPC>()) { n->render(win, cam, 1.0); }
 	}

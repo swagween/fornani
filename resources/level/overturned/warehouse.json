@@ -28,7 +28,8 @@
         "position": [
           10,
           5
-        ]
+        ],
+        "unlit": false
       }
     ],
     "enemies": [
@@ -69,6 +70,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 400,
         "dimensions": [
           1,
@@ -88,11 +90,6 @@
     "ambience": "overturned",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -108,10 +105,12 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       32,
       16
     ],
+    "interior": true,
     "metagrid": [
       50,
       15
@@ -127,17 +126,28 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 403,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

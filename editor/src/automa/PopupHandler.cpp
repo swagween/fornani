@@ -528,6 +528,30 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		close_popup();
 	}
+	if (ImGui::BeginPopupModal("Teleporter Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static int id{};
+		static int type{};
+		ImGui::InputInt("ID", &id);
+		static char const* types[2] = {"standard", "moving"};
+
+		auto ctr{0};
+		if (ImGui::BeginCombo("Type", types[type])) {
+			for (auto const& t : types) {
+				if (ImGui::Selectable(t)) { type = ctr; }
+				++ctr;
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::Teleporter>(svc, id, type);
+			ImGui::CloseCurrentPopup();
+		}
+		close_popup();
+	}
 	if (ImGui::BeginPopupModal("Turret Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int type{};

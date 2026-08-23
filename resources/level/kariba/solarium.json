@@ -59,6 +59,7 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       48,
       32
@@ -89,6 +90,16 @@
     "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

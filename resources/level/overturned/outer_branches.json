@@ -88,6 +88,7 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       80,
       32
@@ -98,15 +99,21 @@
       12
     ],
     "minimap": true,
+    "music": null,
     "player_start": [
       0,
       0
     ],
+    "properties": {
+      "day_night_shift": null,
+      "interior": null
+    },
     "room_id": 201,
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true
+    "use_template": true,
+    "weather": null
   },
   "tile": {
     "animated": [

@@ -9,8 +9,38 @@
         "flipped": false,
         "id": 0,
         "position": [
-          11,
+          10,
+          6
+        ]
+      }
+    ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "to_service",
+        "position": [
+          10,
           11
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "output": 1,
+            "suite": [
+              [
+                {
+                  "message": "Service Elevator >"
+                }
+              ]
+            ]
+          }
         ]
       }
     ],
@@ -18,6 +48,7 @@
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 901,
         "dimensions": [
           1,
@@ -30,6 +61,23 @@
           11
         ],
         "source_id": 902
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 908,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          12,
+          11
+        ],
+        "source_id": 902
       }
     ]
   },
@@ -37,11 +85,6 @@
     "ambience": "firstwind",
     "background": "dusk",
     "biome": "nightside",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -57,13 +100,15 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 1,
     "dimensions": [
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       4,
-      18
+      19
     ],
     "minimap": true,
     "music": "none",
@@ -76,7 +121,9 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 902,
     "shader": {
@@ -88,14 +135,14 @@
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": true,
@@ -526,6 +573,8 @@
         0,
         0,
         0,
+        403,
+        403,
         0,
         0,
         0,
@@ -555,9 +604,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        24,
         0,
         0,
         0,
@@ -784,8 +831,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        437,
+        438,
         0,
         0,
         0,
@@ -1254,23 +1301,7 @@
         0,
         0,
         0,
-        481,
         2,
-        2,
-        2,
-        2,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
         2,
         2,
         2,
@@ -1283,10 +1314,26 @@
         0,
         0,
         0,
+        6,
+        6,
+        2,
+        2,
+        2,
+        2,
+        2,
+        2,
         0,
         0,
         0,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        483,
         2,
         2,
         2,

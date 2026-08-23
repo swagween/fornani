@@ -20,6 +20,7 @@
 #include <fornani/entity/SavePoint.hpp>
 #include <fornani/entity/SwitchBlock.hpp>
 #include <fornani/entity/SwitchButton.hpp>
+#include <fornani/entity/Teleporter.hpp>
 #include <fornani/entity/TimerBlock.hpp>
 #include <fornani/entity/Train.hpp>
 #include <fornani/entity/Turret.hpp>

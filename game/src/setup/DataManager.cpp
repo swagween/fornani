@@ -215,12 +215,6 @@ void DataManager::load_game_data(ResourceFinder& finder) {
 	assert(!menu.is_null());
 	background = *dj::Json::from_file((finder.resource_path() + "/data/level/background_behaviors.json").c_str());
 	assert(!background.is_null());
-	auto tooltips_data = dj::Json::from_file((finder.resource_path() + "/data/gui/tooltips.json"));
-	if (!tooltips_data) {
-		NANI_LOG_ERROR(m_logger, "Failed to load tooltips.");
-	} else {
-		tooltips = std::move(*tooltips_data);
-	}
 
 	// load marketplace
 	for (auto const& entry : npc.as_object()) {
@@ -366,6 +360,12 @@ void DataManager::load_localized_data(AppContext& ctx) {
 	if (!gui_text_result) {
 		NANI_LOG_ERROR(m_logger, "Failed to load gui text!");
 		return;
+	}
+	auto tooltips_data = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/tooltips.json").c_str());
+	if (!tooltips_data) {
+		NANI_LOG_ERROR(m_logger, "Failed to load tooltips.");
+	} else {
+		tooltips = std::move(*tooltips_data);
 	}
 	gui_text = std::move(*gui_text_result);
 	assert(!gui_text.is_null());

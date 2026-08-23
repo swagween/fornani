@@ -20,6 +20,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 237,
         "dimensions": [
           1,
@@ -36,6 +37,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 240,
         "dimensions": [
           2,
@@ -113,11 +115,6 @@
     ],
     "background": "dense_woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -133,10 +130,12 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 1,
     "dimensions": [
       48,
       16
     ],
+    "interior": false,
     "metagrid": [
       58,
       32
@@ -150,8 +149,11 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": true,
+      "interior": false,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 239,
     "shader": {
@@ -161,6 +163,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

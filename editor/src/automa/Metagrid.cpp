@@ -116,6 +116,10 @@ void Metagrid::handle_events(std::optional<sf::Event> event, sf::RenderWindow& w
 			p_view = p_services->window->get_view();
 			p_zoom_level = 1.f;
 		}
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { m_flags.set(MetagridFlags::control); }
+	}
+	if (auto const* key_pressed = event->getIf<sf::Event::KeyReleased>()) {
+		if (key_pressed->scancode == sf::Keyboard::Scancode::LControl) { m_flags.reset(MetagridFlags::control); }
 	}
 	if (auto const* scrolled = event->getIf<sf::Event::MouseWheelScrolled>()) {
 		auto zoom_rate = 0.1f;
@@ -161,7 +165,12 @@ void Metagrid::logic() {
 	auto any_room_hovered = false;
 	for (auto& r : m_rooms) {
 		r.update(last_workspace_position, io.WantCaptureMouse);
-		if (r.is_highlighted()) { any_room_hovered = true; }
+		if (r.is_highlighted()) {
+			any_room_hovered = true;
+			if (m_flags.test(MetagridFlags::control)) {
+				if (p_left_mouse.clicked) { r.increment_status(*p_services); }
+			}
+		}
 	}
 	m_tool->update(p_current_mouse_position);
 	if (p_left_mouse.clicked) {
@@ -237,7 +246,7 @@ void Metagrid::render(sf::RenderWindow& win) {
 	}
 
 	// ImGui stuff
-	bool options_popup{p_left_mouse.clicked && found_one && m_tool->is(MetagridToolType::cursor)};
+	bool options_popup{p_left_mouse.clicked && found_one && m_tool->is(MetagridToolType::cursor) && !m_flags.test(MetagridFlags::control)};
 	if (ImGui::BeginMainMenuBar()) {
 		if (ImGui::BeginMenu("File")) { ImGui::EndMenu(); }
 		if (ImGui::Button("Editor")) { p_target_state = EditorStateType::editor; }

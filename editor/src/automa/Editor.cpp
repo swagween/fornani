@@ -633,6 +633,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Vine", NULL, &entity_popup)) { popup_label = "Vine"; }
 			if (ImGui::MenuItem("Water", NULL, &entity_popup)) { popup_label = "Water"; }
 			if (ImGui::MenuItem("Train", NULL, &entity_popup)) { popup_label = "Train"; }
+			if (ImGui::MenuItem("Teleporter", NULL, &entity_popup)) { popup_label = "Teleporter"; }
 			if (ImGui::MenuItem("Cutscene Trigger", NULL, &entity_popup)) { popup_label = "Cutscene Trigger"; }
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
@@ -1154,6 +1155,11 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::RadioButton("file 3", &e, 2);
 			ImGui::SeparatorText("Info");
 			ImGui::Text("Current Room ID: %u", map.room_id);
+			ImGui::SeparatorText("Development");
+			auto& status = map.get_status();
+			ImGui::RadioButton("unfinished", &status, 0);
+			ImGui::RadioButton("prototype", &status, 1);
+			ImGui::RadioButton("production", &status, 2);
 
 			ImGui::End();
 		}

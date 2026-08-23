@@ -1,9 +1,40 @@
 {
   "entities": {
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "to_nightside",
+        "position": [
+          17,
+          13
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "output": 1,
+            "suite": [
+              [
+                {
+                  "message": "To Nightside Station >"
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 903,
         "dimensions": [
           1,
@@ -20,6 +51,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 709,
         "dimensions": [
           1,
@@ -36,6 +68,7 @@
       {
         "activate_on_contact": true,
         "already_open": false,
+        "channel": 0,
         "destination_id": 707,
         "dimensions": [
           1,
@@ -48,6 +81,63 @@
           23
         ],
         "source_id": 708
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 908,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          19,
+          13
+        ],
+        "source_id": 708
+      }
+    ],
+    "switch_blocks": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 70801,
+        "position": [
+          10,
+          12
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 70801,
+        "position": [
+          10,
+          13
+        ],
+        "type": 1
+      }
+    ],
+    "switch_buttons": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 70801,
+        "position": [
+          13,
+          13
+        ],
+        "type": 1
       }
     ]
   },
@@ -55,11 +145,6 @@
     "ambience": "firstwind",
     "background": "",
     "biome": "junkyard",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -75,10 +160,12 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 1,
     "dimensions": [
       32,
       32
     ],
+    "interior": true,
     "metagrid": [
       9,
       32
@@ -94,7 +181,9 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 708,
     "shader": {
@@ -104,6 +193,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false
@@ -490,41 +589,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        256,
-        257,
-        257,
-        258,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        240,
+        241,
+        242,
         0,
         0,
         0,
@@ -546,6 +613,17 @@
         257,
         257,
         258,
+        243,
+        240,
+        241,
+        241,
+        242,
+        288,
+        290,
+        243,
+        256,
+        257,
+        258,
         0,
         0,
         0,
@@ -557,6 +635,27 @@
         0,
         0,
         0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        256,
+        257,
+        257,
+        258,
+        275,
+        272,
+        273,
+        273,
+        274,
+        320,
+        322,
+        275,
+        272,
+        273,
+        274,
         0,
         0,
         0,
@@ -1579,7 +1678,7 @@
         0,
         0,
         0,
-        0,
+        13,
         0,
         0,
         0,
@@ -4594,9 +4693,9 @@
         10,
         10,
         10,
-        10,
-        10,
-        10,
+        482,
+        0,
+        483,
         10,
         10,
         10,
@@ -4618,17 +4717,17 @@
         0,
         0,
         0,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         10,
         10,
         10,
@@ -4650,17 +4749,17 @@
         0,
         0,
         0,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
-        10,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         10,
         10,
         10,
@@ -5580,6 +5679,7 @@
         0,
         0,
         0,
+        267,
         0,
         0,
         0,
@@ -5587,10 +5687,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        269,
+        270,
+        271,
         0,
         0,
         0,
@@ -5612,17 +5711,17 @@
         0,
         0,
         0,
+        267,
+        269,
+        270,
+        270,
+        270,
+        270,
+        270,
+        271,
+        428,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        429,
         0,
         0,
         0,

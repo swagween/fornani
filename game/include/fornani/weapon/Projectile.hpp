@@ -83,6 +83,7 @@ class Projectile : public Animatable {
 	void damage_over_time();
 	void bounce_off_surface(sf::Vector2i direction);
 	void increment_hits(int amount = 1) { variables.hits.update(amount); }
+	void set_direction(CardinalDirection to);
 
 	[[nodiscard]] auto effect_type() const -> int { return visual.effect_type; }
 	[[nodiscard]] auto get_type() const -> ProjectileType { return metadata.type; }

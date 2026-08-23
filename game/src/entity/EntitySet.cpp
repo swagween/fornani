@@ -28,6 +28,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	create_map.emplace("platforms", &create_entity<Platform>);
 	create_map.emplace("animators", &create_entity<Animator>);
 	create_map.emplace("save_point", &create_entity<SavePoint>);
+	create_map.emplace("teleporters", &create_entity<Teleporter>);
 	create_map.emplace("timer_blocks", &create_entity<TimerBlock>);
 	create_map.emplace("inspectables", &create_entity<Inspectable>);
 	create_map.emplace("ambient_props", &create_entity<AmbientProp>);

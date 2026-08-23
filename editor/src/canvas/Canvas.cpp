@@ -151,6 +151,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	dimensions.y = meta["dimensions"][1].as<int>();
 	m_player_start.x = meta["player_start"][0].as<float>();
 	m_player_start.y = meta["player_start"][1].as<float>();
+	m_status = meta["development_status"].as<int>();
 	real_dimensions = {static_cast<float>(dimensions.x) * fornani::constants::f_cell_size, static_cast<float>(dimensions.y) * fornani::constants::f_cell_size};
 	m_hazard_properties.texture_dimensions = sf::Vector2u{real_dimensions};
 	biome = svc.data.construct_biome(bstr);
@@ -221,6 +222,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 	metadata["meta"]["player_start"][0] = m_player_start.x;
 	metadata["meta"]["player_start"][1] = m_player_start.y;
 	metadata["meta"]["biome"] = biome.get_label();
+	metadata["meta"]["development_status"] = m_status;
 	if (background) { metadata["meta"]["background"] = background->get_label(); }
 	metadata["meta"]["use_template"] = m_use_template;
 	metadata["meta"]["minimap"] = m_attributes.properties.test(fornani::world::MapProperties::minimap);

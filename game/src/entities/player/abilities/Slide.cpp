@@ -19,6 +19,7 @@ Slide::Slide(automa::ServiceProvider& svc, world::Map& map, shape::Collider& col
 void Slide::update(shape::Collider& collider, PlayerController& controller) {
 	Ability::update(collider, controller);
 	m_dampen = m_duration.get_cubic_normalized();
+	m_animation_trigger.start(); // always request slide animation
 	auto prev_count = m_accumulated_speed.get_count();
 	if (collider.downhill()) {
 		m_duration.start();

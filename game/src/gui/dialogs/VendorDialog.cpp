@@ -149,12 +149,14 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		auto& destination_inventory = is_buying() ? player.catalog.inventory : vendor.value()->inventory;
 
 		std::optional<item::Item*> this_item{};
+		std::optional<player::ItemStack*> player_item_stack{};
 
 		if (is_buying()) {
 			for (auto [index, id] : std::views::enumerate(m_vendor_items_list)) {
 				auto item = source_inventory.find_item_stack(id.id);
 				if (item == nullptr) { continue; }
 				if (m_vendor_items_list[index].id == item->item->get_id() && selector.matches(index)) { this_item = &(*item->item); }
+				if (m_player_items_list[index] == item->item->get_id() && selector.matches(index)) { player_item_stack = &(*item); }
 			}
 		} else {
 			for (auto [index, id] : std::views::enumerate(m_player_items_list)) {
@@ -167,6 +169,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 		if (this_item) {
 			// set item metadata
 			auto const& item_lbl = this_item.value()->get_label();
+			auto const& current_item = svc.data.get_item_json_from_tag(item_lbl);
 			auto const item_id = this_item.value()->get_id();
 			auto f_value = static_cast<float>(this_item.value()->get_value());
 			auto upcharge = is_buying() ? f_value * p_upcharge : 0;
@@ -184,11 +187,18 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 					switch (m_item_menu->get_selection()) {
 					case 0:
 						if (is_buying() && player.wallet.get_balance() < p_sale_price) {
-							svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 							svc.soundboard.play_sound("error");
 							svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["insufficient_funds"].as_string());
 							m_item_menu.reset();
 							break;
+						}
+						if (player_item_stack) {
+							if (is_buying() && (player_item_stack.value()->quantity == current_item["stack_limit"].as<int>() || this_item.value()->is_unique())) {
+								svc.soundboard.play_sound("error");
+								svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["already_have_max_item"].as_string());
+								m_item_menu.reset();
+								break;
+							}
 						}
 						destination_inventory.add_item(svc.data.item, item_lbl);
 						player.give_drop(item::DropType::orb, exchange);

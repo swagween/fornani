@@ -42,6 +42,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
+        "channel": 0,
         "destination_id": 208,
         "dimensions": [
           1,
@@ -74,11 +75,6 @@
     "ambience": "",
     "background": "woods",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -94,10 +90,12 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       42,
       21
@@ -113,7 +111,9 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 248,
     "shader": {
@@ -123,6 +123,16 @@
     "use_template": false
   },
   "tile": {
+    "animated": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false
@@ -1212,10 +1222,10 @@
         96,
         96,
         96,
-        3,
-        3,
-        3,
-        3,
+        52,
+        52,
+        52,
+        52,
         96,
         96,
         96,
@@ -1225,7 +1235,7 @@
         96,
         96,
         96,
-        96,
+        71,
         96,
         456,
         457,
@@ -1239,8 +1249,8 @@
         96,
         96,
         96,
-        3,
-        3,
+        52,
+        52,
         96,
         96,
         0,

@@ -222,6 +222,7 @@
       "source": 0,
       "type": 0
     },
+    "development_status": 2,
     "dimensions": [
       32,
       64
@@ -251,7 +252,8 @@
       "darken_factor": 10
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [
