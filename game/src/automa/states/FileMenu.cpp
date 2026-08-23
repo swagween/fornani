@@ -80,9 +80,8 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	auto& opt = options.at(current_selection.get());
-	auto minimenu_dim{sf::Vector2f{8.f, 8.f}}; // defines the width of the nineslice, which does not include corner and edge dimensions. 8.f is enough to comfortably hold all the file options.
-	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + minimenu_dim.x * 0.5f + 3.f * spacing, 0.f}};
-	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_dim, minimenu_pos); }
+	auto minimenu_pos{opt.position + sf::Vector2f{opt.label.getLocalBounds().getCenter().x + 2.f * spacing, 0.f}};
+	if (m_file_select_menu) { m_file_select_menu->update(svc, minimenu_pos); }
 
 	player->request_animation(player::AnimState::run);
 	player->controller.autonomous_walk();

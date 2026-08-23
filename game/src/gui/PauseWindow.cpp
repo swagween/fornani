@@ -20,7 +20,7 @@ PauseWindow::PauseWindow(automa::ServiceProvider& svc, std::vector<std::string> 
 }
 
 void PauseWindow::update(automa::ServiceProvider& svc, std::optional<std::unique_ptr<Console>>& console) {
-	m_menu.update(svc, m_dimensions, svc.window->f_center_screen());
+	m_menu.update(svc, svc.window->f_center_screen() - m_menu.get_dimensions() * 0.5f);
 	if (console) { return; }
 	m_menu.handle_inputs(svc.input_system, svc.soundboard);
 	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered || (svc.input_system.is_mouse_active() && m_menu.is_mouse_hovering_option() && svc.input_system.left_clicked())) {

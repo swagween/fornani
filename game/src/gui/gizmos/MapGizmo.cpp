@@ -152,8 +152,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 
 	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
-	if (m_menu) { m_menu->update(svc, {100.f, 100.f}, svc.window->f_center_screen()); }
-	if (!is_selected()) { close_menu(); }
+	if (m_menu) { m_menu->update(svc, svc.window->f_center_screen()); }
 }
 
 void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -186,7 +185,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 			auto& text = instruction.text;
 			auto lookup = m_services->input_system.get_icon_lookup_by_action(action);
 			if (instruction.control == MapGizmoControls::pan && svc.input_system.is_keyboard()) { lookup = {5, 23}; }
-			if (instruction.control == MapGizmoControls::pan && svc.input_system.is_gamepad()) { lookup = {11, 2}; }
+			if (instruction.control == MapGizmoControls::pan && svc.input_system.is_gamepad()) { lookup = {5, 2}; }
 			text.setPosition(sf::Vector2f{20.f + previous, -svc.window->f_screen_dimensions().y + 8.f} - cam);
 			previous = text.getGlobalBounds().position.x + text.getGlobalBounds().size.x + m_legend.control_icon.get_dimensions().x * 2.f;
 			m_legend.control_icon.set_texture_rect(sf::IntRect{lookup * 18, m_legend.control_icon.get_dimensions()});
@@ -224,7 +223,6 @@ bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& 
 														 m_services->data.gui_text["pin_menu"]["boss"].as_string(), m_services->data.gui_text["map_icon_menu"]["cancel"].as_string()},
 														m_services->window->f_center_screen(),
 														*p_theme});
-								m_services->soundboard.flags.console.set(audio::Console::menu_open);
 								m_flags.general.set(MapGizmoFlags::pin_menu);
 							}
 						}
@@ -293,7 +291,6 @@ bool MapGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& 
 											m_services->window->f_center_screen(),
 											*p_theme});
 				}
-				m_services->soundboard.flags.console.set(audio::Console::menu_open);
 			}
 		}
 	}
@@ -330,11 +327,15 @@ void MapGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::P
 	m_info.reset();
 	m_minimap->set_flag(MiniMapFlags::open, false);
 	m_motherboard_path.set_section("start");
+	m_menu.reset();
+	m_flags.general.reset(MapGizmoFlags::pin_menu);
 }
 
 void MapGizmo::close_menu() {
 	m_menu.reset();
 	m_flags.general.reset(MapGizmoFlags::pin_menu);
+	m_services->input_system.cancel_input(input::DigitalAction::menu_back);
+	m_services->input_system.cancel_input(input::DigitalAction::menu_close);
 }
 
 MapPlugin::MapPlugin(ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)

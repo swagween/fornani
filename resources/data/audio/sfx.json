@@ -96,6 +96,16 @@
     "fade_out": 256
   },
   {
+    "label": "save_point",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.0,
+    "fade_in": 512,
+    "fade_out": 512,
+    "min_distance": 16.0,
+    "max_distance": 96.0
+  },
+  {
     "label": "nani_drink",
     "bus": "gameplay",
     "volume": 1.0,

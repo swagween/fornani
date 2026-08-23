@@ -224,6 +224,13 @@ void InputSystem::flush_inputs() {
 	}
 }
 
+void InputSystem::cancel_input(DigitalAction action) {
+	m_raw_digital[static_cast<size_t>(action)].held = false;
+	m_raw_digital[static_cast<size_t>(action)].active = false;
+	m_resolved_digital[static_cast<size_t>(action)].triggered = false;
+	m_resolved_digital[static_cast<size_t>(action)].held = false;
+}
+
 bool InputSystem::is_action_allowed(DigitalAction action) const { return get_action_set_from_action(action) == m_active_action_set; }
 
 bool InputSystem::is_action_allowed(AnalogAction action) const { return get_action_set_from_action(action) == m_active_action_set; }

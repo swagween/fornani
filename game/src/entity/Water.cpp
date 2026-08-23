@@ -76,6 +76,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 			if (m_replenish_cooldown.is_almost_complete()) {
 				m_replenish_cooldown.start();
 				player.heal();
+				svc.soundboard.play_sound("heal");
 			}
 			svc.soundboard.repeat_sound("regenerate");
 		}

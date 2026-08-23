@@ -114,6 +114,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	void sync_mouse(sf::RenderWindow& window);
 	void update(); // calls gather + resolve
 	void flush_inputs();
+	void cancel_input(DigitalAction action);
 
 	// --- Action set control ---
 	void set_action_set(ActionSet set);

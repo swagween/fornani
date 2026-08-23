@@ -172,7 +172,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 
 	if (port.size.x == 0.f || port.size.y == 0.f) { return; }
 
-	if (has_flag_set(MiniMapFlags::open)) {
+	if (has_flag_set(MiniMapFlags::open) && m_mode != MiniMapMode::minimal) {
 		for (auto& line : m_dotted_lines) {
 			if (!svc.data.is_room_discovered(line.source) || !svc.data.is_room_discovered(line.destination)) { continue; }
 			line.line.render(win, get_ratio(), m_physics.position, scaled_port.size);

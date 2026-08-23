@@ -138,6 +138,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 		player.give_drop(get_type(), static_cast<float>(get_value()));
 		if (get_type() == DropType::gem) {
 			svc.soundboard.flags.item.set(audio::Item::gem);
+			svc.soundboard.play_sound("reward_sparkle");
 		} else if (get_type() == DropType::heart) {
 			svc.soundboard.flags.item.set(audio::Item::heal);
 		} else if (get_rarity() == Rarity::common) {

@@ -7,6 +7,7 @@
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Circuit.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/NineSlice.hpp>
 #include <string>
 
@@ -30,7 +31,7 @@ enum class MiniMenuFlags : std::uint8_t { selected, closed, option_hovered };
 class MiniMenu {
   public:
 	MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, MenuTheme& theme);
-	void update(automa::ServiceProvider& svc, sf::Vector2f dim, sf::Vector2f at_position);
+	void update(automa::ServiceProvider& svc, sf::Vector2f at_position);
 	void render(sf::RenderWindow& win, bool bg = true);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard);
@@ -54,12 +55,12 @@ class MiniMenu {
 	MenuTheme* m_theme;
 	util::BitFlags<MiniMenuAttributes> m_attributes{};
 	util::BitFlags<MiniMenuFlags> m_flags{};
-	sf::Vector2f dimensions{};
 	int maximum{};
 	int index{};
 	util::NineSlice m_nineslice;
 	util::Circuit selection{1};
 	std::vector<automa::Option> options;
+	util::Cooldown m_open;
 
 	io::Logger m_logger{"GUI"};
 };

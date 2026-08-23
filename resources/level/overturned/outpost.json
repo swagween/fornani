@@ -1,16 +1,30 @@
 {
   "entities": {
+    "beds": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "flipped": false,
+        "id": 0,
+        "position": [
+          3,
+          11
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
         "already_open": true,
-        "destination_id": 227,
+        "channel": 0,
+        "destination_id": 235,
         "dimensions": [
           1,
           1
         ],
         "id": 0,
-        "key_id": 0,
         "locked": false,
         "position": [
           6,
@@ -56,6 +70,7 @@
       16,
       16
     ],
+    "interior": true,
     "metagrid": [
       39,
       9
@@ -71,26 +86,27 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 238,
     "shader": {
       "darken_factor": 0
     },
-    "style": 1,
-    "use_template": false,
-    "weather": null
+    "special_drop_id": 0,
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": true,

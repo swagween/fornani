@@ -86,7 +86,7 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	if (m_description) { m_description->update(svc, player, map, m_physics.position + m_path.get_position()); }
 	m_current_item_lookup = m_selector->get_current_selection(current_zone.table_dimensions.x);
 
-	if (m_item_menu) { m_item_menu->update(svc, {4.f, 4.f}, m_selector->get_position() + m_menu_offset); }
+	if (m_item_menu) { m_item_menu->update(svc, m_selector->get_position() + m_menu_offset); }
 	if (!is_selected()) { m_item_menu.reset(); }
 }
 
@@ -175,7 +175,8 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 			if (m_item_menu) { // need to wrap again because it might have been closed
 				if (m_item_menu->was_closed()) {
 					m_item_menu.reset();
-					controller.flush_inputs();
+					controller.cancel_input(input::DigitalAction::menu_back);
+					controller.cancel_input(input::DigitalAction::menu_close);
 				}
 			}
 		} else {
@@ -206,7 +207,7 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 						if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
 							auto list = item->generate_menu_list(m_services->data.gui_text["item_menu"]);
 							if (list.size() > 1 && p_theme) {
-								m_item_menu = MiniMenu(*m_services, list, m_selector->get_position() + m_menu_offset, p_theme.value());
+								m_item_menu.emplace(MiniMenu(*m_services, list, m_selector->get_position() + m_menu_offset, p_theme.value()));
 							} else {
 								soundboard.flags.menu.set(audio::Menu::select);
 							}

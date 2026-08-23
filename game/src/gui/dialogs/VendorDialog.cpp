@@ -222,7 +222,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 	}
 
 	if (m_item_menu) {
-		m_item_menu->update(svc, {1.f, 1.f}, selector.get_position());
+		m_item_menu->update(svc, selector.get_position());
 		if (m_item_menu->was_closed()) { m_item_menu = {}; }
 	}
 

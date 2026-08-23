@@ -53,7 +53,7 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, SceneContext& context, 
 	}
 
 	if (cooldowns.end.running()) { bryn->disengage(); }
-	if (bryn->get_collider().bounding_box.overlaps(player.get_collider().get_vicinity_rect())) {
+	if (player.get_collider().get_vicinity_rect().position.x - bryn->get_collider().bounding_box.get_position().x < 32.f) {
 		if (!context.console) {
 			bryn->force_engage();
 			bryn->request(NPCAnimationState::idle);
@@ -63,7 +63,11 @@ void BrynPostMiaag::update(automa::ServiceProvider& svc, SceneContext& context, 
 		bryn->walk();
 		m_failsafe.update();
 		if (m_failsafe.get_count() > 4000) {
-			bryn->set_position(player.get_collider().physics.position - sf::Vector2f{16.f, 0.f});
+			if (!context.console) {
+				bryn->force_engage();
+				bryn->request(NPCAnimationState::idle);
+				cooldowns.end.start(4);
+			}
 			m_failsafe.cancel();
 		}
 	}
