@@ -6,6 +6,7 @@
 #include <fornani/events/Subscription.hpp>
 #include <fornani/gui/console/Message.hpp>
 #include <fornani/utils/ID.hpp>
+#include <string>
 
 namespace fornani {
 
@@ -28,7 +29,7 @@ class Inspectable : public Entity {
 	void destroy_me(automa::ServiceProvider& svc);
 	void set_index(int to) { m_index = to; }
 	[[nodiscard]] auto destroyed() const -> bool { return flags.test(InspectableFlags::destroy); }
-	[[nodiscard]] auto get_label() const -> std::string { return m_key; }
+	[[nodiscard]] auto get_label() const -> std::string { return m_key + std::to_string(p_stable_id.get()); }
 
   private:
 	// entity
@@ -49,6 +50,8 @@ class Inspectable : public Entity {
 	util::BitFlags<InspectableFlags> flags{};
 	util::Cooldown m_indicator_cooldown{1300};
 	gui::OutputType m_output{};
+
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace fornani

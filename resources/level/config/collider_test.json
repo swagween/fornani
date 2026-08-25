@@ -163,14 +163,15 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       16,
       16
     ],
     "interior": false,
     "metagrid": [
-      -14,
-      25
+      29,
+      -10
     ],
     "minimap": false,
     "music": "",
@@ -192,7 +193,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

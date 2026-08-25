@@ -1,0 +1,95 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Who are you?"
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "You're a mailman?"
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Do you know someone named Spencer?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "The Ashtown Bandit?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 5]],
+          "message": "I promise I will."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "messages": ["Been years since I seen a Kariba.", "Got an early day tomorrow.", "What can I do for ya?"]
+        }
+      ],
+      [
+        {
+          "message": "Name's Eugene. Been working in Ashtown since I was about your age."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "This place has gone south ever since the Bandit showed up and started swiping people's packages."
+        }
+      ],
+      [
+        {
+          "message": "And always will be, if I got any say in the matter. I love my job."
+        },
+        {
+          "message": "We get lots of letters and packages via train from Nightside and Grand Island. Lots of folks here left their friends and folks behind to earn an honest living."
+        },
+        {
+          "message": "I came here after my mom died. It was her last wish for me to get off Grand Island and make a new life for myself."
+        },
+        {
+          "message": "At first we lived in Nightside together, but I moved here after Skycorps drafted her for some secret project. I haven't seen her since."
+        },
+        {
+          "codes": [[2, 90]],
+          "message": "Say, if you ever find yourself in Nightside, could you leave this at the post office? It'd mean a whole lot to me."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "It's the most important letter I've got, and the only one I can't deliver..."
+        }
+      ],
+      [
+        {
+          "message": "Spencer? Yeah, he's that kid who got kidnapped by the Ashtown Bandit."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "No one's seen him in months, and people are beginning to fear the worst..."
+        }
+      ],
+      [
+        {
+          "message": "Yeah. Never heard of him? You must be new in town."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Ain't a single soul around here sleeping with both eyes closed, thanks to him."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "You got a good soul. That's a rare treasure, these days."
+        }
+      ]
+    ]
+  }
+}

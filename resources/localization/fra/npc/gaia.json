@@ -1,0 +1,62 @@
+{
+  "1": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "code_list": [
+            [
+              [
+                27,
+                34, 1
+              ]
+            ],
+            [[]
+            ],
+            [[]
+            ]
+          ],
+          "messages": [
+            "I don't suppose you've seen my husband?",
+            "Nani... it's been a while, huh?",
+            "My cats are going crazy again..."
+          ]
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "code_list": [
+            [
+              [
+                5,
+                1
+              ]
+            ],
+            [
+              [
+                5,
+                0
+              ]
+            ],
+            [
+              [
+                5,
+                0
+              ]
+            ]
+          ],
+          "messages": [
+            "It's a gorgeous day today, isn't it?",
+            "I feel safe here in Woodshine, but as soon as I leave the village boundary I feel like I'm going to get eaten by a monster or something.",
+            "I really hope Sergeant Haunch doesn't come back anytime soon..."
+          ]
+        }
+      ]
+    ]
+  }
+}

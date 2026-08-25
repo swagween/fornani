@@ -1,0 +1,65 @@
+{
+  "1": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Barf! Barf!"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [19, 24],
+            [3, 5, 1, 247],
+            [13, 3, 212],
+            [13, 3, 230]
+          ],
+          "message": "(Take the dog)"
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "(Leave the dog)"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Barf! Barf!"
+        }
+      ],
+      [
+        {
+          "message": "Grrr..."
+        },
+        {
+          "message": "Barf!!"
+        },
+        {
+          "message": "Barf, barf!"
+        }
+      ],
+      [
+        {
+          "message": "(Whine)"
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Barf!"
+        }
+      ]
+    ]
+  }
+}

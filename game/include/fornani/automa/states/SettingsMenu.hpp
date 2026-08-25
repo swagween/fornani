@@ -2,10 +2,11 @@
 #pragma once
 
 #include <fornani/automa/MenuState.hpp>
+#include <fornani/gui/MiniMenu.hpp>
 
 namespace fornani::automa {
 
-enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, music, ambience, sfx, fullscreen, military_time };
+enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, music, ambience, sfx, fullscreen, military_time, language };
 enum class SettingsMenuMode : std::uint8_t { ready, adjust };
 
 class SettingsMenu final : public MenuState {
@@ -22,6 +23,8 @@ class SettingsMenu final : public MenuState {
 	[[nodiscard]] auto is(SettingsToggles toggle) const -> bool { return static_cast<SettingsToggles>(current_selection.get()) == toggle; }
 	util::BitFlags<SettingsToggles> toggles{};
 	SettingsMenuMode m_mode{};
+	std::optional<std::string_view> m_lang{};
+	std::optional<gui::MiniMenu> m_menu{};
 	struct {
 		sf::Text enabled;
 		sf::Text disabled;
@@ -33,6 +36,7 @@ class SettingsMenu final : public MenuState {
 		sf::Text gamepad;
 		sf::Text fullscreen;
 		sf::Text military_time;
+		sf::Text language;
 	} toggleables;
 
 	struct {

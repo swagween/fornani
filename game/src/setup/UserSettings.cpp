@@ -58,7 +58,7 @@ void UserSettings::set_user_settings(automa::ServiceProvider& svc, Localization&
 	svc.world_clock.set_military(m_settings["military_time"].as_bool());
 
 	localization.set_language(m_settings["language"].as_string());
-	NANI_LOG_INFO(m_logger, "Set Language to {}", localization.get_language_title().value());
+	NANI_LOG_INFO(m_logger, "Set Language to {}", localization.get_language_title());
 }
 
 void UserSettings::set_user_controls(input::InputSystem& input) {
@@ -106,6 +106,8 @@ void UserSettings::set_theme(std::string_view to) {
 	m_theme = MenuTheme{m_menu_themes[to]};
 	write_to_file(*m_finder);
 }
+
+void UserSettings::set_language(std::string_view to) { m_settings["language"] = to; }
 
 void UserSettings::write_to_file(ResourceFinder& finder) {
 	auto save_path = (finder.paths.config / fs::path{"settings.json"}).string();

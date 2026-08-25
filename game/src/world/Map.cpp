@@ -1028,7 +1028,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (!cell.is_collidable() || cell.is_ceiling_ramp() || cell.is_cage()) { continue; }
 			if (cell.is_platform() && !collide_with_platforms) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }

@@ -1,0 +1,116 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "I was held hostage by Skycorps."
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "You know, just... my usual thing."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [
+              1,
+              3
+            ]
+          ],
+          "message": "Where can I find my dad?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Ho, there! If it isn't Nani Ba come to pay us another visit. Where have you been?"
+        }
+      ],
+      [
+        {
+          "message": "No kidding! You were always up to some mischief, but that's a whole other level. Glad to see you're okay, anyhow."
+        },
+        {
+          "codes": [
+            [
+              1,
+              1
+            ],
+            [
+              13,
+              26,
+              406
+            ]
+          ],
+          "message": "Say, if you haven't paid your dad a visit yet, I'm sure he'd be thrilled to see you."
+        }
+      ],
+      [
+        {
+          "message": "Making trouble with your brother in the woods, then? Just as long as you stay out of those old ruins..."
+        },
+        {
+          "codes": [
+            [
+              1,
+              1
+            ],
+            [
+              13,
+              26,
+              406
+            ]
+          ],
+          "message": "Anyhow, if you haven't payed your dad a visit yet, I'm sure he'd be thrilled to see you."
+        }
+      ],
+      [
+        {
+          "message": "He should be in the town hall, like usual. No doubt he's worried sick about you."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "messages": [
+            "What can I do for ya?",
+            "Everything alright?"
+          ]
+        }
+      ],
+      [
+        {
+          "message": "Your brother was a real rascal growing up, lemme tell ya. He's gotten so much older now, but I still remember him as the brave boy he was."
+        }
+      ],
+      [
+        {
+          "message": "Even though you two were thirteen or so years apart, you were inseperable. Go talk to your dad about him, I'm sure he remembers much more than I do."
+        }
+      ]
+    ]
+  }
+}

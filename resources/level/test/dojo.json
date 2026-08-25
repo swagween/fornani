@@ -80,13 +80,14 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       32,
       16
     ],
     "metagrid": [
-      -11,
-      -3
+      23,
+      -13
     ],
     "minimap": false,
     "music": "",
@@ -97,6 +98,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -104,9 +106,21 @@
     "shader": {
       "darken_factor": 0
     },
-    "style": 2
+    "style": 2,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

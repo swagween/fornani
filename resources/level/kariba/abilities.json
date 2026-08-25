@@ -21,13 +21,14 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       32,
       32
     ],
     "metagrid": [
-      -11,
-      1
+      28,
+      -21
     ],
     "minimap": false,
     "music": "",
@@ -38,12 +39,25 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "timer": false
     },
     "room_id": 97,
-    "style": 5
+    "style": 5,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

@@ -44,14 +44,15 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       16,
       16
     ],
     "interior": false,
     "metagrid": [
-      -8,
-      8
+      18,
+      -16
     ],
     "minimap": false,
     "music": "",
@@ -75,6 +76,16 @@
     "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

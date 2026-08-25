@@ -1,0 +1,16 @@
+{
+  "1": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "messages": [
+            "Wanna play?",
+            "You're tall.",
+            "Bet you can't catch me!"
+          ]
+        }
+      ]
+    ]
+  }
+}

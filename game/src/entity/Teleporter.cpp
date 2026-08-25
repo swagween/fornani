@@ -4,14 +4,15 @@
 
 namespace fornani {
 
-Teleporter::Teleporter(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "teleporters"), m_sending{40}, m_receiving{40}, m_sensor{14.f} {
+Teleporter::Teleporter(fornani::automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "teleporters", fornani::constants::i_resolution_vec_padded), m_sending{40}, m_receiving{40}, m_sensor{14.f} {
 	unserialize(in);
-	p_animatable.set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
+	p_animatable.push_and_set_animation("basic", {0, 10, 12, -1});
 	repeatable = true;
 	m_sensor.set_position(get_world_position());
+	p_animatable.set_origin({2.f, 2.f});
 }
 
-Teleporter::Teleporter(fornani::automa::ServiceProvider& svc, int id, int type) : Entity(svc, "teleporters", id), m_type{type} {
+Teleporter::Teleporter(fornani::automa::ServiceProvider& svc, int id, int type, int dir) : Entity(svc, "teleporters", id), m_type{type}, m_direction{dir} {
 	p_animatable.set_texture_rect(sf::IntRect{{}, fornani::constants::i_resolution_vec});
 	repeatable = true;
 }
@@ -30,10 +31,14 @@ void Teleporter::unserialize(dj::Json const& in) {
 
 void Teleporter::expose() {
 	Entity::expose();
+	static int dir{};
 	ImGui::InputInt("Type", &m_type);
+	ImGui::InputInt("Dir", &dir);
+	m_direction = CardinalDirection{dir};
 }
 
 void Teleporter::update(automa::ServiceProvider& svc, world::Map& map, SceneContext& context, player::Player& player) {
+	p_animatable.tick();
 	m_sending.update();
 	m_receiving.update();
 	if (m_sending.running()) { return; }
@@ -43,7 +48,7 @@ void Teleporter::update(automa::ServiceProvider& svc, world::Map& map, SceneCont
 			if (map.has_entities()) {
 				for (auto& t : map.get_entities<Teleporter>()) {
 					if (t != this && t->get_id() == get_id()) {
-						proj.set_position(t->get_world_position());
+						proj.set_position(t->get_global_center());
 						proj.set_direction(t->get_direction());
 						m_sending.start();
 						t->receive();
@@ -75,6 +80,7 @@ void Teleporter::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 20});
 	Entity::render(win, cam, size);
 	p_animatable.set_position(get_world_position() - cam);
+	if (m_editor) { return; }
 	win.draw(p_animatable);
 }
 

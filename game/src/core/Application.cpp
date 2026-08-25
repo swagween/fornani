@@ -12,7 +12,7 @@ void Application::init(char** argv, DemoFlags demo_fullscreen) {
 
 void Application::launch(char** argv, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
 	NANI_LOG_INFO(m_logger, "Launching {}", m_context.version.get_title());
-	m_context.localization.set_language("eng"); // default to english
+	m_context.localization.set_language(m_context.settings.get_language_setting()); // default to english
 
 	std::unique_ptr game = std::make_unique<Game>(argv, m_window, m_context, *m_engine);
 

@@ -1,0 +1,100 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "Who are you?"
+        },
+        {
+          "codes": [
+            [
+              1,
+              2
+            ]
+          ],
+          "message": "Tell me about the village."
+        },
+        {
+          "codes": [
+            [
+              1,
+              3
+            ]
+          ],
+          "message": "Tell me about the Mother Worm."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "messages": [
+            "The Mother Worm lives in us all.",
+            "It's a great day for singing, don't you think?",
+            "Don't mind the children, they're in their own little world."
+          ]
+        }
+      ],
+      [
+        {
+          "message": "I am Amber. I've lived here in Woodshine all my life, and I don't intend to leave."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "Ever since my husband passed, I've made it my mission to give my children as peaceful a life as I can."
+        }
+      ],
+      [
+        {
+          "message": "This is the ancestral home of the Kariba. For thousands of years, our tribe have lived and gathered here in peaceful symbiosis with the Mother Worm."
+        },
+        {
+          "message": "Lately it's been declining. We've suffered numerous attacks and kidnappings from Skycorps, and our men have been disappearing or dying trying to fight back."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "I hope you find some peace here in any case."
+        }
+      ],
+      [
+        {
+          "message": "She is the one true constant in our lives."
+        },
+        {
+          "message": "The Mother is our guardian and our warmth, and it is our duty as a tribe to protect her and sing to her. Every day that Skycorps uses her to harvest precious minerals brings us closer to the end."
+        },
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "message": "There is not much I can do but sing and pray. I think it comforts her to hear our voices, however quiet."
+        }
+      ]
+    ]
+  }
+}

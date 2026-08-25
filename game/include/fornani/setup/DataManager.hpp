@@ -63,6 +63,7 @@ class DataManager final {
 	void save_seed();
 	void save_current();
 	void serialize_death();
+	void serialize_inspectables();
 	void load_localized_data(AppContext& ctx);
 	int load_progress(player::Player& player, int file, bool state_switch = false);
 	int reload_progress(player::Player& player);
@@ -158,6 +159,7 @@ class DataManager final {
 	dj::Json fader{};
 	dj::Json portal{};
 	dj::Json vehicle{};
+	dj::Json inspectables{};
 
 	// enemy
 	dj::Json enemy{};
@@ -215,8 +217,8 @@ class DataManager final {
 	std::vector<std::string> m_biomes{};
 	std::unordered_map<int, std::string> m_map_labels{};
 
+	AppContext* m_context = nullptr;
 	io::Loader* m_loader;
-
 	io::Logger m_logger{"data"};
 };
 

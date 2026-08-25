@@ -1,0 +1,581 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "You're the Ashtown Bandit?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Prison...? What did you do?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "I have an important delivery from Dr. Willett."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "He gave me this floppy disc so you could decrypt it or something. It's got blueprints to the Skycorps mother ship on it."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [1, 5],
+            [17, 3]
+          ],
+          "message": "Yeah."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "It's me. I'm Spencer."
+        }
+      ],
+      [
+        {
+          "message": "Well, it wasn't supposed to become such a big thing. I just needed a way to convince the local authorities of my disappearance."
+        },
+        {
+          "message": "Plus, it served as a pretty good distraction for them."
+        },
+        {
+          "message": "I absolutely cannot under any circumstances be found by the Grand Island Police."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "I am not cut out for prison!"
+        }
+      ],
+      [
+        {
+          "message": "It's a long story, but basically the government doesn't like when you poke around their top secret files without the right security clearance. Or any security clearance..."
+        },
+        {
+          "message": "So I had to flee here, and I've been in hiding for years now."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "But anyway, what did you need from me?"
+        }
+      ],
+      [
+        {
+          "message": "Doc! Man, it's been a while since I've heard from him. Unfortunately, I had to block all incoming communications to stay hidden, so I haven't really heard from anyone..."
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "What does he need?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "I can take a look. You have it on you?"
+        }
+      ],
+      [
+        {
+          "codes": [[23, 20]],
+          "message": "Alright, gimme a couple minutes."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "You got the blueprints?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "What? What's fake?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "So, what's on it?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "I... I don't understand..."
+        }
+      ],
+      [
+        {
+          "codes": [[8, 0]],
+          "message": "Yeah, sure."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Okay, all done."
+        }
+      ],
+      [
+        {
+          "message": "..."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "It's fake."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "The floppy. It's a fake disc. Well, it's a real disc. But it's not the disc you think it is."
+        }
+      ],
+      [
+        {
+          "message": "Nothing. It's just a bunch of random garbage."
+        },
+        {
+          "message": "And it's not like it's encrypted or anything. I'd be able to tell."
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Looks like Doc gave you a worthless piece of plastic and had you take it all the way here for nothing."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [1, 4],
+            [23, 25]
+          ],
+          "message": "Don't know what to tell you. Wanna give him a call?"
+        }
+      ]
+    ]
+  },
+  "3": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Yeah, she found me."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "Doc, your disc is a bust. I don't know what you thought was on there, but it's not on there anymore, if it ever was."
+        }
+      ]
+    ]
+  },
+  "4": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[8, 0]],
+          "message": "Hey, uh... Is Bryn there with you, by any chance?"
+        }
+      ]
+    ]
+  },
+  "5": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[8, 0]],
+          "message": "Only you would know, Doc. It's your whole scheme, after all."
+        }
+      ]
+    ]
+  },
+  "6": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "At least I don't send random girls to do my dirty work!"
+        },
+        {
+          "message": "..."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "Oh wait..."
+        }
+      ]
+    ]
+  },
+  "7": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Bryn?!"
+        },
+        {
+          "message": "Uh... hey! Haha..."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "Uhm... What's up?"
+        }
+      ]
+    ]
+  },
+  "8": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "I don't know. But this floppy disc she gave me has nothing on it."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "You wouldn't happen to know anything about that, would you?"
+        }
+      ]
+    ]
+  },
+  "9": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "So? What do we do?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "For the Skycorps mother ship? I'm not just gonna let them come and take over the island!"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "What is it?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "So...?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 5]],
+          "message": "You're losing me..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 6]],
+          "message": "..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 7]],
+          "message": "Let's do it."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 8]],
+          "message": "And sodas?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "She's so beautiful..."
+        },
+        {
+          "message": "..."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Sorry."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "What do you even need those blueprints for, anyway?"
+        }
+      ],
+      [
+        {
+          "message": "Well you're like twenty years too late for that, but whatever."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Anyhow, something just crossed my mind."
+        }
+      ],
+      [
+        {
+          "message": "I used to work with these kinds of discs a lot back at my government internship."
+        },
+        {
+          "message": "As soon as you put it into your computer, it stores an undetectable copy of the IP address."
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Well, I say 'undetectable,' but nothing is undetectable to me."
+        }
+      ],
+      [
+        {
+          "message": "Well, if there really is a floppy disc out there with those blueprints on it..."
+        },
+        {
+          "message": "This fake was probably made with some intention behind it, you know?"
+        },
+        {
+          "codes": [[1, 4]],
+          "message": "It's likely they were both plugged into the same computer at some point."
+        }
+      ],
+      [
+        {
+          "message": "What I'm saying is, if that other floppy disc is currently plugged into a running computer, I can intercept its signal."
+        },
+        {
+          "codes": [[1, 5]],
+          "message": "Then all I would have to do is cross-reference its IP address with the hidden register on this fake one."
+        }
+      ],
+      [
+        {
+          "message": "If you give me a few hours, I can potentially tell you where that other floppy disc is, if it exists."
+        },
+        {
+          "codes": [[1, 6]],
+          "message": "It's a longshot, I know, but it's all I got."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 7]],
+          "message": "Great. So, we're gonna be here a while... You wanna order a pizza?"
+        }
+      ],
+      [
+        {
+          "message": "I have some in the fridge."
+        },
+        {
+          "codes": [[8, 0]],
+          "message": "Now, let's do some digging..."
+        }
+      ]
+    ]
+  },
+  "10": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Really? Can I see?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Hoarder's Cave...?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "Did... Did you say 'Death Road?'"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 4]],
+          "message": "Nope."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 5]],
+          "message": "That's fine. I'll go find Boris and get the disc. Can you mark the location on my map?"
+        }
+      ],
+      [
+        {
+          "codes": [[8, 0]],
+          "message": "Uhm. Yeah, I'll be sure to do that."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Alright, I think I've finally got it."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "There is another floppy disc with the same IP address not too far from here actually. It's in a place called Hoarder's Cave..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Yeah, and you'd have to take Death Road to get there if you fancy the trip."
+        }
+      ],
+      [
+        {
+          "message": "Yeah, not exactly promising."
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "The computer only has one registered user, and his name is Boris Hazard. That ring any bells?"
+        }
+      ],
+      [
+        {
+          "message": "Well, I hope he's a nice guy, because you're probably going to have to meet him if you want that floppy disc."
+        },
+        {
+          "codes": [[1, 4]],
+          "message": "By the way, I'm not promising you'll find any blueprints. I'm just giving you all the info I can."
+        }
+      ],
+      [
+        {
+          "codes": [[22, 1410, 1, 5]],
+          "message": "Sure thing. I'd tell Bryn and Doc, but their line is disconnected right now."
+        },
+        {
+          "message": "If she calls you on your field telephone, tell Bryn I'd love for her to come visit someday."
+        },
+        {
+          "codes": [
+            [1, 5],
+            [13, 1311, 1, 1311]
+          ],
+          "message": "It gets pretty lonely here..."
+        }
+      ]
+    ]
+  },
+  "11": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": true,
+              "tag": "build_scorpion"
+            }
+          ],
+          "message": "Can you upgrade my guns?"
+        },
+        {
+          "codes": [[1, 4]],
+          "message": "Will you continue being the Ashtown Bandit?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Yes!"
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Let me think about it..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "Hey. Good luck getting to Hoarder's Cave."
+        }
+      ],
+      [
+        {
+          "message": "Let's see here..."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Yeah, looks like I could combine the Wasp and the Gnat to make a powerful automatic gun. You want me to go for it?"
+        }
+      ],
+      [
+        {
+          "codes": [[16, 1]],
+          "message": "Cool! I'll take that..."
+        },
+        {
+          "codes": [[16, 2]],
+          "message": "And that..."
+        },
+        {
+          "message": "Just a moment now..."
+        },
+        {
+          "codes": [
+            [15, 17],
+            [3, 28, 1, 1310]
+          ],
+          "message": "Boom. All done."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Here you go!"
+        }
+      ],
+      [
+        {
+          "message": "Sure, why not?"
+        },
+        {
+          "message": "It gives me something to do."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "I'm going crazy cooped up in this hideout all day..."
+        }
+      ]
+    ]
+  }
+}

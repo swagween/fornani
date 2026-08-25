@@ -7,18 +7,18 @@ TextManager::TextManager(ResourceFinder& finder, Localization& localization)
 	: fonts{.title = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/kongtext.ttf"}},
 			.basic = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/pixelFJ8pt1.ttf"}},
 			.config = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/Vera.ttf"}}} {
-	auto code = localization.get_language_code();
-	if (!code) { code.emplace("eng"); }
-	if (code.value() == "ara") {
+	auto const code = localization.get_language_code();
+	if (code == "ara") {
 		fonts.basic.font = sf::Font{finder.resource_path() + "/text/fonts/fs-pixel-sans-unicode-regular.ttf"};
 		fonts.title.font = sf::Font{finder.resource_path() + "/text/fonts/PixelAE-Bold.ttf"};
 	}
-	if (code.value() == "fra") {
+	if (code == "fra") {
 		fonts.basic.font = sf::Font{finder.resource_path() + "/text/fonts/fs-pixel-sans-unicode-regular.ttf"};
 		fonts.basic.glyph_size = 32;
 		fonts.basic.line_spacing = 0.8f;
 		fonts.basic.offset = {0.f, -16.f};
 	}
+	NANI_LOG_INFO(m_logger, "Loaded text for lang: {}", code);
 
 	console = *dj::Json::from_file((finder.resource_path() + localization.get_folder_string() + "/basic.json").c_str());
 	assert(!console.is_null());

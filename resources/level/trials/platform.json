@@ -95,13 +95,14 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       48,
       32
     ],
     "metagrid": [
-      -9,
-      6
+      36,
+      -13
     ],
     "minimap": false,
     "music": "dusken",
@@ -112,13 +113,25 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "timer": true
     },
     "room_id": 9901,
     "style": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

@@ -54,17 +54,19 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       32,
       16
     ],
     "metagrid": [
-      -5,
-      8
+      21,
+      -19
     ],
     "minimap": false,
     "music": "whispering_island",
     "properties": {
+      "day_night_shift": false,
       "environmental_randomness": false,
       "interior": false
     },
@@ -74,6 +76,16 @@
     "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": true,
       "reverse_obscuring": false

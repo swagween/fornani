@@ -38,7 +38,7 @@ class GameState : public UniquePolymorphic {
 	virtual void clear_back_button() {}
 	virtual std::optional<std::reference_wrapper<world::Map>> get_map() { return std::nullopt; }
 
-	SceneContext const& get_context() { return p_context; }
+	SceneContext& get_context() { return p_context; }
 
 	[[nodiscard]] auto is_ready() const -> bool { return flags.test(GameStateFlags::ready); }
 	[[nodiscard]] auto is(StateType test) const -> bool { return m_type == test; }

@@ -10,12 +10,14 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, AppCont
 														   .tutorial = options.at(static_cast<int>(SettingsToggles::tutorial)).label,
 														   .gamepad = options.at(static_cast<int>(SettingsToggles::gamepad)).label,
 														   .fullscreen = options.at(static_cast<int>(SettingsToggles::fullscreen)).label,
-														   .military_time = options.at(static_cast<int>(SettingsToggles::military_time)).label},
+														   .military_time = options.at(static_cast<int>(SettingsToggles::military_time)).label,
+														   .language = options.at(static_cast<int>(SettingsToggles::language)).label},
 	  music_label{options.at(static_cast<int>(SettingsToggles::music)).label}, ambience_label{options.at(static_cast<int>(SettingsToggles::ambience)).label}, sfx_label{options.at(static_cast<int>(SettingsToggles::sfx)).label},
 	  toggle_options{.enabled{svc.text.fonts.title.font}, .disabled{svc.text.fonts.title.font}}, sliders{.music_volume{svc.text.fonts.title.font}, .ambience_volume{svc.text.fonts.title.font}, .sfx_volume{svc.text.fonts.title.font}} {
 	m_parent_menu = MenuType::options;
 	toggle_options.enabled.setString(svc.data.gui_text["settings"]["enabled"].as_string());
 	toggle_options.disabled.setString(svc.data.gui_text["settings"]["disabled"].as_string());
+	m_lang = ctx.localization.get_language_title();
 
 	options.at(static_cast<int>(SettingsToggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
@@ -25,6 +27,7 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, AppCont
 	options.at(static_cast<int>(SettingsToggles::sfx)).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.get_volume() * 100.f)) + "%");
 	options.at(static_cast<int>(SettingsToggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	if (m_lang) { options.at(static_cast<int>(SettingsToggles::language)).label.setString(toggleables.language.getString() + *m_lang); }
 }
 
 void SettingsMenu::on_exit() {
@@ -33,9 +36,24 @@ void SettingsMenu::on_exit() {
 }
 
 void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-	m_input_authorized = !adjust_mode() && !p_context.console;
+	m_input_authorized = !adjust_mode() && !p_context.console && !m_menu;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
+
 	if (!p_context.console) {
+		if (m_menu) { m_menu->handle_inputs(svc.input_system, svc.soundboard); }
+		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
+			if (m_menu) { m_menu.reset(); }
+		}
+		if (was_selected(svc.input_system, true)) {
+			if (m_menu) {
+				auto selected_lang = 0;
+				for (auto const& lang : p_app_context->localization.get_available_languages()) {
+					auto tag = p_app_context->localization.get_tag_from_index(lang.index);
+					if (lang.index == m_menu->get_selection()) { svc.events.set_langauge_event.dispatch(*p_app_context, tag); }
+				}
+				m_menu.reset();
+			}
+		}
 		if (svc.input_system.menu_move(input::MoveDirection::down)) {
 			if (adjust_mode()) { svc.soundboard.flags.menu.set(audio::Menu::backward_switch); }
 			m_mode = SettingsMenuMode::ready;
@@ -64,6 +82,9 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 				p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "fullscreen", gui::OutputType::gradual);
 				break;
 			case static_cast<int>(SettingsToggles::military_time): svc.world_clock.toggle_military_time(); break;
+			case static_cast<int>(SettingsToggles::language):
+				m_menu.emplace(svc, p_app_context->localization.get_copy_of_available_languages(), options.at(static_cast<int>(SettingsToggles::language)).label.getGlobalBounds().position, p_app_context->settings.get_theme());
+				break;
 			}
 			options.at(static_cast<int>(SettingsToggles::autosprint))
 				.label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
@@ -71,12 +92,14 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.input_system.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 			options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+			if (m_lang) { options.at(static_cast<int>(SettingsToggles::language)).label.setString(toggleables.language.getString() + *m_lang); }
 		} else if (was_selected(svc.input_system) && adjust_mode()) {
 			m_mode = SettingsMenuMode::ready;
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 		}
 	}
 	MenuState::tick_update(svc, engine);
+	if (m_menu) { m_menu->update(svc, options.at(static_cast<int>(SettingsToggles::language)).label.getGlobalBounds().position); }
 	for (auto& option : options) {
 		option.update(current_selection.get());
 		option.label.setLetterSpacing(1.2f);
@@ -116,6 +139,7 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		p_context.console.value()->render(win);
 		p_context.console.value()->write(win, true);
 	}
+	if (m_menu) { m_menu->render(win); }
 }
 
 } // namespace fornani::automa

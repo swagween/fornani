@@ -174,20 +174,37 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       16,
       16
     ],
     "metagrid": [
-      -8,
-      0
+      22,
+      -17
     ],
     "minimap": false,
     "music": "dusken",
+    "properties": {
+      "day_night_shift": false,
+      "interior": false
+    },
     "room_id": 4200,
-    "style": 0
+    "style": 0,
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

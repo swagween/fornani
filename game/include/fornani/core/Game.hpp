@@ -5,6 +5,7 @@
 #include <fornani/automa/StateManager.hpp>
 #include <fornani/core/FrameTracker.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/events/Subscription.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/LoadingScreen.hpp>
@@ -14,6 +15,7 @@
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <filesystem>
+#include <string_view>
 #include <imgui-SFML.h>
 
 namespace fornani {
@@ -28,6 +30,7 @@ class Game final {
 	void set_file(int to) { services.editor_settings.save_file = to; }
 	void shutdown();
 	void draw_wallpaper();
+	void set_language(AppContext& context, std::string_view label);
 
 	util::BitFlags<GameFlags> flags{};
 
@@ -56,6 +59,7 @@ class Game final {
 		int total{};
 	} rng_test{};
 
+	std::shared_ptr<Slot const> m_slot{std::make_shared<Slot const>()};
 	std::optional<player::Player> player{};
 	std::optional<automa::StateManager> game_state{};
 	std::optional<std::unique_ptr<automa::StateManager>> m_game_menu{};

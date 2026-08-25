@@ -532,7 +532,9 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		m_is_open = true;
 		static int id{};
 		static int type{};
-		ImGui::InputInt("ID", &id);
+		static int dir{};
+		ImGui::InputInt("ID", &dir);
+		ImGui::InputInt("Direction", &id);
 		static char const* types[2] = {"standard", "moving"};
 
 		auto ctr{0};
@@ -547,7 +549,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		if (ImGui::Button("Create")) {
 			m_is_open = false;
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Teleporter>(svc, id, type);
+			tool->current_entity = std::make_unique<fornani::Teleporter>(svc, id, type, dir);
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

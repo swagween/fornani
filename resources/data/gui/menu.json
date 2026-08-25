@@ -26,7 +26,7 @@
       "reset to default"
     ],
     "controls_menu": ["< menu >", "left", "right", "up", "down", "select", "back", "tab_left", "tab_right", "close", "gamepad settings", "reset to default"],
-    "settings": ["auto-sprint: ", "tutorial: ", "gamepad input: ", "music volume: ", "ambience volume: ", "sfx volume: ", "fullscreen: ", "military time: "],
+    "settings": ["auto-sprint: ", "tutorial: ", "gamepad input: ", "music volume: ", "ambience volume: ", "sfx volume: ", "fullscreen: ", "military time: ", "language: "],
     "credits": ["creator", "dev", "lib", "design", "visuals", "sound", "playtesters", "thanks"],
     "themes": ["classic", "night"]
   },

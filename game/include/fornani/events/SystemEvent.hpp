@@ -5,7 +5,7 @@
 #include <string_view>
 
 namespace fornani {
-
+struct AppContext;
 namespace automa {
 struct ServiceProvider;
 }
@@ -15,5 +15,6 @@ struct NewFileEvent : Event<int> {};
 struct ReloadSaveEvent : Event<automa::ServiceProvider&, int> {};
 struct ReturnToMainMenuEvent : Event<> {};
 struct PauseEvent : Event<automa::ServiceProvider&> {};
+struct SetLangaugeEvent : Event<AppContext&, std::string_view> {};
 
 } // namespace fornani

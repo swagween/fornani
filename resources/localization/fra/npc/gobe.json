@@ -1,0 +1,282 @@
+{
+  "1": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I'm just looking for a place to rest."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "I'm looking for my older brother, Loth."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [1, 3],
+            [13, 3, 212]
+          ],
+          "message": "Sure thing!"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "..."
+        },
+        {
+          "codes": [[4, 0]],
+          "message": "Huh?"
+        },
+        {
+          "message": "Oh! A lost girl wanders my way, hmm?"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "It's not every day I see another friendly face around here. What's your story?"
+        }
+      ],
+      [
+        {
+          "message": "Well, you're welcome to this here farmhouse. It's been abandoned ever since Old Mimic passed, and so I've been stopping by every now and again to do some upkeep."
+        },
+        {
+          "message": "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
+        }
+      ],
+      [
+        {
+          "message": "A lost brother, eh? Well, my heart aches to hear that."
+        },
+        {
+          "message": "You know, there are others of your kind at Woodshine, east of here. It seems like it'd be a good place to start."
+        },
+        {
+          "message": "Anyhow, I could really use some help. My dog got spooked by some creature and darted off into the woods."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Could you go find him for me? The past weeks of hard travel have left me a bit tired."
+        }
+      ],
+      [
+        {
+          "codes": [[2, 24]],
+          "message": "Now, that's awful kind. Here, take this. You'll need it if you want to properly wrangle him up."
+        },
+        {
+          "codes": [[13, 24, 247]],
+          "message": "He shouldn't be too far off. I know he loves running down big slopes, if that's any help."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Not yet..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [1, 0],
+            [4, 0]
+          ],
+          "message": "So? Have you found my dog yet? I'm starting to get worried..."
+        }
+      ],
+      [
+        {
+          "message": "Well, if it's any help, he tends to run down slopes when he's afraid."
+        },
+        {
+          "message": "Good luck!"
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [1, 1],
+            [19, 24],
+            [3, 5, 1, 212]
+          ],
+          "message": "Hey, don't mention it!"
+        }
+      ],
+      [
+        {
+          "codes": [[20, 3]],
+          "message": "Sure, let's trade!"
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Maybe later."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Oh, Justin! My precious thing!"
+        },
+        {
+          "message": "Well, you've really gone and done it, haven't you?"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "I say, I was beginning to fear for this lil' guy's life. I owe you a great debt, friend!"
+        }
+      ],
+      [
+        {
+          "message": "Well, I've got to thank you somehow..."
+        },
+        {
+          "codes": [[13, 3, 212]],
+          "message": "Say, I'd be happy to trade some stuff with you. Normally I don't vend outside of Ashtown, but for you I'll make an exception!"
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "What do you say?"
+        }
+      ],
+      [
+        {
+          "message": "Alright then, I'll see ya around!"
+        }
+      ]
+    ]
+  },
+  "4": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I'd like to trade things with you."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Who are you?"
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Where are we?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [1, 0],
+            [4, 0]
+          ],
+          "messages": ["Yes?", "Good to see you again!", "Lost in the woods?", "Sometimes this place gives me the creeps..."]
+        }
+      ],
+      [
+        {
+          "codes": [[20, 3]],
+          "messages": ["Sure thing! Here's what I've picked up over the last few weeks...", "Here's what I got!"]
+        }
+      ],
+      [
+        {
+          "message": "I'm a surveyor of this land, and I've been exploring its farthest and darkest reaches for as long as I can remember."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Justin and I tend to find stuff along the way and pick it up, so if you're ever in the market for random junk, I'm your guy!"
+        }
+      ],
+      [
+        {
+          "message": "Well, the Overturned Forest, if ya ain't talkin' specifics. At least, that's what we Grand-Islanders call it."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "But shouldn't you know, anyhow? You're a Kariba after all, and, last I checked, all your kind come from here."
+        }
+      ]
+    ]
+  },
+  "5": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "I'd like to trade things with you."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "What are you doing here?"
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "Where do you live?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [1, 0],
+            [4, 0]
+          ],
+          "messages": ["Oh, hey! Fancy seeing you here.", "Good to see you again!", "Nani! What can I do for ya?"]
+        }
+      ],
+      [
+        {
+          "codes": [[20, 3]],
+          "messages": ["Take a looks-y!", "Check it out!"]
+        }
+      ],
+      [
+        {
+          "message": "Well, I gots to eat, same as anybody else. And I am not the farmer that Old Mimic was, so occasionally I swing by Woodshine to pick up some supplies."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Plus, who can resist a drink at the Chafed Worm?"
+        }
+      ],
+      [
+        {
+          "message": "Everywhere and nowhere. I learned long ago that I'm not meant to settle down in any one place for too long, so I camp here and there on the roads or hunker down at the inn for a few nights."
+        },
+        {
+          "message": "It's the life I chose, really. And as long as I have Justin by my side, I'm happy as a clam!"
+        },
+        {
+          "codes": [[2, 80]],
+          "message": "You know what, since I can be tricky to pin down, let me give you this."
+        },
+        {
+          "message": "Hook that in to your little map gizmo there, and you should be able to see where I am on any given day."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Hope you find it useful!"
+        }
+      ]
+    ]
+  }
+}

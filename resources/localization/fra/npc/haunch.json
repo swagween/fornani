@@ -1,0 +1,141 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Who are you?"
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Look, I don't want any trouble..."
+        },
+        {
+          "codes": [[1, 3]],
+          "message": "How long are you going to keep talking?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Well, look what we got here!"
+        },
+        {
+          "message": "Looks like our intel was spot-on, boys. The mischievous Kariba walked straight into our hands."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "You ain't as smart as I was expecting, missy!"
+        }
+      ],
+      [
+        {
+          "message": "I'm Sergeant Haunch of Lady Nimbus's Harpoon Squad."
+        },
+        {
+          "message": "You know, I'm surprised you haven't heard of me considering I killed half your tribe."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Anyhow, makes no difference to me. Your time makin' trouble for Skycorps has come to an end."
+        }
+      ],
+      [
+        {
+          "message": "Then you came to the wrong place at the wrong time, I regret to say."
+        },
+        {
+          "message": "I've had no trouble gunning down your people in the past, so I don't see what makes you any different."
+        },
+        {
+          "codes": [
+            [23, 10],
+            [12, 0]
+          ],
+          "message": "I'm sure you'll bleed just like the rest of 'em."
+        }
+      ],
+      [
+        {
+          "message": "Hah! Got a little bite to you, then, eh?"
+        },
+        {
+          "message": "Don't worry, I don't discriminate. I'll give you the same treatment I gave the rest of your pathetic village."
+        },
+        {
+          "codes": [
+            [23, 10],
+            [12, 0]
+          ],
+          "message": "Time to die!"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Well, well, well."
+        },
+        {
+          "codes": [[23, 10]],
+          "message": "Look who's back!"
+        },
+        {
+          "codes": [[12, 0]],
+          "messages": [
+            "What's the matter, couldn't take the heat?",
+            "Don't know when to give up, do you?",
+            "You ain't got an ounce more fight in you than I expected."
+          ]
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "That's it...!"
+        },
+        {
+          "message": "You're dead meat, kid!"
+        }
+      ]
+    ]
+  },
+  "4": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "If you wanna kill me, I'm takin' you with me!"
+        }
+      ]
+    ]
+  },
+  "5": {
+    "output": 3,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [5, 1],
+            [23, 11]
+          ],
+          "message": "...AAAAHHHHHHHHH!"
+        }
+      ]
+    ]
+  }
+}

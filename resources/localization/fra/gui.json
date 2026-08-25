@@ -1,0 +1,91 @@
+{
+  "vendor": {
+    "buy": "BUY",
+    "sell": "SELL",
+    "price": "PRICE:",
+    "value": "VALUE:"
+  },
+  "item_menu": {
+    "equip": "equip",
+    "unequip": "unequip",
+    "read": "read",
+    "use": "use",
+    "cancel": "cancel"
+  },
+  "exchange_menu": {
+    "buy": "buy",
+    "sell": "sell",
+    "build": "build",
+    "cancel": "cancel"
+  },
+  "minimap_menu": {
+    "pin": "pin",
+    "center": "center",
+    "mode": "mode",
+    "cancel": "cancel"
+  },
+  "map_icon_menu": {
+    "remove": "remove",
+    "cancel": "cancel"
+  },
+  "pin_menu": {
+    "treasure": "treasure",
+    "landmark": "landmark",
+    "boss": "boss",
+    "cancel": "cancel"
+  },
+  "minimap_legend": {
+    "pan": "pan:",
+    "zoom_in": "zoom in:",
+    "zoom_out": "zoom out:",
+    "menu": "menu:"
+  },
+  "notifications": {
+    "equipped": "Equipped ",
+    "unequipped": "Unequipped ",
+    "popped_from_loadout": "Removed from loadout: ",
+    "pushed_to_loadout": "Added to loadout: ",
+    "popped_from_hotbar": "Removed from hotbar: ",
+    "pushed_to_hotbar": "Added to hotbar: ",
+    "removed": "Removed ",
+    "slots_full": "Equipment slots full!",
+    "swapped": "Swapped equipped items.",
+    "map_marker": "Map marker added to minimap.",
+    "inspect_hint": "Press      to inspect.",
+    "shoot_hint": "Press      to shoot.",
+    "cannot_build": "You do not have the necessary ingredients to build that item.",
+    "already_have_max_item": "You already have the maximum amount of that item.",
+    "insufficient_funds": "You cannot afford that item.",
+    "journal_updated": "Journal updated.",
+    "quest_completed": "Quest completed: "
+  },
+  "locations": {
+    "firstwind": "- Firstwind Airship - ",
+    "greatwing": "- Greatwing Airship - "
+  },
+  "menu": { "back_button": "< back", "completed": "<completed>" },
+  "journal": { "quest": "<Journal>", "bestiary": "<Bestiary>" },
+  "file_menu": {
+    "play": "jouer",
+    "stats": "statistiques",
+    "delete": "supprimer"
+  },
+  "pause_menu": {
+    "resume": "continuer",
+    "controls": "commandes",
+    "settings": "paramètres",
+    "quit": "quitter",
+    "restart": "redémarrer"
+  },
+  "settings": {
+    "enabled": "ON",
+    "disabled": "OFF"
+  },
+  "dialog": {
+    "enter_start": "Press ",
+    "enter_end": " to continue."
+  },
+  "bestiary": {
+    "fallen": "fallen: "
+  }
+}

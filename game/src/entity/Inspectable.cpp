@@ -9,7 +9,7 @@
 
 namespace fornani {
 
-Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "inspectables") {
+Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "inspectables"), m_services{&svc} {
 	unserialize(in);
 	if (in["activate_on_contact"].as_bool()) { attributes.set(InspectableAttributes::activate_on_contact); }
 	if (in["instant"].as_bool()) { attributes.set(InspectableAttributes::instant); }
@@ -20,7 +20,7 @@ Inspectable::Inspectable(automa::ServiceProvider& svc, dj::Json const& in) : Ent
 }
 
 Inspectable::Inspectable(automa::ServiceProvider& svc, std::vector<std::vector<gui::BasicMessage>> suite, std::vector<std::vector<gui::BasicMessage>> responses, bool activate_on_contact, std::string key, int alternates, bool instant)
-	: Entity(svc, "inspectables", 0, {1, 1}), m_activate_on_contact{activate_on_contact}, m_key{key}, m_alternates{alternates}, m_instant{instant}, m_suites{suite}, m_responses{responses} {
+	: Entity(svc, "inspectables", 0, {1, 1}), m_activate_on_contact{activate_on_contact}, m_key{key}, m_alternates{alternates}, m_instant{instant}, m_suites{suite}, m_responses{responses}, m_services{&svc} {
 	m_textured = false;
 }
 
@@ -29,12 +29,15 @@ std::unique_ptr<Entity> Inspectable::clone() const { return std::make_unique<Ins
 void Inspectable::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	auto const& wipe = dj::Json::empty_array();
+	auto& dout = m_services->data.inspectables;
 	out["activate_on_contact"] = m_activate_on_contact;
 	out["instant"] = m_instant;
 	out["key"] = m_key;
 	out["alternates"] = m_alternates;
 	out["series"] = dj::Json::empty_array();
-	for (auto i{0}; i < 1; ++i) {
+	if (dout[get_label()].is_null()) { dout[get_label()] = dj::Json::empty_object(); }
+	dout[get_label()]["series"] = dj::Json::empty_array();
+	for (auto i{0}; i < 2; ++i) {
 		auto next = dj::Json{};
 		next["hide_portrait"] = true;
 		next["output"] = m_instant ? 1 : static_cast<int>(m_output);
@@ -57,13 +60,15 @@ void Inspectable::serialize(dj::Json& out) {
 				next[tag].push_back(out_set);
 			}
 		}
-		out["series"].push_back(next);
-		NANI_LOG_DEBUG(m_logger, "Serialized a series entry.");
+		i == 0 ? out["series"].push_back(next) : dout[get_label()]["series"].push_back(next);
 	}
+	m_services->data.serialize_inspectables();
 }
 
 void Inspectable::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
+	p_stable_id = p_stable_id.from(89645, get_grid_position().x, get_grid_position().y);
+
 	auto const& wipe = dj::Json::empty_array();
 	m_activate_on_contact = in["activate_on_contact"].as_bool();
 	m_instant = in["instant"].as_bool();
@@ -71,7 +76,17 @@ void Inspectable::unserialize(dj::Json const& in) {
 	m_alternates = in["alternates"].as<int>();
 	m_suites.clear();
 	m_responses.clear();
-	for (auto const& entry : in["series"].as_array()) {
+
+	// try to read localized version of inspectable
+	// and default to the map one if it doesn't exist
+	auto const& lin = m_services->data.inspectables[get_label()];
+	if (lin.is_null()) {
+		NANI_LOG_WARN(m_logger, "Localized inspectable data from {} was null; loading english text from map json instead...", get_label());
+	} else {
+		NANI_LOG_INFO(m_logger, "Successfully loaded localized inspectable data!");
+	}
+	auto& source = lin.is_null() ? in : lin;
+	for (auto const& entry : source["series"].as_array()) {
 		for (auto j = 0; j < 2; ++j) {
 			auto& to_set = j == 0 ? m_suites : m_responses;
 			auto tag = j == 0 ? "suite" : "responses";

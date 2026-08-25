@@ -476,6 +476,18 @@
     },
     {
       "folder": "nightside",
+      "label": "crane.json",
+      "region": "nightside",
+      "room_id": 915
+    },
+    {
+      "folder": "nightside",
+      "label": "lower_plant.json",
+      "region": "nightside",
+      "room_id": 909
+    },
+    {
+      "folder": "nightside",
       "label": "obstacle_course.json",
       "region": "nightside",
       "room_id": 904
@@ -494,9 +506,21 @@
     },
     {
       "folder": "nightside",
+      "label": "power_plant.json",
+      "region": "nightside",
+      "room_id": 910
+    },
+    {
+      "folder": "nightside",
       "label": "service_elevator.json",
       "region": "nightside",
       "room_id": 908
+    },
+    {
+      "folder": "nightside",
+      "label": "shaft.json",
+      "region": "nightside",
+      "room_id": 911
     },
     {
       "folder": "nightside",

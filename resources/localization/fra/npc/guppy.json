@@ -1,0 +1,38 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              1
+            ]
+          ],
+          "message": "(Pet the cat)"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [
+              1,
+              0
+            ]
+          ],
+          "messages": [
+            "Mreow...",
+            "Rrrrwr!"
+          ]
+        }
+      ],
+      [
+        {
+          "message": "Purr..."
+        }
+      ]
+    ]
+  }
+}

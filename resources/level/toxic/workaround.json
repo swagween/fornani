@@ -52,14 +52,15 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       16,
       16
     ],
     "interior": false,
     "metagrid": [
-      -9,
-      11
+      21,
+      -14
     ],
     "minimap": false,
     "music": "",

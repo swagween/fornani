@@ -13,7 +13,7 @@ enum class TeleporterFlags {};
 class Teleporter : public Entity {
   public:
 	Teleporter(automa::ServiceProvider& svc, dj::Json const& in);
-	Teleporter(automa::ServiceProvider& svc, int id, int type);
+	Teleporter(automa::ServiceProvider& svc, int id, int type, int dir);
 	std::unique_ptr<Entity> clone() const override;
 	void serialize(dj::Json& out) override;
 	void unserialize(dj::Json const& in) override;

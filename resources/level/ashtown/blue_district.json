@@ -19,14 +19,15 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       48,
       32
     ],
     "interior": false,
     "metagrid": [
-      -7,
-      14
+      15,
+      -14
     ],
     "minimap": false,
     "music": "i_dream_of_sky",

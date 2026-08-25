@@ -22,6 +22,9 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 	app_settings = *dj::Json::from_file((m_services.finder.paths.editor / "data/config/settings.json").string().c_str());
 	assert(!app_settings.is_null());
 
+	context.localization.set_language("eng"); // default to english
+	m_services.data.load_localized_data(context);
+
 	// create window
 	window.create("Pioneer", app_settings["fullscreen"].as_bool(), {1920, 1080});
 	window.set();
@@ -61,7 +64,6 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 }
 
 void EditorApplication::run(char** argv) {
-	context.localization.set_language("eng"); // default to english
 	while (window.get().isOpen()) {
 		while (std::optional const event = window.get().pollEvent()) {
 			ImGui::SFML::ProcessEvent(window.get(), *event);

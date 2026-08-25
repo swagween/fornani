@@ -1,0 +1,41 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "What have you got for sale?"
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 10,
+              "strict": false,
+              "tag": "ashtown_bandit"
+            }
+          ],
+          "codes": [[1, 1]],
+          "message": "I need to tell you a white lie."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "You got business for me?"
+        }
+      ],
+      [
+        {
+          "codes": [[9, 130302]],
+          "message": "Just a moment..."
+        },
+        {
+          "message": "Boom! All set."
+        }
+      ],
+      [{ "codes": [[20, 46]], "message": "Check it out." }]
+    ]
+  }
+}

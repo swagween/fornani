@@ -251,5 +251,20 @@
       [0, 0],
       [32, 0]
     ]
+  },
+  "slippery_side_to_side": {
+    "sticky": false,
+    "ease": true,
+    "loop": true,
+    "slide": true,
+    "hit_activated": false,
+    "repeating": false,
+    "player_activated": false,
+    "player_controlled": false,
+    "speed": 0.0005,
+    "track": [
+      [0, 0],
+      [32, 0]
+    ]
   }
 }

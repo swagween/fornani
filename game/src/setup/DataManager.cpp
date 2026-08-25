@@ -355,17 +355,29 @@ void DataManager::serialize_death() {
 	save_current();
 }
 
+void DataManager::serialize_inspectables() {
+	if (m_context == nullptr) { NANI_LOG_ERROR(m_logger, "Context was nullptr in DataManager!"); }
+	if (!inspectables.to_file((m_services->finder.resource_path() + m_context->localization.get_folder_string() + "/inspectables.json"))) { NANI_LOG_ERROR(m_logger, "Failed to serialize localized inspectables!"); }
+}
+
 void DataManager::load_localized_data(AppContext& ctx) {
-	auto gui_text_result = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/gui.json").c_str());
+	m_context = &ctx;
+	auto gui_text_result = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/gui.json"));
 	if (!gui_text_result) {
 		NANI_LOG_ERROR(m_logger, "Failed to load gui text!");
 		return;
 	}
-	auto tooltips_data = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/tooltips.json").c_str());
+	auto tooltips_data = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/tooltips.json"));
 	if (!tooltips_data) {
 		NANI_LOG_ERROR(m_logger, "Failed to load tooltips.");
 	} else {
 		tooltips = std::move(*tooltips_data);
+	}
+	auto inspectables_data = dj::Json::from_file((m_services->finder.resource_path() + ctx.localization.get_folder_string() + "/inspectables.json"));
+	if (!inspectables_data) {
+		NANI_LOG_ERROR(m_logger, "Failed to load inspectables.");
+	} else {
+		inspectables = std::move(*inspectables_data);
 	}
 	gui_text = std::move(*gui_text_result);
 	assert(!gui_text.is_null());

@@ -1,0 +1,404 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "The way up is closed off."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Yes! But only one of them..."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[4, 5]],
+          "message": "...Nani?"
+        },
+        {
+          "message": "Do you come in, Nani?"
+        },
+        {
+          "message": "It's me, Bryn."
+        },
+        {
+          "codes": [[5, 1]],
+          "message": "I was finally able to detect your field telephone, but even now the connection is barely stable."
+        },
+        {
+          "codes": [
+            [1, 0],
+            [5, 0],
+            [23, 1]
+          ],
+          "message": "What do you see?"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [4, 20],
+            [5, 1]
+          ],
+          "message": "Alright, looks like Nightside's old security systems are still in place."
+        },
+        {
+          "codes": [[13, 34, 903]],
+          "message": "Let me try something here..."
+        },
+        {
+          "codes": [
+            [23, 2],
+            [5, 0]
+          ],
+          "message": "...There!"
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "Okay, did that open up any paths?"
+        }
+      ],
+      [
+        {
+          "codes": [[3, 15, 1, 903]],
+          "message": "Dang, alright..."
+        },
+        {
+          "codes": [
+            [5, 1],
+            [23, 4]
+          ],
+          "message": "See if you can head up to that terminal and tell me if it displays any transmission code or something like that."
+        },
+        {
+          "codes": [],
+          "message": "I might be able to intercept its signal and override the block."
+        },
+        {
+          "codes": [
+            [23, 5],
+            [5, 0]
+          ],
+          "message": "I'll be waiting for your call. Good luck!"
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "The tracks are blocked off."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Go ahead and unblock the way. I'll investigate."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[4, 5]],
+          "message": "Hello?"
+        },
+        {
+          "message": "It's me again."
+        },
+        {
+          "codes": [[5, 1]],
+          "message": "I can barely see Nightside Station from here, but I'm guessing you've made it there since I'm getting a strong radar reading from your field telephone's signature."
+        },
+        {
+          "codes": [
+            [1, 0],
+            [5, 0],
+            [23, 1]
+          ],
+          "message": "Are you able to take the train? I see some construction on the tracks."
+        }
+      ],
+      [
+        {
+          "codes": [[4, 20]],
+          "message": "Hmph."
+        },
+        {
+          "message": "I was kinda worried that might be the case. I can override the block from here, but..."
+        },
+        {
+          "message": "I don't know. I fear that your chances of taking any trains to Ashtown might be very low."
+        },
+        {
+          "message": "There's lots of lights and Skycorps security vehicles all over the place down there, so they might be repairing the tracks or something."
+        },
+        {
+          "codes": [
+            [5, 1],
+            [1, 1]
+          ],
+          "message": "You made it this far. I guess it can't hurt to try."
+        }
+      ],
+      [
+        {
+          "codes": [[5, 0]],
+          "message": "Roger that."
+        },
+        {
+          "message": "Just a second..."
+        },
+        {
+          "codes": [[23, 2]],
+          "message": "There. Should be good to go."
+        },
+        {
+          "codes": [[5, 0]],
+          "message": "Proceed at your own risk, Nani. I get the sense that something fishy might be going on."
+        },
+        {
+          "codes": [[23, 4]],
+          "message": "Good luck, Nani. Over and out!"
+        }
+      ]
+    ]
+  },
+  "3": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Yeah. It's 'AC-7738'."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Looks like it worked!"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [1, 0],
+            [4, 16]
+          ],
+          "message": "Hey Nani, me again. You got the code?"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [4, 20],
+            [23, 8],
+            [5, 1]
+          ],
+          "message": "Awesome. Let me just..."
+        },
+        {
+          "codes": [],
+          "message": "...This might take a moment. The signal is really weak from up here."
+        },
+        {
+          "codes": [
+            [1, 1],
+            [5, 0],
+            [23, 9]
+          ],
+          "message": "Boom! Any luck?"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [5, 0],
+            [4, 22],
+            [23, 11]
+          ],
+          "message": "Great! That should clear the way for you to get to Nightside Station."
+        },
+        {
+          "codes": [
+            [5, 1],
+            [4, 8]
+          ],
+          "message": "But please... Be careful. I see some Skycorps security vehicles near where you are, so I hope they haven't somehow tracked you down..."
+        },
+        {
+          "codes": [[5, 0]],
+          "message": "There should be another callbox at the station. Give me a ring when you get there."
+        },
+        {
+          "codes": [[23, 12]],
+          "message": "Over and out!"
+        }
+      ]
+    ]
+  },
+  "4": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [4, 4],
+            [5, 3],
+            [23, 7]
+          ],
+          "message": "Nani! Get in!"
+        }
+      ]
+    ]
+  },
+  "5": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [5, 3],
+            [23, 9]
+          ],
+          "message": "Hang on tight!"
+        }
+      ]
+    ]
+  },
+  "6": {
+    "output": 2,
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "You saved my life..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 2]],
+          "message": "Pretty smooth for a first flight."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 3]],
+          "message": "I think Skycorps must have been tracking me somehow ever since I defeated Minigus."
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [
+            [5, 3],
+            [1, 0]
+          ],
+          "message": "That was a close one, huh?"
+        }
+      ],
+      [
+        {
+          "message": "I suppose that makes us even."
+        },
+        {
+          "message": "As soon as I saw that Skycorps truck headed your way, I decided I might have to intervene."
+        },
+        {
+          "codes": [[1, 1]],
+          "message": "The timing worked out perfectly, too, since I just finished working on this bad boy yesterday."
+        }
+      ],
+      [
+        {
+          "codes": [[5, 3]],
+          "message": "My dad is a pilot, so I've been flying these things since I was a kid."
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Anyway, I'm sorry I led you into an ambush like that. I wasn't expecting anything like that at all..."
+        }
+      ],
+      [
+        {
+          "codes": [[5, 3]],
+          "message": "You what...?!"
+        },
+        {
+          "codes": [[4, 14]],
+          "message": "Hah... And to think it was all just with my little pistol."
+        },
+        {
+          "message": "I guss we'll have to be a bit more careful from now on. You'll need to take the long way to Ashtown, via the Pioneer Trail and through the Mother Worm."
+        },
+        {
+          "message": "Just like the first pioneers did, way back when."
+        },
+        {
+          "codes": [[23, 25]],
+          "message": "Looks like we're almost back to base. Hold on to your seat, it'll be a pretty tight landing!"
+        }
+      ]
+    ]
+  },
+  "7": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [5, 3],
+            [23, 1]
+          ],
+          "message": "Here we are!"
+        }
+      ]
+    ]
+  },
+  "8": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 3]],
+          "message": "We have some planning to do."
+        },
+        {
+          "message": "But first, get some rest. You've been through the wringer the past few days."
+        },
+        {
+          "codes": [[23, 4]],
+          "message": "I'm gonna wash up and get changed, too. I'll see you inside!"
+        }
+      ]
+    ]
+  },
+  "9": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[5, 3]],
+          "message": "Head on inside get some sleep."
+        },
+        {
+          "message": "You can come talk to me and Doc when you're ready."
+        }
+      ]
+    ]
+  }
+}
