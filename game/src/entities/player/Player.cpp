@@ -666,10 +666,10 @@ void Player::update_animation() {
 
 	if (controller.get_ability_animation() && controller.is_ability_active() && controller.is_animation_request()) { m_animation_machine.request(*controller.get_ability_animation()); }
 
-	if (!hotbar) {
-		// melee attacks out of scope for now
-		// if (controller.has_flag_set(PlayerControllerFlags::shot_weapon)) { m_animation_machine.request(AnimState::melee_front_kick); }
-	}
+	// if (!hotbar) {
+	// melee attacks out of scope for now
+	// if (controller.has_flag_set(PlayerControllerFlags::shot_weapon)) { m_animation_machine.request(AnimState::melee_front_kick); }
+	// }
 
 	if (m_animation_machine.is_state(AnimState::sit)) { set_flag(PlayerFlags::show_weapon, false); }
 	if (controller.inspecting()) { m_animation_machine.request(AnimState::inspect); }

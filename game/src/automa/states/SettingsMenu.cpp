@@ -13,7 +13,8 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, AppCont
 														   .military_time = options.at(static_cast<int>(SettingsToggles::military_time)).label,
 														   .language = options.at(static_cast<int>(SettingsToggles::language)).label},
 	  music_label{options.at(static_cast<int>(SettingsToggles::music)).label}, ambience_label{options.at(static_cast<int>(SettingsToggles::ambience)).label}, sfx_label{options.at(static_cast<int>(SettingsToggles::sfx)).label},
-	  toggle_options{.enabled{svc.text.fonts.title.font}, .disabled{svc.text.fonts.title.font}}, sliders{.music_volume{svc.text.fonts.title.font}, .ambience_volume{svc.text.fonts.title.font}, .sfx_volume{svc.text.fonts.title.font}} {
+	  toggle_options{.enabled{svc.text.fonts.title.font}, .disabled{svc.text.fonts.title.font}}, sliders{.music_volume{svc.text.fonts.title.font}, .ambience_volume{svc.text.fonts.title.font}, .sfx_volume{svc.text.fonts.title.font}},
+	  m_adjustment{80} {
 	m_parent_menu = MenuType::options;
 	toggle_options.enabled.setString(svc.data.gui_text["settings"]["enabled"].as_string());
 	toggle_options.disabled.setString(svc.data.gui_text["settings"]["disabled"].as_string());
@@ -22,9 +23,9 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, AppCont
 	options.at(static_cast<int>(SettingsToggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.input_system.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
-	options.at(static_cast<int>(SettingsToggles::music)).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.get_volume() * 100.f)) + "%");
-	options.at(static_cast<int>(SettingsToggles::ambience)).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.get_volume() * 100.f)) + "%");
-	options.at(static_cast<int>(SettingsToggles::sfx)).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.get_volume() * 100.f)) + "%");
+	options.at(static_cast<int>(SettingsToggles::music)).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.volume.get_base() * 100.0)) + "%");
+	options.at(static_cast<int>(SettingsToggles::ambience)).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.volume.get_base() * 100.0)) + "%");
+	options.at(static_cast<int>(SettingsToggles::sfx)).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.volume.get_base() * 100.0)) + "%");
 	options.at(static_cast<int>(SettingsToggles::fullscreen)).label.setString(toggleables.fullscreen.getString() + (svc.fullscreen() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::military_time)).label.setString(toggleables.military_time.getString() + (svc.world_clock.is_military() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	if (m_lang) { options.at(static_cast<int>(SettingsToggles::language)).label.setString(toggleables.language.getString() + *m_lang); }
@@ -38,6 +39,7 @@ void SettingsMenu::on_exit() {
 void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	m_input_authorized = !adjust_mode() && !p_context.console && !m_menu;
 	adjust_mode() ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
+	m_adjustment.update();
 
 	if (!p_context.console) {
 		if (m_menu) { m_menu->handle_inputs(svc.input_system, svc.soundboard); }
@@ -105,21 +107,28 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		option.label.setLetterSpacing(1.2f);
 	}
 	if (adjust_mode()) {
-		auto const update_volume = svc.ticker.every_x_ticks(16);
-		auto delta = 0.01f;
-		auto left = svc.input_system.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held);
-		auto right = svc.input_system.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held);
+		auto const update_volume = svc.ticker.every_x_ticks(16) && !m_adjustment.running();
+		auto const delta = 0.010;
+		auto const left_pressed = svc.input_system.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::triggered);
+		auto const right_pressed = svc.input_system.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::triggered);
+		if (left_pressed || right_pressed) { m_adjustment.start(); }
+		auto const left = svc.input_system.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::held);
+		auto const right = svc.input_system.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::held);
+		auto const adjust_left = left_pressed || (left && update_volume);
+		auto const adjust_right = right_pressed || (right && update_volume);
+		auto const final_delta = adjust_left ? -delta : adjust_right ? delta : 0.0;
+		auto const adjusted = (adjust_left || adjust_right);
 		if (is(SettingsToggles::music)) {
-			if (left && update_volume) { svc.music_player.adjust_volume(-delta); }
-			if (right && update_volume) { svc.music_player.adjust_volume(delta); }
+			if (adjusted && !svc.music_player.volume.at_range()) { svc.soundboard.play_sound("menu_tick"); }
+			svc.music_player.adjust_volume(final_delta);
 		}
 		if (is(SettingsToggles::ambience)) {
-			if (left && update_volume) { svc.ambience_player.adjust_volume(-delta); }
-			if (right && update_volume) { svc.ambience_player.adjust_volume(delta); }
+			if (adjusted && !svc.ambience_player.volume.at_range()) { svc.soundboard.play_sound("menu_tick"); }
+			svc.ambience_player.volume.adjust_base(final_delta);
 		}
 		if (is(SettingsToggles::sfx)) {
-			if (left && update_volume) { svc.soundboard.adjust_volume(-delta); }
-			if (right && update_volume) { svc.soundboard.adjust_volume(delta); }
+			if (adjusted && !svc.soundboard.volume.at_range()) { svc.soundboard.play_sound("menu_tick"); }
+			svc.soundboard.volume.adjust_base(final_delta);
 		}
 	}
 }
@@ -131,9 +140,9 @@ void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	adjust_mode() ? options.at(index).label.setFillColor(p_app_context->settings.get_theme().activated_text_color) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
 	MenuState::render(svc, win);
-	if (is(SettingsToggles::music)) { options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.get_volume() * 100.f)) + "%"); }
-	if (is(SettingsToggles::ambience)) { options.at(index).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.get_volume() * 100.f)) + "%"); }
-	if (is(SettingsToggles::sfx)) { options.at(index).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.get_volume() * 100.f)) + "%"); }
+	if (is(SettingsToggles::music)) { options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.volume.get_base() * 100.0)) + "%"); }
+	if (is(SettingsToggles::ambience)) { options.at(index).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.volume.get_base() * 100.0)) + "%"); }
+	if (is(SettingsToggles::sfx)) { options.at(index).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.volume.get_base() * 100.0)) + "%"); }
 
 	if (p_context.console) {
 		p_context.console.value()->render(win);

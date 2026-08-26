@@ -23,7 +23,7 @@ void Localization::set_language(std::string_view code) {
 
 std::vector<std::string> Localization::get_copy_of_available_languages() {
 	auto ret = std::vector<std::string>();
-	for (auto const& entry : m_available_languages) { ret.push_back(entry.code); }
+	for (auto const& entry : m_available_languages) { ret.push_back(entry.title); }
 	return ret;
 }
 

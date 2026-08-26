@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/audio/Balance.hpp>
+#include <fornani/audio/Volume.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/utils/BitFlags.hpp>
@@ -34,18 +35,18 @@ class MusicPlayer {
 	void fade_in(std::chrono::duration<float> duration);
 	void turn_on();
 	void turn_off();
-	void set_volume(float const to) { m_volume_multiplier = to; }
-	void set_balance(float const to) { m_balance = to; }
-	void adjust_volume(float delta);
+	void set_balance(double const to) { m_balance = to; }
+	void adjust_volume(double delta);
 
 	[[nodiscard]] auto get_volume() const -> float;
-	[[nodiscard]] auto get_volume_multiplier() const -> float { return m_volume_multiplier; }
 	[[nodiscard]] auto is_on() const -> bool { return m_state == MusicPlayerState::on; }
 	[[nodiscard]] auto is_off() const -> bool { return m_state == MusicPlayerState::off; }
 	[[nodiscard]] auto is_finished_playing() const -> bool { return !m_ringtone.is_playing(); }
 
 	[[nodiscard]] auto is_playing() const -> bool { return m_jukebox.is_playing(); }
 	[[nodiscard]] auto is_stopped() const -> bool { return m_jukebox.is_stopped(); }
+
+	Volume volume{};
 
   private:
 	void set_gain(float const to) { m_jukebox.set_gain(to); }
@@ -54,7 +55,6 @@ class MusicPlayer {
 	juke::Jukebox m_jukebox;
 	juke::Jukebox m_ringtone;
 	std::string m_current_song{};
-	float m_volume_multiplier{};
 	struct {
 		float lo{juke::sample_rate_v};
 		float hi{0.f};

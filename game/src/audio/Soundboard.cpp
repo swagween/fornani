@@ -420,7 +420,7 @@ void Soundboard::play_sound(std::string_view label, sf::Vector2f position) {
 	m_services->sounds.set_tick_for_buffer(lookup, tick);
 
 	auto props = it->second;
-	props.volume *= m_volume_multiplier;
+	props.volume *= volume.get();
 
 	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(*m_engine, m_services->sounds.get_buffer(lookup), lookup, props), .label = lookup, .id = 0, .position = position, .looping = false, .touched_this_tick = true});
 
@@ -434,7 +434,7 @@ void Soundboard::repeat_sound(std::string_view label, SoundProducerID id, sf::Ve
 
 	std::string_view lookup = not_found ? label : it->first;
 	auto props = it->second;
-	props.volume *= m_volume_multiplier;
+	props.volume *= volume.get();
 
 	auto existing = std::find_if(sound_pool.begin(), sound_pool.end(), [&](ActiveSound& s) { return s.looping && s.label == lookup && s.id == id; });
 
@@ -463,7 +463,7 @@ void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::
 	auto tick = svc.ticker.ticks;
 	if (frequency == 0 && tick - minimum_wait_time_v < svc.sounds.get_tick_for_buffer(label)) { return; }
 
-	props.volume *= (vol / 100.f) * m_volume_multiplier;
+	props.volume *= (vol / 100.f) * volume.get();
 
 	svc.sounds.set_tick_for_buffer(label, tick);
 	auto& entry = sound_pool.emplace_back(ActiveSound{.sound = Sound(engine, svc.sounds.get_buffer(label), lookup, props), .label = label, .position = m_listener.position, .looping = frequency != 0, .touched_this_tick = true});
@@ -481,7 +481,7 @@ void Soundboard::play(capo::IEngine& engine, automa::ServiceProvider& svc, std::
 	std::string_view lookup = it->first;
 	auto props = it->second;
 
-	props.volume *= m_volume_multiplier;
+	props.volume *= volume.get();
 	if (props.volume < constants::tiny_value) { return; }
 
 	auto tick = svc.ticker.ticks;

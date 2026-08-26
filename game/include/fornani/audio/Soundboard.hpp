@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <capo/engine.hpp>
 #include <fornani/audio/Sound.hpp>
+#include <fornani/audio/Volume.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -155,11 +156,8 @@ class Soundboard {
 	void turn_on() { status = SoundboardState::on; }
 	void turn_off() { status = SoundboardState::off; }
 	void play_step(int tile_value, int style_id, bool land = false);
-	void set_volume(float to) { m_volume_multiplier = std::clamp(to, 0.f, 1.f); }
-	void adjust_volume(float amount) { set_volume(m_volume_multiplier + amount); }
 	void set_listener_position(sf::Vector2f const to) { m_listener.position = to; }
 
-	[[nodiscard]] auto get_volume() const -> float { return m_volume_multiplier; }
 	[[nodiscard]] auto sound_pool_size() const -> std::size_t { return sound_pool.size(); }
 	[[nodiscard]] auto number_of_playng_sounds() -> int;
 	struct {
@@ -218,6 +216,8 @@ class Soundboard {
 	void play(capo::IEngine& engine, automa::ServiceProvider& svc, std::string const& label, float random_pitch_offset = 0.f, float vol = 100.f, int frequency = 1, float attenuation = 1.f, sf::Vector2f distance = {}, int echo_count = 0,
 			  int echo_rate = 64);
 
+	Volume volume{};
+
   private:
 	void repeat(automa::ServiceProvider& svc, Sound& sound, int frequency, float random_pitch_offset = 0.f, float attenuation = 1.f, sf::Vector2f distance = {});
 	void randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol = 100.f, float attenuation = 1.f, sf::Vector2f distance = {}, bool wait_until_over = false);
@@ -225,7 +225,6 @@ class Soundboard {
 
 	std::vector<ActiveSound> sound_pool{};
 	std::unordered_map<std::string, SoundProperties, TransparentHash, TransparentEqual> m_property_map{};
-	float m_volume_multiplier{0.5f};
 
 	SoundboardState status{SoundboardState::on};
 

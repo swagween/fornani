@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/audio/Balance.hpp>
 #include <fornani/audio/MusicPlayer.hpp>
+#include <fornani/audio/Volume.hpp>
 
 namespace fornani::automa {
 struct ServiceProvider;
@@ -16,19 +17,16 @@ class Ambience {
 	explicit Ambience(capo::IEngine& audio_engine);
 	void load(ResourceFinder& finder, std::string_view source);
 	void play();
-	void set_balance(float balance);
-	void set_volume(float const vol) { m_volume_multiplier = std::clamp(vol, 0.f, 1.f); }
-	void adjust_volume(float delta) { set_volume(get_volume() + delta); };
+	void set_balance(double balance);
+
+	Volume volume{};
 	struct {
 		MusicPlayer open;
 		MusicPlayer closed;
 	} tracks;
 
-	[[nodiscard]] auto get_volume() const -> float { return m_volume_multiplier; }
-
   private:
 	std::string current_track{};
-	float m_volume_multiplier;
 };
 
 } // namespace fornani::audio

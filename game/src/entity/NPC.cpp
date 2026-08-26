@@ -401,7 +401,7 @@ void NPC::pop_conversation() {
 }
 
 void NPC::play_voice_cue(automa::ServiceProvider& svc, int which) const {
-	if (!m_state.test(NPCState::talking)) { return; }
+	if (!m_state.test(NPCState::talking) && !has_flag_set(NPCFlags::cutscene)) { return; }
 	if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(which); }
 	if (auto it = m_voice_cues.find(which); it != m_voice_cues.end()) { svc.soundboard.play_sound(it->second.tag); }
 }

@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/io/Logger.hpp>
 #include <vector>
 #include "fornani/entities/player/Inventory.hpp"
 
@@ -25,5 +26,7 @@ class Vendor {
   private:
 	float m_upcharge{0.2f};
 	std::size_t m_stock_size{6};
+
+	io::Logger m_logger{"Vendor"};
 };
 } // namespace fornani::npc

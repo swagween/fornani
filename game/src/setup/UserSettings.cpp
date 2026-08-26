@@ -51,9 +51,9 @@ void UserSettings::set_user_settings(automa::ServiceProvider& svc, Localization&
 	svc.input_system.set_setting(input::InputSystemSettings::auto_sprint, m_settings["auto_sprint"].as_bool());
 	svc.set_tutorial(m_settings["tutorial"].as_bool());
 	svc.input_system.set_setting(input::InputSystemSettings::gamepad_input_enabled, m_settings["gamepad"].as_bool());
-	svc.music_player.set_volume(m_settings["music_volume"].as<float>());
-	svc.ambience_player.set_volume(m_settings["ambience_volume"].as<float>());
-	svc.soundboard.set_volume(m_settings["sfx_volume"].as<float>());
+	svc.music_player.volume.set_base(m_settings["music_volume"].as<double>());
+	svc.ambience_player.volume.set_base(m_settings["ambience_volume"].as<double>());
+	svc.soundboard.volume.set_base(m_settings["sfx_volume"].as<double>());
 	svc.set_fullscreen(m_settings["fullscreen"].as_bool());
 	svc.world_clock.set_military(m_settings["military_time"].as_bool());
 
@@ -73,9 +73,9 @@ void UserSettings::save_user_settings(automa::ServiceProvider& svc) {
 	m_settings["auto_sprint"] = svc.input_system.is_autosprint_enabled();
 	m_settings["tutorial"] = svc.tutorial();
 	m_settings["gamepad"] = svc.input_system.is_gamepad_input_enabled();
-	m_settings["music_volume"] = svc.music_player.get_volume_multiplier();
-	m_settings["ambience_volume"] = svc.ambience_player.get_volume();
-	m_settings["sfx_volume"] = svc.soundboard.get_volume();
+	m_settings["music_volume"] = svc.music_player.volume.get_base();
+	m_settings["ambience_volume"] = svc.ambience_player.volume.get_base();
+	m_settings["sfx_volume"] = svc.soundboard.volume.get_base();
 	m_settings["fullscreen"] = svc.fullscreen();
 	m_settings["military_time"] = svc.world_clock.is_military();
 	write_to_file(svc.finder);

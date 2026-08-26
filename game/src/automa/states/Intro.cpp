@@ -114,7 +114,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			m_attack_fadeout.start();
 		}
 		svc.ambience_player.set_balance(0.f);
-		if (m_attack_fadeout.running()) { svc.ambience_player.set_volume(m_attack_fadeout.get_quadratic_normalized()); }
+		if (m_attack_fadeout.running()) { svc.ambience_player.volume.set_dynamic(m_attack_fadeout.get_quadratic_normalized()); }
 		if (!p_context.console && m_flags.test(IntroFlags::console_message)) { m_flags.set(IntroFlags::complete); }
 	}
 

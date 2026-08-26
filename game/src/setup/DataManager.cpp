@@ -766,6 +766,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	for (auto& vendor : marketplace) {}
 	random::set_vendor_seed(save["vendor_seed"].as<random::seed_t>());
 	NANI_LOG_INFO(m_logger, "Loaded vendor seed: {}", save["vendor_seed"].as<random::seed_t>());
+	for (auto& vendor : marketplace) { vendor.second.generate_inventory(*m_services); }
 
 	discovered_rooms.clear();
 	unlocked_doors.clear();

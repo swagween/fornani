@@ -5,4 +5,5 @@ nani_add_headers(
         Sound.hpp
         Soundboard.hpp
         SoundEffects.hpp
+        Volume.hpp
 )

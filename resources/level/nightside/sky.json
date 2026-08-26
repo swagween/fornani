@@ -71,13 +71,14 @@
       "source": 902,
       "type": 8
     },
+    "development_status": null,
     "dimensions": [
       48,
       32
     ],
     "metagrid": [
-      13,
-      20
+      16,
+      23
     ],
     "minimap": false,
     "music": "pixium",
@@ -88,6 +89,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "interior": false,
       "lighting": false,
       "timer": false
     },
@@ -96,9 +98,20 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
+    "animated": [
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
     "flags": {
       "obscuring": false,
       "reverse_obscuring": false

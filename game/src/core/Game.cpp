@@ -537,12 +537,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				}
 				if (ImGui::BeginTabItem("Audio")) {
 					ImGui::Separator();
-					static float sfxvol{services.soundboard.get_volume()};
-					ImGui::SliderFloat("##sfxvol", &sfxvol, 0.f, 1.f);
-					services.soundboard.set_volume(sfxvol);
 					ImGui::Text("Music Volume %f", services.music_player.get_volume());
-					ImGui::Text("Music Volume Multiplier %f", services.music_player.get_volume_multiplier());
-					ImGui::Text("Soundboard Volume %f", services.soundboard.get_volume());
+					ImGui::Text("Music Volume Base %f", services.music_player.volume.get_base());
+					ImGui::Text("Soundboard Volume Base %f", services.soundboard.volume.get_base());
 					ImGui::Text("Sound pool size: %i", static_cast<int>(services.soundboard.number_of_playng_sounds()));
 					ImGui::Separator();
 					if (ImGui::BeginTabBar("NPCs", tab_bar_flags)) {

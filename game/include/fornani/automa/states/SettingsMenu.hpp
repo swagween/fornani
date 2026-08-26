@@ -3,6 +3,7 @@
 
 #include <fornani/automa/MenuState.hpp>
 #include <fornani/gui/MiniMenu.hpp>
+#include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::automa {
 
@@ -48,6 +49,8 @@ class SettingsMenu final : public MenuState {
 	sf::Text music_label;
 	sf::Text ambience_label;
 	sf::Text sfx_label;
+
+	util::Cooldown m_adjustment;
 };
 
 } // namespace fornani::automa

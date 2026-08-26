@@ -74,6 +74,7 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -82,8 +83,7 @@
       "darken_factor": 4
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
@@ -1311,12 +1311,12 @@
         260,
         261,
         262,
-        464,
-        465,
-        475,
-        260,
+        317,
+        261,
+        319,
+        351,
         503,
-        262,
+        351,
         0,
         276,
         2,
@@ -1573,7 +1573,7 @@
         0,
         0,
         0,
-        261,
+        0,
         0,
         0,
         0,

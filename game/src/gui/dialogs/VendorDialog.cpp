@@ -185,7 +185,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 					auto apparel_type = this_item.value()->get_apparel_type();
 
 					switch (m_item_menu->get_selection()) {
-					case 0:
+					case 0: {
 						if (is_buying() && player.wallet.get_balance() < p_sale_price) {
 							svc.soundboard.play_sound("error");
 							svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["insufficient_funds"].as_string());
@@ -204,8 +204,11 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						player.give_drop(item::DropType::orb, exchange);
 						p_orb_indicator.add(exchange);
 						p_balance += exchange;
-						source_inventory.remove_item(item_lbl, 1);
-						NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
+						auto gfi = vendor.value()->guaranteed_finite_items;
+						if (is_buying() && std::find(gfi.begin(), gfi.end(), item_lbl) == gfi.end()) {
+							source_inventory.remove_item(item_lbl, 1);
+							NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
+						}
 						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						p_flags.set(DialogStatus::made_sale);
 						m_item_menu.reset();
@@ -217,10 +220,12 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						}
 						refresh(svc, player, map);
 						break;
-					case 1:
+					}
+					case 1: {
 						m_item_menu = {};
 						svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 						break;
+					}
 					}
 				}
 			} else if (controller.digital(input::DigitalAction::menu_select).triggered) {
@@ -342,8 +347,6 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 		if (slot == -1) { slot = item.item->get_id(); } // populate next slot with item
 		++index;										// we need this to avoid skipping slots for unsellable items
 	}
-	for (auto [i, row] : std::views::enumerate(m_vendor_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row.id); }
-	for (auto [i, row] : std::views::enumerate(m_player_items_list)) { NANI_LOG_INFO(m_logger, "Row {}: {}", i, row); }
 	player.update_wardrobe();
 }
 
