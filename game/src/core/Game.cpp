@@ -304,7 +304,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 		window_pos_pivot.y = (corner & 2) ? 1.0f : 0.0f;
 		ImGui::SetNextWindowPos(window_pos, ImGuiCond_Always, window_pos_pivot);
 		window_flags |= ImGuiWindowFlags_NoMove;
-		ImGui::SetNextWindowBgAlpha(0.65f); // Transparent background
+		ImGui::SetNextWindowBgAlpha(0.95f); // Transparent background
 		if (ImGui::Begin("Playtester Portal", b_debug, window_flags)) {
 			ImGui::Text("Playtester Portal");
 			ImGui::Separator();
@@ -399,7 +399,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							for (auto i = 0; i < map->get().num_registered_chunks(); ++i) { ImGui::Text("Colliders in chunk %i: %i", i, map->get().num_colliders_in_chunk(i)); }
 							ImGui::TreePop();
 						}
-						ImGui::Text("Collision calculations: %i", map->get().num_collision_checks);
+						ImGui::Text("Collision checks: %i", debug::collision_checks);
+						ImGui::Text("Collision calculations: %i", debug::collision_resolutions);
 
 						ImGui::Separator();
 						ImGui::Text("Calculated chunks for player:");

@@ -4,7 +4,7 @@
 
 namespace fornani::shape {
 
-ICollider::ICollider(sf::Vector2f dimensions) : p_vicinity{dimensions + sf::Vector2f{vicinity_pad_v * 2.f, vicinity_pad_v * 2.f}} {}
+ICollider::ICollider(sf::Vector2f dimensions) : m_id{++s_next_id}, p_vicinity{dimensions + sf::Vector2f{vicinity_pad_v * 2.f, vicinity_pad_v * 2.f}} {}
 
 void ICollider::handle_collision(ICollider& other) {}
 
@@ -71,7 +71,7 @@ void ICollider::register_chunks(world::Map& map) {
 	if (!was_changed()) { return; }
 	auto old_chunks = m_chunks;
 	m_chunks.clear();
-	for (auto [i, vertex] : std::views::enumerate(p_vicinity.vertices)) { m_chunks.add(map.get_chunk_id_from_position(p_vicinity.vertices[i])); }
+	for (auto const& vertex : p_vicinity.vertices) { m_chunks.add(map.get_chunk_id_from_position(vertex)); }
 	std::sort(old_chunks.begin(), old_chunks.end());
 	std::sort(m_chunks.begin(), m_chunks.end());
 	if (old_chunks != m_chunks) { map.refresh_collider_chunks(old_chunks, m_chunks, this); }

@@ -148,6 +148,12 @@
     "max_distance": 1024.0
   },
   {
+    "label": "light_clink",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "missile_whistle",
     "bus": "gameplay",
     "volume": 1.0,

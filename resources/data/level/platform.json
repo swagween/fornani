@@ -231,7 +231,7 @@
     "repeating": false,
     "player_activated": false,
     "player_controlled": false,
-    "speed": 0.0005,
+    "speed": 0.001,
     "track": [
       [0, 0],
       [0, 32]
@@ -239,14 +239,14 @@
   },
   "slippery_worm_side_to_side": {
     "sticky": false,
-    "ease": true,
+    "ease": false,
     "loop": true,
     "slide": true,
     "hit_activated": true,
     "repeating": false,
     "player_activated": false,
     "player_controlled": false,
-    "speed": 0.0005,
+    "speed": 0.001,
     "track": [
       [0, 0],
       [32, 0]

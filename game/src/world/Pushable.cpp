@@ -26,7 +26,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	mass = static_cast<float>(size);
 	get_collider().sync_components();
 	auto lock = get_collider().snap_to_grid(static_cast<float>(size));
-	get_collider().physics.position = lock;
+	get_collider().physics.position = lock + sf::Vector2f{0.f, -1.f};
 	start_box = get_collider().bounding_box;
 	set_texture_rect(sf::IntRect{{style * 2 * constants::i_cell_resolution, (size - 1) * constants::i_cell_resolution}, constants::i_resolution_vec * size});
 	get_collider().flags.general.reset(shape::General::complex);
@@ -36,7 +36,6 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().vert_threshold = 0.1f;
 
 	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
-	// get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_trait(shape::ColliderTrait::block);
 	get_collider().set_trait(shape::ColliderTrait::pushable);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);

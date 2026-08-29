@@ -99,21 +99,15 @@
       12
     ],
     "minimap": true,
-    "music": null,
     "player_start": [
       0,
       0
     ],
-    "properties": {
-      "day_night_shift": null,
-      "interior": null
-    },
     "room_id": 201,
     "shader": {
       "darken_factor": 0
     },
-    "use_template": true,
-    "weather": null
+    "use_template": true
   },
   "tile": {
     "animated": [
@@ -14905,7 +14899,7 @@
         148,
         0,
         122,
-        0,
+        124,
         0,
         145,
         146,
@@ -15016,9 +15010,9 @@
         0,
         0,
         0,
-        0,
+        124,
         121,
-        0,
+        124,
         0,
         0,
         0,

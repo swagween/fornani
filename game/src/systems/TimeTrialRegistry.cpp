@@ -11,7 +11,6 @@ constexpr auto max_records_v = 8;
 void TimeTrialRegistry::insert_time(automa::ServiceProvider& svc, int course, std::string_view tag, float time) {
 	if (m_trial_attempts.contains(course)) {
 		m_trial_attempts.at(course).push_back(TrialAttempt{tag.data(), time, calculate_rating(svc, course, time)});
-		NANI_LOG_DEBUG(m_logger, "Rating: {}", calculate_rating(svc, course, time));
 	} else {
 		m_trial_attempts.insert({course, std::vector<TrialAttempt>{TrialAttempt{tag.data(), time, calculate_rating(svc, course, time)}}});
 	}

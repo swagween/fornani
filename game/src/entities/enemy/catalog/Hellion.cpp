@@ -51,6 +51,11 @@ fsm::StateFunction Hellion::update_run() {
 	p_state.actual = HellionState::run;
 	m_services->soundboard.repeat_sound("hellion_run", get_stable_id().get(), get_collider().get_center());
 	get_collider().physics.velocity.x = directions.actual.as_float() * attributes.speed;
+	if (get_collider().physics.actual_speed() < constants::tiny_value) { m_stuck.update(); }
+	if (m_stuck.get_count() > 160) {
+		m_stuck.cancel();
+		request(HellionState::turn);
+	}
 	if (change_state(HellionState::turn, get_params("turn"))) { return HELLION_BIND(update_turn); }
 	return HELLION_BIND(update_run);
 }

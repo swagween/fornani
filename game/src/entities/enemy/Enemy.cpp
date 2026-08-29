@@ -97,7 +97,12 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (!flags.general.test(GeneralFlags::uncrushable)) { get_collider().collision_depths = util::CollisionDepth(); }
 
 	if (!flags.general.test(GeneralFlags::player_collision)) { get_collider().set_exclusion_target(shape::ColliderTrait::player); }
-	if (!flags.general.test(GeneralFlags::map_collision)) { get_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
+	if (!flags.general.test(GeneralFlags::map_collision)) {
+		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+		get_collider().set_exclusion_target(shape::ColliderTrait::block);
+		get_collider().set_exclusion_target(shape::ColliderTrait::platform);
+		get_collider().set_exclusion_target(shape::ColliderTrait::pushable);
+	}
 	get_collider().set_exclusion_target(shape::ColliderTrait::circle);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::secondary);
@@ -113,7 +118,12 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 		get_secondary_collider().set_trait(shape::ColliderTrait::secondary);
 		get_secondary_collider().set_trait(shape::ColliderTrait::enemy);
 		if (!flags.general.test(GeneralFlags::player_collision)) { get_secondary_collider().set_exclusion_target(shape::ColliderTrait::player); }
-		if (!flags.general.test(GeneralFlags::map_collision)) { get_secondary_collider().set_attribute(shape::ColliderAttributes::no_map_collision); }
+		if (!flags.general.test(GeneralFlags::map_collision)) {
+			get_secondary_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+			get_secondary_collider().set_exclusion_target(shape::ColliderTrait::block);
+			get_secondary_collider().set_exclusion_target(shape::ColliderTrait::platform);
+			get_secondary_collider().set_exclusion_target(shape::ColliderTrait::pushable);
+		}
 		get_secondary_collider().set_exclusion_target(shape::ColliderTrait::circle);
 		get_secondary_collider().set_exclusion_target(shape::ColliderTrait::npc);
 		get_secondary_collider().set_resolution_exclusion_target(shape::ColliderTrait::player);

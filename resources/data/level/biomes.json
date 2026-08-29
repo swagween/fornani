@@ -29,7 +29,8 @@
       "black": [9, 1, 17],
       "haze_highlight": [0, 91, 91],
       "haze_shadow": [0, 51, 91],
-      "max_light": 4.0
+      "max_light": 4.0,
+      "spike_variations": 3
     },
     "toxic": {
       "black": [13, 15, 14],

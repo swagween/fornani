@@ -467,39 +467,26 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
-	for (auto& proj : active_projectiles) {
-		if (proj.destruction_initiated()) { continue; }
-		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
-		for (auto& platform : platforms) { platform->on_hit(svc, *this, proj); }
-		for (auto& breakable : breakables) { breakable->on_hit(svc, *this, proj); }
-		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
-		for (auto destructible : get_entities<Destructible>()) { destructible->on_hit(svc, *this, proj); }
-		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
-		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj, *player); }
-		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
-		for (auto& brittle : brittle_blocks) { brittle->on_hit(svc, *this, proj); }
-		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
-		proj.handle_collision(svc, *this);
-		proj.on_player_hit(svc, *this, *player);
-	}
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->update(svc, *this, *player); }
 	for (auto& emitter : active_emitters) { emitter->update(svc, *this); }
 	for (auto& platform : platforms) { platform->update(svc, *this, *player); }
 
-	num_collision_checks = 0;
+	debug::collision_checks = 0;
+	debug::collision_resolutions = 0;
 	for (auto& colliderPtr : m_colliders) {
 		if (!colliderPtr) { continue; }
 		auto& collider = *colliderPtr;
 		collider.register_chunks(*this);
 		collider.update(svc);
+		if (collider.has_attribute(shape::ColliderAttributes::fixed) && !collider.has_trait(shape::ColliderTrait::platform)) { continue; }
+		if (collider.is_intangible()) { continue; }
 		for (auto chunk : collider.get_chunks()) {
 			for (auto& other_ptr : m_chunks[chunk]) {
 				if (!other_ptr) { continue; }
 				if (other_ptr == &collider) { continue; }
-				if (collider.is_intangible()) { continue; }
-				collider.handle_collision(*other_ptr);
-				++num_collision_checks;
+				other_ptr->handle_collision(collider);
+				++debug::collision_checks;
 			}
 		}
 		if (!collider.has_attribute(shape::ColliderAttributes::fixed)) { collider.detect_map_collision(*this); }
@@ -712,7 +699,21 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		win.draw(center_box);
 	}
 
-	if (debug::is_greyblock()) { get_middleground()->grid.render(win, cam); }
+	if (debug::is_greyblock() || debug::is_debug()) { get_middleground()->grid.render(win, cam); }
+	if (debug::is_debug()) {
+		for (int i = 0; i < get_chunk_dimensions().x; ++i) {
+			for (int j = 0; j < get_chunk_dimensions().y; ++j) {
+				auto chunkbox = sf::RectangleShape{constants::f_cell_vec * constants::f_chunk_size};
+				chunkbox.setFillColor(colors::transparent);
+				auto col = colors::bright_purple;
+				col.a = 80;
+				chunkbox.setOutlineColor(sf::Color{col});
+				chunkbox.setOutlineThickness(-1.f);
+				chunkbox.setPosition((constants::f_cell_vec * constants::f_chunk_size).componentWiseMul(sf::Vector2f{float(i), float(j)}) - cam);
+				win.draw(chunkbox);
+			}
+		}
+	}
 
 	m_entity_texture.display();
 }
@@ -906,6 +907,19 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 			effects.push_back(entity::Effect(svc, "bullet_whiff", proj.get_collider().get_global_center(), proj.get_velocity() * 0.05f, proj.effect_type()));
 			proj.poof();
 		}
+		if (proj.destruction_initiated()) { continue; }
+		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
+		for (auto& platform : platforms) { platform->on_hit(svc, *this, proj); }
+		for (auto& breakable : breakables) { breakable->on_hit(svc, *this, proj); }
+		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
+		for (auto destructible : get_entities<Destructible>()) { destructible->on_hit(svc, *this, proj); }
+		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
+		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj, *player); }
+		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }
+		for (auto& brittle : brittle_blocks) { brittle->on_hit(svc, *this, proj); }
+		for (auto vine : get_entities<Vine>()) { vine->on_hit(svc, *this, proj, *player); }
+		proj.handle_collision(svc, *this);
+		proj.on_player_hit(svc, *this, *player);
 	}
 
 	std::erase_if(active_projectiles, [](auto const& p) { return p.destroyed(); });
@@ -997,7 +1011,8 @@ void Map::refresh_collider_chunks(Register<int> const& old_chunks, Register<int>
 bool Map::check_cell_collision(shape::Collider& collider, bool foreground) {
 	auto& grid = foreground ? get_obscuring_layer()->grid : get_middleground()->grid;
 	auto& layers = m_services->data.get_layers(room_id);
-	auto top = get_index_at_position({collider.get_vicinity_rect().position.x, std::clamp(collider.get_vicinity_rect().position.y, constants::small_value, collider.get_vicinity_rect().position.y)});
+	auto const y = std::max(collider.get_vicinity_rect().position.y, constants::small_value);
+	auto top = get_index_at_position({collider.get_vicinity_rect().position.x, y});
 	auto bt = collider.get_vicinity_rect().position + collider.get_vicinity_rect().size;
 	bt.y = std::clamp(bt.y, constants::small_value, bt.y);
 	auto bottom = get_index_at_position(bt);

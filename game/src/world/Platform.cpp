@@ -10,7 +10,7 @@
 namespace fornani::world {
 
 Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f position, sf::Vector2f dimensions, float extent, std::string_view specifications, float start_point, int style)
-	: Animatable(svc, "platform_" + std::string{map.get_biome_string()}), m_collider{map, dimensions}, path_position(start_point), switch_up{12} {
+	: Animatable(svc, "platform_" + std::string{map.get_biome_string()}), m_collider{map, dimensions}, path_position(start_point), switch_up{12}, m_hit{400} {
 
 	auto const& in_data = svc.data.platform[specifications];
 	if (in_data["sticky"].as_bool()) { flags.attributes.set(PlatformAttributes::sticky); }
@@ -18,6 +18,7 @@ Platform::Platform(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	if (in_data["repeating"].as_bool()) { flags.attributes.set(PlatformAttributes::repeating); }
 	if (in_data["player_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::player_activated); }
 	if (in_data["player_controlled"].as_bool()) { flags.attributes.set(PlatformAttributes::player_controlled); }
+	if (in_data["hit_activated"].as_bool()) { flags.attributes.set(PlatformAttributes::hit_activated); }
 	if (in_data["ease"].as_bool()) { flags.attributes.set(PlatformAttributes::ease); }
 
 	metrics.speed = in_data["speed"].as<float>();
@@ -113,7 +114,11 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		}
 	} else {
 		state = flags.attributes.test(PlatformAttributes::sticky) ? 0 : 1;
-		path_position += metrics.speed;
+		if (flags.attributes.test(PlatformAttributes::hit_activated)) {
+			path_position += metrics.speed * m_hit.get_normalized();
+		} else {
+			path_position += metrics.speed;
+		}
 	}
 	if (path_position > 1.0f) { path_position = 0.0f; }
 	if (path_position < 0.0f) { path_position = 0.0f; }
@@ -161,11 +166,12 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 
 	counter.update();
+	m_hit.update();
 
 	auto st = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
 	auto speed = std::lerp(0.f, 20.f, st);
 	animation.params.framerate = (24 - static_cast<int>(speed));
-	animation.update();
+	if (!flags.attributes.test(PlatformAttributes::hit_activated) || m_hit.running()) { animation.update(); }
 	if (get_velocity().lengthSquared() > 0.001f) {
 		auto pt = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
 		auto pitch = std::lerp(1.f, 2.0f, pt);
@@ -246,7 +252,14 @@ void Platform::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 		proj.get_collider().handle_collision(m_collider.get()->bounding_box);
 		return;
 	}
-	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) { proj.handle_hard_hit(svc, map); }
+	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) {
+		if (flags.attributes.test(PlatformAttributes::hit_activated)) {
+			proj.handle_successful_hit(svc, map);
+			m_hit.start();
+		} else {
+			proj.handle_hard_hit(svc, map);
+		}
+	}
 }
 
 void Platform::switch_directions() {

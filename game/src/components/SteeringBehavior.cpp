@@ -85,6 +85,7 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 	sf::Vector2f random_offset{random::random_range_float(-1.f, 1.f), random::random_range_float(-1.f, 1.f)};
 	desired_dir = (desired_dir + random_offset * jitter).normalized();
 
+	if (physics.velocity.length() < constants::tiny_value) { physics.velocity = random::random_vector_float(-constants::small_value, constants::small_value); }
 	sf::Vector2f forward = physics.velocity.normalized();
 
 	if (forward.length() < constants::tiny_value) { forward = desired_dir; }
@@ -95,8 +96,6 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 		forward = physics.velocity / physics.actual_speed();
 		forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
 	}
-
-	forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
 
 	float alignment = util::dot(forward, desired_dir);
 

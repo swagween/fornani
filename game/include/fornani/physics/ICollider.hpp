@@ -25,10 +25,30 @@ constexpr auto vicinity_pad_v = 31.f;
 class Collider;
 class CircleCollider;
 
-enum class ColliderFlags : std::uint8_t { custom_properties, changed, intangible, simple, no_physics, registered, crushed, landed, in_water, submerged, sinking, no_update, left_walljump, right_walljump, gravity, in_goo, momentum, encumbered, sink };
+enum class ColliderFlags : std::uint8_t {
+	custom_properties,
+	changed,
+	intangible,
+	simple,
+	no_physics,
+	registered,
+	crushed,
+	landed,
+	in_water,
+	submerged,
+	sinking,
+	no_update,
+	left_walljump,
+	right_walljump,
+	gravity,
+	in_goo,
+	momentum,
+	encumbered,
+	sink
+};
 enum class ColliderType : std::uint8_t { rectangle, circle };
 enum class ColliderAttributes : std::uint8_t { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution };
-enum class ColliderTrait : std::uint8_t { circle, player, enemy, npc, secondary, block, particle, platform, pushable, chest, prop };
+enum class ColliderTrait : std::uint8_t { circle, player, enemy, npc, secondary, block, particle, platform, pushable, chest, prop, breakable };
 
 class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
   public:
@@ -64,6 +84,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 
 	std::vector<int> compute_chunks(world::Map& map);
 	std::vector<int> get_chunks() const;
+	[[nodiscard]] auto get_id() const -> std::uint64_t { return m_id; }
 
 	[[nodiscard]] auto was_changed() const -> bool { return has_flag_set(ColliderFlags::changed); }
 	[[nodiscard]] auto is_intangible() const -> bool { return has_flag_set(ColliderFlags::intangible); }
@@ -88,6 +109,8 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	io::Logger p_logger{"Collider"};
 
   private:
+	inline static std::uint64_t s_next_id{};
+	std::uint64_t m_id{};
 	Register<int> m_chunks;
 	util::BitFlags<ColliderAttributes> m_attributes{};
 

@@ -217,7 +217,7 @@ void Collider::detect_map_collision(world::Map& map) {
 
 	auto& grid = map.get_middleground()->grid;
 	auto tt = p_vicinity.vertices.at(0);
-	tt.y = std::clamp(tt.y, constants::small_value, tt.y);
+	tt.y = std::max(tt.y, constants::small_value);
 	auto top = map.get_index_at_position(p_vicinity.vertices.at(0));
 	auto bt = p_vicinity.vertices.at(3);
 	bt.y = std::clamp(bt.y, constants::small_value, bt.y);
@@ -312,6 +312,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	auto ret{false};
 	if (has_attribute(ColliderAttributes::no_collision)) { return ret; }
 	if (!p_vicinity.overlaps(collider)) { return ret; }
+	++debug::collision_resolutions;
 	if (soft) {
 		mtvs.actual = bounding_box.get_MTV(bounding_box, collider);
 		if (bounding_box.SAT(collider)) { physics.position += mtvs.actual * force; }

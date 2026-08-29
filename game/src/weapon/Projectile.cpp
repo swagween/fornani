@@ -208,6 +208,18 @@ void Projectile::on_explode(automa::ServiceProvider& svc, world::Map& map) {
 	destroy(false);
 }
 
+void Projectile::handle_successful_hit(automa::ServiceProvider& svc, world::Map& map) {
+	if (has_attribute(arms::ProjectileAttributes::explode_on_impact)) {
+		on_explode(svc, map);
+		return;
+	}
+	if (!destruction_initiated()) {
+		map.spawn_effect(svc, "hit_flash", get_collider().get_global_center());
+		svc.soundboard.play_sound("projectile_hit", get_collider().get_global_center());
+	}
+	destroy(false);
+}
+
 void Projectile::handle_hard_hit(automa::ServiceProvider& svc, world::Map& map) {
 	if (has_attribute(arms::ProjectileAttributes::explode_on_impact)) {
 		on_explode(svc, map);
@@ -215,7 +227,7 @@ void Projectile::handle_hard_hit(automa::ServiceProvider& svc, world::Map& map) 
 	}
 	if (!destruction_initiated()) {
 		map.spawn_effect(svc, "inv_hit", get_collider().get_global_center(), {}, effect_type());
-		svc.soundboard.flags.world.set(audio::World::hard_hit);
+		svc.soundboard.play_sound("hard_hit", get_collider().get_global_center());
 	}
 	destroy(false);
 }

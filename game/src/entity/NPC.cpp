@@ -91,6 +91,8 @@ void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
 	svc.events.npc_pop_conversation_event.attach_to(slot, &NPC::pop_conversation, this);
 	svc.events.npc_piggyback_event.attach_to(slot, &NPC::piggyback_me, this);
 
+	p_stable_id = p_stable_id.from(m_id.get(), get_grid_position().x, get_grid_position().y);
+
 	m_offset = sf::Vector2f{in_data["sprite_offset"][0].as<float>(), in_data["sprite_offset"][1].as<float>()};
 	if (in_data["vendor"] && svc.data.marketplace.contains(get_specifier())) {
 		vendor = &svc.data.marketplace.at(get_specifier());
@@ -284,7 +286,10 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	m_disappear.update();
 	if (m_disappear.is_almost_complete()) { hide(); }
 
-	context.console.has_value() && m_state.test(NPCState::overlapping_player) ? m_state.set(NPCState::talking) : m_state.reset(NPCState::talking);
+	m_state.reset(NPCState::talking);
+	if (context.console.has_value()) {
+		if (context.console.value()->get_speaker() == p_stable_id) { m_state.set(NPCState::talking); }
+	}
 
 	if (collider.has_value()) {
 		get_collider().update(svc);
@@ -385,7 +390,7 @@ void NPC::start_conversation(automa::ServiceProvider& svc, std::optional<std::un
 		NANI_LOG_ERROR(Entity::m_logger, "Tried to start a conversation that doesn't exist!");
 		return;
 	}
-	console = std::make_unique<gui::Console>(svc, svc.text.npc[name][target], static_cast<gui::OutputType>(svc.text.npc[name][target]["output"].as<int>()));
+	console = std::make_unique<gui::Console>(p_stable_id, svc, svc.text.npc[name][target], static_cast<gui::OutputType>(svc.text.npc[name][target]["output"].as<int>()));
 	console.value()->include_portrait(m_id.get());
 }
 
@@ -401,7 +406,7 @@ void NPC::pop_conversation() {
 }
 
 void NPC::play_voice_cue(automa::ServiceProvider& svc, int which) const {
-	if (!m_state.test(NPCState::talking) && !has_flag_set(NPCFlags::cutscene)) { return; }
+	if (!m_state.test(NPCState::talking)) { return; }
 	if (svc.soundboard.npc_map.contains(m_label)) { svc.soundboard.npc_map.at(m_label)(which); }
 	if (auto it = m_voice_cues.find(which); it != m_voice_cues.end()) { svc.soundboard.play_sound(it->second.tag); }
 }

@@ -10,9 +10,13 @@ if (NOT DEFINED FORNANI_ROOT_DIR)
 endif ()
 
 project(fornani
-        LANGUAGES CXX
-        VERSION 1.0
+    VERSION 4.4.0
+    LANGUAGES CXX
 )
+
+set(FORNANI_CHANNEL "alpha")
+set(version_file "${CMAKE_CURRENT_BINARY_DIR}/game/include/fornani/app/build_version.hpp")
+configure_file(game/src/app/build_version.hpp.in "${version_file}" @ONLY)
 
 set(FORNANI_STEAM_APP_ID_DEFAULT 3218760 CACHE STRING "The default Steam app ID")
 set(FORNANI_STEAM_APP_ID_DEV 480 CACHE STRING "The developer Steam app ID (Spacewar)")

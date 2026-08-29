@@ -29,6 +29,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 		auto framerate = in_animation["framerate"].as<int>();
 		auto loop = in_animation["loop"].as<int>();
 		m_animatable->set_parameters({lookup, duration, framerate, loop});
+		m_base_framerate = framerate;
 	}
 
 	expulsion += random::random_range_float(-expulsion_variance, expulsion_variance);
@@ -40,11 +41,14 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 
 	m_physics->set_global_friction(in_data["friction"].as<float>());
 	m_physics->gravity = in_data["gravity"].as<float>();
+	m_slowdown = in_data["slowdown"].as<float>();
+	m_channels = in_data["channels"].as<int>();
+	if (in_data["hit_sound"].is_string()) { m_hit_sound.emplace(in_data["hit_sound"].as_string()); }
 
 	auto lifespan_time = in_data["lifespan"].as<int>();
 	auto lifespan_variance = in_data["lifespan_variance"].as<int>();
 	int rand_diff = random::random_range(-lifespan_variance, lifespan_variance);
-	lifespan.start(lifespan_time + rand_diff);
+	lifespan.set_and_start(lifespan_time + rand_diff);
 
 	if (m_animatable) {
 		m_animatable->center();
@@ -97,13 +101,23 @@ Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 }
 
 void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
-	if (m_animatable) { m_animatable->tick(); }
+	if (m_animatable) {
+		m_animatable->tick();
+		if (m_slowdown > constants::tiny_value) { m_animatable->set_framerate(m_base_framerate + static_cast<int>(m_slowdown * lifespan.get_inverse_normalized())); }
+		if (m_channels > 0) {
+			auto const channel = std::min(static_cast<int>(m_channels * lifespan.get_inverse_normalized()), m_channels - 1);
+			m_animatable->set_channel(channel);
+		}
+	}
 	if (m_fader) { m_fader->update(); }
 	if (m_physics) {
 		m_physics->update(svc);
 		m_physics->acceleration = {};
 	}
 	lifespan.update();
+	if (m_collider && m_hit_sound) {
+		if (m_collider->get_circle()->collided()) { svc.soundboard.play_sound(*m_hit_sound, m_collider->get_circle()->get_global_center()); }
+	}
 }
 
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

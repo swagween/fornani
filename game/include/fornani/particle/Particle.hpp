@@ -33,7 +33,11 @@ class Particle {
 	std::optional<shape::RegisteredCollider> m_collider{};
 	std::optional<Animatable> m_animatable{};
 	std::optional<util::Fader> m_fader{};
+	std::optional<std::string> m_hit_sound{};
 	util::BitFlags<SpriteTransform> m_flip{};
+	float m_slowdown{};
+	int m_base_framerate{};
+	int m_channels{};
 	int frame{};
 };
 

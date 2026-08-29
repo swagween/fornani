@@ -1,4 +1,5 @@
 
+#include <fornani/core/Debug.hpp>
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/physics/Collider.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -41,6 +42,7 @@ void CircleCollider::detect_map_collision(world::Map& map) { handle_map_collisio
 
 void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 	if (!sensor.within_bounds(shape)) { return; }
+	++debug::collision_resolutions;
 	auto distance = util::magnitude(sensor.bounds.getPosition() - shape.get_center());
 	auto circle_left_of = sensor.bounds.getPosition().x < shape.get_center().x;
 	auto circle_right_of = !circle_left_of;
@@ -51,12 +53,37 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 	auto nudge = soft && !circle_above ? 1.f : 0.f;
 	auto vertical = abs(mtv.y) > abs(mtv.x);
 	if (shape.non_square()) {
-		vertical ? physics.position.y -= mtv.y* leeway + nudge : physics.position.x -= mtv.x * leeway + nudge;
+		auto const a = shape.vertices[0];
+		auto const b = shape.vertices[1];
+		auto const ab = b - a;
+		auto const ab_length_squared = ab.lengthSquared();
+
+		if (ab_length_squared > constants::tiny_value) {
+			auto const ap = get_global_center() - a;
+			auto const t = std::clamp(ap.dot(ab) / ab_length_squared, 0.f, 1.f);
+			auto const closest = a + ab * t;
+			auto const delta = get_global_center() - closest;
+			auto const distance_squared = delta.lengthSquared();
+			auto const radius = get_radius();
+			if (distance_squared < radius * radius) {
+				auto const distance = std::sqrt(distance_squared);
+				if (distance > constants::tiny_value) {
+					auto const tangent = ab / std::sqrt(ab_length_squared);
+					auto normal = sf::Vector2f{-tangent.y, tangent.x};
+					if (normal.y > 0.f) { normal = -normal; }
+					physics.position += normal * (radius - distance);
+					auto const velocity_normal = physics.velocity.dot(normal);
+					if (velocity_normal < 0.f) { physics.velocity -= (1.f + physics.elasticity) * velocity_normal * normal; }
+				}
+			}
+		}
+
+		// vertical ? physics.position.y -= mtv.y* leeway + nudge : physics.position.x -= mtv.x * leeway + nudge;
 	} else {
 		physics.position.x += circle_right_of ? abs(mtv.x) * leeway + nudge : abs(mtv.x) * -leeway - nudge;
 		physics.position.y += circle_below ? abs(mtv.y) * leeway + nudge : abs(mtv.y) * -leeway - nudge;
+		if (!(soft && !circle_above)) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
 	}
-	if (!(soft && !circle_above)) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
 	m_flags.set(CircleColliderFlags::collided);
 	sensor.set_position(physics.position);
 }

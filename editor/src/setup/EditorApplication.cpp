@@ -10,7 +10,7 @@
 
 namespace pi {
 
-EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{game_info, m_finder}, .loader{}}, window{{1920, 1080}} {
+EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(argv, context, window, *m_engine), context{.settings{m_finder}, .localization{m_finder}, .version{}, .loader{}}, window{{1920, 1080}} {
 	m_loading_screen.emplace(m_services);
 
 	// load app resources

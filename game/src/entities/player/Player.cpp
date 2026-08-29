@@ -376,6 +376,10 @@ void Player::update(world::Map& map) {
 	m_weapon_socket = m_animation_machine.is_state(AnimState::crawl) || m_animation_machine.is_state(AnimState::crouch) ? get_collider().get_center() + crouch_offset : get_collider().get_center();
 
 	force_cooldown.update();
+	if (get_collider().has_horizontal_collision()) {
+		NANI_LOG_DEBUG(m_logger, "momentum coll!");
+		accumulated_momentum.clear();
+	}
 	for (auto& force : accumulated_forces) { get_collider().physics.apply_force(force); }
 	auto sum = 0.f;
 	for (auto& force : accumulated_momentum) {
@@ -537,7 +541,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		box.setPosition(hurtbox.get_position() - cam);
 		box.setSize(hurtbox.get_dimensions());
 		win.draw(box);
-		get_collider().render(win, cam);
+		if (has_collider()) { get_collider().render(win, cam); }
 	}
 
 	if (arsenal && hotbar) {
@@ -888,13 +892,18 @@ void Player::update_weapon(world::Map& map) {
 		equipped_weapon().set_flag(arms::WeaponFlags::released, controller.has_flag_set(PlayerControllerFlags::released_weapon));
 	} else if (fire_weapon()) {
 		m_services->stats.player.bullets_fired.update();
-		sf::Vector2f tweak = controller.facing_left() ? sf::Vector2f{0.f, 0.f} : sf::Vector2f{-3.f, 0.f};
 		if (equipped_weapon().multishot()) {
 			for (int i = 0; i < equipped_weapon().get_multishot(); ++i) { map.spawn_projectile_at(*m_services, equipped_weapon(), equipped_weapon().get_barrel_point()); }
 		} else {
 			equipped_weapon().shoot(*m_services, map);
 		}
 		if (!equipped_weapon().automatic() && !equipped_weapon().is_chargeable()) { controller.set_shot(false); }
+		if (!equipped_weapon().is_chargeable() && equipped_weapon().is_gun()) {
+			auto cdir = equipped_weapon().get_firing_direction();
+			cdir.rotate(equipped_weapon().get_firing_direction().left() ? RotationType::clockwise : RotationType::counterclockwise);
+			auto casing_dir = Direction{cdir};
+			map.spawn_emitter(*m_services, "bullet_casing", m_weapon_socket, casing_dir, {2.f, 2.f});
+		}
 	}
 	controller.set_arsenal(hotbar.has_value());
 	// update all weapons in loadout to avoid unusual behavior upon weapon switching
@@ -1058,10 +1067,18 @@ bool Player::grounded() const { return get_collider().flags.external_state.test(
 
 bool Player::fire_weapon() {
 	if (!arsenal || !hotbar) { return false; }
-	if (controller.shot() && equipped_weapon().can_shoot()) {
-		// m_services->soundboard.flags.weapon.set(static_cast<audio::Weapon>(equipped_weapon().get_sound_id()));
-		if (!equipped_weapon().is_chargeable()) { set_flag(PlayerFlags::impart_recoil); }
-		return true;
+	if (controller.shot()) {
+		if (equipped_weapon().can_shoot()) {
+			if (!equipped_weapon().is_chargeable()) { set_flag(PlayerFlags::impart_recoil); }
+			return true;
+		} else if (!equipped_weapon().cooling_down()) {
+			if (!equipped_weapon().is_chargeable() && equipped_weapon().is_gun()) {
+				m_services->soundboard.play_sound("arms_empty");
+				if (m_map) { m_map.value()->spawn_effect(*m_services, "spark", equipped_weapon().get_barrel_point()); }
+				equipped_weapon().start_cooldown();
+				controller.key_map[ControllerInput::shoot] = 0.f;
+			}
+		}
 	}
 	return false;
 }

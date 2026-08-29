@@ -192,6 +192,11 @@
     "framerate": 16,
     "dimensions": [8, 8]
   },
+  "spark": {
+    "frame_count": 5,
+    "framerate": 18,
+    "dimensions": [16, 16]
+  },
   "press": {
     "frame_count": 5,
     "framerate": 20,

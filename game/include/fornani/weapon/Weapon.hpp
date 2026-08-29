@@ -14,7 +14,7 @@ namespace fornani::arms {
 
 enum class WeaponFlags : std::uint8_t { firing, charging, released, overdrive };
 enum class WeaponState : std::uint8_t { unlocked, equipped, reloading };
-enum class WeaponAttributes : std::uint8_t { automatic, no_reload, charge };
+enum class WeaponAttributes : std::uint8_t { automatic, no_reload, charge, gun };
 enum class InventoryState : std::uint8_t { reserve, hotbar };
 enum class UIFlags : std::uint8_t { selected };
 
@@ -74,6 +74,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void shoot(automa::ServiceProvider& svc, world::Map& map);
 	void shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target);
 	void decrement_projectiles();
+	void start_cooldown();
 
 	bool is_equipped() const;
 	bool is_unlocked() const;
@@ -100,6 +101,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
 	[[nodiscard]] auto is_chargeable() const -> bool { return attributes.test(WeaponAttributes::charge); }
+	[[nodiscard]] auto is_gun() const -> bool { return attributes.test(WeaponAttributes::gun); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }

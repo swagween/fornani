@@ -123,9 +123,10 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			sf::Vector2f correction = mtv;
 			m_avg_velocity += correction;
 			link.set_bob(p + correction);
-			if (mtv.length() > constants::tiny_value) { ++m_num_collisions; }
+			if (mtv.length() < constants::tiny_value) { continue; }
 
-			// remove inward velocity (critical for slipperiness)
+			++m_num_collisions;
+			// remove inward velocity (for slipperiness)
 			sf::Vector2f n = mtv.normalized();
 			float vn = util::dot(link.variables.bob_physics.velocity, n);
 

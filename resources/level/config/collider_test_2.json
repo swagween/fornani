@@ -1,5 +1,50 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 74975,
+        "modifier": 0,
+        "position": [
+          10,
+          0
+        ],
+        "type": 1
+      }
+    ],
+    "destructibles": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 3,
+        "inverse": false,
+        "position": [
+          6,
+          4
+        ],
+        "unlit": false
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "enemy_clear": false,
+        "id": 3,
+        "inverse": false,
+        "position": [
+          7,
+          4
+        ],
+        "unlit": false
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -52,7 +97,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": null,
+    "development_status": 0,
     "dimensions": [
       16,
       16
@@ -82,8 +127,7 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
@@ -1166,7 +1210,7 @@
         0,
         0,
         0,
-        0,
+        485,
         0,
         0,
         0,
@@ -1198,11 +1242,11 @@
         0,
         0,
         0,
+        503,
+        503,
         0,
         0,
-        0,
-        0,
-        0,
+        485,
         0,
         0,
         0,
@@ -1234,16 +1278,16 @@
         0,
         0,
         0,
+        489,
+        489,
+        0,
+        267,
+        0,
         0,
         0,
         0,
         267,
-        0,
-        0,
-        0,
-        0,
-        267,
-        0,
+        485,
         0,
         0,
         0,

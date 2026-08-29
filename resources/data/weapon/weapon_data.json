@@ -28,6 +28,7 @@
     "gameplay": {
       "attributes": {
         "automatic": false,
+        "gun": true,
         "ammo": 4,
         "reload": 260,
         "cooldown_time": 1,
@@ -100,6 +101,7 @@
     "gameplay": {
       "attributes": {
         "automatic": false,
+        "gun": true,
         "ammo": 3,
         "reload": 180,
         "cooldown_time": 8,
@@ -227,6 +229,7 @@
     "gameplay": {
       "attributes": {
         "automatic": false,
+        "gun": true,
         "ammo": 6,
         "reload": 180,
         "cooldown_time": 8,
@@ -291,6 +294,7 @@
     "gameplay": {
       "attributes": {
         "automatic": false,
+        "gun": true,
         "ammo": 3,
         "reload": 100,
         "cooldown_time": 3,
@@ -655,7 +659,7 @@
           "dampen_factor": 1.0,
           "reflect": true,
           "hitstun": true,
-          "gravity": 0.5,
+          "gravity": 1.5,
           "elasticity": 0.95
         },
         "visual": {
@@ -690,6 +694,7 @@
     "gameplay": {
       "attributes": {
         "automatic": true,
+        "gun": true,
         "ammo": 28,
         "reload": 600,
         "cooldown_time": 16,
@@ -749,6 +754,7 @@
     "gameplay": {
       "attributes": {
         "automatic": false,
+        "gun": true,
         "ammo": 8,
         "reload": 300,
         "cooldown_time": 32,
@@ -809,6 +815,7 @@
     "gameplay": {
       "attributes": {
         "automatic": true,
+        "gun": true,
         "ammo": 12,
         "reload": 300,
         "cooldown_time": 12,
@@ -869,6 +876,7 @@
     "gameplay": {
       "attributes": {
         "automatic": true,
+        "gun": true,
         "ammo": 30,
         "reload": 480,
         "cooldown_time": 10,

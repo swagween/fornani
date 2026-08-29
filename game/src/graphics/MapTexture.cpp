@@ -68,7 +68,6 @@ void MapTexture::bake(dj::Json const& in) {
 		}
 		sf::Image image({image_width, image_height}, m_pixels.data());
 		if (!layer.texture.loadFromImage(image)) { NANI_LOG_WARN(m_logger, "Failed to load image into map texture"); }
-		NANI_LOG_INFO(m_logger, "Texture size for resolution {}: [{}, {}]", lod, layer.texture.getSize().x, layer.texture.getSize().y);
 	}
 }
 

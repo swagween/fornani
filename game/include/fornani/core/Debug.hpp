@@ -19,6 +19,8 @@ inline auto cycle_presentation_mode(debug::PresentationMode mode, int direction)
 inline PresentationMode mode{};
 
 inline int draw_calls{};
+inline int collision_checks{};
+inline int collision_resolutions{};
 
 inline bool is_production() { return mode == PresentationMode::production; }
 inline bool is_debug() { return mode == PresentationMode::debug; }

@@ -44,6 +44,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["no_reload"].as_bool())) { attributes.set(WeaponAttributes::no_reload); }
+	if (static_cast<bool>(in_data["gameplay"]["attributes"]["gun"].as_bool())) { attributes.set(WeaponAttributes::gun); }
 	if (static_cast<bool>(in_data["gameplay"]["attributes"]["charge"].as_bool())) {
 		attributes.set(WeaponAttributes::charge);
 		attributes.set(WeaponAttributes::no_reload);
@@ -151,20 +152,16 @@ void Weapon::unlock() { flags.state.set(WeaponState::unlocked); }
 void Weapon::lock() { flags.state.reset(WeaponState::unlocked); }
 
 void Weapon::shoot() {
-	cooldowns.cooldown.start(specifications.cooldown_time);
-	if (attributes.test(WeaponAttributes::charge)) {
-		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
-		cooldowns.reload.start();
-	} else if (!cooldowns.reload.running()) {
-		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
-		cooldowns.reload.start();
-	}
+	start_cooldown();
 
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.as_vector() * -1.f);
 	cooldowns.shoot_effect.start();
-	if (!attributes.test(WeaponAttributes::automatic) && !attributes.test(WeaponAttributes::charge)) { m_services->soundboard.play_sound(get_audio_tag(), get_barrel_point()); }
+	if (!attributes.test(WeaponAttributes::automatic) && !attributes.test(WeaponAttributes::charge)) {
+		m_services->soundboard.play_sound(get_audio_tag(), get_barrel_point());
+		if (ammo.empty() && is_gun()) { m_services->soundboard.play_sound("arms_end_mag"); }
+	}
 }
 
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map) {
@@ -233,6 +230,17 @@ void Weapon::reduce_reload_time(float percentage) {
 	auto amount = static_cast<int>(static_cast<float>(cooldowns.reload.get_native_time()) * percentage);
 	amount = std::clamp(amount, 0, cooldowns.reload.get() - 1);
 	cooldowns.reload.update(amount);
+}
+
+void Weapon::start_cooldown() {
+	cooldowns.cooldown.start(specifications.cooldown_time);
+	if (attributes.test(WeaponAttributes::charge)) {
+		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
+		cooldowns.reload.start();
+	} else if (!cooldowns.reload.running()) {
+		cooldowns.reload = util::Cooldown{static_cast<int>(specifications.reload_time * m_modifiers.reload_multiplier)};
+		cooldowns.reload.start();
+	}
 }
 
 void Weapon::reset() { active_projectiles.start(); }

@@ -105,7 +105,7 @@ class Drop : public Animatable {
 	int cooldown_constant{2500};
 
 	struct {
-		float priceless{0.001f};
+		float priceless{0.002f};
 		float rare{0.01f};
 		float uncommon{0.1f};
 		float special{0.001f};

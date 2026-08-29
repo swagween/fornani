@@ -1,4 +1,79 @@
 {
+  "atrium_bridge385022343708680": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Bridge -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "atrium_docs385022344626238": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "You find a textbook from a place called Grand Island University. This sets off a spark in your mind, but you can't figure out why."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "barracks_switch385022345216023": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "briar_ruins0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Briar's House"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "briar_ruins385022346330140": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Briar's House"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "bridge_desk385022345216024": {
     "series": [
       {
@@ -119,6 +194,279 @@
       }
     ]
   },
+  "cargo385022343577658": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Cargo Room -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "caution1385022345805884": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Caution! Ventilation shafts drain to ship exterior. A fall means certain death."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "crouch_tut385022345543694": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "Keyboard"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  2
+                ]
+              ],
+              "message": "Controller"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "It's a training manual. Select your control apparatus:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  10,
+                  62,
+                  7
+                ]
+              ],
+              "message": "It reads: the soldier who crouches on the ground by pressing  may better view enemies and terrain below."
+            },
+            {
+              "message": "The soldier must not be sprinting to enable this skill."
+            }
+          ],
+          [
+            {
+              "message": "It reads: the soldier may pan the camera using the right joystick to better view the surrounding terrain."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "gaia385022345805850": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Gaia's House -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "high_road385022346854462": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "To Woodshine Village >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "hold_1385022344822808": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- to Hangar and Outer Deck -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "hold_2385022344953911": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Hangar -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "hold_3385022343577691": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Outer Deck -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "infirmary385022345019399": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Infirmary -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "inn385022347837463": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- The Chafed Worm -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "laboratory_password385022343381024": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Laboratory console authorization key: 66724"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "low_road385022347182168": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "To Lower Glades >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "rest385022344888332": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Hollow's Rest -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "shop385022346526748": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Otto's Emporium -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "shop385022346657820": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Otto's Emporium -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "to_service385022343905291": {
     "series": [
       {
@@ -128,6 +476,36 @@
           [
             {
               "message": "Service Elevator >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "town_hall385022348427287": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Woodshine Town Hall -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "welcome385022343839782": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Woodshine Village -"
             }
           ]
         ]

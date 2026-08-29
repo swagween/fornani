@@ -70,6 +70,7 @@ class Projectile : public Animatable {
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void on_explode(automa::ServiceProvider& svc, world::Map& map);
+	void handle_successful_hit(automa::ServiceProvider& svc, world::Map& map);
 	void handle_hard_hit(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f cam);
 	void destroy(bool completely, bool whiffed = false);

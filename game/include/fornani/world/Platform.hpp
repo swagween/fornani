@@ -76,6 +76,7 @@ class Platform : public Animatable {
 	float path_length{};
 	float path_position{};
 	util::Cooldown switch_up;
+	util::Cooldown m_hit;
 	int style{};
 	int state{};
 	sf::Vector2<int> offset{};

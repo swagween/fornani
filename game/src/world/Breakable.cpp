@@ -15,6 +15,7 @@ Breakable::Breakable(automa::ServiceProvider& svc, Map& map, sf::Vector2f positi
 	get_collider().sync_components();
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
+	m_collider.get()->set_trait(shape::ColliderTrait::breakable);
 	get_collider().hurtbox.set_dimensions({38.f, 38.f});
 	NANI_LOG_DEBUG(m_logger, "Breakable Position: {:.3f}, {:.3f}", get_collider().physics.position.x / 32.f, get_collider().physics.position.y / 32.f);
 }

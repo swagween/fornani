@@ -88,7 +88,10 @@ fsm::StateFunction Lymphocyte::update_idle() {
 
 fsm::StateFunction Lymphocyte::update_make_antibody() {
 	p_state.actual = LymphocyteState::make_antibody;
-	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { spawn_antibody(1); }
+	if (p_animatable.frame_action(3)) {
+		spawn_antibody(1);
+		m_services->soundboard.play_sound("beast_spawn", get_collider().get_center());
+	}
 	if (p_animatable.animation.complete()) {
 		request(LymphocyteState::idle);
 		if (change_state(LymphocyteState::idle, get_params("idle"))) { return LYMPHOCYTE_BIND(update_idle); }

@@ -25,6 +25,8 @@ class Hellion final : public Enemy, public StateMachine<HellionState> {
 	// packages
 	entity::WeaponPackage m_poison;
 
+	util::Counter m_stuck{};
+
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 
