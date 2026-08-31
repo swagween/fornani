@@ -30,7 +30,7 @@
         },
         {
           "codes": [[10, 69, 7]],
-          "message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
+          "message": "This medal grants you the ability to slide on the ground by pressing # . It will give you a slight speed boost, and you may slide indefinitely down slopes."
         }
       ]
     ],
@@ -44,7 +44,7 @@
         },
         {
           "codes": [[10, 52, 9]],
-          "message": "It allows you to dash forward in midair by pressing  ."
+          "message": "It allows you to dash forward in midair by pressing # ."
         }
       ]
     ],
@@ -84,7 +84,7 @@
         },
         {
           "codes": [[10, 86, 7]],
-          "message": "This totem grants you the ability to roll on the ground right as you land by pressing  . It will give you a slight speed boost."
+          "message": "This totem grants you the ability to roll on the ground right as you land by pressing # . It will give you a slight speed boost."
         }
       ]
     ],
@@ -98,7 +98,7 @@
         },
         {
           "codes": [[10, 86, 4]],
-          "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing  . There is no limit to the number of times you can walljump."
+          "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing # . There is no limit to the number of times you can walljump."
         }
       ]
     ],
@@ -193,7 +193,7 @@
         [
           {
             "codes": [[10, 69, 7]],
-            "message": "This medal grants you the ability to slide on the ground by pressing  . It will give you a slight speed boost, and you may slide indefinitely down slopes."
+            "message": "This medal grants you the ability to slide on the ground by pressing # . It will give you a slight speed boost, and you may slide indefinitely down slopes."
           }
         ]
       ],
@@ -204,7 +204,7 @@
         [
           {
             "codes": [[10, 86, 4]],
-            "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing  . There is no limit to the number of times you can walljump."
+            "message": "This talisman grants you the ability to slide on walls, and jump off them by pressing # . There is no limit to the number of times you can walljump."
           }
         ]
       ],
@@ -215,7 +215,7 @@
         [
           {
             "codes": [[10, 79, 6]],
-            "message": "This charm grants you the ability to cling to walls whilst not sprinting (hold   if auto-sprint is enabled). You can cling to walls indefinitely."
+            "message": "This charm grants you the ability to cling to walls whilst not sprinting (hold # if auto-sprint is enabled). You can cling to walls indefinitely."
           }
         ]
       ],
@@ -225,11 +225,8 @@
       "suite": [
         [
           {
-            "message": "An amulet your brother gave to you. It's made of petrified brinium, and it bears a subtle yet unpleasant stench."
-          },
-          {
-            "codes": [[10, 52, 9]],
-            "message": "It allows you to dash forward in midair by pressing  ."
+            "codes": [[10, 78, 9]],
+            "message": "This petrified brinium charm allows you to dash forward in midair by pressing # ."
           }
         ]
       ],

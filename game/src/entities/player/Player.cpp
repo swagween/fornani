@@ -969,9 +969,9 @@ void Player::hurt(float amount, bool force) {
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 		if (amount > 1.f) {
 			if (!health.is_dead()) { m_sprite_shake.start(); }
-			m_services->ticker.freeze_frame(0.05f, 1.f);
+			m_services->ticker.freeze_frame(0.7f, 1.f);
 		} else {
-			m_services->ticker.freeze_frame(0.04f, 1.f);
+			m_services->ticker.freeze_frame(0.5f, 1.f);
 		}
 	}
 }
@@ -986,7 +986,7 @@ void Player::on_crush(world::Map& map) {
 		right_squish.lnr = get_collider().vertical_squish() ? LNR::right : LNR::neutral;
 		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, left_squish, get_collider().dimensions);
 		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, right_squish, get_collider().dimensions);
-		get_collider().collision_depths = {};
+		get_collider().collision_depths.reset();
 		m_death_type = PlayerDeathType::crushed;
 	}
 }

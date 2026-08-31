@@ -112,10 +112,7 @@
                       7
                     ]
                   ],
-                  "message": "It reads: the soldier who crouches on the ground by pressing  may better view enemies and terrain below."
-                },
-                {
-                  "message": "The soldier must not be sprinting to enable this skill."
+                  "message": "It reads: the soldier who crawls may also better view enemies and terrain below."
                 }
               ],
               [
@@ -149,6 +146,51 @@
               [
                 {
                   "message": "...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured."
+                }
+              ]
+            ]
+          }
+        ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "avoid_spike",
+        "position": [
+          20,
+          14
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "output": 0,
+            "suite": [
+              [
+                {
+                  "codes": [
+                    [
+                      10,
+                      1,
+                      7
+                    ]
+                  ],
+                  "message": "\"...and a soldier must fall to all fours and crawl by pressing and holding #  if he is to avoid injury from the spikes.\""
+                },
+                {
+                  "codes": [
+                    [
+                      10,
+                      1,
+                      6
+                    ]
+                  ],
+                  "message": "\"If auto-sprint is enabled, one must also hold #  to enable crawling.\""
                 }
               ]
             ]
@@ -1221,14 +1263,14 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
+        1,
         0,
         0,
         0,
@@ -3334,8 +3376,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        309,
+        325,
         0,
         0,
         0,
@@ -9358,13 +9400,13 @@
         1,
         1,
         1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        52,
+        53,
+        53,
+        53,
+        53,
+        53,
+        54,
         1,
         1,
         1,
@@ -9421,18 +9463,18 @@
         52,
         53,
         53,
-        53,
-        53,
-        53,
-        53,
-        53,
-        53,
-        53,
+        54,
+        511,
+        511,
+        511,
+        511,
+        511,
+        511,
+        511,
+        52,
         53,
         53,
         54,
-        52,
-        53,
         40,
         0,
         0,
@@ -9488,10 +9530,10 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        468,
+        469,
+        466,
+        467,
         0,
         0,
         0,
@@ -11407,6 +11449,7 @@
         0,
         0,
         0,
+        25,
         0,
         0,
         0,
@@ -11414,6 +11457,7 @@
         0,
         0,
         0,
+        26,
         0,
         0,
         0,
@@ -11538,10 +11582,8 @@
         0,
         0,
         0,
-        175,
-        175,
-        175,
-        175,
+        0,
+        0,
         0,
         0,
         0,

@@ -10,7 +10,7 @@
 namespace fornani::gui {
 
 TextWriter::TextWriter(automa::ServiceProvider& svc)
-	: m_services(&svc), working_message{svc.text.fonts.basic.font}, zero_option{.data{svc.text.fonts.basic.font}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{32}},
+	: m_services(&svc), working_message{svc.text.fonts.basic.font}, zero_option{.data{svc.text.fonts.basic.font}}, m_font{&svc.text.fonts.basic}, m_mode{WriterMode::stall}, m_delay{util::Cooldown{64}},
 	  m_writing_speed{default_writing_speed_v}, m_delta_threshold{8.f}, m_input_code{"   "} {
 	NANI_LOG_DEBUG(m_logger, "TextWriter ctor @{}", static_cast<void const*>(this));
 	bounds_box.setFillColor(sf::Color(200, 200, 10, 10));
@@ -285,6 +285,26 @@ void TextWriter::insert_icon_at(int index, sf::Vector2i icon_lookup) {
 	m_flags.set(WriterFlags::input_hint);
 }
 
+void TextWriter::insert_icon(sf::Vector2i icon_lookup) {
+	if (!suite) { return; }
+	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
+	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
+	auto& current_message = suite->suite.at(m_iterators.current_suite_set).at(m_iterators.index).data;
+	if (m_input_icon) { return; } // don't do this if we've already done it last tick
+	m_input_icon = sf::Sprite{m_services->assets.get_texture("controller_button_icons")};
+	m_input_icon->setTextureRect(sf::IntRect{icon_lookup * 18, {18, 18}});
+	m_input_icon->setScale(constants::f_scale_vec);
+	m_input_icon->setOrigin({-2.f, 12.f});
+	auto const msg = current_message.getString();
+	auto const index = msg.find('#');
+	if (index != std::string::npos) {
+		auto const first = msg.substring(0, index);
+		auto const second = msg.substring(index + 1);
+		current_message.setString(first + m_input_code + second);
+	}
+	m_flags.set(WriterFlags::input_hint);
+}
+
 bool TextWriter::request_next() {
 	// writer is writing, not ready
 	if (is_writing()) { return false; }
@@ -293,6 +313,7 @@ bool TextWriter::request_next() {
 	reset();
 	if (!suite) { return false; }
 	if (m_iterators.index >= suite->suite.at(m_iterators.current_suite_set).size()) { shutdown(); }
+	m_input_icon.reset();
 	return true;
 }
 

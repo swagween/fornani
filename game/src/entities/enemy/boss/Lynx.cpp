@@ -133,7 +133,7 @@ void Lynx::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 				if (p_animatable.animation.get_frame_count() != 4) { slash.disable(); }
 			}
 			slash.hurt_player(player, damage, {Enemy::directions.desired.as_float() * 0.4f, -0.2f});
-			slash.cancel_projectiles(svc, map, get_team(), 0.02f);
+			slash.cancel_projectiles(svc, map, get_team(), 0.06f);
 		}
 	}
 
@@ -299,28 +299,23 @@ fsm::StateFunction Lynx::update_jump() {
 	if (change_state(LynxState::defeat, Enemy::get_params("defeat"))) { return LYNX_BIND(update_defeat); }
 	if (change_state(LynxState::second_phase, Enemy::get_params("second_phase"))) { return LYNX_BIND(update_second_phase); }
 
-	// check if battle is over and Lynx peaced out
-	if (health.is_dead()) {
-		// flags.general.reset(GeneralFlags::map_collision);
-		Enemy::get_collider().physics.acceleration.y = -80.f;
-	} else {
-		if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) {
-			random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::hah) : m_services->soundboard.flags.lynx.set(audio::Lynx::hoah);
-			Enemy::get_collider().physics.acceleration.y = -260.f;
-			Enemy::get_collider().physics.acceleration.x = Enemy::directions.actual.as_float() * 60.f;
-		}
-		if (p_animatable.animation.get_frame_count() >= 3) { flags.general.reset(GeneralFlags::gravity); }
-		if (p_animatable.animation.complete()) {
-			random::percent_chance(50) ? request(LynxState::aerial_slash) : request(LynxState::downward_slam);
-			if (half_health()) { request(LynxState::aerial_slash); }
-			if (flags.state.test(StateFlags::out_of_zone)) {
-				request(LynxState::aerial_slash);
-				flags.state.reset(StateFlags::out_of_zone);
-			}
-			if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
-			if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
-		}
+	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) {
+		random::percent_chance(50) ? m_services->soundboard.flags.lynx.set(audio::Lynx::hah) : m_services->soundboard.flags.lynx.set(audio::Lynx::hoah);
+		Enemy::get_collider().physics.acceleration.y = -260.f;
+		Enemy::get_collider().physics.acceleration.x = Enemy::directions.actual.as_float() * 60.f;
 	}
+	if (p_animatable.animation.get_frame_count() >= 3) { flags.general.reset(GeneralFlags::gravity); }
+	if (p_animatable.animation.complete()) {
+		random::percent_chance(50) ? request(LynxState::aerial_slash) : request(LynxState::downward_slam);
+		if (half_health()) { request(LynxState::aerial_slash); }
+		if (flags.state.test(StateFlags::out_of_zone)) {
+			request(LynxState::aerial_slash);
+			flags.state.reset(StateFlags::out_of_zone);
+		}
+		if (change_state(LynxState::aerial_slash, Enemy::get_params("aerial_slash"))) { return LYNX_BIND(update_aerial_slash); }
+		if (change_state(LynxState::downward_slam, Enemy::get_params("downward_slam"))) { return LYNX_BIND(update_downward_slam); }
+	}
+
 	return LYNX_BIND(update_jump);
 }
 

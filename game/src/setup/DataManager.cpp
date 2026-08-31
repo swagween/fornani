@@ -279,6 +279,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["activated_switches"] = dj::Json::empty_array();
 	save["destroyed_blocks"] = dj::Json::empty_array();
 	save["destroyed_inspectables"] = dj::Json::empty_array();
+	save["visit_history"] = dj::Json::empty_array();
 	save["map_pins"] = dj::Json::empty_array();
 	save["bestiary"] = dj::Json::empty_array();
 
@@ -294,6 +295,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
+	for (auto const room : player.visit_history.get_list()) { save["visit_history"].push_back(room); }
 	for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
 	for (auto& enemy : m_bestiary) {
 		auto record = dj::Json{};
@@ -763,7 +765,12 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	auto const& player_data = save["player_data"];
 
 	// marketplace
-	for (auto& vendor : marketplace) {}
+	if (files.at(current_save).is_new()) {
+		random::reset_vendor_seed();
+		save_seed();
+		for (auto& vendor : marketplace) { vendor.second.generate_inventory(*m_services); }
+		NANI_LOG_INFO(m_logger, "Generated new vendor inventory and reset vendor seed.");
+	}
 	random::set_vendor_seed(save["vendor_seed"].as<random::seed_t>());
 	NANI_LOG_INFO(m_logger, "Loaded vendor seed: {}", save["vendor_seed"].as<random::seed_t>());
 	for (auto& vendor : marketplace) { vendor.second.generate_inventory(*m_services); }
@@ -780,6 +787,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	m_bestiary.clear();
 	m_map_pins.clear();
 	minimap.clear_custom_pins();
+	player.visit_history.clear();
 
 	m_services->quest_table.unserialize(save);
 	active_quest = save["active_quest"].as<int>();
@@ -816,6 +824,9 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 	for (auto const& enemy : fallen_enemies_data) {
 		fallen_enemies.emplace_back(std::make_pair(enemy[0].as<int>(), StableID{enemy[1].as<StableID::underlying_type>()}), enemy[2].as<int>(), static_cast<bool>(enemy[3].as<int>()), static_cast<bool>(enemy[4].as<int>()));
 	}
+
+	auto const& visit_history_data = save["visit_history"].as_array();
+	for (auto const& room : visit_history_data) { player.visit_history.push_room(room.as<int>()); }
 
 	player.piggybacker = {};
 	if (save["piggybacker"].as<int>() != 0) { player.piggyback(save["piggybacker"].as<int>()); }

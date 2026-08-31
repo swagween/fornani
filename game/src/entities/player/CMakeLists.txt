@@ -7,6 +7,7 @@ nani_add_sources(
         PlayerAnimation.cpp
         PlayerAttributes.cpp
         PlayerController.cpp
+        VisitHistory.cpp
         Wallet.cpp
         Wardrobe.cpp
 )

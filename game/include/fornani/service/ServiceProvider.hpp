@@ -30,7 +30,7 @@
 
 namespace fornani::automa {
 enum class DebugFlags : std::uint8_t { imgui_overlay, demo_mode, debug_mode };
-enum class AppFlags : std::uint8_t { fullscreen, tutorial, in_game, editor, custom_map_start };
+enum class AppFlags : std::uint8_t { tutorial, in_game, editor, custom_map_start };
 enum class StateFlags : std::uint8_t { hide_hud, no_menu, cutscene };
 
 struct EditorSettings {
@@ -77,14 +77,12 @@ struct ServiceProvider {
 	// debug stuff
 	int out_value{};
 
-	void toggle_fullscreen() { fullscreen() ? app_flags.reset(AppFlags::fullscreen) : app_flags.set(AppFlags::fullscreen); }
 	void toggle_tutorial() { tutorial() ? app_flags.reset(AppFlags::tutorial) : app_flags.set(AppFlags::tutorial); }
 	void toggle_debug() { debug_mode() ? debug_flags.reset(DebugFlags::debug_mode) : debug_flags.set(DebugFlags::debug_mode); }
-	void set_fullscreen(bool flag) { flag ? app_flags.set(AppFlags::fullscreen) : app_flags.reset(AppFlags::fullscreen); }
 	void set_editor(bool flag) { flag ? app_flags.set(AppFlags::editor) : app_flags.reset(AppFlags::editor); }
 	void set_tutorial(bool flag) { flag ? app_flags.set(AppFlags::tutorial) : app_flags.reset(AppFlags::tutorial); }
 
-	[[nodiscard]] auto fullscreen() const -> bool { return app_flags.test(AppFlags::fullscreen); }
+	[[nodiscard]] auto fullscreen() const -> bool { return window->is_fullscreen(); }
 	[[nodiscard]] auto is_editor() const -> bool { return app_flags.test(AppFlags::editor); }
 	[[nodiscard]] auto tutorial() const -> bool { return app_flags.test(AppFlags::tutorial); }
 	[[nodiscard]] auto in_game() const -> bool { return app_flags.test(AppFlags::in_game); }

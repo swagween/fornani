@@ -46,7 +46,6 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		m_context->loader.add([&] { services.data.load_progress(player, static_cast<int>(i)); });
 	}*/
 
-	if (services.window->is_fullscreen()) { services.app_flags.set(automa::AppFlags::fullscreen); }
 	services.set_editor(false);
 
 	measurements.win_size.x = services.window->get().getSize().x;
@@ -331,9 +330,29 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Actual Position: (%.2f, %.2f)", player->get_actual_camera_position().x, player->get_actual_camera_position().y);
 					ImGui::Text("Camera state: %s", services.camera_controller.is_free() ? "free" : "constrained");
 					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
+					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
+					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
+					ImGui::Text("Previous Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_previous_time_of_day()));
+					ImGui::Text("World Clock Transition: %f", services.world_clock.get_transition());
+					ImGui::Text("World Clock RNG (weekly): %f", services.world_clock.get_rng(WorldClockInterval::week));
+					ImGui::Text("World Clock RNG (daily): %f", services.world_clock.get_rng(WorldClockInterval::day));
+					ImGui::Text("World Clock RNG (hourly): %f", services.world_clock.get_rng(WorldClockInterval::hour));
 					ImGui::Separator();
+					static int clock_speed{services.world_clock.get_rate()};
+					if (ImGui::Button("Dawn")) { services.world_clock.set_time(5, 59); }
+					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
+					if (ImGui::Button("Dusk")) { services.world_clock.set_time(17, 59); }
+					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
+					ImGui::Text("World clock transitioning? %s", services.world_clock.is_transitioning() ? "yes" : "no");
+					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
+					services.world_clock.set_speed(clock_speed);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Ticker")) {
 					ImGui::Text("Ticker");
 					ImGui::Text("dt: %.8f", services.ticker.dt.count());
+					ImGui::Text("accumulator: %.8f", services.ticker.accumulator.count());
+					ImGui::Text("residue: %.8f", services.ticker.residue.count());
 					ImGui::Separator();
 					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
 					ImGui::Text("Seconds Passed In-Game: %.2f", services.ticker.in_game_seconds_passed.count());
@@ -351,26 +370,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::ProgressBar(services.ticker.get_slowdown(), {300.f, 4.f}, "");
 					ImGui::Text("DT Scalar: %.4f", services.ticker.dt_scalar);
 					if (ImGui::Button("Slowdown Test")) { services.ticker.slow_down(0.7f, 0.2f, 0.4f); }
-					if (ImGui::Button("Freezeframe Test")) { services.ticker.freeze_frame(0.06f); }
-					ImGui::Separator();
-					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
-					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
-					ImGui::Text("Previous Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_previous_time_of_day()));
-					ImGui::Text("World Clock Transition: %f", services.world_clock.get_transition());
-					ImGui::Text("World Clock RNG (weekly): %f", services.world_clock.get_rng(WorldClockInterval::week));
-					ImGui::Text("World Clock RNG (daily): %f", services.world_clock.get_rng(WorldClockInterval::day));
-					ImGui::Text("World Clock RNG (hourly): %f", services.world_clock.get_rng(WorldClockInterval::hour));
-					ImGui::Separator();
-					static int clock_speed{services.world_clock.get_rate()};
-					if (ImGui::Button("Dawn")) { services.world_clock.set_time(5, 59); }
-					if (ImGui::Button("Morning")) { services.world_clock.set_time(6, 59); }
-					if (ImGui::Button("Dusk")) { services.world_clock.set_time(17, 59); }
-					if (ImGui::Button("Night")) { services.world_clock.set_time(18, 59); }
-					ImGui::Text("World clock transitioning? %s", services.world_clock.is_transitioning() ? "yes" : "no");
-					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
-					services.world_clock.set_speed(clock_speed);
-					ImGui::Separator();
-
+					if (ImGui::Button("Freezeframe Test")) { services.ticker.freeze_frame(0.18f); }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Save")) {
@@ -483,13 +483,18 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					left_triggered.update();
 					ImGui::EndTabItem();
 				}
-				if (ImGui::BeginTabItem("RNG")) {
+				if (ImGui::BeginTabItem("RNG / Travel")) {
 					ImGui::Text("Vendor Seed: %u", random::get_vendor_seed());
 					ImGui::Separator();
-					ImGui::Text("Distance Traveled: %i", player->visit_history.distance_traveled());
-					ImGui::Separator();
+
 					ImGui::Text("Room Deque: ");
-					for (auto& room : player->visit_history.room_deque) {
+					for (auto [i, room] : std::views::enumerate(player->visit_history.get_list())) {
+						ImGui::Text("%i, ", room);
+						if (i % 6 != 5) { ImGui::SameLine(); }
+					}
+					ImGui::NewLine();
+					ImGui::Text("Collapsed List: ");
+					for (auto room : player->visit_history.collapsed_path()) {
 						ImGui::Text("%i, ", room);
 						ImGui::SameLine();
 					}
@@ -525,14 +530,15 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						}
 					}
 					ImGui::Separator();
-					ImGui::Text("Distance Traveled: %i", player->visit_history.distance_traveled());
-					ImGui::Text("Distance Traveled from 223: %i", player->visit_history.distance_traveled_from(223));
+					static int t_room{};
+					ImGui::InputInt("Test", &t_room);
+					ImGui::Text("Distance Traveled from 223: %i", player->visit_history.distance_traveled_from(t_room));
 					ImGui::Text("Visit History: ");
 					ImGui::Separator();
 					ImGui::Text("Room Deque: ");
-					for (auto& room : player->visit_history.room_deque) {
+					for (auto [i, room] : std::views::enumerate(player->visit_history.get_list())) {
 						ImGui::Text("%i, ", room);
-						ImGui::SameLine();
+						if (i % 6 != 5) { ImGui::SameLine(); }
 					}
 					ImGui::EndTabItem();
 				}

@@ -321,19 +321,58 @@
   {
     "tag": "ashtown_bandit",
     "target": 11,
-    "objectives": [],
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Learn more about the Ashtown Bandit."
+      },
+      {
+        "index": 2,
+        "readout": "Go to the top of the Yellow District at night to catch the Bandit in the act."
+      },
+      {
+        "index": 3,
+        "readout": "Talk to the Curio Shop owner to enter the Bandit's secret hideout."
+      },
+      {
+        "index": 4,
+        "readout": "Steal Sarah Bane's Golden Tiara."
+      },
+      {
+        "index": 5,
+        "readout": "Bring the Golden Tiara back to the Bandit."
+      }
+    ],
     "displayed": true
   },
   {
     "tag": "find_spencer",
     "target": 11,
-    "objectives": [],
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Talk to Ashtown residents to learn more about Spencer."
+      },
+      {
+        "index": 2,
+        "readout": ""
+      }
+    ],
     "displayed": true
   },
   {
     "tag": "cajole_doug",
     "target": 10,
-    "objectives": [],
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Get on Doug's good side."
+      },
+      {
+        "index": 2,
+        "readout": "Go to the top of the Yellow District at night to catch the theif who stole Doug's screwdriver."
+      }
+    ],
     "displayed": true
   },
   {

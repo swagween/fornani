@@ -121,7 +121,7 @@ void Particle::update(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Particle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	if (!debug::is_production()) { return; }
+	// if (!debug::is_production()) { return; }
 	if (m_collider) { m_collider->get_circle()->render(win, cam); }
 	render(win, cam);
 }

@@ -40,20 +40,28 @@ class Ticker {
 	void tick(F fn) {
 
 		ft = Sec{tick_rate};
-		manage_slowdowns();
 
 		new_time = Clk::now();
-		dt = std::chrono::duration_cast<Sec>(new_time - current_time);
-		dt *= dt_scalar;
+		auto const real_dt = std::chrono::duration_cast<Sec>(new_time - current_time);
 		current_time = new_time;
+
+		// discard abnormally large real-time gaps
+		// (window resizing, debugger pauses, focus changes, etc.)
+		if (real_dt > tick_limit) {
+			residue = Sec::zero();
+			accumulator = Sec::zero();
+			return;
+		}
+
+		manage_slowdowns(real_dt);
 
 		if (dt_scalar < constants::tiny_value) { return; }
 
-		if (dt.count() > tick_limit.count()) { return; } // return for unexpected dt values, particularly during the beginning of the state
+		dt = real_dt * dt_scalar;
 
 		accumulator = dt + residue;
 		if (accumulator < ft) {
-			residue += accumulator;
+			residue = accumulator;
 			accumulator = Sec::zero();
 			return;
 		}
@@ -67,12 +75,14 @@ class Ticker {
 			++total_integrations;
 			++ticks;
 		}
-		if (integrations == max_integrations_v) { residue = Sec::zero(); }
-
-		residue = accumulator;
-		accumulator = Sec::zero();
+		if (integrations == max_integrations_v) {
+			residue = Sec::zero();
+		} else {
+			residue = accumulator;
+		}
 		++calls_per_frame;
 	};
+
 	void reset();
 
 	void start_frame();
@@ -129,7 +139,7 @@ class Ticker {
 	float fps{60.f};
 
   private:
-	void manage_slowdowns();
+	void manage_slowdowns(Sec real_dt);
 
   private:
 	std::deque<Sec> frame_list{};

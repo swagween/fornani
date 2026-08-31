@@ -11,14 +11,15 @@ namespace fornani {
 class WindowManager {
   public:
 	WindowManager(sf::Vector2i const dimensions) : m_screen_dimensions{dimensions} {};
-	sf::RenderWindow& get() { return *m_window.get(); }
-	sf::View get_view() const { return game_view; }
-	sf::FloatRect get_viewport() const { return game_port; }
+	sf::RenderWindow& get() { return m_window; }
+	sf::View get_view() const { return m_game_view; }
+	sf::FloatRect get_viewport() const { return m_game_port; }
 	void set();
 	void create(std::string const& title, bool fullscreen, sf::Vector2i const dimensions);
+	void recreate(bool fullscreen);
 	void restore_view();
 	void set_screencap();
-	void set_view(sf::View& to) { m_window->setView(to); }
+	void set_view(sf::View& to) { m_window.setView(to); }
 
 	[[nodiscard]] auto i_screen_dimensions() const -> sf::Vector2i { return m_screen_dimensions; }
 	[[nodiscard]] auto f_screen_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_screen_dimensions}; }
@@ -35,14 +36,18 @@ class WindowManager {
 	sf::Texture screencap{};
 
   private:
-	std::unique_ptr<sf::RenderWindow> m_window{};
+	void try_fullscreen();
+
+  private:
+	sf::RenderWindow m_window{};
 	sf::Image m_icon;
-	sf::View game_view{};
-	sf::VideoMode mode{};
-	sf::FloatRect game_port{};
-	sf::Vector2i aspects{3840, 2048};
+	sf::View m_game_view{};
+	sf::VideoMode m_mode{};
+	sf::FloatRect m_game_port{};
+	sf::Vector2i m_aspects{3840, 2048};
 	sf::Vector2i m_screen_dimensions{};
 	sf::Vector2f m_letterbox{1.f, 1.f};
+	std::string m_title{};
 	bool m_fullscreen{};
 
 	io::Logger m_logger{"windowing"};

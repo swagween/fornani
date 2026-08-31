@@ -79,10 +79,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			case static_cast<int>(SettingsToggles::music): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::ambience): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::sfx): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
-			case static_cast<int>(SettingsToggles::fullscreen):
-				svc.toggle_fullscreen();
-				p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "fullscreen", gui::OutputType::gradual);
-				break;
+			case static_cast<int>(SettingsToggles::fullscreen): svc.window->recreate(!svc.window->is_fullscreen()); break;
 			case static_cast<int>(SettingsToggles::military_time): svc.world_clock.toggle_military_time(); break;
 			case static_cast<int>(SettingsToggles::language):
 				m_menu.emplace(svc, p_app_context->localization.get_copy_of_available_languages(), options.at(static_cast<int>(SettingsToggles::language)).label.getGlobalBounds().position, p_app_context->settings.get_theme());

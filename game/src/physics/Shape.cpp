@@ -391,6 +391,29 @@ std::vector<sf::Vector2f> Shape::get_edges() const {
 	return ret;
 }
 
+auto Shape::get_sloped_vertex(bool lower) const -> sf::Vector2f {
+	auto const count = vertices.size();
+	if (count < 2) { return {}; }
+
+	std::size_t first = 0;
+	std::size_t second = 1;
+	auto longest = (vertices[1] - vertices[0]).lengthSquared();
+
+	for (std::size_t i = 0; i < count; ++i) {
+		for (std::size_t j = i + 1; j < count; ++j) {
+			auto const length = (vertices[j] - vertices[i]).lengthSquared();
+			if (length > longest) {
+				longest = length;
+				first = i;
+				second = j;
+			}
+		}
+	}
+
+	if (lower) { return vertices[first].y > vertices[second].y ? vertices[first] : vertices[second]; }
+	return vertices[first].y < vertices[second].y ? vertices[first] : vertices[second];
+}
+
 float Shape::get_height_at(float x) const {
 	if (!non_square()) { return 0.f; }
 	auto rise = vertices.at(0).y - vertices.at(1).y;

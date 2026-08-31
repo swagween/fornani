@@ -272,9 +272,9 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		return PA_BIND(update_rise);
 	}
 	if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
-	if (change_state(AnimState::slide, get_params("slide"), true)) { return PA_BIND(update_slide); }
 	if (m_player->p_animatable.animation.complete()) {
 		m_player->request_flip();
+		if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 		if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
@@ -471,6 +471,8 @@ fsm::StateFunction PlayerAnimation::update_inspect() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
+	if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
+	if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
 	if (m_player->p_animatable.animation.complete()) {
 		if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }

@@ -1,4 +1,19 @@
 {
+  "ashtown385022343905331": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "atrium_bridge385022343708680": {
     "series": [
       {
@@ -29,6 +44,38 @@
       }
     ]
   },
+  "avoid_spike385022344560654": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  10,
+                  1,
+                  7
+                ]
+              ],
+              "message": "\"...and a soldier must fall to all fours and crawl by pressing and holding #  if he is to avoid injury from the spikes.\""
+            },
+            {
+              "codes": [
+                [
+                  10,
+                  1,
+                  6
+                ]
+              ],
+              "message": "\"If auto-sprint is enabled, one must also hold #  to enable crawling.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "barracks_switch385022345216023": {
     "series": [
       {
@@ -38,21 +85,6 @@
           [
             {
               "message": "...to activate, apply a force of any kind to the top. Switches like these will open paths previously obscured."
-            }
-          ]
-        ]
-      }
-    ]
-  },
-  "briar_ruins0": {
-    "series": [
-      {
-        "hide_portrait": true,
-        "output": 1,
-        "suite": [
-          [
-            {
-              "message": "Briar's House"
             }
           ]
         ]
@@ -272,15 +304,27 @@
                   7
                 ]
               ],
-              "message": "It reads: the soldier who crouches on the ground by pressing  may better view enemies and terrain below."
-            },
-            {
-              "message": "The soldier must not be sprinting to enable this skill."
+              "message": "It reads: the soldier who crawls may also better view enemies and terrain below."
             }
           ],
           [
             {
               "message": "It reads: the soldier may pan the camera using the right joystick to better view the surrounding terrain."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "dougs_house385022344036383": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Doug's House -"
             }
           ]
         ]
@@ -422,6 +466,66 @@
       }
     ]
   },
+  "memories0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "A surge of memories comes rushing back to you as you regard the bedroom where you grew up."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "pawprint385022344298531": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "There's a paw print in the dirt."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "pawprint385022345084969": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "You find a paw print in the dirt."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "pioneer_trail385022344232969": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Pioneer Trail -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "rest385022344888332": {
     "series": [
       {
@@ -431,6 +535,21 @@
           [
             {
               "message": "- Hollow's Rest -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "sarahs_house385022344495141": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Sarah Bane's House -"
             }
           ]
         ]
@@ -467,6 +586,81 @@
       }
     ]
   },
+  "the_way385022347706421": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "< Kariba Ruins          Woodshine Village >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "the_way_2385022345150494": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Old Mimic's Farm ^          Woodshine Village >         Kariba Ruins >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "to_hold385022349213701": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- The Hold -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "to_junk385022350131276": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Junkyards >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "to_pioneer_trail385022350131227": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Pioneer Trail >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "to_service385022343905291": {
     "series": [
       {
@@ -476,6 +670,51 @@
           [
             {
               "message": "Service Elevator >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "to_woodshine385022343643176": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Woodshine Village ^"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "to_woodshine385022344364072": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "^ Old Mimic's Farm            Woodshine Village >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "to_woodshine385022348689420": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Woodshine Village ^"
             }
           ]
         ]
@@ -497,6 +736,21 @@
       }
     ]
   },
+  "wall_pedestal385022345084939": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "There is a small inset, as if a piece is missing..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "welcome385022343839782": {
     "series": [
       {
@@ -506,6 +760,21 @@
           [
             {
               "message": "- Woodshine Village -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "yellow385022349869090": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "- Yellow District -"
             }
           ]
         ]

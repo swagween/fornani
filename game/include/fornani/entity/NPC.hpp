@@ -106,6 +106,7 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	void set_position_from_scaled(sf::Vector2f scaled_pos);
 
 	[[nodiscard]] auto is_hidden() const -> bool { return m_state.test(NPCState::hidden); }
+	[[nodiscard]] auto is_vendor() const -> bool { return vendor.has_value(); }
 	[[nodiscard]] auto is_background() const -> bool { return has_flag_set(NPCFlags::background); }
 	[[nodiscard]] auto is_force_interact() const -> bool { return m_state.test(NPCState::force_interact); }
 	[[nodiscard]] auto get_number_of_suites() const -> int { return static_cast<int>(conversations.size()); }

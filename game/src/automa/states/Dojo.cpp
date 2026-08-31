@@ -187,16 +187,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	if (check_for_vendor(svc)) { return; }
 
-	if (player->visit_history.traveled_far()) {
-		random::reset_vendor_seed();
-		svc.data.save_seed();
-		player->visit_history.clear();
-		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
-	}
-	if (svc.data.marketplace.at(3).inventory.items_view().is_empty()) {
-		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
-	}
-
 	// in-game menus
 	if (svc.input_system.digital(input::DigitalAction::inventory).triggered && !svc.no_menu() && p_context.transition.is(graphics::TransitionState::inactive) && !player->is_dead()) {
 		p_inventory_window = std::make_unique<gui::InventoryWindow>(svc, *m_map, *player);
@@ -324,7 +314,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	svc.camera_controller.set_position(player->get_camera_focus_point());
 	svc.soundboard.set_listener_position(player->get_ear_position());
 
-	// save was loaded from a json, or player died, so we successfully skipped door searchm_map->loa
+	// save was loaded from a json, or player died, so we successfully skipped door search
 	svc.state_controller.actions.reset(Actions::save_loaded);
 	if (!player->is_dead()) { svc.state_controller.actions.reset(Actions::player_death); }
 	player->visit_history.push_room(target_state);

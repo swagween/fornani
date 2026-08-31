@@ -96,7 +96,7 @@ void Console::update(automa::ServiceProvider& svc) {
 			if (code.is_input_hint()) {
 				auto action_id = code.extras ? code.extras->at(0) : 0;
 				auto lookup = m_services->input_system.get_icon_lookup_by_action(static_cast<input::DigitalAction>(action_id));
-				m_writer->insert_icon_at(code.value, lookup);
+				m_writer->insert_icon(lookup);
 			}
 			if (code.is(MessageCodeType::give_bonus_health)) {
 				m_services->events.give_bonus_health_event.dispatch(code.value);

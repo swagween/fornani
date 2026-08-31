@@ -54,7 +54,6 @@ void UserSettings::set_user_settings(automa::ServiceProvider& svc, Localization&
 	svc.music_player.volume.set_base(m_settings["music_volume"].as<double>());
 	svc.ambience_player.volume.set_base(m_settings["ambience_volume"].as<double>());
 	svc.soundboard.volume.set_base(m_settings["sfx_volume"].as<double>());
-	svc.set_fullscreen(m_settings["fullscreen"].as_bool());
 	svc.world_clock.set_military(m_settings["military_time"].as_bool());
 
 	localization.set_language(m_settings["language"].as_string());

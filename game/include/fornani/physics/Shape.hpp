@@ -47,6 +47,7 @@ class Shape {
 		if (vertices.size() < 4) { return true; }
 		return vertices[0].y != vertices[1].y || vertices[2].y != vertices[3].y;
 	}
+	[[nodiscard]] auto get_sloped_vertex(bool lower) const -> sf::Vector2f;
 	[[nodiscard]] auto get_position() const -> sf::Vector2f { return position; }
 	[[nodiscard]] auto get_dimensions() const -> sf::Vector2f { return non_square() ? sf::Vector2f{32.f, 32.f} : vertices[2] - vertices[0]; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }

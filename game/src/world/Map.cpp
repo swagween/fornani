@@ -236,11 +236,13 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 					spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), -in["spread"][1].as<float>()}, {in["spread"][0].as<float>(), in["spread"][1].as<float>()});
 				}
 			}
+			auto sid = StableID{};
+			sid = sid.from(room_id, static_cast<int>(pos.x), static_cast<int>(pos.y));
+			if (svc.data.enemy_is_fallen(room_id, sid)) { continue; }
 			enemy_catalog.push_enemy(svc, *this, context, entry["id"].as<int>(), {variant, start, enemy::Multispawn{spawn_range}, false});
 			enemy_catalog.enemies.back()->set_position_from_scaled(sf::Vector2f{pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();
 			enemy_catalog.enemies.back()->set_stable_id({room_id, {static_cast<int>(pos.x), static_cast<int>(pos.y)}});
-			if (svc.data.enemy_is_fallen(room_id, enemy_catalog.enemies.back()->get_stable_id())) { enemy_catalog.enemies.pop_back(); }
 		}
 	}
 
@@ -289,6 +291,19 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	generate_layer_textures(svc);
 	cooldowns.fade_obscured.start();
 	cooldowns.loading.start();
+
+	auto has_vendor = false;
+	for (auto n : get_entities<NPC>()) {
+		if (!n->is_hidden() && n->is_vendor()) { has_vendor = true; }
+	}
+	auto const visited = player->visit_history.has_visited(room_number) && player->visit_history.traveled_far_from(room_number);
+	auto const never_visited = !player->visit_history.has_visited(room_number);
+	if ((visited || never_visited) && has_vendor) {
+		svc.notifications.push_notification(svc, "New Vendor Items Available!");
+		random::reset_vendor_seed();
+		svc.data.save_seed();
+		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
+	}
 
 	player->register_with_map(*this);
 	if (m_biome.get_id() == 12) {
@@ -480,11 +495,11 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 		collider.register_chunks(*this);
 		collider.update(svc);
 		if (collider.has_attribute(shape::ColliderAttributes::fixed) && !collider.has_trait(shape::ColliderTrait::platform)) { continue; }
-		if (collider.is_intangible()) { continue; }
 		for (auto chunk : collider.get_chunks()) {
 			for (auto& other_ptr : m_chunks[chunk]) {
 				if (!other_ptr) { continue; }
 				if (other_ptr == &collider) { continue; }
+				if (collider.is_intangible()) { continue; }
 				other_ptr->handle_collision(collider);
 				++debug::collision_checks;
 			}
@@ -1043,7 +1058,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_collidable() || cell.is_ceiling_ramp() || cell.is_cage()) { continue; }
+			if (!cell.is_collidable() || cell.is_cage()) { continue; }
 			if (cell.is_platform() && !collide_with_platforms) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
@@ -1064,7 +1079,7 @@ sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, b
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (!cell.is_collidable()) { continue; }
 			if (cell.is_platform() && !collide_with_platforms) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return collider.get_collision_result(cell.bounding_box); }
@@ -1086,7 +1101,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_collidable() || cell.is_ceiling_ramp()) { continue; }
+			if (!cell.is_collidable()) { continue; }
 			if (cell.is_platform() && (world::is_above_platform(cell, collider.get_radius() + collider.get_global_center().y) || collider.physics.actual_velocity().y < 0.f)) { continue; }
 			cell.collision_check = true;
 			collider.handle_collision(cell.bounding_box);

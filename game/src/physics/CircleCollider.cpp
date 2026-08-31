@@ -53,11 +53,10 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 	auto nudge = soft && !circle_above ? 1.f : 0.f;
 	auto vertical = abs(mtv.y) > abs(mtv.x);
 	if (shape.non_square()) {
-		auto const a = shape.vertices[0];
-		auto const b = shape.vertices[1];
+		auto const a = shape.get_sloped_vertex(true);
+		auto const b = shape.get_sloped_vertex(false);
 		auto const ab = b - a;
 		auto const ab_length_squared = ab.lengthSquared();
-
 		if (ab_length_squared > constants::tiny_value) {
 			auto const ap = get_global_center() - a;
 			auto const t = std::clamp(ap.dot(ab) / ab_length_squared, 0.f, 1.f);
@@ -70,15 +69,16 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 				if (distance > constants::tiny_value) {
 					auto const tangent = ab / std::sqrt(ab_length_squared);
 					auto normal = sf::Vector2f{-tangent.y, tangent.x};
-					if (normal.y > 0.f) { normal = -normal; }
+
+					// make the normal point toward the circle
+					if (normal.dot(delta) < 0.f) { normal = -normal; }
+
 					physics.position += normal * (radius - distance);
 					auto const velocity_normal = physics.velocity.dot(normal);
 					if (velocity_normal < 0.f) { physics.velocity -= (1.f + physics.elasticity) * velocity_normal * normal; }
 				}
 			}
 		}
-
-		// vertical ? physics.position.y -= mtv.y* leeway + nudge : physics.position.x -= mtv.x * leeway + nudge;
 	} else {
 		physics.position.x += circle_right_of ? abs(mtv.x) * leeway + nudge : abs(mtv.x) * -leeway - nudge;
 		physics.position.y += circle_below ? abs(mtv.y) * leeway + nudge : abs(mtv.y) * -leeway - nudge;

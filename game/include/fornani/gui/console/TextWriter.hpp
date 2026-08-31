@@ -64,6 +64,7 @@ class TextWriter {
 	void speed_up();
 	void slow_down();
 	void insert_icon_at(int index, sf::Vector2i icon_lookup);
+	void insert_icon(sf::Vector2i icon_lookup);
 
 	[[nodiscard]] auto is_responding() const -> bool { return m_mode == WriterMode::respond; }
 	[[nodiscard]] auto is_writing() const -> bool { return m_mode == WriterMode::write; }

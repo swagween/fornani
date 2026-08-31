@@ -356,7 +356,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		}
 		if (proj.can_damage()) {
 			if (!m_freeze.running()) {
-				auto rate = proj.has_attribute(arms::ProjectileAttributes::automatic) ? 0.011f : 0.016f;
+				auto rate = proj.has_attribute(arms::ProjectileAttributes::automatic) ? 0.022f : 0.048f;
 				svc.ticker.freeze_frame(rate);
 				m_freeze.start();
 			}
@@ -376,7 +376,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
 			if (proj.has_critical_damage()) {
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
-				svc.ticker.freeze_frame(0.03f);
+				svc.ticker.freeze_frame(0.09f);
 				map.spawn_emitter(svc, "critical_hit", proj.get_position(), Direction{});
 				map.spawn_effect(svc, "flare", proj.get_position());
 			} else {

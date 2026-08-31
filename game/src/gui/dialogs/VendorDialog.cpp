@@ -156,7 +156,9 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 				auto item = source_inventory.find_item_stack(id.id);
 				if (item == nullptr) { continue; }
 				if (m_vendor_items_list[index].id == item->item->get_id() && selector.matches(index)) { this_item = &(*item->item); }
-				if (m_player_items_list[index] == item->item->get_id() && selector.matches(index)) { player_item_stack = &(*item); }
+				for (auto [pindex, pid] : std::views::enumerate(m_player_items_list)) {
+					if (m_player_items_list[pindex] == item->item->get_id() && selector.matches(index)) { player_item_stack = &(*item); }
+				}
 			}
 		} else {
 			for (auto [index, id] : std::views::enumerate(m_player_items_list)) {
@@ -209,6 +211,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 							source_inventory.remove_item(item_lbl, 1);
 							NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
 						}
+						if (is_selling()) { source_inventory.remove_item(item_lbl, 1); }
 						svc.soundboard.flags.item.set(audio::Item::vendor_sale);
 						p_flags.set(DialogStatus::made_sale);
 						m_item_menu.reset();
@@ -341,7 +344,7 @@ void VendorDialog::refresh(automa::ServiceProvider& svc, player::Player& player,
 	}
 	std::size_t index = 0;
 	for (auto [i, item] : std::views::enumerate(player.catalog.inventory.items_view())) {
-		if (i >= m_player_items_list.size()) { break; } // player has more than 24 unique sellable items
+		if (index >= m_player_items_list.size()) { break; } // player has more than 24 unique sellable items
 		if (!item.item->is_sellable()) { continue; }
 		auto& slot = m_player_items_list[index];
 		if (slot == -1) { slot = item.item->get_id(); } // populate next slot with item

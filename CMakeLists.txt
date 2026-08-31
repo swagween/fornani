@@ -10,7 +10,7 @@ if (NOT DEFINED FORNANI_ROOT_DIR)
 endif ()
 
 project(fornani
-    VERSION 4.4.0
+    VERSION 4.4.2
     LANGUAGES CXX
 )
 
