@@ -79,11 +79,16 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			case static_cast<int>(SettingsToggles::music): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::ambience): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::sfx): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
-			case static_cast<int>(SettingsToggles::fullscreen): svc.window->recreate(!svc.window->is_fullscreen()); break;
+			case static_cast<int>(SettingsToggles::fullscreen): {
+				svc.window->recreate(!svc.window->is_fullscreen());
+				p_app_context->settings.save_user_settings(*p_services);
+				break;
+			}
 			case static_cast<int>(SettingsToggles::military_time): svc.world_clock.toggle_military_time(); break;
-			case static_cast<int>(SettingsToggles::language):
+			case static_cast<int>(SettingsToggles::language): {
 				m_menu.emplace(svc, p_app_context->localization.get_copy_of_available_languages(), options.at(static_cast<int>(SettingsToggles::language)).label.getGlobalBounds().position, p_app_context->settings.get_theme());
 				break;
+			}
 			}
 			options.at(static_cast<int>(SettingsToggles::autosprint))
 				.label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));

@@ -140,6 +140,14 @@
     "max_distance": 256.0
   },
   {
+    "label": "flower_spin",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.1,
+    "min_distance": 128.0,
+    "max_distance": 1024.0
+  },
+  {
     "label": "shovel_dig",
     "bus": "gameplay",
     "volume": 0.7,
@@ -527,7 +535,9 @@
     "label": "hit_demon_bow",
     "bus": "gameplay",
     "volume": 1.0,
-    "pitch_offset": 0.2
+    "pitch_offset": 0.2,
+    "min_distance": 128.0,
+    "max_distance": 512.0
   },
   {
     "label": "hit_pulse",

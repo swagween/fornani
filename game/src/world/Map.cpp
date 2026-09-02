@@ -299,24 +299,12 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	auto const visited = player->visit_history.has_visited(room_number) && player->visit_history.traveled_far_from(room_number);
 	auto const never_visited = !player->visit_history.has_visited(room_number);
 	if ((visited || never_visited) && has_vendor) {
-		svc.notifications.push_notification(svc, "New Vendor Items Available!");
 		random::reset_vendor_seed();
 		svc.data.save_seed();
 		for (auto& vendor : svc.data.marketplace) { vendor.second.generate_inventory(svc); }
 	}
 
 	player->register_with_map(*this);
-	if (m_biome.get_id() == 12) {
-		player->texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_night"));
-		player->catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_night"));
-		player->update_sprite();
-		player->update_wardrobe();
-	} else {
-		player->texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
-		player->catalog.wardrobe.set_palette(svc.assets.get_texture_modifiable("nani_palette_default"));
-		player->update_sprite();
-		player->update_wardrobe();
-	}
 	NANI_LOG_INFO(m_logger, "Player registered with map.");
 }
 

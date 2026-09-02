@@ -180,16 +180,18 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 }
 
 void Platform::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	constexpr auto skip_value{16.f};
-	player.get_collider().handle_collider_collision(get_collider());
-	//  if (player.get_collider().flags.state.test(shape::State::ceiling_collision)) { player.get_collider().physics.acceleration.y = player.physics_stats.maximum_velocity.y; }
+	auto const skip_value{16.f};
+	auto const stuck_left = player.get_collider().has_left_wallslide_collision() && get_collider().physics.velocity.x < 0.f;
+	auto const stuck_right = player.get_collider().has_right_wallslide_collision() && get_collider().physics.velocity.x > 0.f;
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && !player.get_collider().perma_grounded() && is_sticky()) {
-		auto stuck_left = player.get_collider().has_left_wallslide_collision() && get_collider().physics.velocity.x < 0.f;
-		auto stuck_right = player.get_collider().has_right_wallslide_collision() && get_collider().physics.velocity.x > 0.f;
 		if (!(stuck_right || stuck_left)) {
 			if (!(abs(get_collider().physics.velocity.x) > skip_value || abs(get_collider().physics.velocity.y) > skip_value)) { player.get_collider().physics.forced_momentum = get_collider().physics.position - m_old_position; }
 		}
 	}
+	auto const moving_away = (player.get_input_direction().left() && get_collider().physics.velocity.x < 0.f && player.get_collider().get_center().x < get_collider().get_center().x) ||
+							 (player.get_input_direction().right() && get_collider().physics.velocity.x > 0.f && player.get_collider().get_center().x > get_collider().get_center().x);
+	auto const trapped = player.get_collider().wallslider.overlaps(get_collider().bounding_box) && player.controller.moving() && moving_away && player.get_collider().grounded();
+	if (trapped) { player.get_collider().physics.velocity = {player.get_actual_direction().as_float() * get_collider().physics.actual_speed() * 200.f, 0.f}; }
 	m_old_position = get_collider().physics.position;
 	if (!switch_up.running()) {
 		if (native_direction.lnr == LNR::left) {

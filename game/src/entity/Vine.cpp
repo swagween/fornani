@@ -59,7 +59,6 @@ void Vine::init() {
 		++ctr;
 	}
 	repeatable = false;
-	NANI_LOG_DEBUG(m_logger, "simulating vines...");
 	m_chain.simulate(*m_services, 128);
 }
 
@@ -111,6 +110,7 @@ void Vine::expose() {
 void Vine::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, context, player);
 	if (m_init.running()) {
+		if (p_flags.test(EntityFlags::spawn_denied)) { m_spawnable_platforms.reset(); }
 		for (int i = 0; i < simulations_v; ++i) { m_chain.update(svc, map, player); }
 	} else {
 		m_chain.update(svc, map, player);

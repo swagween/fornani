@@ -2,6 +2,7 @@
 #include "fornani/entities/world/SpawnablePlatform.hpp"
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Renderer.hpp>
+#include "fornani/audio/Soundboard.hpp"
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Math.hpp"
@@ -9,7 +10,7 @@
 
 namespace fornani::entity {
 
-SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {32, 32}), m_health{1.f} {
+SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index) : index(index), sprite(svc.assets.get_texture("spawnable_platform"), {32, 32}), m_health{1.f}, m_soundboard{&svc.soundboard} {
 	collider = shape::Collider({64.f, 64.f});
 	collider.set_top_only();
 	m_steering.physics.set_friction_componentwise({0.8f, 0.8f});
@@ -24,6 +25,8 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f 
 	sprite.push_params("closing", {15, 3, 28, 0});
 	sprite.set_params("dormant");
 	state = SpawnablePlatformState::dormant;
+	auto ipos = sf::Vector2i{position};
+	m_id = m_id.from(random::random_range(1, 1000), ipos.x, ipos.y);
 }
 
 void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target) {
@@ -35,6 +38,7 @@ void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& pla
 	sensor.set_position(m_steering.physics.position + collider.dimensions * 0.5f - sf::Vector2f{0.f, 16.f});
 	m_health.update();
 	sprite.update(util::round_to_even(m_steering.physics.position - sf::Vector2f{-2.f, 10.f}));
+	if (state != SpawnablePlatformState::dormant) { svc.soundboard.repeat_sound("flower_spin", m_id.get(), sensor.bounds.getPosition()); }
 	state_function = state_function();
 }
 
@@ -44,7 +48,7 @@ void SpawnablePlatform::on_hit(automa::ServiceProvider& svc, world::Map& map, ar
 			m_health.inflict(proj.get_damage());
 			svc.soundboard.flags.world.set(audio::World::breakable_hit);
 			if (m_health.is_dead()) {
-				svc.soundboard.flags.world.set(audio::World::block_toggle);
+				svc.soundboard.play_sound("flower_hit", sensor.bounds.getPosition());
 				map.effects.push_back(entity::Effect(svc, "small_explosion", sensor.bounds.getPosition()));
 				state = SpawnablePlatformState::opening;
 			}
@@ -59,7 +63,6 @@ void SpawnablePlatform::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		sensor.render(win, cam);
 	} else {
 		sprite.render(win, cam);
-		++debug::draw_calls;
 	}
 }
 
@@ -93,6 +96,7 @@ fsm::StateFunction SpawnablePlatform::update_fading() {
 	if (sprite.complete()) {
 		state = SpawnablePlatformState::closing;
 		sprite.set_params("closing", true);
+		m_soundboard->play_sound("flower_close", sensor.bounds.getPosition());
 		return SPAWNABLE_PLAT_BIND(update_closing);
 	}
 	return SPAWNABLE_PLAT_BIND(update_fading);

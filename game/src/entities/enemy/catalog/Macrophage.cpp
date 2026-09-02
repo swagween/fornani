@@ -58,7 +58,7 @@ void Macrophage::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	} else {
 		m_steering.smooth_random_walk(Enemy::get_collider().physics, 0.0005f, 64.f);
 	}
-	player.is_stunned() ? m_body->flags.set(vfx::ChainFlags::no_collision) : m_body->flags.reset(vfx::ChainFlags::no_collision);
+	player.is_stunned() || hurt_effect.running() ? m_body->flags.set(vfx::ChainFlags::no_collision) : m_body->flags.reset(vfx::ChainFlags::no_collision);
 	// handle body visuals
 	m_body->set_position(get_collider().get_center());
 	m_body->update(svc, map, player);

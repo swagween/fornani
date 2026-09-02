@@ -68,6 +68,11 @@
     "framerate": 16,
     "dimensions": [18, 18]
   },
+  "dark_flare": {
+    "frame_count": 10,
+    "framerate": 8,
+    "dimensions": [63, 63]
+  },
   "lens_flare": {
     "frame_count": 5,
     "framerate": 16,

@@ -182,7 +182,7 @@ void InputSystem::sync_mouse(sf::RenderWindow& window) {
 		return;
 	}
 	m_mouse.previous_position = m_mouse.position;
-	m_mouse.position = window.mapPixelToCoords(sf::Mouse::getPosition());
+	m_mouse.position = window.mapPixelToCoords(sf::Mouse::getPosition() - window.getPosition());
 }
 
 void InputSystem::update() {

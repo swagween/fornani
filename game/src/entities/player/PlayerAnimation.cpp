@@ -271,6 +271,10 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		m_player->request_flip();
 		return PA_BIND(update_rise);
 	}
+	if (change_state(AnimState::inspect, get_params("inspect"))) {
+		m_player->request_flip();
+		return PA_BIND(update_inspect);
+	}
 	if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
 	if (m_player->p_animatable.animation.complete()) {
 		m_player->request_flip();
@@ -284,7 +288,6 @@ fsm::StateFunction PlayerAnimation::update_turn() {
 		if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 		if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
 		if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
-		if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 		request(AnimState::idle);
@@ -305,6 +308,10 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		m_player->request_flip();
 		return PA_BIND(update_rise);
 	}
+	if (change_state(AnimState::inspect, get_params("inspect"))) {
+		m_player->request_flip();
+		return PA_BIND(update_inspect);
+	}
 	if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
 	if (m_player->p_animatable.animation.complete()) {
 		m_player->request_flip();
@@ -314,7 +321,6 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
 		if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
 		if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
-		if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 		if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 		if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 
@@ -364,6 +370,7 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
 	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
 	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
+	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }

@@ -9,6 +9,8 @@
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Map.hpp>
+#include <functional>
+#include <ranges>
 
 namespace fornani::player {
 
@@ -385,6 +387,7 @@ void Player::update(world::Map& map) {
 	for (auto& force : accumulated_momentum) {
 		get_collider().physics.apply_force(force);
 		auto fric = get_collider().grounded() ? 0.985f : 0.985f;
+		if (((controller.moving_left() && force.x < 0.f) || (controller.moving_right() && force.x > 0.f)) && !get_collider().grounded()) { fric = 0.992f; }
 		force = force.componentWiseMul({fric, 0.95f});
 		sum += force.lengthSquared();
 	}
@@ -1043,6 +1046,15 @@ void Player::sync_antennae() {
 }
 
 void Player::apply_impulse(sf::Vector2f impulse) { accumulated_momentum.push_back(impulse); }
+
+void Player::bhop(float const multiplier) {
+	auto const sum = std::ranges::fold_left(accumulated_momentum, sf::Vector2f{}, std::plus{});
+	accumulated_momentum.clear();
+	auto impulse = sum * multiplier;
+	impulse.x = std::min(impulse.x, 10.f);
+	impulse.y = std::min(impulse.y, 10.f);
+	accumulated_momentum.push_back(impulse);
+}
 
 void Player::stun(float multiplier) {
 	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }

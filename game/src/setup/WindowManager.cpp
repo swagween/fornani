@@ -60,9 +60,7 @@ void WindowManager::recreate(bool fullscreen) {
 	m_fullscreen = fullscreen;
 	try_fullscreen();
 	m_window.create(m_mode, m_title, fullscreen ? sf::Style::None : sf::Style::Default & ~sf::Style::Resize, m_fullscreen ? sf::State::Windowed : sf::State::Windowed);
-	m_window.setVerticalSyncEnabled(true);
-	m_window.setFramerateLimit(default_framerate_limit_v);
-	m_window.setKeyRepeatEnabled(false);
+	set();
 }
 
 void WindowManager::restore_view() { m_window.setView(m_game_view); }

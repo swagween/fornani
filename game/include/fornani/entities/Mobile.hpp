@@ -54,6 +54,7 @@ class Mobile : public Polymorphic {
 	[[nodiscard]] bool player_behind(player::Player& player) const;
 	[[nodiscard]] auto get_desired_direction() const -> Direction { return directions.desired; }
 	[[nodiscard]] auto get_actual_direction() const -> Direction { return directions.actual; }
+	[[nodiscard]] auto get_input_direction() const -> Direction { return directions.input; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return collider.value().get().get_reference().get_center(); }
 	[[nodiscard]] auto get_collider() const -> shape::Collider& { return collider.value().get().get_reference(); }
 

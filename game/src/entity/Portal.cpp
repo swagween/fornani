@@ -124,7 +124,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	p_animatable.set_texture_rect(lookup);
 
 	if (!context.transition.is(graphics::TransitionState::inactive)) { m_state.reset(PortalState::ready); }
-	if (bounding_box.overlaps(player.get_collider().bounding_box)) {
+	if (bounding_box.overlaps(player.hurtbox)) {
 		player.set_flag(player::PlayerFlags::in_front_of_door);
 		if (m_attributes.test(PortalAttributes::activate_on_contact)) {
 			if (!m_state.test(PortalState::transitioning) && m_state.test(PortalState::ready)) { m_state.set(PortalState::activated); }
@@ -140,6 +140,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 					player.walk();
 				}
 			}
+			if (is_top() && m_state.test(PortalState::ready)) { player.apply_impulse({0.f, -2.f}); }
 		} else if (player.controller.inspecting()) {
 			m_state.set(PortalState::activated);
 			player.get_collider().physics.acceleration.x = 0.f;

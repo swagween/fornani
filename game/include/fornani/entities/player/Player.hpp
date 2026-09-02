@@ -275,6 +275,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void update_antennae();
 	void sync_antennae();
 	void apply_impulse(sf::Vector2f impulse);
+	void bhop(float const multiplier = 1.1f);
 	void set_busy(bool flag) { set_flag(PlayerFlags::busy, flag); }
 	void stun(float multiplier = 1.f);
 	void hurt_and_stun(float multiplier = 1.f);

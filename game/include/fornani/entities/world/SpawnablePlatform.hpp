@@ -7,8 +7,13 @@
 #include <fornani/entities/animation/AnimatedSprite.hpp>
 #include <fornani/entities/packages/Health.hpp>
 #include <fornani/physics/Collider.hpp>
+#include <fornani/utils/ID.hpp>
 #include <fornani/utils/StateFunction.hpp>
 #define SPAWNABLE_PLAT_BIND(f) std::bind(&SpawnablePlatform::f, this)
+
+namespace fornani::audio {
+class Soundboard;
+}
 
 namespace fornani::entity {
 
@@ -17,7 +22,7 @@ enum class SpawnablePlatformState : std::uint8_t { open, opening, fading, closin
 class SpawnablePlatform {
   public:
 	SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f position, int index = 0);
-	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index), m_health{1.f} {}
+	SpawnablePlatform(SpawnablePlatform const& other) : sprite(other.sprite), index(other.index), m_health{1.f}, m_soundboard(other.m_soundboard) {}
 
 	void update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
@@ -43,5 +48,8 @@ class SpawnablePlatform {
 	components::CircleSensor sensor{};
 	anim::AnimatedSprite sprite;
 	Health m_health;
+	StableID m_id{};
+
+	audio::Soundboard* m_soundboard;
 };
 } // namespace fornani::entity

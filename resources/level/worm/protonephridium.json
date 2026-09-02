@@ -1,5 +1,20 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 22335,
+        "modifier": 39,
+        "position": [
+          2,
+          4
+        ],
+        "type": 1
+      }
+    ],
     "enemies": [
       {
         "dimensions": [
@@ -168,7 +183,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": 0,
+    "development_status": 1,
     "dimensions": [
       32,
       48
@@ -198,7 +213,8 @@
       "darken_factor": 5
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

@@ -108,6 +108,11 @@ fsm::StateFunction Archer::update_run() {
 	auto const facing = directions.actual.lnr == LNR::left ? -1.f : 1.f;
 	get_collider().physics.apply_force({attributes.speed * facing, 0.f});
 	if (caution.danger() || p_animatable.animation.complete()) {
+		if (cooldowns.post_shoot.running()) {
+			cooldowns.post_jump.start();
+			request(ArcherState::idle);
+			if (change_state(ArcherState::idle, get_params("idle"))) { return ARCHER_BIND(update_idle); }
+		}
 		request(ArcherState::shoot);
 		if (change_state(ArcherState::shoot, get_params("shoot"))) { return ARCHER_BIND(update_shoot); }
 	}
