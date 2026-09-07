@@ -23,6 +23,7 @@
 #include <fornani/entities/enemy/catalog/Hulmet.hpp>
 #include <fornani/entities/enemy/catalog/Hurtle.hpp>
 #include <fornani/entities/enemy/catalog/Imp.hpp>
+#include <fornani/entities/enemy/catalog/Junkboss.hpp>
 #include <fornani/entities/enemy/catalog/Junker.hpp>
 #include <fornani/entities/enemy/catalog/Junkfly.hpp>
 #include <fornani/entities/enemy/catalog/Lymphocyte.hpp>
@@ -80,6 +81,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(36, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Macrophage>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(37, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Antibody>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(38, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Grunt>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(39, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Junkboss>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

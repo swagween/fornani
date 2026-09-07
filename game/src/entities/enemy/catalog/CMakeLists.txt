@@ -16,6 +16,7 @@ nani_add_sources(
         Hellion.cpp
         Hurtle.cpp
         Imp.cpp
+        Junkboss.cpp
         Junker.cpp
         Junkfly.cpp
         Lymphocyte.cpp

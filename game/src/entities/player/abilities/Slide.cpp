@@ -33,7 +33,7 @@ void Slide::update(shape::Collider& collider, PlayerController& controller) {
 	if (super) { controller.set_flag(PlayerControllerFlags::super_slide); }
 	if (m_accumulated_speed.get_count() == super_threshold && prev_count < m_accumulated_speed.get_count()) { m_services->soundboard.flags.player.set(audio::Player::super_slide); }
 	collider.physics.acceleration.x = m_direction.as_float() * (m_speed_multiplier * m_dampen + static_cast<float>(m_accumulated_speed.get_count()) * 0.01f);
-	if ((std::abs(collider.physics.apparent_velocity().x) < m_minimum_threshold) || !collider.grounded() || Direction{controller.last_requested_direction()}.lnr != m_direction.lnr) {
+	if ((std::abs(collider.physics.apparent_velocity().x) < m_minimum_threshold) || !collider.slide_grounded() || Direction{controller.last_requested_direction()}.lnr != m_direction.lnr) {
 		controller.post_slide.start();
 		fail();
 	}

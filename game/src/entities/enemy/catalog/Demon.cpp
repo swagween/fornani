@@ -101,7 +101,7 @@ void Demon::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
 		m_services->soundboard.flags.demon.set(audio::Demon::hurt);
 		sound.hurt_sound_cooldown.start();
-		hurt_effect.start(128);
+		hurt_effect.start();
 		flags.state.reset(StateFlags::hurt);
 	}
 

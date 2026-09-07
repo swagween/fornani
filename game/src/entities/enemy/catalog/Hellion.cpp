@@ -21,7 +21,6 @@ void Hellion::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 
-	hurt_effect.update();
 	if (flags.state.test(StateFlags::hurt)) {
 		hurt_effect.start();
 		if (sound.hurt_sound_cooldown.is_complete()) {

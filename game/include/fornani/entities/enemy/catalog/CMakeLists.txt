@@ -16,6 +16,7 @@ nani_add_headers(
         Hellion.hpp
         Hurtle.hpp
         Imp.hpp
+        Junkboss.hpp
         Junker.hpp
         Junkfly.hpp
         Lymphocyte.hpp

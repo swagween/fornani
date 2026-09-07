@@ -25,6 +25,7 @@ class CircleSensor {
 	bool within_bounds(shape::Shape const& shape) const;
 	bool within_bounds(shape::CircleCollider const& shape) const;
 	sf::Vector2f get_MTV(shape::Shape const& shape) const;
+	sf::FloatRect const& get_vicinity() { return m_vicinity; }
 
 	auto activate() -> void { state.set(SensorState::active); }
 	auto deactivate() -> void { state.reset(SensorState::active); }
@@ -33,6 +34,7 @@ class CircleSensor {
 
   private:
 	util::BitFlags<SensorState> state{};
+	sf::FloatRect m_vicinity{};
 };
 
 } // namespace fornani::components

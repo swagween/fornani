@@ -31,6 +31,7 @@ class CircleCollider : public ICollider {
 	void handle_collision(Shape const& shape, bool soft = false) override;
 	void handle_collider_collision(Collider const& collider, bool momentum = false) override;
 	void detect_map_collision(world::Map& map) override;
+	void resolve_collision();
 	void render(sf::RenderWindow& win, sf::Vector2f cam) override;
 	void set_position(sf::Vector2f pos) { physics.position = pos; }
 
@@ -45,6 +46,8 @@ class CircleCollider : public ICollider {
 
   private:
 	util::BitFlags<CircleColliderFlags> m_flags{};
+	sf::Vector2f m_correction{};
+	sf::Vector2f m_collision_normal{};
 };
 
 } // namespace fornani::shape

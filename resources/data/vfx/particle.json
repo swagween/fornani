@@ -22,7 +22,7 @@
     "rate": 120.0,
     "expulsion": 90.0,
     "expulsion_variance": 88.0,
-    "cone": 0.1,
+    "cone": 0.3,
     "friction": 0.995,
     "elasticity": 0.9,
     "elasticity_variance": 0.08,
@@ -766,6 +766,31 @@
     "colliding": false,
     "fader": true,
     "color": "fucshia",
+    "physics": {
+      "gravity": 0.5,
+      "friction": [0.97, 0.97],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
+  "spark": {
+    "load": 4,
+    "rate": 60.0,
+    "expulsion": 150.0,
+    "expulsion_variance": 60.0,
+    "cone": 6.28,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "gravity": 0.5,
+    "lifespan": 100,
+    "lifespan_variance": 40,
+    "dimensions": [2, 2],
+    "colliding": false,
+    "fader": true,
+    "color": "yellow",
     "physics": {
       "gravity": 0.5,
       "friction": [0.97, 0.97],

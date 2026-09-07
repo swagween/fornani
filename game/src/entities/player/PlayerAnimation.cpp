@@ -19,6 +19,7 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 									 {"push", {86, 4, 6 * nani_animation_rate_v, -1}},
 									 {"rise", {40, 4, 6 * nani_animation_rate_v, 0}},
 									 {"walljump", {90, 6, 6 * nani_animation_rate_v, 0}},
+									 {"corner_flip", {175, 6, 5 * nani_animation_rate_v, 0}},
 									 {"suspend", {30, 3, 7 * nani_animation_rate_v, -1}},
 									 {"fall", {62, 4, 5 * nani_animation_rate_v, -1}},
 									 {"stop", {74, 2, 6 * nani_animation_rate_v, 0}},
@@ -380,6 +381,7 @@ fsm::StateFunction PlayerAnimation::update_suspend() {
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::corner_flip, get_params("corner_flip"))) { return PA_BIND(update_corner_flip); }
 	if (change_state(AnimState::fall, get_params("fall"))) { return PA_BIND(update_fall); }
 	if (change_state(AnimState::crouch, get_params("crouch"))) { return PA_BIND(update_crouch); }
 	if (change_state(AnimState::crawl, get_params("crouch"), true)) { return PA_BIND(update_crouch); }
@@ -407,6 +409,7 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
+	if (change_state(AnimState::corner_flip, get_params("corner_flip"))) { return PA_BIND(update_corner_flip); }
 	if (change_state(AnimState::rise, get_params("rise"))) { return PA_BIND(update_rise); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
@@ -712,6 +715,7 @@ fsm::StateFunction PlayerAnimation::update_wallslide() {
 	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
 	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::rise, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
+	if (change_state(AnimState::corner_flip, get_params("corner_flip"))) { return PA_BIND(update_corner_flip); }
 	if (change_state(AnimState::dive, get_params("dive"))) { return PA_BIND(update_dive); }
 	if (change_state(AnimState::swim, get_params("swim"))) { return PA_BIND(update_swim); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
@@ -1341,6 +1345,30 @@ fsm::StateFunction PlayerAnimation::update_knock_over() {
 		if (change_state(AnimState::unconscious, get_params("unconscious"))) { return PA_BIND(update_unconscious); }
 	}
 	return PA_BIND(update_knock_over);
+}
+
+fsm::StateFunction PlayerAnimation::update_corner_flip() {
+	m_player->p_animatable.animation.label = "corner_flip";
+	p_state.actual = AnimState::corner_flip;
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	if (change_state(AnimState::drown, get_params("drown"), true)) { return PA_BIND(update_drown); }
+	if (change_state(AnimState::stun, get_params("stun"), true)) { return PA_BIND(update_stun); }
+	if (change_state(AnimState::knock_over, get_params("knock_over"), true)) { return PA_BIND(update_knock_over); }
+	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
+	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
+	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
+	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
+	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
+	if (change_state(AnimState::run, get_params("run"))) { return PA_BIND(update_run); }
+	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
+	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
+	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
+	if (m_player->p_animatable.animation.complete()) {
+		m_player->p_animatable.animation.set_params(get_params("suspend"));
+		return PA_BIND(update_suspend);
+	}
+	return PA_BIND(update_walljump);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

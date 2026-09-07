@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <fornani/components/CircleSensor.hpp>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/Mobile.hpp>
@@ -97,6 +98,11 @@ struct PhysicsStats {
 
 struct Counters {
 	int invincibility{};
+};
+
+struct CornerSensor {
+	components::CircleSensor left;
+	components::CircleSensor right;
 };
 
 enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated };
@@ -386,6 +392,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	std::optional<item::Headgear> m_headgear{};
 	std::optional<world::Map*> m_map;
 
+	CornerSensor m_corner_sensor;
+
 	[[nodiscard]] auto can_dash() const -> bool;
 	[[nodiscard]] auto can_omnidirectional_dash() const -> bool;
 	[[nodiscard]] auto can_doublejump() const -> bool;
@@ -396,6 +404,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto can_wallcling() const -> bool;
 	[[nodiscard]] auto can_walljump() const -> bool;
 	[[nodiscard]] auto can_dive() const -> bool;
+	[[nodiscard]] auto can_corner_flip() const -> bool;
 
 	struct {
 		components::SteeringBehavior steering{};

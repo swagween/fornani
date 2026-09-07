@@ -71,7 +71,7 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
-		if (!hurt_effect.running()) { hurt_effect.start(128); }
+		if (!hurt_effect.running()) { hurt_effect.start(); }
 		flags.state.reset(StateFlags::hurt);
 	}
 

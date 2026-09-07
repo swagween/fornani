@@ -1149,5 +1149,48 @@
     "naive_description": "When equipped, these boots will cause you to sink in water.",
     "unique": true,
     "equippable": true
+  },
+  {
+    "tag": "horse_totem",
+    "category": 1,
+    "lookup": [14, 7],
+    "origin": [9, 3],
+    "actual_title": "Horse Totem",
+    "naive_description": "A stone totem carved to look like a horse's head.",
+    "unique": true,
+    "transient": true
+  },
+  {
+    "tag": "basilisk_totem",
+    "category": 1,
+    "lookup": [13, 7],
+    "origin": [9, 3],
+    "actual_title": "Basilisk Totem",
+    "naive_description": "A stone totem carved to look like a basilisk.",
+    "unique": true,
+    "transient": true
+  },
+  {
+    "tag": "sloth_totem",
+    "category": 1,
+    "lookup": [15, 7],
+    "origin": [9, 3],
+    "actual_title": "Sloth Totem",
+    "naive_description": "A stone totem carved to look like a sloth.",
+    "unique": true,
+    "transient": true
+  },
+  {
+    "tag": "pixium",
+    "category": 2,
+    "lookup": [2, 5],
+    "origin": [8, 0],
+    "actual_title": "Pixium",
+    "naive_description": "A very rare mineral valued by the Pixiotes of the lost ages.",
+    "unique": false,
+    "sellable": true,
+    "ingredient": true,
+    "rarity": 3,
+    "value": 2200
   }
 ]

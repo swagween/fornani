@@ -7,6 +7,7 @@
 #include <fornani/physics/ICollider.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/utils/BitFlags.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <fornani/world/Tile.hpp>
 #include <optional>
 
@@ -53,7 +54,8 @@ enum class ExternalState : std::uint8_t {
 	on_ramp,
 	tile_debug_flag,
 	ceiling_ramp_hit,
-	roll_collision
+	roll_collision,
+	slide_grounded
 };
 enum class PermaFlags : std::uint8_t { world_grounded, downhill };
 
@@ -63,6 +65,13 @@ enum class Movement : std::uint8_t { dashing, jumping, crouching, walljumping };
 
 struct PhysicsStats {
 	float GRAV{0.002f};
+};
+
+struct MTVSet {
+	sf::Vector2f combined{};
+	sf::Vector2f horizontal{};
+	sf::Vector2f vertical{};
+	sf::Vector2f actual{};
 };
 
 struct DetectorPair {
@@ -117,6 +126,8 @@ class Collider : public ICollider {
 
 	sf::Vector2f snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
 	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
+	[[nodiscard]] auto slide_grounded() const -> bool { return flags.external_state.test(ExternalState::slide_grounded); }
+	[[nodiscard]] auto is_complex() const -> bool { return flags.general.test(General::complex); }
 	[[nodiscard]] auto jumping() const -> bool { return flags.movement.test(Movement::jumping); }
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
 	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
@@ -147,7 +158,9 @@ class Collider : public ICollider {
 	Shape predictive_horizontal{};
 	Shape predictive_combined{};
 	Shape wallslider{};
+	Shape headbox{};
 	Shape jumpbox{};
+	Shape slidebox{};
 	Shape hurtbox{};
 	Shape horizontal{};
 	Shape vertical{};
@@ -168,12 +181,8 @@ class Collider : public ICollider {
 		util::BitFlags<Dash> dash{};
 	} flags{};
 
-	struct {
-		sf::Vector2f combined{};
-		sf::Vector2f horizontal{};
-		sf::Vector2f vertical{};
-		sf::Vector2f actual{};
-	} mtvs{};
+	MTVSet mtvs{};
+	MTVSet mtv_snapshot{};
 
 	struct {
 		sf::Color local{};
@@ -199,6 +208,9 @@ class Collider : public ICollider {
 	Direction m_direction{};
 
 	io::Logger m_logger{"Collider"};
+
+  private:
+	util::Cooldown m_ricochet;
 };
 
 } // namespace fornani::shape

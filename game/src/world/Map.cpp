@@ -85,7 +85,7 @@
 
 namespace fornani::world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}} {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}}, m_flat_shader{svc.finder} {}
 
 Map::~Map() {
 	m_destroying = true;
@@ -499,6 +499,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& pushable : pushables) { pushable->update(svc, *this, *player); }
 	for (auto& platform : platforms) { platform->post_update(svc, *this, *player); }
 
+	player->handle_map_collision(*this); // gotta do this so registration order does not affect crushing
 	player->on_crush(*this);
 	player->reset_water_flags();
 
@@ -592,11 +593,17 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) {
-		if (enemy->is_background()) { enemy->render(svc, win, cam); }
+		if (enemy->is_background()) {
+			enemy->render(svc, win, cam);
+			enemy->submit(m_flat_shader, win);
+		}
 	}
 	player->render(svc, win, cam);
 	for (auto& enemy : enemy_catalog.enemies) {
-		if (!enemy->is_foreground() && !enemy->is_background()) { enemy->render(svc, win, cam); }
+		if (!enemy->is_foreground() && !enemy->is_background()) {
+			enemy->render(svc, win, cam);
+			enemy->submit(m_flat_shader, win);
+		}
 	}
 	for (auto& proj : active_projectiles) { proj.render(svc, *player, win, cam); }
 	for (auto& loot : active_loot) { loot.render(win, cam); }
@@ -660,7 +667,10 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	// foreground enemies
 	for (auto& enemy : enemy_catalog.enemies) {
-		if (enemy->is_foreground()) { enemy->render(svc, win, cam); }
+		if (enemy->is_foreground()) {
+			enemy->render(svc, win, cam);
+			enemy->submit(m_flat_shader, win);
+		}
 		enemy->render_indicators(svc, win, cam);
 		enemy->gui_render(svc, win, cam);
 	}
@@ -1050,6 +1060,38 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 			if (cell.is_platform() && !collide_with_platforms) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
+		}
+	}
+	return false;
+}
+
+bool Map::overlaps_corner(components::CircleSensor& sensor, LR dir) {
+	auto& grid = get_middleground()->grid;
+	auto& layers = m_services->data.get_layers(room_id);
+	auto top = get_index_at_position(sensor.get_vicinity().position);
+	auto bottom = get_index_at_position(sensor.get_vicinity().position + sensor.get_vicinity().size);
+	auto right = static_cast<std::size_t>(sensor.get_vicinity().size.x / constants::f_cell_size);
+	for (auto i{top}; i <= bottom; i += static_cast<std::size_t>(dimensions.x)) {
+		auto left{0};
+		for (auto j{left}; j <= right; ++j) {
+			auto index = i + j;
+			if (index >= dimensions.x * dimensions.y - dimensions.x || index < 0) { continue; }
+			if (right >= dimensions.x - 1 || right <= 0) { continue; }
+			auto& cell = grid.get_cell(static_cast<int>(index));
+			auto const next_index = static_cast<int>(index + dimensions.x);
+			auto const left_index = static_cast<int>(index - 1);
+			auto const right_index = static_cast<int>(index + 1);
+			if (next_index >= dimensions.x * dimensions.y) { continue; }
+			auto& below_cell = grid.get_cell(next_index);
+			if (!cell.is_collidable()) { continue; }
+			if (cell.is_platform()) { continue; }
+			if (cell.is_ramp()) { continue; }
+			if (below_cell.is_solid()) { continue; }
+			auto& left_cell = grid.get_cell(left_index);
+			auto& right_cell = grid.get_cell(right_index);
+			cell.collision_check = true;
+			if (sensor.within_bounds(cell.bounding_box.vertices[2]) && dir == LR::left && !right_cell.is_solid()) { return true; }
+			if (sensor.within_bounds(cell.bounding_box.vertices[3]) && dir == LR::right && !left_cell.is_solid()) { return true; }
 		}
 	}
 	return false;

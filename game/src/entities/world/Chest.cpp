@@ -47,8 +47,7 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 		Animatable::set_parameters(m_animations.opened);
 	}
 
-	if (get_collider().collided() && std::abs(get_collider().physics.apparent_velocity().y) > 0.05f) { svc.soundboard.flags.world.set(audio::World::clink); }
-	map.handle_cell_collision(get_collider());
+	if (get_collider().collided() && std::abs(get_collider().physics.apparent_velocity().y) > 0.05f) { svc.soundboard.play_sound("clink", get_collider().get_global_center()); }
 	for (auto& button : map.switch_buttons) { get_collider().handle_collision(button->collider.bounding_box); }
 	get_collider().physics.acceleration = {};
 	state.reset(ChestState::activated);
@@ -81,6 +80,10 @@ void Chest::update(automa::ServiceProvider& svc, world::Map& map, std::optional<
 }
 
 void Chest::render(sf::RenderWindow& win, sf::Vector2f cam) {
+	if (!debug::is_production()) {
+		get_collider().render(win, cam);
+		return;
+	}
 	auto sprite_position = get_collider().physics.position - cam + sf::Vector2f{-2.f, -4.f} - get_collider().get_local_center();
 	Drawable::set_position(sprite_position);
 	if (m_sparkler) { m_sparkler->render(win, cam); }

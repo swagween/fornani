@@ -58,7 +58,8 @@ enum class AnimState : std::uint8_t {
 	melee_side_kick,
 	melee_roundhouse_kick,
 	drink,
-	knock_over
+	knock_over,
+	corner_flip
 };
 
 enum class AnimTriggers : std::uint8_t { end_death };
@@ -132,6 +133,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_melee_roundhouse_kick();
 	fsm::StateFunction update_drink();
 	fsm::StateFunction update_knock_over();
+	fsm::StateFunction update_corner_flip();
 
 	bool change_state(AnimState next, anim::Parameters params, bool hard = false);
 	void force(AnimState to_state, std::string_view key);

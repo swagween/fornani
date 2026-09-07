@@ -181,6 +181,7 @@ fsm::StateFunction Caster::update_signal() {
 	if (m_variant == CasterVariant::tyrant) { cooldowns.rapid_fire.update(); }
 	if (cooldowns.rapid_fire.is_almost_complete()) {
 		energy_ball.shoot(*m_services, *m_map, attack_target);
+		if (!flags.general.test(GeneralFlags::no_death_flare)) { m_map->spawn_effect(*m_services, "dark_flare", energy_ball.get().get_barrel_point(), {}, 1); }
 		cooldowns.rapid_fire.start();
 	}
 	if (p_animatable.animation.complete()) {
@@ -189,7 +190,10 @@ fsm::StateFunction Caster::update_signal() {
 		auto sign = directions.actual.lnr == LNR::left ? 1.f : -1.f;
 		parts.scepter.sprite->rotate(sf::degrees(-90.f) * sign);
 		cooldowns.post_cast.start();
-		if (m_variant == CasterVariant::apprentice) { energy_ball.shoot(*m_services, *m_map, attack_target); }
+		if (m_variant == CasterVariant::apprentice) {
+			energy_ball.shoot(*m_services, *m_map, attack_target);
+			if (!flags.general.test(GeneralFlags::no_death_flare)) { m_map->spawn_effect(*m_services, "dark_flare", energy_ball.get().get_barrel_point(), {}, 1); }
+		}
 		if (change_state(CasterState::turn, get_params("turn"))) { return CASTER_BIND(update_turn); }
 		request(CasterState::idle);
 		if (change_state(CasterState::idle, get_params("idle"))) { return CASTER_BIND(update_idle); }

@@ -19,13 +19,13 @@
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
 #include <fornani/graphics/Scenery.hpp>
-#include <fornani/graphics/SpriteBatch.hpp>
 #include <fornani/graphics/Weather.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/physics/Shape.hpp>
+#include <fornani/shader/FlatShader.hpp>
 #include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/systems/Register.hpp>
@@ -138,6 +138,7 @@ class Map {
 
 	bool check_cell_collision(shape::Collider& collider, bool foreground = false);
 	bool check_cell_collision_circle(shape::CircleCollider& collider, bool collide_with_platforms = true);
+	bool overlaps_corner(components::CircleSensor& sensor, LR dir);
 	sf::Vector2i get_circle_collision_result(shape::CircleCollider& collider, bool collide_with_platforms = true);
 	void handle_cell_collision(shape::CircleCollider& collider);
 	void handle_breakable_collision(shape::CircleCollider& collider);
@@ -291,6 +292,7 @@ class Map {
 	std::optional<std::unique_ptr<vfx::Weather>> m_weather{};
 	std::vector<SurfacePoint> m_surface_points{};
 
+	FlatShader m_flat_shader;
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
 	sf::Vector2f m_player_start{};

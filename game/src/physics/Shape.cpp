@@ -221,37 +221,42 @@ sf::Vector2f Shape::circle_SAT_MTV(sf::CircleShape const& circle) const {
 	auto ret = sf::Vector2f{};
 	auto min_overlap = std::numeric_limits<float>::max();
 	auto normals = get_normals();
+
+	// Face-normal axes: valid whenever the circle is cleanly separated
+	// along a face (still needed for the "definitely not colliding" early-out).
 	for (auto& axis : normals) {
 		auto proj1 = project_on_axis(vertices, axis);
 		auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), axis);
-		auto overlap = get_overlap_length(proj1, proj2);
-		if (overlap < min_overlap) {
-			min_overlap = overlap;
-			ret = axis * min_overlap;
-		}
 		if (!are_overlapping(proj1, proj2)) { return {}; }
 	}
-	// check fourth axis
-	auto closest_vertex_axis{sf::Vector2f{}};
-	auto distance{std::numeric_limits<float>::max()};
-	auto min_dist{std::numeric_limits<float>::max()};
-	for (auto& vertex : vertices) {
-		distance = util::magnitude(vertex - circle.getPosition());
-		if (distance < min_dist) {
-			closest_vertex_axis = vertex - circle.getPosition();
-			min_dist = distance;
+
+	// Closest point on the polygon BOUNDARY (per-edge, clamped), not per-vertex.
+	auto closest_point = vertices.front();
+	auto best_dist_sq = std::numeric_limits<float>::max();
+	auto const center = circle.getPosition();
+	auto const n = vertices.size();
+	for (std::size_t i{0}; i < n; ++i) {
+		auto const& a = vertices[i];
+		auto const& b = vertices[(i + 1) % n];
+		auto const ab = b - a;
+		auto const len_sq = ab.lengthSquared();
+		if (len_sq <= constants::tiny_value) { continue; }
+		auto const t = std::clamp((center - a).dot(ab) / len_sq, 0.f, 1.f);
+		auto const candidate = a + ab * t;
+		auto const dist_sq = (center - candidate).lengthSquared();
+		if (dist_sq < best_dist_sq) {
+			best_dist_sq = dist_sq;
+			closest_point = candidate;
 		}
 	}
-	closest_vertex_axis = get_normalized(closest_vertex_axis);
-	auto proj1 = project_on_axis(vertices, closest_vertex_axis);
-	auto proj2 = project_circle_on_axis(circle.getPosition(), circle.getRadius(), closest_vertex_axis);
-	auto overlap = get_overlap_length(proj1, proj2);
-	if (overlap < min_overlap) {
-		min_overlap = overlap;
-		ret = closest_vertex_axis * min_overlap;
-	}
-	if (!are_overlapping(proj1, proj2)) { return {}; }
-	return ret;
+
+	auto const delta = center - closest_point;
+	auto const distance = std::sqrt(best_dist_sq);
+	if (distance <= constants::tiny_value) { return {}; } // center exactly on boundary; degenerate
+	auto const normal = delta / distance;
+	auto const penetration = circle.getRadius() - distance;
+	if (penetration <= 0.f) { return {}; }
+	return normal * penetration;
 }
 
 sf::Vector2f Shape::compute_mtv(sf::Vector2f p) {

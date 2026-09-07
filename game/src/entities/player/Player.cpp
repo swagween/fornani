@@ -21,7 +21,7 @@ constexpr auto max_damage_v = 1024.f;
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
 	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}},
-	  m_flat_shader{svc.finder} {
+	  m_flat_shader{svc.finder}, m_corner_sensor{.left{6.f}, .right{6.f}} {
 
 	p_animatable.center();
 	m_sprite_overlay.center();
@@ -138,7 +138,7 @@ void Player::register_with_map(world::Map& map) {
 
 	if (has_collider()) { NANI_LOG_INFO(m_logger, "Player has a collider."); }
 	anchor_point = get_collider().physics.position + player_dimensions_v * 0.5f;
-	get_collider().collision_depths = util::CollisionDepth();
+	get_collider().collision_depths.emplace();
 	get_collider().physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
 	get_collider().physics.set_constant_friction({physics_stats.ground_fric, physics_stats.air_fric});
 	get_collider().physics.maximum_velocity = physics_stats.maximum_velocity;
@@ -293,10 +293,14 @@ void Player::update(world::Map& map) {
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
 	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
 
-	// hurtbox and walljumpbox
+	// hurtbox and other collision utilities
 	auto low_profile = is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) || is_in_animation(AnimState::roll) || is_in_animation(AnimState::slide) || is_in_animation(AnimState::turn_slide);
 	low_profile ? hurtbox.set_dimensions(sf::Vector2f{12.f, 12.f}) : hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 	low_profile ? hurtbox.set_position(get_collider().hurtbox.get_position() + sf::Vector2f{0.f, 4.f}) : hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
+	m_corner_sensor.left.set_position(get_collider().bounding_box.vertices[0] + sf::Vector2f{0.f, -8.f});
+	m_corner_sensor.right.set_position(get_collider().bounding_box.vertices[1] + sf::Vector2f{0.f, -8.f});
+	map.overlaps_corner(m_corner_sensor.left, LR::left) && directions.input.left() ? m_corner_sensor.left.activate() : m_corner_sensor.left.deactivate();
+	map.overlaps_corner(m_corner_sensor.right, LR::right) && directions.input.right() ? m_corner_sensor.right.activate() : m_corner_sensor.right.deactivate();
 
 	get_collider().set_flag(shape::ColliderFlags::sinking, has_death_type(PlayerDeathType::drowned));
 
@@ -362,6 +366,7 @@ void Player::update(world::Map& map) {
 
 	// weapon
 	if (controller.is(AbilityType::walljump) && controller.is_ability_active()) { accumulated_forces.push_back({controller.get_ability_force() * controller.get_ability_direction().as_float(), 0.f}); }
+	if (controller.is(AbilityType::corner_flip) && controller.is_ability_active()) { apply_impulse({controller.get_ability_force() * controller.get_ability_direction().as_float(), 0.f}); }
 	if (controller.shot() || controller.arms_switch()) { m_animation_machine.idle_timer.start(); }
 	if (has_flag_set(PlayerFlags::impart_recoil) && arsenal) {
 		if (controller.direction.und == UND::down) {
@@ -526,6 +531,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			win.draw(camera_target);
 			get_collider().render(win, cam);
 		}
+		m_corner_sensor.left.render(win, cam);
+		m_corner_sensor.right.render(win, cam);
 	} else if (debug::is_production()) {
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
 		auto& drawable = has_flag_set(PlayerFlags::special_render) ? m_sprite_overlay : p_animatable;
@@ -987,8 +994,8 @@ void Player::on_crush(world::Map& map) {
 		left_squish.lnr = get_collider().vertical_squish() ? LNR::left : LNR::neutral;
 		right_squish.und = get_collider().horizontal_squish() ? UND::down : UND::neutral;
 		right_squish.lnr = get_collider().vertical_squish() ? LNR::right : LNR::neutral;
-		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, left_squish, get_collider().dimensions);
-		map.spawn_emitter(*m_services, "player_crush", get_collider().physics.position, right_squish, get_collider().dimensions);
+		map.spawn_emitter(*m_services, "player_crush", hurtbox.get_center(), left_squish, get_collider().dimensions);
+		map.spawn_emitter(*m_services, "player_crush", hurtbox.get_center(), right_squish, get_collider().dimensions);
 		get_collider().collision_depths.reset();
 		m_death_type = PlayerDeathType::crushed;
 	}
@@ -1124,7 +1131,7 @@ void Player::start_over() {
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	set_animation_flag(player::AnimTriggers::end_death, false);
 	m_animation_machine.post_death.cancel();
-	if (has_collider()) { get_collider().collision_depths = util::CollisionDepth(); }
+	if (has_collider()) { get_collider().collision_depths.emplace(); }
 	for (auto& a : antennae) {
 		a->get_collider().physics.set_global_friction(physics_stats.antenna_friction);
 		a->get_collider().physics.gravity = 0.f;
@@ -1320,7 +1327,7 @@ void Player::handle_item_logic() {
 	auto has_bonus_health = health.has_bonus() ? 1 : 0;
 	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
 	if (has_item_equipped("gas_mask") && !is_dead()) {
-		m_services->soundboard.repeat_sound("gas_mask_breathing", 1, {}, health.is_critical() ? 0.7f : 1.f);
+		m_services->soundboard.repeat_sound("gas_mask_breathing", 888U, {}, health.is_critical() ? 0.7f : 1.f);
 		if (!m_headgear) { m_headgear.emplace(*m_services, 0, 1); }
 	} else {
 		if (m_headgear) { m_headgear.reset(); }
@@ -1452,5 +1459,7 @@ bool Player::can_dive() const {
 	if (!is_swimming()) { return false; }
 	return true;
 }
+
+auto Player::can_corner_flip() const -> bool { return can_walljump() && (m_corner_sensor.left.active() || m_corner_sensor.right.active()); }
 
 } // namespace fornani::player

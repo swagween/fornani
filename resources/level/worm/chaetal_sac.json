@@ -60,8 +60,8 @@
     ],
     "interior": false,
     "metagrid": [
-      72,
-      20
+      71,
+      16
     ],
     "minimap": true,
     "music": "vesicle",
@@ -83,7 +83,8 @@
       "darken_factor": 4
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

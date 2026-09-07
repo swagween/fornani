@@ -1,5 +1,119 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 14,
+        "position": [
+          32,
+          7
+        ],
+        "tag": "wraith",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 14,
+        "position": [
+          36,
+          7
+        ],
+        "tag": "wraith",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 12,
+        "position": [
+          41,
+          6
+        ],
+        "tag": "plasmer",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 12,
+        "position": [
+          7,
+          7
+        ],
+        "tag": "plasmer",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 12,
+        "position": [
+          3,
+          5
+        ],
+        "tag": "plasmer",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 12,
+        "position": [
+          5,
+          5
+        ],
+        "tag": "plasmer",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 12,
+        "position": [
+          9,
+          7
+        ],
+        "tag": "plasmer",
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11137,
+        "modifier": 12,
+        "position": [
+          12,
+          7
+        ],
+        "tag": "plasmer",
+        "type": 0
+      }
+    ],
     "destructibles": [
       {
         "dimensions": [
@@ -12,7 +126,8 @@
         "position": [
           43,
           8
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -25,7 +140,8 @@
         "position": [
           43,
           9
-        ]
+        ],
+        "unlit": false
       },
       {
         "dimensions": [
@@ -38,31 +154,31 @@
         "position": [
           43,
           10
-        ]
+        ],
+        "unlit": false
       }
     ],
-    "enemies": [
+    "platforms": [
       {
         "dimensions": [
-          1,
-          1
+          3,
+          3
         ],
-        "id": 28,
+        "extent": 4,
+        "id": 0,
         "position": [
-          13,
-          10
+          20,
+          3
         ],
-        "start_direction": [
-          0,
-          0
-        ],
-        "variant": 0
+        "start": 0,
+        "type": "standard_up_down"
       }
     ],
     "portals": [
       {
         "activate_on_contact": false,
         "already_open": true,
+        "channel": 0,
         "destination_id": 901,
         "dimensions": [
           1,
@@ -75,6 +191,82 @@
           10
         ],
         "source_id": 906
+      }
+    ],
+    "switch_blocks": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11,
+        "position": [
+          7,
+          8
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11,
+        "position": [
+          9,
+          8
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11,
+        "position": [
+          12,
+          8
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11,
+        "position": [
+          5,
+          6
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11,
+        "position": [
+          3,
+          6
+        ],
+        "type": 0
+      }
+    ],
+    "switch_buttons": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 11,
+        "position": [
+          17,
+          7
+        ],
+        "type": 0
       }
     ],
     "turrets": [
@@ -120,11 +312,6 @@
     "ambience": "",
     "background": "dusk",
     "biome": "junkyard",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -140,11 +327,12 @@
       "source": 0,
       "type": 0
     },
-    "development_status": null,
+    "development_status": 0,
     "dimensions": [
       48,
       16
     ],
+    "interior": false,
     "metagrid": [
       34,
       -10
@@ -160,26 +348,27 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "sky_limit": 0,
+      "timer": false,
+      "toxic": false
     },
     "room_id": 906,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": false,
@@ -3421,8 +3610,8 @@
         50,
         10,
         10,
-        10,
-        10,
+        11,
+        11,
         16,
         17,
         18,
@@ -3469,11 +3658,8 @@
         18,
         10,
         10,
-        10,
-        10,
-        32,
-        33,
-        34,
+        11,
+        11,
         0,
         0,
         0,
@@ -3487,52 +3673,7 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        32,
-        33,
-        34,
-        10,
-        10,
-        10,
-        10,
-        32,
-        33,
-        34,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        8,
         0,
         0,
         0,
@@ -3565,11 +3706,11 @@
         34,
         10,
         10,
-        10,
-        10,
-        32,
-        33,
-        34,
+        11,
+        11,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -3613,11 +3754,56 @@
         34,
         10,
         10,
-        10,
-        10,
+        11,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         32,
         33,
         34,
+        10,
+        10,
+        11,
+        11,
         0,
         0,
         0,
@@ -3641,6 +3827,7 @@
         0,
         0,
         0,
+        485,
         0,
         0,
         0,
@@ -3655,17 +3842,66 @@
         0,
         0,
         0,
+        0,
+        503,
         0,
         48,
         49,
         50,
         12,
         23,
-        10,
-        10,
-        32,
-        33,
-        34,
+        11,
+        11,
+        498,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        11,
+        11,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        503,
+        0,
+        0,
+        0,
+        503,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        39,
+        11,
+        11,
+        11,
+        498,
         0,
         0,
         0,
@@ -3686,9 +3922,10 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        35,
+        35,
+        35,
+        35,
         0,
         0,
         0,
@@ -3709,11 +3946,11 @@
         0,
         0,
         39,
-        10,
-        10,
-        32,
-        33,
-        34,
+        11,
+        11,
+        11,
+        11,
+        498,
         0,
         0,
         0,
@@ -3729,58 +3966,10 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        39,
-        10,
-        10,
-        32,
-        33,
-        34,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        35,
+        35,
+        35,
+        35,
         0,
         0,
         0,
@@ -3825,10 +4014,10 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        35,
+        35,
+        35,
+        35,
         0,
         0,
         0,
@@ -3860,21 +4049,21 @@
         34,
         12,
         12,
-        476,
-        477,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        464,
+        465,
+        466,
+        467,
         0,
         468,
         469,
         470,
         471,
+        476,
+        477,
+        468,
+        469,
+        35,
+        35,
         11,
         11,
         11,
@@ -3932,13 +4121,13 @@
         17,
         17,
         17,
+        476,
+        479,
         17,
-        17,
-        17,
-        17,
-        17,
-        17,
-        18,
+        464,
+        465,
+        470,
+        471,
         16,
         17,
         17,

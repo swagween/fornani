@@ -12,7 +12,7 @@ DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int 
 	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = DumpsterDiverState::idle;
 	m_wait_time.start();
-	m_attack.hit.bounds.setRadius(64.f);
+	m_attack.hit.bounds.setRadius(48.f);
 
 	m_variant = static_cast<DumpsterDiverVariant>(variant);
 
@@ -73,12 +73,13 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 		}
 		auto alpha = which_side == 1 ? m_dive_time.get_normalized() : m_dive_time.get_inverse_normalized();
 		auto pos = util::arc_lerp_midpoint(target_points[0], target_points[1], alpha, 1.f, sf::Vector2f{0.f, 0.f});
-		get_collider().set_position(pos);
-
+		get_collider().set_position(pos - get_collider().get_local_center());
+		if (has_secondary_collider()) { get_secondary_collider().set_position(get_collider().get_position() + sf::Vector2f{directions.actual.as_float() * 100.f, 0.f}); }
 		auto frame = std::floor(m_dive_time.get_inverse_normalized() * 6.f);
 		p_animatable.set_frame(frame);
 	}
 
+	if (m_wait_time.running()) { svc.soundboard.repeat_sound("rumble", 1U, get_collider().get_center()); }
 	if (svc.ticker.every_x_ticks(48)) {
 		for (auto const& pt : m_surface_tiles) {
 			if ((which_side == pt.side && m_wait_time.running()) || m_attack.hit.within_bounds(pt.point) || get_collider().bounding_box.overlaps(pt.point)) {
@@ -88,12 +89,14 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	// attack
-	auto hit_offset = sf::Vector2f{directions.actual.as_float() * 64.f, -48.f};
+	auto hit_offset = sf::Vector2f{directions.actual.as_float() * 120.f, -30.f};
 	m_attack.hit.set_position(get_collider().get_center() + hit_offset);
-	if (m_attack.hit.within_bounds(player.hurtbox)) { player.hurt(); }
+	m_attack.hit.activate();
+	m_attack.kill_player(player, player::PlayerDeathType::swallowed);
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
+		m_services->soundboard.play_sound("deep_hurt", get_collider().get_center());
 		if (!hurt_effect.running()) { hurt_effect.start(128); }
 		flags.state.reset(StateFlags::hurt);
 	}

@@ -48,6 +48,22 @@
         ]
       }
     ],
+    "platforms": [
+      {
+        "dimensions": [
+          3,
+          2
+        ],
+        "extent": 3,
+        "id": 0,
+        "position": [
+          64,
+          7
+        ],
+        "start": 0,
+        "type": "slippery_worm_side_to_side"
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
@@ -4248,7 +4264,7 @@
         0,
         0,
         0,
-        386,
+        320,
         232,
         233,
         234,
@@ -4410,7 +4426,7 @@
         0,
         0,
         0,
-        370,
+        336,
         8,
         9,
         14,

@@ -91,6 +91,629 @@
       }
     ]
   },
+  "base_server385022343512079": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  2
+                ]
+              ],
+              "message": "8"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  2
+                ]
+              ],
+              "message": "9"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "8"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  3
+                ]
+              ],
+              "message": "9"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "2"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "3"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  5
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "4"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "5"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "6"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "4"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "5"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "6"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  10
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  10
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  10
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  10
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  10
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  12
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  12
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  11
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  12
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  12
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  12
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  13
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "4"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "5"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "6"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "4"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  15
+                ]
+              ],
+              "message": "5"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "6"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "8"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  14
+                ]
+              ],
+              "message": "9"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  2
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  3
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  5
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  10
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  11
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  12
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  13
+                ]
+              ],
+              "message": "Server Code: BRAVECAT"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  8,
+                  0
+                ]
+              ],
+              "message": "ACCESS DENIED"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  9,
+                  30001
+                ]
+              ],
+              "message": "ACCESS GRANTED"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "briar_ruins385022346330140": {
     "series": [
       {
@@ -346,6 +969,96 @@
       }
     ]
   },
+  "grave_baya385022344691723": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Baya, beloved wife of Jura, who crafted chitin instruments for the Mother. Her soul will be forever protected by her music."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "grave_jura385022344495115": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Jura, beloved music-maker and worm-singer. May his soul dwell evermore within the Mother."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "grave_oldmimic385022344429588": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Old Mimic, who fought bravely to defend the Kariba against invaders."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "grave_peegle385022344953867": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Peegle, our loyal watchman and forever-brother."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "grave_tomhollow385022345084939": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Tom Hollow, husband to Amber Hollow and father of Dale, Lylem, and Lucie. May he rest in forever-peace."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "grave_youngmimic385022344626196": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Young Mimic, who passed long before he was due. May the Mother protect him from beyond."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "high_road385022346854462": {
     "series": [
       {
@@ -400,6 +1113,36 @@
           [
             {
               "message": "- Outer Deck -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "horse_pedestal0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "A pedestal with a horse-shaped inset."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "horse_pedestal385022343839785": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "A pedestal with a horse-shaped inset."
             }
           ]
         ]
@@ -475,6 +1218,33 @@
           [
             {
               "message": "A surge of memories comes rushing back to you as you regard the bedroom where you grew up."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "night_code385022345871382": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  3,
+                  15,
+                  1,
+                  904
+                ],
+                [
+                  21,
+                  903
+                ]
+              ],
+              "message": "Transmission ID: AC-7738"
             }
           ]
         ]
@@ -580,6 +1350,21 @@
           [
             {
               "message": "- Otto's Emporium -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "sump_pedestal385022344429577": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "There is a small inset, as if a piece is missing..."
             }
           ]
         ]

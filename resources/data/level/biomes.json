@@ -3,6 +3,7 @@
   "atmosphere": ["dragonflies"],
   "properties": {
     "firstwind": {
+      "platform_sound": "industrial",
       "black": [12, 12, 20]
     },
     "overturned": {
@@ -14,6 +15,7 @@
       "max_light": 3.0
     },
     "greatwing": {
+      "platform_sound": "industrial",
       "black": [12, 12, 20],
       "max_light": 3.0
     },
@@ -22,10 +24,12 @@
       "max_light": 3.0
     },
     "junkyard": {
+      "platform_sound": "industrial",
       "black": [16, 9, 11],
       "max_light": 3.0
     },
     "worm": {
+      "platform_sound": "organic",
       "black": [9, 1, 17],
       "haze_highlight": [0, 91, 91],
       "haze_shadow": [0, 51, 91],
@@ -33,12 +37,14 @@
       "spike_variations": 3
     },
     "toxic": {
+      "platform_sound": "industrial",
       "black": [13, 15, 14],
       "haze_highlight": [210, 241, 68],
       "haze_shadow": [29, 204, 129],
       "max_light": 3.0
     },
     "nightside": {
+      "platform_sound": "industrial",
       "black": [19, 18, 16],
       "max_light": 3.0
     }

@@ -32,6 +32,10 @@ namespace fornani::arms {
 class Projectile;
 }
 
+namespace fornani {
+class FlatShader;
+}
+
 namespace fornani::enemy {
 
 using EntityHandle = std::uint64_t;
@@ -62,7 +66,8 @@ enum class GeneralFlags : std::uint8_t {
 	no_tick,
 	boss,
 	kick_immune,
-	tick_slowdown
+	tick_slowdown,
+	no_death_flare
 };
 enum class StateFlags : std::uint8_t {
 	alive,
@@ -125,6 +130,7 @@ class Enemy : public Mobile {
 	virtual void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	virtual void gui_render([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win, [[maybe_unused]] sf::Vector2f cam) {};
 	void post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick = true) override;
+	void submit(FlatShader& shader, sf::RenderWindow& win);
 
 	void render_indicators(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 

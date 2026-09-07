@@ -10,7 +10,7 @@ namespace fornani::player {
 
 Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool perfect) : Ability(svc, map, collider, direction), m_vertical_multiplier{-11.f}, m_beginning{24} {
 	m_type = AbilityType::walljump;
-	m_state = AnimState::backflip;
+	m_state = perfect ? AnimState::backflip : AnimState::walljump;
 	svc.soundboard.flags.player.set(audio::Player::walljump);
 	p_force = perfect ? 11.0f : 8.6f;
 	if (perfect) {

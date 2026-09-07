@@ -1,5 +1,6 @@
 nani_add_sources(
   Ability.hpp
+  CornerFlip.hpp
         Jump.hpp
         Dash.hpp
         DashKick.hpp

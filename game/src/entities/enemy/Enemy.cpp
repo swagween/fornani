@@ -93,6 +93,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (in_general["tick_slowdown"].as_bool()) { flags.general.set(GeneralFlags::tick_slowdown); }
 	if (in_general["no_tick"].as_bool()) { flags.general.set(GeneralFlags::no_tick); }
 	if (in_general["kick_immune"].as_bool()) { flags.general.set(GeneralFlags::kick_immune); }
+	if (in_general["no_death_flare"].as_bool()) { flags.general.set(GeneralFlags::no_death_flare); }
 	if (!flags.general.test(GeneralFlags::gravity)) { get_collider().stats.GRAV = 0.f; }
 	if (!flags.general.test(GeneralFlags::uncrushable)) { get_collider().collision_depths = util::CollisionDepth(); }
 
@@ -215,7 +216,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	health.update();
 	m_health_bar.update(health.get_normalized(), get_collider().get_top() + sf::Vector2f{-24.f, -32.f});
 	player.has_item_equipped("magnifying_glass") && !flags.general.test(GeneralFlags::boss) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
-	auto flash_rate = 32;
+	auto const flash_rate = 32;
 	if (!flags.general.test(GeneralFlags::custom_channels)) { set_channel(EnemyChannel::standard); }
 	if (flags.general.test(GeneralFlags::has_invincible_channel)) {
 		flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible);
@@ -304,7 +305,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 	if (!debug::is_greyblock()) { p_animatable.draw(win); }
 
-	if (debug::is_greyblock()) {
+	if (!debug::is_production()) {
 		get_collider().render(win, cam);
 		if (secondary_collider) { get_secondary_collider().render(win, cam); }
 		if (debug::is_debug()) {
@@ -312,6 +313,23 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 			physical.hostile_range.render(win, cam);
 			physical.home_detector.render(win, cam, colors::blue);
 		}
+	}
+}
+
+void Enemy::submit(FlatShader& shader, sf::RenderWindow& win) {
+	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
+	if (debug::is_debug()) {
+		shader.finalize(colors::blue);
+		shader.submit(win, p_animatable.get_sprite());
+		return;
+	}
+	if (flags.state.test(StateFlags::invisible)) { return; }
+	if (hurt_effect.get_normalized() > 0.9f) {
+		shader.finalize(colors::ui_white);
+		shader.submit(win, p_animatable.get_sprite());
+	} else if (hurt_effect.get_normalized() > 0.8f) {
+		shader.finalize(colors::black);
+		shader.submit(win, p_animatable.get_sprite());
 	}
 }
 
@@ -372,8 +390,9 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 					auto random_vector = random::random_vector_float(-0.5f, 0.5f);
 					map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), proj.get_direction().as_vector() + random_vector, visual.effect_type));
 				}
+				if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center()); }
 			}
-			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.flags.enemy.set(sound.hit_flag); }
+			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.play_sound("standard_hit", get_collider().get_center()); }
 			if (proj.has_critical_damage()) {
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
 				svc.ticker.freeze_frame(0.09f);
@@ -383,6 +402,7 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 				if (svc.data.enemy[label]["visual"]["hit_effect"]) {
 					map.spawn_emitter(svc, svc.data.enemy[label]["visual"]["hit_effect"].as_string(), get_collider().get_center(), Direction{});
 				} else {
+					map.spawn_emitter(svc, "spark", get_collider().get_center(), Direction{});
 					map.spawn_emitter(svc, "blood", get_collider().get_center(), Direction{});
 				}
 				map.spawn_effect(svc, "hit_flash", proj.get_position());

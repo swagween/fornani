@@ -70,7 +70,7 @@
   },
   "dark_flare": {
     "frame_count": 10,
-    "framerate": 8,
+    "framerate": 12,
     "dimensions": [63, 63]
   },
   "lens_flare": {

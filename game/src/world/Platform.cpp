@@ -175,7 +175,8 @@ void Platform::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (get_velocity().lengthSquared() > 0.001f) {
 		auto pt = std::clamp(get_velocity().lengthSquared(), 0.f, 1.f);
 		auto pitch = std::lerp(1.f, 2.0f, pt);
-		svc.soundboard.repeat_sound("platform_industrial", m_handle, get_collider().get_center(), pitch);
+		auto plat_sound = svc.data.biomes["properties"][map.get_biome_string()]["platform_sound"].as_string();
+		svc.soundboard.repeat_sound("platform_" + plat_sound, m_handle, get_collider().get_center(), pitch);
 	}
 }
 

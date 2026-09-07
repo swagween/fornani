@@ -982,8 +982,7 @@
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
@@ -5772,7 +5771,7 @@
         2,
         2,
         2,
-        0,
+        480,
         0,
         0,
         0,

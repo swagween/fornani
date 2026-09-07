@@ -1,7 +1,7 @@
 
-#include <algorithm>
 #include <fornani/components/PhysicsComponent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <algorithm>
 #include <cmath>
 
 namespace fornani::components {

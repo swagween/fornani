@@ -1,10 +1,14 @@
 
 #include <fornani/components/CircleSensor.hpp>
+#include <fornani/core/Debug.hpp>
+#include <fornani/graphics/Colors.hpp>
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/utils/Math.hpp>
 #include <algorithm>
 
 namespace fornani::components {
+
+constexpr auto circle_vicinity_v = sf::Vector2f{80.f, 80.f};
 
 CircleSensor::CircleSensor() : CircleSensor(32.f) {}
 
@@ -15,6 +19,7 @@ CircleSensor::CircleSensor(float radius) {
 	bounds.setFillColor(sf::Color::Transparent);
 	bounds.setOrigin({radius, radius});
 	drawable = bounds;
+	m_vicinity = sf::FloatRect{{}, {sf::Vector2f{radius * 2.f, radius * 2.f} + circle_vicinity_v}};
 }
 
 void CircleSensor::render(sf::RenderWindow& win, sf::Vector2f cam) {
@@ -23,9 +28,20 @@ void CircleSensor::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	drawable.setFillColor(active() ? sf::Color{20, 160, 160, 100} : sf::Color{160, 20, 160, 60});
 	drawable.setPosition(bounds.getPosition() - cam);
 	win.draw(drawable);
+	if (debug::is_debug()) {
+		sf::RectangleShape v{m_vicinity.size};
+		v.setPosition(-cam);
+		v.setFillColor(colors::transparent);
+		v.setOutlineColor(colors::dark_orange);
+		v.setOutlineThickness(-1.f);
+		win.draw(v);
+	}
 }
 
-void CircleSensor::set_position(sf::Vector2f position) { bounds.setPosition(position); }
+void CircleSensor::set_position(sf::Vector2f position) {
+	bounds.setPosition(position);
+	m_vicinity.position = position - m_vicinity.size * 0.5f - bounds.getOrigin();
+}
 
 bool CircleSensor::within_bounds(sf::Vector2f const point) const { return (point - bounds.getPosition()).length() < bounds.getRadius(); }
 

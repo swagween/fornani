@@ -354,7 +354,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("accumulator: %.8f", services.ticker.accumulator.count());
 					ImGui::Text("residue: %.8f", services.ticker.residue.count());
 					ImGui::Separator();
-					ImGui::Text("Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
+					ImGui::Text("Seconds Passed: %.2f", services.ticker.seconds_passed.count());
+					ImGui::Text("Total Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
 					ImGui::Text("Seconds Passed In-Game: %.2f", services.ticker.in_game_seconds_passed.count());
 					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
@@ -663,6 +664,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::SliderFloat("Antenna Force", &player->physics_stats.antenna_force, 0.1f, 3.f);
 								ImGui::SliderFloat("Antenna Friction", &player->physics_stats.antenna_friction, 0.8f, 1.f);
+								ImGui::SeparatorText("Collision");
+								ImGui::Text("MTV vertical: (%.2f, %.2f)", player->get_collider().mtv_snapshot.vertical.x, player->get_collider().mtv_snapshot.vertical.y);
+								ImGui::Text("MTV horizontal: (%.2f, %.2f)", player->get_collider().mtv_snapshot.horizontal.x, player->get_collider().mtv_snapshot.horizontal.y);
+								ImGui::Text("MTV combined: (%.2f, %.2f)", player->get_collider().mtv_snapshot.combined.x, player->get_collider().mtv_snapshot.combined.y);
+								ImGui::Text("MTV actual: (%.2f, %.2f)", player->get_collider().mtv_snapshot.actual.x, player->get_collider().mtv_snapshot.actual.y);
 								ImGui::Separator();
 								ImGui::Text("Stunned? %s", player->is_stunned() ? "Yes" : "No");
 								if (ImGui::Button("Stun")) { player->stun(); }
