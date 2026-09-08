@@ -18,6 +18,7 @@ class TextManager {
 	dj::Json console{};
 	dj::Json inspectables{};
 	dj::Json basic{};
+	dj::Json story{};
 	dj::Json item{};
 	dj::Json npc{};
 

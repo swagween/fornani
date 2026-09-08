@@ -14,6 +14,7 @@
 #include <fornani/story/cutscene/LadyNimbusIntro.hpp>
 #include <fornani/story/cutscene/LothAtWorm.hpp>
 #include <fornani/story/cutscene/MainIntro.hpp>
+#include <fornani/story/cutscene/MomsGrave.hpp>
 #include <fornani/story/cutscene/NightsideStation.hpp>
 #include <fornani/story/cutscene/NightsideWall.hpp>
 #include <fornani/story/cutscene/PioneerBaseDebrief.hpp>
@@ -49,6 +50,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 601: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;
 	case 509: cutscenes.push_back(std::make_unique<BrynPostMiaag>(svc)); break;
 	case 300: cutscenes.push_back(std::make_unique<PioneerBaseDebrief>(svc, map, player)); break;
+	case 402: cutscenes.push_back(std::make_unique<MomsGrave>(svc)); break;
 	case 901: cutscenes.push_back(std::make_unique<NightsideStation>(svc)); break;
 	case 903: cutscenes.push_back(std::make_unique<NightsideWall>(svc)); break;
 	case 268: cutscenes.push_back(std::make_unique<LothAtWorm>(svc)); break;
@@ -61,10 +63,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 1310: cutscenes.push_back(std::make_unique<SpencerReveal>(svc)); break;
 	case 407: cutscenes.push_back(std::make_unique<FamilyReunion>(svc)); break;
 	case 607: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc, map, player)); break;
-	default:
-		NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id);
-		cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc));
-		break;
+	default: NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id); return;
 	}
 	m_register.add(id);
 	NANI_LOG_INFO(m_logger, "Pushed Cutscene: {}", id);

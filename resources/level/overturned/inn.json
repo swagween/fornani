@@ -248,6 +248,28 @@
             1
           ]
         ]
+      },
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": false,
+        "id": 406,
+        "label": "sylvio",
+        "position": [
+          4,
+          13
+        ],
+        "start_busy": false,
+        "suites": [
+          [
+            1
+          ]
+        ]
       }
     ],
     "portals": [

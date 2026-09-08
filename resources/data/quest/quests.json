@@ -105,10 +105,15 @@
   },
 
   {
-    "title": "Collect vermite shards",
+    "title": "Collect Vermite Shards",
     "tag": "collect_vermite",
     "target": 24,
-    "objectives": ["Collect all the vermite shards."],
+    "objectives": [
+      {
+        "index": 0,
+        "readout": "Collect all 24 vermite shards."
+      }
+    ],
     "displayed": true
   },
 
@@ -479,6 +484,12 @@
   },
   {
     "tag": "reunite_with_dad",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "moms_grave",
     "target": 2,
     "objectives": [],
     "displayed": false

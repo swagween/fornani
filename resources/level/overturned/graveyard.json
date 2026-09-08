@@ -32,6 +32,13 @@
     ],
     "cutscene_triggers": [
       {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "moms_grave"
+          }
+        ],
         "dimensions": [
           2,
           5
@@ -211,6 +218,34 @@
             ]
           }
         ]
+      },
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "moms_grave",
+        "position": [
+          52,
+          9
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "output": 1,
+            "suite": [
+              [
+                {
+                  "message": "Here lies Biryanne, loving wife of Chieftain Borm, mother of Loth and Nani."
+                }
+              ]
+            ]
+          }
+        ]
       }
     ],
     "portals": [
@@ -293,6 +328,9 @@
   },
   "meta": {
     "ambience": "overturned",
+    "atmosphere": [
+      "dragonflies"
+    ],
     "background": "woods",
     "biome": "overturned",
     "camera_effects": {
@@ -13291,9 +13329,9 @@
         504,
         0,
         0,
-        486,
-        501,
         0,
+        501,
+        486,
         501,
         468,
         469,
@@ -13462,8 +13500,8 @@
         107,
         108,
         109,
-        110,
-        111,
+        99,
+        100,
         0,
         0,
         0,
@@ -16538,7 +16576,7 @@
         0,
         0,
         0,
-        0,
+        174,
         0,
         0,
         0,

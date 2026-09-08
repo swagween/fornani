@@ -181,8 +181,14 @@
           "message": "Alas, then, it is as I feared."
         },
         {
-          "codes": [[23, 10]],
           "message": "Please, do what you can to bring him home, will you?"
+        },
+        {
+          "message": "Oh, and how long has it been since you've been to your mother's grave?"
+        },
+        {
+          "codes": [[23, 10]],
+          "message": "You should pay her a visit while you're here."
         }
       ]
     ]

@@ -16,6 +16,7 @@ nani_add_sources(
         LothAtWorm.cpp
         PioneerBaseDebrief.cpp
         MainIntro.cpp
+        MomsGrave.cpp
         NightsideStation.cpp
         NightsideWall.cpp
         RetrieveLynx.cpp

@@ -1200,6 +1200,7 @@ void Player::give_item(std::string_view label, int amount, bool from_save) {
 		// m_services->quest_table.set_quest_progression("rescue_justin", 0, QuestRequirementType::loose);
 		m_services->events.set_quest_progression_event.dispatch(5, 0);
 	}
+	if (label == "vermite" && !from_save) { m_services->events.set_quest_progression_event.dispatch(3, catalog.inventory.get_quantity("vermite")); }
 	if (m_services->data.get_item_json_from_tag(label)["category"].as<int>() == 0 && !from_save) { set_flag(PlayerFlags::ability_acquisition); }
 }
 

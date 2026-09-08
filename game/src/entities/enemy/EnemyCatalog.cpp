@@ -20,6 +20,7 @@
 #include <fornani/entities/enemy/catalog/Grappler.hpp>
 #include <fornani/entities/enemy/catalog/Grunt.hpp>
 #include <fornani/entities/enemy/catalog/Hellion.hpp>
+#include <fornani/entities/enemy/catalog/Hivle.hpp>
 #include <fornani/entities/enemy/catalog/Hulmet.hpp>
 #include <fornani/entities/enemy/catalog/Hurtle.hpp>
 #include <fornani/entities/enemy/catalog/Imp.hpp>
@@ -82,6 +83,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(37, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Antibody>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(38, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Grunt>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(39, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Junkboss>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(40, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Hivle>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

@@ -716,6 +716,7 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": true,
+      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -724,8 +725,7 @@
       "darken_factor": 2
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [

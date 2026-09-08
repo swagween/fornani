@@ -14,6 +14,7 @@ nani_add_sources(
         Grappler.cpp
         Grunt.cpp
         Hellion.cpp
+        Hivle.cpp
         Hurtle.cpp
         Imp.cpp
         Junkboss.cpp

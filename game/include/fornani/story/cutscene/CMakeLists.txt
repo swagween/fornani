@@ -15,6 +15,7 @@ nani_add_headers(
         NightsideWall.hpp
         PioneerBaseDebrief.hpp
         MainIntro.hpp
+        MomsGrave.hpp
         RetrieveLynx.hpp
         FamilyReunion.hpp
         ReturnToBase.hpp

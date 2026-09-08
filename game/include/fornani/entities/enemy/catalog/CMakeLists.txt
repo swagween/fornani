@@ -14,6 +14,7 @@ nani_add_headers(
         Grappler.hpp
         Grunt.hpp
         Hellion.hpp
+        Hivle.hpp
         Hurtle.hpp
         Imp.hpp
         Junkboss.hpp

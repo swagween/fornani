@@ -1343,5 +1343,65 @@
         }
       }
     }
+  },
+  "javelin": {
+    "metadata": {
+      "id": 14
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [-3.0, 5.0],
+        "barrel": [18.0, 2.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "twinkle",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [22.0, 22.0],
+        "radius": 4.0,
+        "audio": { "hit": 1 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 3000,
+          "lifespan_variance": 0,
+          "speed": 25.5,
+          "variance": 0.0,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": true,
+          "sticky": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.0,
+          "gravity": 0.01,
+          "elasticity": 0.0
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 1,
+          "framerate": 24,
+          "angles": 6
+        }
+      }
+    }
   }
 }

@@ -136,13 +136,15 @@
   },
   "large_explosion": {
     "frame_count": 8,
-    "framerate": 16,
-    "dimensions": [27, 27]
+    "framerate": 30,
+    "dimensions": [27, 27],
+    "x_reflection": true
   },
   "explosion": {
     "frame_count": 8,
-    "framerate": 16,
-    "dimensions": [48, 48]
+    "framerate": 20,
+    "dimensions": [48, 48],
+    "x_reflection": true
   },
   "stun_explosion": {
     "frame_count": 8,

@@ -1,0 +1,52 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": false,
+              "tag": "collect_vermite"
+            }
+          ],
+          "message": "What is this crystal?"
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Got anything for me?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "messages": ["Ho there, Nani!", "Find anything interesting?", "Got a lot of rocks to admire."]
+        }
+      ],
+      [
+        {
+          "message": "Wow, what a beauty."
+        },
+        {
+          "message": "That there is a vermite shard. They're extremely rare, and the Ancient Pixiotes hid them all over the island back in the Lost Ages."
+        },
+        {
+          "message": "Only twenty-four of them exist."
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Say, if you manage to collect all of them and bring them back to me, I'll give you a fabulous reward!"
+        }
+      ],
+      [
+        {
+          "codes": [1, 0],
+          "message": "Not today, sorry to say. Come back in a little while!"
+        }
+      ]
+    ]
+  }
+}

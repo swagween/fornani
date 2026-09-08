@@ -245,7 +245,7 @@
         "attributes": {
           "base_damage": 4,
           "power": 1,
-          "lifespan": 270,
+          "lifespan": 480,
           "lifespan_variance": 0,
           "speed": 30.0,
           "variance": 0.1,
@@ -255,6 +255,7 @@
           "persistent": false,
           "constrained": false,
           "hitstun": true,
+          "sticky": true,
           "range_variance": 0.0,
           "acceleration_factor": 0.0,
           "dampen_factor": 0.985

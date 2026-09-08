@@ -81,7 +81,7 @@ enum class Weapon : std::uint8_t { bryns_gun, wasp, skycorps_ar, tomahawk, tomah
 enum class Projectile : std::uint8_t { basic, shuriken, pulse, hard_hit, critical_hit };
 enum class Arms : std::uint8_t { reload, frag_grenade, whistle };
 enum class Transmission : std::uint8_t { statics };
-enum class Step : std::uint8_t { basic, grass, metal };
+enum class Step : std::uint8_t { basic, grass, metal, hollow, wood, mud, stone, ice };
 
 // critters
 enum class Enemy : std::uint8_t { hit_squeak, hit_high, hit_medium, hit_low, standard_death, jump_low, high_death, low_death, disappear };

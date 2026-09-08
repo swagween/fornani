@@ -12,7 +12,7 @@ DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int 
 	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = DumpsterDiverState::idle;
 	m_wait_time.start();
-	m_attack.hit.bounds.setRadius(48.f);
+	m_attack.hit.bounds.setRadius(44.f);
 
 	m_variant = static_cast<DumpsterDiverVariant>(variant);
 
@@ -89,7 +89,7 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 	}
 
 	// attack
-	auto hit_offset = sf::Vector2f{directions.actual.as_float() * 120.f, -30.f};
+	auto hit_offset = sf::Vector2f{directions.actual.as_float() * 120.f, 0.f};
 	m_attack.hit.set_position(get_collider().get_center() + hit_offset);
 	m_attack.hit.activate();
 	m_attack.kill_player(player, player::PlayerDeathType::swallowed);

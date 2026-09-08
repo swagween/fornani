@@ -507,6 +507,22 @@
       }
     ]
   },
+  "sylvio": {
+    "id": 47,
+    "dimensions": [32, 32],
+    "sprite_dimensions": [32, 32],
+    "sprite_offset": [0, -13],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 40, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [8, 1, 30, 0, false]
+      }
+    ]
+  },
   "spencer": {
     "id": 6,
     "dimensions": [24, 24],

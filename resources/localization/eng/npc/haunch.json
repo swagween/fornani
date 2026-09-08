@@ -4,17 +4,19 @@
       [
         {
           "codes": [[1, 1]],
-          "message": "Who are you?"
+          "message": "It's you..."
         }
       ],
       [
         {
           "codes": [[1, 2]],
-          "message": "Look, I don't want any trouble..."
-        },
+          "message": "You killed my mother."
+        }
+      ],
+      [
         {
           "codes": [[1, 3]],
-          "message": "How long are you going to keep talking?"
+          "message": "It's time for you to die!"
         }
       ]
     ],
@@ -33,44 +35,35 @@
       ],
       [
         {
-          "message": "I'm Sergeant Haunch of Lady Nimbus's Harpoon Squad."
-        },
-        {
-          "message": "You know, I'm surprised you haven't heard of me considering I killed half your tribe."
-        },
-        {
           "codes": [[1, 1]],
+          "message": "Recognize me, huh?"
+        }
+      ],
+      [
+        {
+          "message": "Well, I kidnapped your mother."
+        },
+        {
+          "message": "Whatever happened after that wasn't strictly by my command."
+        },
+        {
+          "codes": [[1, 2]],
           "message": "Anyhow, makes no difference to me. Your time makin' trouble for Skycorps has come to an end."
         }
       ],
       [
         {
-          "message": "Then you came to the wrong place at the wrong time, I regret to say."
+          "message": "That so?"
         },
         {
-          "message": "I've had no trouble gunning down your people in the past, so I don't see what makes you any different."
-        },
-        {
-          "codes": [
-            [23, 10],
-            [12, 0]
-          ],
-          "message": "I'm sure you'll bleed just like the rest of 'em."
-        }
-      ],
-      [
-        {
-          "message": "Hah! Got a little bite to you, then, eh?"
-        },
-        {
-          "message": "Don't worry, I don't discriminate. I'll give you the same treatment I gave the rest of your pathetic village."
+          "message": "You got some nerve, kid."
         },
         {
           "codes": [
             [23, 10],
             [12, 0]
           ],
-          "message": "Time to die!"
+          "message": "I'll send you right back into your mommy's arms!"
         }
       ]
     ]
@@ -89,11 +82,7 @@
         },
         {
           "codes": [[12, 0]],
-          "messages": [
-            "What's the matter, couldn't take the heat?",
-            "Don't know when to give up, do you?",
-            "You ain't got an ounce more fight in you than I expected."
-          ]
+          "messages": ["What's the matter, couldn't take the heat?", "Don't know when to give up, do you?", "You ain't got an ounce more fight in you than I expected."]
         }
       ]
     ]

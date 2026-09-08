@@ -57,7 +57,7 @@ void Junkboss::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
-		m_services->soundboard.play_sound("demon_hurt", get_collider().get_center());
+		m_services->soundboard.play_sound("hit_deep", get_collider().get_center());
 		if (!hurt_effect.running()) { hurt_effect.start(128); }
 		flags.state.reset(StateFlags::hurt);
 	}

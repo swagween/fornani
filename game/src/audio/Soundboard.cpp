@@ -40,10 +40,29 @@ Soundboard::Soundboard(automa::ServiceProvider& svc, capo::IEngine& engine) : m_
 							{479, Step::grass},
 							{496, Step::grass},
 							{497, Step::grass}}});
-	get_step_sound.insert({7, {{3, Step::metal},   {5, Step::metal},   {6, Step::metal},   {7, Step::metal},   {16, Step::metal},  {17, Step::metal},  {18, Step::metal},  {20, Step::metal},  {21, Step::metal},  {35, Step::metal},
-							   {37, Step::metal},  {51, Step::metal},  {53, Step::metal},  {64, Step::metal},  {65, Step::metal},  {66, Step::metal},  {67, Step::metal},  {68, Step::metal},  {69, Step::metal},  {70, Step::metal},
-							   {71, Step::metal},  {464, Step::metal}, {465, Step::metal}, {466, Step::metal}, {467, Step::metal}, {468, Step::metal}, {469, Step::metal}, {470, Step::metal}, {471, Step::metal}, {476, Step::metal},
-							   {477, Step::metal}, {478, Step::metal}, {479, Step::metal}, {493, Step::metal}, {494, Step::metal}, {495, Step::metal}, {498, Step::metal}, {499, Step::metal}}});
+	get_step_sound.insert({6,
+						   {{10, Step::mud},
+							{464, Step::mud},
+							{465, Step::mud},
+							{466, Step::mud},
+							{467, Step::mud},
+							{468, Step::mud},
+							{469, Step::mud},
+							{470, Step::mud},
+							{471, Step::mud},
+							{472, Step::mud},
+							{473, Step::mud},
+							{474, Step::mud},
+							{475, Step::mud},
+							{493, Step::mud},
+							{494, Step::mud},
+							{495, Step::mud},
+							{496, Step::mud},
+							{497, Step::mud}}});
+	get_step_sound.insert({7, {{3, Step::metal},   {4, Step::hollow},  {5, Step::metal},   {6, Step::metal},   {7, Step::metal},   {16, Step::metal},  {17, Step::metal},  {18, Step::metal},  {20, Step::metal},  {21, Step::metal},
+							   {35, Step::metal},  {37, Step::metal},  {51, Step::metal},  {53, Step::metal},  {64, Step::metal},  {65, Step::metal},  {66, Step::metal},  {67, Step::metal},  {68, Step::metal},  {69, Step::metal},
+							   {70, Step::metal},  {71, Step::metal},  {464, Step::metal}, {465, Step::metal}, {466, Step::metal}, {467, Step::metal}, {468, Step::metal}, {469, Step::metal}, {470, Step::metal}, {471, Step::metal},
+							   {476, Step::metal}, {477, Step::metal}, {478, Step::metal}, {479, Step::metal}, {493, Step::metal}, {494, Step::metal}, {495, Step::metal}, {498, Step::metal}, {499, Step::metal}}});
 }
 
 void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc, int echo_count, int echo_rate) {
@@ -366,9 +385,13 @@ void Soundboard::play_sounds(capo::IEngine& engine, automa::ServiceProvider& svc
 	if (flags.step.test(Step::basic)) { play(engine, svc, "nani_steps", 0.1f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.step.test(Step::grass)) { play(engine, svc, "nani_steps_grass", 0.3f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.step.test(Step::metal)) { play(engine, svc, "nani_steps_metal", 0.3f, 80.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.step.test(Step::mud)) { play(engine, svc, "nani_steps_mud", 0.3f, 80.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.step.test(Step::hollow)) { random::coin_flip() ? play(engine, svc, "steps_hollow_1", 0.3f, 30.f, 0, 1.f, {}, echo_count, echo_rate) : play(engine, svc, "steps_hollow_2", 0.3f, 30.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.land.test(Step::basic)) { play(engine, svc, "nani_landed", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.land.test(Step::grass)) { play(engine, svc, "nani_landed_grass", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }
 	if (flags.land.test(Step::metal)) { play(engine, svc, "nani_landed_metal", 0.2f, 90.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.land.test(Step::mud)) { play(engine, svc, "nani_landed_mud", 0.2f, 90.f, 0, 1.f, {}, echo_count, echo_rate); }
+	if (flags.land.test(Step::hollow)) { play(engine, svc, "land_hollow", 0.2f, 30.f, 0, 1.f, {}, echo_count, echo_rate); }
 
 	// arms
 	if (flags.player.test(Player::arms_switch)) { play(engine, svc, "arms_switch", 0.f, 100.f, 0, 1.f, {}, echo_count, echo_rate); }

@@ -184,24 +184,27 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (get_secondary_collider().collision_depths) { get_secondary_collider().collision_depths.value().reset(); }
 	}
 
-	if (just_died() && !flags.state.test(StateFlags::special_death_mode)) {
+	if (just_died()) {
 		svc.data.kill_enemy(map.room_id, metadata.stable_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent));
 		svc.data.register_enemy(label);
-		svc.stats.enemy.enemies_killed.update();
-		auto individual_delay = flags.general.test(GeneralFlags::boss) ? 16 : 0;
-		map.active_loot.push_back(item::Loot(svc, map, player, get_collider().get_center(),
-											 {attributes.drop_range, attributes.loot_multiplier * player.get_luck(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id, individual_delay, attributes.gem_multiplier}));
-		if (random::percent_chance(attributes.treasure_chance * 100.f)) { spawn_treasure(svc, map); }
-		switch (attributes.size) {
-		case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
-		case EnemySize::small: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
-		case EnemySize::medium: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
-		case EnemySize::large: svc.soundboard.flags.enemy.set(audio::Enemy::low_death); break;
-		case EnemySize::giant: svc.soundboard.flags.enemy.set(audio::Enemy::low_death); break;
-		default: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
+		if (!flags.state.test(StateFlags::special_death_mode)) {
+			svc.stats.enemy.enemies_killed.update();
+			auto individual_delay = flags.general.test(GeneralFlags::boss) ? 16 : 0;
+			map.active_loot.push_back(
+				item::Loot(svc, map, player, get_collider().get_center(),
+						   {attributes.drop_range, attributes.loot_multiplier * player.get_luck(), 0, flags.general.test(GeneralFlags::rare_drops), attributes.rare_drop_id, individual_delay, attributes.gem_multiplier}));
+			if (random::percent_chance(attributes.treasure_chance * 100.f)) { spawn_treasure(svc, map); }
+			switch (attributes.size) {
+			case EnemySize::tiny: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
+			case EnemySize::small: svc.soundboard.flags.enemy.set(audio::Enemy::high_death); break;
+			case EnemySize::medium: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
+			case EnemySize::large: svc.soundboard.flags.enemy.set(audio::Enemy::low_death); break;
+			case EnemySize::giant: svc.soundboard.flags.enemy.set(audio::Enemy::low_death); break;
+			default: svc.soundboard.flags.enemy.set(audio::Enemy::standard_death); break;
+			}
+			map.spawn_counter.update(-1);
+			get_collider().set_flag(shape::ColliderFlags::intangible);
 		}
-		map.spawn_counter.update(-1);
-		get_collider().set_flag(shape::ColliderFlags::intangible);
 	}
 	flags.triggers = {};
 	if (map.off_the_bottom(get_collider().physics.position)) {
@@ -388,9 +391,9 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			if (health.is_dead() && !flags.general.test(GeneralFlags::post_death_render)) {
 				for (auto i = 0; i < 3; ++i) {
 					auto random_vector = random::random_vector_float(-0.5f, 0.5f);
-					map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), proj.get_direction().as_vector() + random_vector, visual.effect_type));
+					map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), proj.get_direction().as_vector() * 0.7f + random_vector, visual.effect_type));
 				}
-				if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center()); }
+				if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center(), get_collider().physics.actual_velocity() * 0.5f); }
 			}
 			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.play_sound("standard_hit", get_collider().get_center()); }
 			if (proj.has_critical_damage()) {

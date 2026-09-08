@@ -361,7 +361,7 @@ bool Collider::handle_collider_collision(Shape const& collider, bool soft, sf::V
 	if (!util::same_sign(velocity.x, mtvs.horizontal.x)) { velocity.x = 0.f; }
 
 	if (collision_depths && crusher) { collision_depths.value().calculate(*this, collider); }
-	if (headbox.overlaps(collider)) {
+	if (headbox.overlaps(collider) && is_complex()) {
 		if (headbox.vertices[2].y + 4.f > collider.vertices[2].y) {
 			physics.velocity.y = 10.f;
 			auto const overlap = sf::Vector2f{0.f, (collider.vertices[2].y - headbox.vertices[0].y)};

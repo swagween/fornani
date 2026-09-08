@@ -306,7 +306,7 @@
       "gravity": 6.5
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 1
     },
     "audio": {
@@ -355,7 +355,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 1
     },
     "audio": {
@@ -403,7 +403,7 @@
       "gravity": 6.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 1
     },
     "audio": {
@@ -452,7 +452,7 @@
       "gravity": 8.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 2,
       "effect_size": 1
     },
     "audio": {
@@ -500,7 +500,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 6,
       "effect_size": 1,
       "hit_effect": "green_blood"
     },
@@ -549,7 +549,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 6,
       "effect_size": 1
     },
     "audio": {
@@ -727,7 +727,7 @@
       "gravity": 12.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 1
     },
     "audio": {
@@ -794,7 +794,7 @@
       "gravity": 20.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 2,
       "effect_size": 1
     },
     "audio": {
@@ -838,7 +838,7 @@
       "gravity": 0.5
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 2,
       "effect_size": 1
     },
     "audio": {
@@ -881,7 +881,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 3,
       "effect_size": 1
     },
     "audio": {
@@ -924,7 +924,7 @@
       "gravity": 14.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 3,
       "effect_size": 1
     },
     "audio": {
@@ -967,7 +967,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 3,
       "effect_size": 1
     },
     "audio": {
@@ -1035,7 +1035,7 @@
       "gravity": 20.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 2,
       "effect_size": 1
     },
     "audio": {
@@ -1080,7 +1080,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 6,
       "effect_size": 1,
       "hit_effect": "green_blood"
     },
@@ -1129,7 +1129,7 @@
       "gravity": 20.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 1
     },
     "audio": {
@@ -1235,7 +1235,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 0
     },
     "audio": {
@@ -1284,7 +1284,7 @@
       "gravity": 16.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 2,
       "effect_size": 0
     },
     "audio": {
@@ -1381,7 +1381,7 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 4,
       "effect_size": 0
     },
     "audio": {
@@ -1431,8 +1431,8 @@
       "gravity": 4.0
     },
     "visual": {
-      "effect_type": 0,
-      "effect_size": 0,
+      "effect_type": 4,
+      "effect_size": 1,
       "death": {
         "size": 2,
         "style": "guardian"
@@ -1484,8 +1484,8 @@
       "gravity": 12.0
     },
     "visual": {
-      "effect_type": 0,
-      "effect_size": 0,
+      "effect_type": 4,
+      "effect_size": 1,
       "death": {
         "size": 1,
         "style": "guardian"
@@ -1909,7 +1909,65 @@
       "gravity": 0.0
     },
     "visual": {
-      "effect_type": 0,
+      "effect_type": 3,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": -1
+    },
+    "attributes": {
+      "base_hp": 120,
+      "base_damage": 1.0,
+      "speed": 0.5,
+      "loot_multiplier": 4.0,
+      "drop_range": [7, 9],
+      "rare_drop_id": 0,
+      "respawn_distance": 0,
+      "permadeath": false,
+      "size": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "foreground": true,
+      "rare_drops": false
+    },
+    "treasure": {
+      "chance": 0.1,
+      "items": [
+        {
+          "tag": "bronze_bracelet",
+          "chance": 0.9,
+          "mythic": false
+        },
+        {
+          "tag": "pioneer_scrap",
+          "chance": 0.1,
+          "mythic": true
+        }
+      ]
+    }
+  },
+  "hivle": {
+    "metadata": {
+      "name": "Hivle",
+      "id": 40,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [36, 36],
+      "sprite_dimensions": [48, 48],
+      "offset": [0, -26],
+      "alert_range": [800.0, 400.0],
+      "hostile_range": [500.0, 500.0],
+      "friction": 0.98,
+      "gravity": 10.0
+    },
+    "visual": {
+      "effect_type": 3,
       "effect_size": 1
     },
     "audio": {

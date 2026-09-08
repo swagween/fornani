@@ -31,9 +31,13 @@ TextManager::TextManager(ResourceFinder& finder, Localization& localization)
 	basic = *dj::Json::from_file((finder.resource_path() + localization.get_folder_string() + "/basic.json").c_str());
 	assert(!basic.is_null());
 
-	// basic
+	// item
 	item = *dj::Json::from_file((finder.resource_path() + localization.get_folder_string() + "/item.json").c_str());
 	assert(!item.is_null());
+
+	// story
+	story = *dj::Json::from_file((finder.resource_path() + localization.get_folder_string() + "/story.json").c_str());
+	assert(!story.is_null());
 
 	// NPCs
 	// npc = *dj::Json::from_file((finder.resource_path() + localization.get_folder_string() + "/npc.json").c_str());

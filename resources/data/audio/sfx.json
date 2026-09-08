@@ -147,7 +147,7 @@
     "fade_in": 256,
     "fade_out": 256,
     "min_distance": 512.0,
-    "max_distance": 4096.0
+    "max_distance": 1024.0
   },
   {
     "label": "flower_spin",
@@ -268,6 +268,12 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "nani_steps_metal",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "land_worm_1",
     "bus": "gameplay",
     "volume": 0.4,
@@ -275,6 +281,12 @@
   },
   {
     "label": "land_worm_2",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_deep",
     "bus": "gameplay",
     "volume": 0.4,
     "pitch_offset": 0.2

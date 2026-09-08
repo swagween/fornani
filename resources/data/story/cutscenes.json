@@ -13,5 +13,9 @@
   "family_reunion": {
     "stall_idle": true,
     "hide_weapon": true
+  },
+  "moms_grave": {
+    "stall_idle": true,
+    "hide_weapon": true
   }
 }

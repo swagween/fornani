@@ -111,7 +111,10 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	// process properties
 	svc.music_player.load(svc.finder, m_attributes.music);
 	svc.music_player.play_looped();
-	svc.ambience_player.load(svc.finder, m_attributes.ambience);
+	auto const domain = is_interior() ? "interior" : "exterior";
+	auto const lookup = svc.data.biomes["properties"][m_biome.get_label()]["ambience"][domain].as_string_view();
+	NANI_LOG_DEBUG(m_logger, "Retrieving ambience from: {}", lookup);
+	svc.ambience_player.load(svc.finder, lookup);
 	svc.ambience_player.play();
 	for (auto const& atmo : m_attributes.atmosphere) { atmosphere.push_back(vfx::Atmosphere(svc, *this, atmo)); }
 

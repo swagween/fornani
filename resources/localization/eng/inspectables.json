@@ -939,6 +939,46 @@
       }
     ]
   },
+  "danger385022348034061": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Danger! Steep Drop-off!"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "deity385022344888364": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 2,
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  12,
+                  509
+                ],
+                [
+                  18,
+                  5091
+                ]
+              ],
+              "message": "\"Deity Miaag\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "dougs_house385022344036383": {
     "series": [
       {
@@ -948,6 +988,21 @@
           [
             {
               "message": "- Doug's House -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "fall385022347968520": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "There's no way but down..."
             }
           ]
         ]
@@ -1179,6 +1234,21 @@
       }
     ]
   },
+  "king385022344429612": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "The inscription reads, \"Miaag, King of the Kariba.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "laboratory_password385022343381024": {
     "series": [
       {
@@ -1218,6 +1288,36 @@
           [
             {
               "message": "A surge of memories comes rushing back to you as you regard the bedroom where you grew up."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "moms_grave0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Biryanne, loving wife of Chieftain Borm, mother of Loth and Nani."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "moms_grave385022346657801": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Here lies Biryanne, loving wife of Chieftain Borm, mother of Loth and Nani."
             }
           ]
         ]
@@ -1290,6 +1390,21 @@
           [
             {
               "message": "- Pioneer Trail -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "research385022344691722": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "You find a bunch of scattered books and papers about the endocrinology of the Mother Worm."
             }
           ]
         ]
@@ -1545,6 +1660,21 @@
           [
             {
               "message": "- Woodshine Village -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "worm385022344691756": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "\"Miaag. He absorbs the power of the Mother.\""
             }
           ]
         ]

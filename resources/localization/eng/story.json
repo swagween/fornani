@@ -1,0 +1,29 @@
+{
+  "moms_grave": {
+    "output": 2,
+    "hide_portrait": true,
+    "suite": [
+      [
+        {
+          "message": "It reads: Here lies Biryanne, loving wife of Chieftain Borm, mother of Loth and Nani."
+        },
+        {
+          "message": "You feel a wave of emotion run through you as a steady breeze tugs at your hair."
+        },
+        {
+          "message": "Your mother was killed by Skycorps. A man named Sergeant Haunch raided Woodshine and took her hostage when you were just a little girl."
+        },
+        {
+          "message": "No one knows exactly what happened, but a few months later she was returned to the village in a wooden box and wrapped up in linens."
+        },
+        {
+          "message": "..."
+        },
+        {
+          "message": "Memories that you wish weren't real suddenly come rushing back to you."
+        }
+      ]
+    ],
+    "responses": [[]]
+  }
+}
