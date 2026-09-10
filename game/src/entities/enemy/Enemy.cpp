@@ -74,7 +74,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	case 3: sound.hit_flag = audio::Enemy::hit_squeak; break;
 	}
 
-	post_death.start(afterlife);
+	post_death.set_and_start(afterlife);
 
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
 	if (in_general["gravity"].as_bool()) { flags.general.set(GeneralFlags::gravity); }
@@ -143,6 +143,12 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 		attributes.treasure_chance = in_treasure["chance"].as<float>();
 		for (auto const& entry : in_treasure["items"].as_array()) { m_treasure->push_back(Treasure{entity::ChestType::item, entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
 		for (auto const& entry : in_treasure["guns"].as_array()) { m_treasure->push_back(Treasure{entity::ChestType::gun, entry["chance"].as<float>(), entry["tag"].as_string(), entry["mythic"].as_bool()}); }
+	}
+
+	auto& ieo = in_visual["effects_overlay"];
+	if (ieo) {
+		m_effects_overlay.emplace(Animatable{svc, "enemy_" + std::string{label} + "_effects", {ieo["dimensions"][0].as<int>(), ieo["dimensions"][1].as<int>()}});
+		m_effects_overlay->center();
 	}
 
 	p_animatable.center();
@@ -294,6 +300,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick) {
 	Mobile::post_update(svc, map, player, !flags.general.test(GeneralFlags::no_tick));
+	if (m_effects_overlay && !flags.general.test(GeneralFlags::no_tick)) { m_effects_overlay->tick(); }
 	handle_player_collision(player);
 }
 
@@ -302,11 +309,19 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	auto horizontal_offset = sf::Vector2f{directions.actual.as_float(), 1.f};
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	p_animatable.set_position(sprite_position);
+	if (m_effects_overlay) {
+		m_effects_overlay->set_frame(p_animatable.get_frame());
+		m_effects_overlay->set_position(sprite_position);
+		m_effects_overlay->set_scale(p_animatable.get_scale());
+	}
 	if (flags.state.test(StateFlags::invisible)) { return; }
 
 	if (debug::is_debug()) { debug(); }
 
-	if (!debug::is_greyblock()) { p_animatable.draw(win); }
+	if (!debug::is_greyblock()) {
+		p_animatable.draw(win);
+		if (m_effects_overlay) { win.draw(*m_effects_overlay); }
+	}
 
 	if (!debug::is_production()) {
 		get_collider().render(win, cam);

@@ -1960,9 +1960,9 @@
     "physical": {
       "dimensions": [36, 36],
       "sprite_dimensions": [48, 48],
-      "offset": [0, -26],
+      "offset": [0, -27],
       "alert_range": [800.0, 400.0],
-      "hostile_range": [500.0, 500.0],
+      "hostile_range": [300.0, 80.0],
       "friction": 0.98,
       "gravity": 10.0
     },
@@ -1979,6 +1979,128 @@
       "speed": 0.5,
       "loot_multiplier": 4.0,
       "drop_range": [7, 9],
+      "rare_drop_id": 0,
+      "respawn_distance": 0,
+      "permadeath": false,
+      "size": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "foreground": true,
+      "rare_drops": false
+    },
+    "treasure": {
+      "chance": 0.1,
+      "items": [
+        {
+          "tag": "bronze_bracelet",
+          "chance": 0.9,
+          "mythic": false
+        },
+        {
+          "tag": "pioneer_scrap",
+          "chance": 0.1,
+          "mythic": true
+        }
+      ]
+    }
+  },
+  "glub": {
+    "metadata": {
+      "name": "Glub",
+      "id": 41,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [80, 74],
+      "sprite_dimensions": [64, 44],
+      "offset": [0, -2],
+      "alert_range": [800.0, 400.0],
+      "hostile_range": [300.0, 80.0],
+      "friction": 0.98,
+      "gravity": 1.0
+    },
+    "visual": {
+      "effect_type": 3,
+      "effect_size": 1
+    },
+    "audio": {
+      "hit": 1
+    },
+    "attributes": {
+      "base_hp": 220,
+      "base_damage": 1.0,
+      "speed": 0.5,
+      "loot_multiplier": 4.0,
+      "drop_range": [11, 15],
+      "rare_drop_id": 0,
+      "respawn_distance": 0,
+      "permadeath": false,
+      "size": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "sturdy": true,
+      "map_collision": true,
+      "player_collision": true,
+      "rare_drops": true,
+      "secondary_collider": true,
+      "no_soft_collision": true
+    },
+    "treasure": {
+      "chance": 0.1,
+      "items": [
+        {
+          "tag": "bronze_bracelet",
+          "chance": 0.9,
+          "mythic": false
+        },
+        {
+          "tag": "pioneer_scrap",
+          "chance": 0.1,
+          "mythic": true
+        }
+      ]
+    }
+  },
+  "brovle": {
+    "metadata": {
+      "name": "Brovle",
+      "id": 42,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [44, 74],
+      "sprite_dimensions": [128, 64],
+      "offset": [0, -24],
+      "alert_range": [400.0, 200.0],
+      "hostile_range": [300.0, 80.0],
+      "friction": 0.98,
+      "gravity": 12.0
+    },
+    "visual": {
+      "effect_type": 3,
+      "effect_size": 1,
+      "effects_overlay": {
+        "dimensions": [128, 64],
+        "offset": [0, 0]
+      }
+    },
+    "audio": {
+      "hit": 1
+    },
+    "attributes": {
+      "base_hp": 180,
+      "base_damage": 2.0,
+      "speed": 0.5,
+      "loot_multiplier": 6.0,
+      "drop_range": [10, 14],
       "rare_drop_id": 0,
       "respawn_distance": 0,
       "permadeath": false,

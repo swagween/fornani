@@ -236,6 +236,19 @@ void Chain::set_position(sf::Vector2f to_position) {
 	if (linked) { links[0].cousin = &links.back(); }
 }
 
+void Chain::force_endpoints(sf::Vector2f start, sf::Vector2f end) {
+	set_position(start);
+	set_end_position(end);
+
+	for (std::size_t i = 0; i < links.size(); ++i) {
+		auto const t = static_cast<float>(i) / static_cast<float>(links.size() - 1);
+		auto const delta = start + (end - start) * t;
+
+		links[i].set_bob(delta);
+		links[i].set_anchor(delta);
+	}
+}
+
 void Chain::set_end_position(sf::Vector2f to_position) {
 	if (links.empty()) { return; }
 	links.at(links.size() - 1).set_bob(to_position);
@@ -270,7 +283,7 @@ void Chain::simulate(automa::ServiceProvider& svc, int amount) {
 void Chain::break_all() {
 	flags.set(ChainFlags::broken);
 	for (auto& link : links) {
-		sf::Vector2f dir = (link.get_bob() - *m_centroid).normalized();
+		sf::Vector2f dir = flags.test(ChainFlags::linked) ? (link.get_bob() - *m_centroid).normalized() : random::random_vector_float(-0.5f, 0.5f);
 		link.variables.bob_physics.velocity += dir * 20.f;
 		link.fade(random::random_range(80, 200));
 	}
@@ -314,6 +327,14 @@ auto Chain::contains_point(sf::Vector2f test) const -> bool {
 		if (((a.y > test.y) != (b.y > test.y)) && (test.x < (b.x - a.x) * (test.y - a.y) / (b.y - a.y) + a.x)) { inside = !inside; }
 	}
 	return inside;
+}
+
+auto Chain::is_destroyed() const -> bool {
+	if (!flags.test(ChainFlags::broken)) { return false; }
+	for (auto& l : links) {
+		if (l.get_fade().running()) { return false; }
+	}
+	return true;
 }
 
 } // namespace fornani::vfx

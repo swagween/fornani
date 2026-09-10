@@ -863,7 +863,7 @@ void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, st
 	spawn_emitter(svc, emitter, pos, Direction{});
 	if (volatility > 0) {
 		for (auto i = 0; i < volatility; ++i) {
-			m_chain_explosions.push_back(ExplosionSpecifications{tag.data(), emitter.data(), team, pos, radius, channel, 1});
+			m_chain_explosions.push_back(ExplosionSpecifications{std::string{tag}, std::string{emitter}, team, pos, radius, channel, 1});
 			m_chain_explosions.back().delay.start(i * random::random_range(24, 48));
 		}
 	}

@@ -190,6 +190,12 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "hit_javelin",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "crow_caw_1",
     "bus": "gameplay",
     "volume": 1.0,

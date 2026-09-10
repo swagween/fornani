@@ -29,6 +29,7 @@ class Chain {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool average = true);
 	void set_gravity(float g) { parameters.gravity = g; }
 	void set_position(sf::Vector2f to_position);
+	void force_endpoints(sf::Vector2f start, sf::Vector2f end);
 	void set_end_position(sf::Vector2f to_position);
 	void lock_ends();
 	void snap_to_axis(bool vert = true);
@@ -43,6 +44,7 @@ class Chain {
 	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return -m_avg_velocity * parameters.resistance; }
 	[[nodiscard]] auto get_percentage_colliding() const -> float;
 	[[nodiscard]] auto contains_point(sf::Vector2f test) const -> bool;
+	[[nodiscard]] auto is_destroyed() const -> bool;
 
   public:
 	std::vector<Spring> links{};

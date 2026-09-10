@@ -155,16 +155,17 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       32,
       160
     ],
     "interior": true,
     "metagrid": [
-      100,
-      25
+      38,
+      -24
     ],
-    "minimap": true,
+    "minimap": false,
     "music": "brown",
     "player_start": [
       0,

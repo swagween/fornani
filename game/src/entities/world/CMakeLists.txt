@@ -6,6 +6,7 @@ nani_add_sources(
         Hazard.cpp
         HazardTile.cpp
         Laser.cpp
+        Mine.cpp
         SpawnablePlatform.cpp
         TestMobile.cpp
         TreasureContainer.cpp

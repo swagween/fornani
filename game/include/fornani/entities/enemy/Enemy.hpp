@@ -216,6 +216,7 @@ class Enemy : public Mobile {
 	util::Cooldown m_crush;
 
 	EnemyChannel m_custom_channel{};
+	std::optional<Animatable> m_effects_overlay{};
 
 	std::optional<std::vector<Treasure>> m_treasure{};
 

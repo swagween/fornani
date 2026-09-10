@@ -40,7 +40,9 @@ void Hulmet::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	if (towards_me && get_collider().grounded() && !m_cooldowns.post_roll.running()) { request(HulmetState::roll); }
 	if (detected_projectile.up_or_down() && !m_cooldowns.post_roll.running()) { request(HulmetState::roll); }
 	if (is_hurt()) { m_cooldowns.post_roll.running() ? request(HulmetState::panic) : request(HulmetState::roll); }
-	if (m_caution.detected_step(map, get_collider(), directions.actual) && (get_collider().physics.is_moving_horizontally(0.5f) || is_mid_run()) && !m_cooldowns.post_jump.running()) { request(HulmetState::jump); }
+	if (m_caution.detected_step(map, get_collider(), directions.actual) && (get_collider().physics.is_moving_horizontally(0.5f) || is_mid_run()) && !m_cooldowns.post_jump.running() && get_collider().grounded()) {
+		request(HulmetState::jump);
+	}
 	if (is_out_of_ammo()) { request(HulmetState::reload); }
 
 	m_cooldowns.post_fire.update();

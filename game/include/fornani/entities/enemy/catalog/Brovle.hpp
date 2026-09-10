@@ -4,40 +4,41 @@
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
-#define HIVLE_BIND(f) std::bind(&Hivle::f, this)
+#define BROVLE_BIND(f) std::bind(&Brovle::f, this)
 
 namespace fornani::enemy {
 
-enum class HivleState : std::uint8_t { idle, turn, toss, run, jump, jumpsquat, land };
-enum class HivleVariant : std::uint8_t { javelin_tosser };
-enum class HivleFlags : std::uint8_t { toss };
+enum class BrovleState : std::uint8_t { idle, sweep, run, jumpsquat, jump, land, slash, turn };
+enum class BrovleVariant : std::uint8_t { swordfighter };
+enum class BrovleFlags : std::uint8_t { step_detected, projectile };
 
-class Hivle final : public Enemy, public StateMachine<HivleState>, public Flaggable<HivleFlags> {
+class Brovle final : public Enemy, public StateMachine<BrovleState>, public Flaggable<BrovleFlags> {
   public:
-	Hivle(automa::ServiceProvider& svc, world::Map& map, int variant);
+	Brovle(automa::ServiceProvider& svc, world::Map& map, int variant);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 
 	void debug();
 
-	fsm::StateFunction state_function = std::bind(&Hivle::update_idle, this);
+	fsm::StateFunction state_function = std::bind(&Brovle::update_idle, this);
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_run();
 	fsm::StateFunction update_jumpsquat();
 	fsm::StateFunction update_jump();
 	fsm::StateFunction update_turn();
-	fsm::StateFunction update_toss();
+	fsm::StateFunction update_slash();
+	fsm::StateFunction update_sweep();
 	fsm::StateFunction update_land();
 
   private:
-	HivleVariant m_variant{};
+	BrovleVariant m_variant{};
 
 	util::Cooldown m_jump_time;
 	util::Cooldown m_switch_sides;
-	std::optional<entity::WeaponPackage> m_javelin{};
+	std::optional<entity::WeaponPackage> m_sword_wave{};
 	entity::Caution m_caution{};
 
-	bool change_state(HivleState next, anim::Parameters params);
+	bool change_state(BrovleState next, anim::Parameters params);
 
 	automa::ServiceProvider* m_services;
 };

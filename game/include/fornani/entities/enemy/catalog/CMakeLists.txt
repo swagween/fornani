@@ -3,6 +3,7 @@ nani_add_headers(
         Archer.hpp
         Beamsprout.hpp
         Beamstalk.hpp
+        Brovle.hpp
         Caster.hpp
         Crow.hpp
         Demon.hpp
@@ -10,6 +11,7 @@ nani_add_headers(
         Eyebit.hpp
         Eyebot.hpp
         Frdog.hpp
+        Glub.hpp
         Golem.hpp
         Grappler.hpp
         Grunt.hpp

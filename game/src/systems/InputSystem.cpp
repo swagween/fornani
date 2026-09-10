@@ -477,6 +477,11 @@ void InputSystem::set_secondary_keyboard_binding(DigitalAction action, sf::Keybo
 	if (m_digital_actions.contains(action)) { m_digital_actions.at(action).secondary_binding = key; }
 }
 
+void InputSystem::on_steam_overlay_activated(GameOverlayActivated_t* callback) {
+	m_steam_overlay_open = callback->m_bActive != 0;
+	NANI_LOG_INFO(m_logger, "Steam Overlay opened.");
+}
+
 auto InputSystem::get_primary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return m_digital_actions.at(action).primary_binding; }
 
 auto InputSystem::get_secondary_keyboard_binding(DigitalAction action) const -> sf::Keyboard::Scancode { return m_digital_actions.at(action).secondary_binding; }

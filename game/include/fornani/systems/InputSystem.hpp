@@ -2,6 +2,7 @@
 #pragma once
 
 #include <steam/isteaminput.h>
+#include <steam/steam_api.h>
 #include <SFML/Graphics.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
@@ -201,6 +202,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 
 	[[nodiscard]] auto steam_handle_for(DigitalAction action) const -> InputHandle_t { return m_digital_actions.at(action).steam_handle; }
 	[[nodiscard]] auto steam_handle_for(AnalogAction action) const -> InputHandle_t { return m_analog_actions.at(action).steam_handle; }
+	[[nodiscard]] auto is_steam_overlay_open() const -> bool { return m_steam_overlay_open; }
 
 	// --- Keyboard helpers ---
 	void set_last_key_pressed(sf::Keyboard::Scancode to_key);
@@ -220,6 +222,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	// --- SteamInput ---
 	InputHandle_t m_controller_handle{0};
 	std::array<InputActionSetHandle_t, static_cast<size_t>(ActionSet::END)> m_steam_action_sets{};
+	bool m_steam_overlay_open{};
 
 	// --- Joystick Input ---
 	sf::Vector2f m_joystick_throttle{};
@@ -242,6 +245,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 
 	STEAM_CALLBACK(InputSystem, handle_gamepad_connection, SteamInputDeviceConnected_t);
 	STEAM_CALLBACK(InputSystem, handle_gamepad_disconnection, SteamInputDeviceDisconnected_t);
+	STEAM_CALLBACK(InputSystem, on_steam_overlay_activated, GameOverlayActivated_t);
 };
 
 } // namespace fornani::input

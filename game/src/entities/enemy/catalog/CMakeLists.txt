@@ -3,6 +3,7 @@ nani_add_sources(
         Archer.cpp
         Beamsprout.cpp
         Beamstalk.cpp
+        Brovle.cpp
         Caster.cpp
         Crow.cpp
         Demon.cpp
@@ -10,6 +11,7 @@ nani_add_sources(
         Eyebit.cpp
         Eyebot.cpp
         Frdog.cpp
+        Glub.cpp
         Golem.cpp
         Grappler.cpp
         Grunt.cpp

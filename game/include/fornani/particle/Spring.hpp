@@ -43,7 +43,7 @@ class Spring {
 	components::CircleSensor sensor{8.f};
 	std::optional<Spring*> cousin{};
 
-	[[nodiscard]] auto get_fade() -> util::Cooldown& { return m_fade; }
+	[[nodiscard]] auto get_fade() const -> util::Cooldown const& { return m_fade; }
 	[[nodiscard]] auto is_locked() const -> bool { return locked; }
 	[[nodiscard]] auto get_channel() const -> int { return m_channel; }
 	[[nodiscard]] auto get_equilibrium_point() const -> float { return params.grav / params.spring_constant; }

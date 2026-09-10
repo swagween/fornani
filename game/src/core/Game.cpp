@@ -223,7 +223,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 		m_frame_tracker.update();
 		if (services.ticker.every_x_frames(default_framerate_limit_v)) { average_frame_time = m_frame_tracker.get_average_frame_time(); }
 		if (flags.test(GameFlags::playtest)) { playtester_portal(services.window->get()); }
-		flags.test(GameFlags::playtest) || demo ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
+		flags.test(GameFlags::playtest) || demo || services.input_system.is_steam_overlay_open() ? flags.set(GameFlags::draw_cursor) : flags.reset(GameFlags::draw_cursor);
 
 		// rendering
 		draw_wallpaper();

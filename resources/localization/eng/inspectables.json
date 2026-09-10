@@ -954,6 +954,51 @@
       }
     ]
   },
+  "death_road0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "< Death Road"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "death_road385022343512087": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "< Death Road"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "death_road385022344626214": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "< Death Road"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "deity385022344888364": {
     "series": [
       {
@@ -1264,6 +1309,51 @@
       }
     ]
   },
+  "leaving_ashtown385022344822820": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "You are now leaving Ashtown..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "lodge0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Shadowrock Lodge -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "lodge385022349017127": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Shadowrock Lodge -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "low_road385022347182168": {
     "series": [
       {
@@ -1345,6 +1435,21 @@
                 ]
               ],
               "message": "Transmission ID: AC-7738"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "outpost385022343708708": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- East Ashtown Outpost -"
             }
           ]
         ]
@@ -1660,6 +1765,36 @@
           [
             {
               "message": "- Woodshine Village -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "wilds0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Shadowrock Wilds >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "wilds385022345281573": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Shadowrock Wilds >"
             }
           ]
         ]

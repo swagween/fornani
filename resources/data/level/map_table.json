@@ -1034,6 +1034,24 @@
     },
     {
       "folder": "shadow",
+      "label": "entrypoint.json",
+      "region": "shadow",
+      "room_id": 1703
+    },
+    {
+      "folder": "shadow",
+      "label": "lodge.json",
+      "region": "shadow",
+      "room_id": 1705
+    },
+    {
+      "folder": "shadow",
+      "label": "north_death_road.json",
+      "region": "shadow",
+      "room_id": 1704
+    },
+    {
+      "folder": "shadow",
       "label": "west_death_road.json",
       "region": "shadow",
       "room_id": 1702

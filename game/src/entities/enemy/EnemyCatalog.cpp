@@ -10,6 +10,7 @@
 #include <fornani/entities/enemy/catalog/Archer.hpp>
 #include <fornani/entities/enemy/catalog/Beamsprout.hpp>
 #include <fornani/entities/enemy/catalog/Beamstalk.hpp>
+#include <fornani/entities/enemy/catalog/Brovle.hpp>
 #include <fornani/entities/enemy/catalog/Caster.hpp>
 #include <fornani/entities/enemy/catalog/Crow.hpp>
 #include <fornani/entities/enemy/catalog/Demon.hpp>
@@ -17,6 +18,7 @@
 #include <fornani/entities/enemy/catalog/Eyebit.hpp>
 #include <fornani/entities/enemy/catalog/Eyebot.hpp>
 #include <fornani/entities/enemy/catalog/Frdog.hpp>
+#include <fornani/entities/enemy/catalog/Glub.hpp>
 #include <fornani/entities/enemy/catalog/Grappler.hpp>
 #include <fornani/entities/enemy/catalog/Grunt.hpp>
 #include <fornani/entities/enemy/catalog/Hellion.hpp>
@@ -84,6 +86,8 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(38, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Grunt>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(39, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Junkboss>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(40, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Hivle>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(41, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Glub>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(42, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Brovle>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

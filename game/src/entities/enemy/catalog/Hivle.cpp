@@ -9,12 +9,13 @@ namespace fornani::enemy {
 
 constexpr auto hivle_framerate = 12;
 
-Hivle::Hivle(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "hivle"), m_services{&svc}, m_toss_time{600}, m_switch_sides{2400} {
-	p_animatable.set_animations({{"idle", {0, 4, hivle_framerate * 2, 2}},
+Hivle::Hivle(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "hivle"), m_services{&svc}, m_jump_time{64}, m_switch_sides{2400} {
+	p_animatable.set_animations({{"idle", {0, 4, hivle_framerate * 3, 2}},
 								 {"run", {4, 4, hivle_framerate * 2, 3}},
 								 {"toss", {8, 7, hivle_framerate * 2, 0}},
 								 {"land", {19, 2, hivle_framerate * 2, 0}},
-								 {"jump", {15, 4, hivle_framerate * 3, 0, true}},
+								 {"jumpsquat", {15, 1, hivle_framerate, 0}},
+								 {"jump", {16, 3, hivle_framerate * 2, -1}},
 								 {"turn", {21, 2, hivle_framerate * 2, 0}}});
 	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = HivleState::idle;
@@ -24,16 +25,14 @@ Hivle::Hivle(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy
 	m_javelin->get().set_team(arms::Team::guardian);
 
 	get_collider().physics.set_friction_componentwise({0.995f, 0.999f});
-
-	m_toss_time.randomize();
 }
 
 void Hivle::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
+	if (just_died()) { svc.soundboard.play_sound("beast_damage", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
-	m_toss_time.update();
+	m_jump_time.update();
 	m_switch_sides.update();
 	if (m_switch_sides.is_complete()) { m_switch_sides.start(); }
 
@@ -45,7 +44,6 @@ void Hivle::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		auto bp = sf::Vector2f{directions.actual.as_float() * 10.f, -8.f};
 		m_javelin->get().set_barrel_point(get_collider().get_center() + bp);
 		m_javelin->get().shoot(svc, map, player.get_collider().get_center() - get_collider().get_center() + bp);
-		m_toss_time.start();
 		set_flag(HivleFlags::toss, false);
 	}
 
@@ -57,7 +55,7 @@ void Hivle::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 
 	if (directions.actual.lnr != directions.desired.lnr) { request(HivleState::turn); }
-	if (m_caution.is_projectile_detected(map, physical.alert_range, arms::Team::guardian)) { request(HivleState::jump); }
+	if (m_caution.is_projectile_detected(map, physical.hostile_range, arms::Team::guardian)) { request(HivleState::jumpsquat); }
 
 	state_function = state_function();
 }
@@ -71,7 +69,7 @@ fsm::StateFunction Hivle::update_idle() {
 	p_state.actual = HivleState::idle;
 	if (change_state(HivleState::turn, get_params("turn"))) { return HIVLE_BIND(update_turn); }
 	if (get_collider().grounded()) {
-		if (change_state(HivleState::jump, get_params("jump"))) { return HIVLE_BIND(update_jump); }
+		if (change_state(HivleState::jumpsquat, get_params("jumpsquat"))) { return HIVLE_BIND(update_jumpsquat); }
 	}
 	if (p_animatable.animation.is_complete()) {
 		is_alert() ? request(HivleState::toss) : request(HivleState::run);
@@ -86,7 +84,7 @@ fsm::StateFunction Hivle::update_run() {
 	get_collider().physics.velocity.x = directions.actual.as_float() * 2.f;
 	if (change_state(HivleState::turn, get_params("turn"))) { return HIVLE_BIND(update_turn); }
 	if (get_collider().grounded()) {
-		if (change_state(HivleState::jump, get_params("jump"))) { return HIVLE_BIND(update_jump); }
+		if (change_state(HivleState::jumpsquat, get_params("jumpsquat"))) { return HIVLE_BIND(update_jumpsquat); }
 	}
 	if (p_animatable.animation.is_complete()) {
 		is_alert() ? request(HivleState::toss) : request(HivleState::idle);
@@ -96,11 +94,22 @@ fsm::StateFunction Hivle::update_run() {
 	return HIVLE_BIND(update_run);
 }
 
+fsm::StateFunction Hivle::update_jumpsquat() {
+	p_state.actual = HivleState::jumpsquat;
+	if (p_animatable.animation.complete()) {
+		m_jump_time.start();
+		m_services->soundboard.play_sound("mid_jump", get_collider().get_center());
+		request(HivleState::jump);
+		if (change_state(HivleState::jump, get_params("jump"))) { return HIVLE_BIND(update_jump); }
+	}
+	return HIVLE_BIND(update_jumpsquat);
+}
+
 fsm::StateFunction Hivle::update_jump() {
 	p_state.actual = HivleState::jump;
-	if (p_animatable.frame_action(1)) { get_collider().physics.velocity.y = -14.f; }
-	if (p_animatable.animation.get_frame_count() > 0) { get_collider().physics.velocity.x = directions.actual.as_float() * -2.f; }
-	if (p_animatable.animation.is_complete() && get_collider().grounded()) {
+	if (p_animatable.animation.just_started()) { get_collider().physics.velocity.y = -14.f; }
+	get_collider().physics.velocity.x = directions.actual.as_float() * -2.f;
+	if (m_jump_time.is_complete() && get_collider().grounded()) {
 		request(HivleState::land);
 		if (change_state(HivleState::land, get_params("land"))) { return HIVLE_BIND(update_land); }
 	}

@@ -24,6 +24,7 @@ class CircleSensor {
 	bool within_bounds(sf::Vector2f const point) const;
 	bool within_bounds(shape::Shape const& shape) const;
 	bool within_bounds(shape::CircleCollider const& shape) const;
+	sf::Vector2f get_overlap(shape::CircleCollider const& shape) const;
 	sf::Vector2f get_MTV(shape::Shape const& shape) const;
 	sf::FloatRect const& get_vicinity() { return m_vicinity; }
 
