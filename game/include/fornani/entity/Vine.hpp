@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/core/Fwd.hpp>
+#include <fornani/entities/world/Mine.hpp>
 #include <fornani/entities/world/SpawnablePlatform.hpp>
 #include <fornani/entities/world/TreasureContainer.hpp>
 #include <fornani/entity/Entity.hpp>
@@ -12,6 +13,10 @@
 #include <vector>
 
 namespace fornani {
+
+struct MineData {
+	int index{};
+};
 
 enum class VineFlags : std::uint8_t { foreground, reverse };
 
@@ -28,20 +33,16 @@ class Vine : public Entity {
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 	void submit(Renderer& renderer) override;
 
-	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) const;
+	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player);
 	void add_platform(automa::ServiceProvider& svc, int link_index);
+	void add_mine(automa::ServiceProvider& svc, int link_index);
 	void remove_platform(int link_index);
+	void remove_mine(int link_index);
 
 	// Copy constructor
 	Vine(Vine const& other) : Entity(other), m_length(other.m_length), m_chain(other.m_chain), m_services(other.m_services) {
-		if (other.m_treasure_balls) {
-			m_treasure_balls.emplace();
-			for (auto const& tb_ptr : *other.m_treasure_balls) { m_treasure_balls->push_back(tb_ptr->clone()); }
-		}
-		if (other.m_spawnable_platforms) {
-			m_spawnable_platforms.emplace();
-			for (auto const& sp_ptr : *other.m_spawnable_platforms) { m_spawnable_platforms->push_back(sp_ptr->clone()); }
-		}
+		for (auto const& tb_ptr : other.m_treasure_balls) { m_treasure_balls.push_back(tb_ptr->clone()); }
+		for (auto const& sp_ptr : other.m_spawnable_platforms) { m_spawnable_platforms.push_back(sp_ptr->clone()); }
 	}
 
 	// Copy assignment
@@ -50,20 +51,12 @@ class Vine : public Entity {
 			Entity::operator=(other);
 			m_length = other.m_length;
 
-			if (other.m_treasure_balls) {
-				std::vector<std::unique_ptr<entity::TreasureContainer>> new_tb;
-				for (auto const& tb_ptr : *other.m_treasure_balls) { new_tb.push_back(tb_ptr->clone()); }
-				m_treasure_balls = std::move(new_tb);
-			} else {
-				m_treasure_balls.reset();
-			}
-			if (other.m_spawnable_platforms) {
-				std::vector<std::unique_ptr<entity::SpawnablePlatform>> new_sp;
-				for (auto const& sp_ptr : *other.m_spawnable_platforms) { new_sp.push_back(sp_ptr->clone()); }
-				m_spawnable_platforms = std::move(new_sp);
-			} else {
-				m_spawnable_platforms.reset();
-			}
+			std::vector<std::unique_ptr<entity::TreasureContainer>> new_tb;
+			for (auto const& tb_ptr : other.m_treasure_balls) { new_tb.push_back(tb_ptr->clone()); }
+			m_treasure_balls = std::move(new_tb);
+			std::vector<std::unique_ptr<entity::SpawnablePlatform>> new_sp;
+			for (auto const& sp_ptr : other.m_spawnable_platforms) { new_sp.push_back(sp_ptr->clone()); }
+			m_spawnable_platforms = std::move(new_sp);
 		}
 		return *this;
 	}
@@ -73,11 +66,16 @@ class Vine : public Entity {
 	vfx::Chain& get_chain() { return m_chain; }
 
   private:
-	void init();
-	std::optional<std::vector<std::unique_ptr<entity::TreasureContainer>>> m_treasure_balls{};
-	std::optional<std::vector<std::unique_ptr<entity::SpawnablePlatform>>> m_spawnable_platforms{};
+	void init(automa::ServiceProvider& svc, world::Map& map);
+	std::vector<std::unique_ptr<entity::TreasureContainer>> m_treasure_balls{};
+	std::vector<std::unique_ptr<entity::SpawnablePlatform>> m_spawnable_platforms{};
+	std::vector<std::unique_ptr<entity::Mine>> m_mines{};
+	std::vector<MineData> m_mine_data{};
 	util::BitFlags<VineFlags> m_flags{};
 	int m_length{};
+	int m_tapers{};
+	int m_angles{};
+	float m_dampen{};
 	vfx::Chain m_chain;
 	std::vector<std::array<int, 2>> encodings{};
 	struct {
@@ -89,6 +87,8 @@ class Vine : public Entity {
 	util::Cooldown m_init;
 
 	automa::ServiceProvider* m_services;
+	std::optional<world::Map*> m_map{};
+	std::optional<dj::Json> m_json{};
 };
 
 } // namespace fornani

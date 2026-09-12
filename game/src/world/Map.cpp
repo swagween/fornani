@@ -958,7 +958,8 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_spawner()) { spawners.push_back(Spawner(*m_services, cell.get_global_center(), 5)); }
 		if (cell.is_target()) { target_points.push_back(cell.get_global_center()); }
 		if (cell.is_home()) { home_points.push_back(cell.get_global_center()); }
-		if (cell.is_incinerite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id)); }
+		if (cell.is_incinerite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id, IncineriteVariant::incinerite)); }
+		if (cell.is_blastite()) { incinerite_blocks.push_back(std::make_unique<Incinerite>(*m_services, *this, cell.position(), chunk_id, IncineriteVariant::blastite)); }
 		if (cell.is_brittle()) { brittle_blocks.push_back(std::make_unique<BrittleBlock>(*m_services, *this, cell.position(), chunk_id)); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) { fire.push_back(Fire(*m_services, cell.position(), cell.value)); }

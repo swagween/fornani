@@ -56,7 +56,6 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	auto gun_offset = p_state.actual == TankState::pocket ? sf::Vector2f{directions.actual.as_float() * -30.f, 12.f} : sf::Vector2f{0.f, 4.f};
 	m_gun.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center() + gun_offset);
 
-	hurt_effect.update();
 	m_cooldowns.post_jump.update();
 	is_alert() ? m_cooldowns.alerted.reverse() : m_cooldowns.alerted.update(player.is_sneaking() ? 2 : 1);
 	m_cooldowns.post_shoot.update();
@@ -71,14 +70,6 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 								  sf::Vector2f{(m_vertical_range.get_dimensions().x * 0.5f) - (get_collider().dimensions.x * 0.5f), (m_vertical_range.get_dimensions().y) - (get_collider().dimensions.y * 0.5f)});
 	m_shoulders.set_position(get_collider().bounding_box.get_position() - sf::Vector2f{(m_shoulders.get_dimensions().x * 0.5f) - (get_collider().dimensions.x * 0.5f), m_shoulders.get_dimensions().y});
 	m_lower_range.set_position(get_collider().bounding_box.get_position() - sf::Vector2f{(m_lower_range.get_dimensions().x * 0.5f) - (get_collider().dimensions.x * 0.5f), -(get_collider().dimensions.y - m_lower_range.get_dimensions().y)});
-
-	m_sounds.hurt = random::percent_chance(50) ? audio::Tank::hurt_1 : audio::Tank::hurt_2;
-	if (flags.state.test(StateFlags::hurt)) {
-		hurt_effect.start();
-		if (sound.hurt_sound_cooldown.is_complete()) { svc.soundboard.flags.tank.set(m_sounds.hurt); }
-		flags.state.reset(StateFlags::hurt);
-		sound.hurt_sound_cooldown.start();
-	}
 
 	if (svc.ticker.every_x_ticks(20)) {
 		if (random::percent_chance(8) && !m_caution.danger()) { request(TankState::run); }
@@ -140,8 +131,6 @@ void Tank::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			set_flag(TankFlags::squishing, false);
 		}
 	}
-
-	if (just_died()) { m_services->soundboard.play_sound("tank_death", get_collider().get_center()); }
 
 	state_function = state_function();
 }

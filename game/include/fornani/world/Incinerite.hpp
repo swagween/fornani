@@ -20,11 +20,13 @@ class Projectile;
 
 namespace fornani::world {
 
+enum class IncineriteVariant : std::uint8_t { incinerite, blastite };
+
 class Map;
 
 class Incinerite : public Animatable {
   public:
-	Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id);
+	Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id, IncineriteVariant variant);
 	Incinerite(Incinerite&&) = delete;
 	Incinerite& operator=(Incinerite&&) = delete;
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
@@ -37,12 +39,14 @@ class Incinerite : public Animatable {
 	shape::Shape& get_hurtbox() { return m_collider.get()->hurtbox; }
 	[[nodiscard]] auto is_destroyed() const -> bool { return health.is_dead(); }
 	[[nodiscard]] auto get_chunk_id() const -> int { return m_chunk_id; }
+	[[nodiscard]] auto is(IncineriteVariant const test) const -> bool { return m_variant == test; }
 
 	Health health;
 
   private:
 	shape::RegisteredCollider m_collider;
 	Map* m_map;
+	IncineriteVariant m_variant;
 	int m_chunk_id{};
 	float energy{};
 	float dampen{0.1f};

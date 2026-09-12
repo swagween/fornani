@@ -32,7 +32,7 @@ Glub::Glub(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(s
 		me.chain->set_num_angles(0);
 		me.chain->flags.set(vfx::ChainFlags::no_collision);
 		me.chain->flags.set(vfx::ChainFlags::linked);
-		me.chain->parameters = vfx::ChainParameters{10.f, 1.1f, 10.f, 1.f, 4.f};
+		me.chain->parameters = vfx::ChainParameters{10.f, 1.1f, 10.f, 1.f, 12.f};
 		me.offset = pos;
 		me.timer = random::random_range_float(0.f, 1.f);
 	}

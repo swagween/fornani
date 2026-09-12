@@ -49,13 +49,6 @@ void Brovle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	}
 	if (m_caution.detected_step(map, get_collider(), directions.actual)) { set_flag(BrovleFlags::step_detected); }
 
-	// hurt
-	if (flags.state.test(StateFlags::hurt)) {
-		m_services->soundboard.play_sound("hit_deep", get_collider().get_center());
-		if (!hurt_effect.running()) { hurt_effect.start(128); }
-		flags.state.reset(StateFlags::hurt);
-	}
-
 	if (directions.actual.lnr != directions.desired.lnr) { request(BrovleState::turn); }
 	if (m_caution.is_projectile_detected(map, physical.hostile_range, arms::Team::guardian)) { request(BrovleState::jumpsquat); }
 

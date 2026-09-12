@@ -257,7 +257,7 @@
         "activate_on_contact": false,
         "already_open": false,
         "channel": 0,
-        "destination_id": 904,
+        "destination_id": 903,
         "dimensions": [
           1,
           1
@@ -405,8 +405,8 @@
     ],
     "interior": false,
     "metagrid": [
-      0,
-      17
+      4,
+      22
     ],
     "minimap": true,
     "music": "wind",

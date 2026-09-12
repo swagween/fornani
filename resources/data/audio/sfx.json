@@ -220,6 +220,24 @@
     "pitch_offset": 0.0
   },
   {
+    "label": "brovle_hurt_1",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "brovle_hurt_2",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "brovle_hurt_3",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "jump_low",
     "bus": "gameplay",
     "volume": 1.0,

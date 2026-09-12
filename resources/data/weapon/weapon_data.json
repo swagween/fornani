@@ -440,7 +440,7 @@
         "ammo": 2,
         "reload": 550,
         "cooldown_time": 3,
-        "recoil": 4.8
+        "recoil": 2.8
       }
     },
     "class_package": {

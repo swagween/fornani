@@ -23,6 +23,7 @@ Beamsprout::Beamsprout(automa::ServiceProvider& svc, world::Map& map, sf::Vector
 	directions.actual = Direction(start_direction);
 	set_root(map);
 	init.start();
+	flags.state.set(StateFlags::vulnerable); // always vulnerable
 }
 
 void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -34,9 +35,7 @@ void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::P
 		return;
 	}
 	post_beam.update();
-	hurt_sound.update();
 	face_player(player);
-	flags.state.set(StateFlags::vulnerable); // always vulnerable
 
 	Enemy::update(svc, map, player);
 	auto offset = get_collider().dimensions * 0.5f + sf::Vector2f{-20.f * directions.actual.as_float(), -64.f};
@@ -47,15 +46,6 @@ void Beamsprout::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	bp.x += 4.f * directions.actual.as_float();
 	bp.y -= 4.f;
 	beam.get().set_barrel_point(bp);
-
-	if (flags.state.test(StateFlags::hurt) && !hurt_sound.running()) {
-		m_services->soundboard.flags.beast.set(audio::Beast::hurt);
-		hurt_effect.start(128);
-		flags.state.reset(StateFlags::hurt);
-		hurt_sound.start();
-	}
-
-	hurt_effect.update();
 
 	if (is_hostile() && !hostility_triggered() && !post_beam.running()) { request(BeamsproutState::charge); }
 	if (directions.actual.lnr != directions.desired.lnr) { request(BeamsproutState::turn); }

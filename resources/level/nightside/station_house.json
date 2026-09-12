@@ -107,8 +107,8 @@
     ],
     "interior": true,
     "metagrid": [
-      4,
-      19
+      8,
+      24
     ],
     "minimap": true,
     "music": "none",

@@ -114,6 +114,11 @@ struct Treasure {
 	bool mythic{};
 };
 
+struct EnemySounds {
+	std::vector<std::string> hurt{};
+	std::vector<std::string> death{};
+};
+
 struct Flags {
 	util::BitFlags<GeneralFlags> general{};
 	util::BitFlags<StateFlags> state{};
@@ -217,6 +222,7 @@ class Enemy : public Mobile {
 
 	EnemyChannel m_custom_channel{};
 	std::optional<Animatable> m_effects_overlay{};
+	EnemySounds p_sounds{};
 
 	std::optional<std::vector<Treasure>> m_treasure{};
 

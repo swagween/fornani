@@ -30,6 +30,9 @@ void Explosion::update(automa::ServiceProvider& svc, player::Player& player, Map
 			exhausted = true;
 		}
 	}
+	for (auto& i : map.incinerite_blocks) {
+		if (m_sensor.within_bounds(i->get_bounding_box()) && i->is(IncineriteVariant::blastite)) { i->hit(); }
+	}
 	if (exhausted) { set_flag(ExplosionFlags::exhausted); }
 }
 

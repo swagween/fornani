@@ -4,6 +4,7 @@ nani_add_headers(
         Beamsprout.hpp
         Beamstalk.hpp
         Brovle.hpp
+        Buzzle.hpp
         Caster.hpp
         Crow.hpp
         Demon.hpp

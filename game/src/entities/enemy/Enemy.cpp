@@ -74,6 +74,9 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	case 3: sound.hit_flag = audio::Enemy::hit_squeak; break;
 	}
 
+	for (auto const& s : in_audio["hurt_sounds"].as_array()) { p_sounds.hurt.push_back(s.as_string()); }
+	for (auto const& s : in_audio["death_sounds"].as_array()) { p_sounds.death.push_back(s.as_string()); }
+
 	post_death.set_and_start(afterlife);
 
 	if (in_general["mobile"].as_bool()) { flags.general.set(GeneralFlags::mobile); }
@@ -161,10 +164,9 @@ void Enemy::set_stable_id(std::pair<int, sf::Vector2<int>> code) {
 
 void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 
-	auto const& in_data = svc.data.enemy[label];
-	auto const& in_audio = in_data["audio"];
 	if (just_died()) {
-		if (in_audio["death"]) { svc.soundboard.play_sound(in_audio["death"].as_string(), get_collider().get_center()); }
+		auto const at = get_collider().get_center();
+		p_sounds.death.empty() ? svc.soundboard.play_sound("standard_death", at) : svc.soundboard.play_sound(random::random_element(p_sounds.death), at);
 	}
 
 	directions.desired.lnr = (player.get_collider().get_center().x < get_collider().get_center().x) ? LNR::left : LNR::right;
@@ -220,6 +222,18 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		health_indicator.update(svc, m_death_position);
 		post_death.update();
 		return;
+	}
+
+	// hurt
+	if (flags.state.test(StateFlags::hurt)) {
+		if (!hurt_effect.running()) { hurt_effect.start(); }
+		auto const at = get_collider().get_center();
+		if (sound.hurt_sound_cooldown.is_complete()) {
+			svc.soundboard.play_sound("hit", at);
+			p_sounds.hurt.empty() ? svc.soundboard.play_sound("standard_hit", at) : svc.soundboard.play_sound(random::random_element(p_sounds.hurt), at);
+			sound.hurt_sound_cooldown.start();
+		}
+		flags.state.reset(StateFlags::hurt);
 	}
 
 	health.update();
@@ -410,7 +424,6 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 				}
 				if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center(), get_collider().physics.actual_velocity() * 0.5f); }
 			}
-			if (!flags.general.test(GeneralFlags::custom_sounds) && !sound.hurt_sound_cooldown.running()) { svc.soundboard.play_sound("standard_hit", get_collider().get_center()); }
 			if (proj.has_critical_damage()) {
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
 				svc.ticker.freeze_frame(0.09f);

@@ -65,7 +65,8 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": -1
+      "hurt_sounds": ["tank_hurt_1", "tank_hurt_2"],
+      "death_sounds": ["tank_death"]
     },
     "attributes": {
       "base_hp": 120,
@@ -1239,7 +1240,8 @@
       "effect_size": 0
     },
     "audio": {
-      "hit": 3
+      "hit": 3,
+      "hurt_sound": "hit_squeak"
     },
     "attributes": {
       "base_hp": 1,
@@ -1599,7 +1601,7 @@
     },
     "audio": {
       "hit": -1,
-      "death": "thief_die"
+      "death_sounds": ["thief_die"]
     },
     "attributes": {
       "base_hp": 40,
@@ -1663,7 +1665,7 @@
     },
     "audio": {
       "hit": -1,
-      "death": "deep_death"
+      "death_sounds": ["deep_death"]
     },
     "attributes": {
       "base_hp": 200,
@@ -1718,7 +1720,7 @@
     },
     "audio": {
       "hit": -1,
-      "death": "nimbus_death"
+      "death_sounds": ["nimbus_death"]
     },
     "attributes": {
       "base_hp": 1300,
@@ -2029,7 +2031,8 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": 1
+      "hurt_sounds": ["deep_hurt"],
+      "death_sounds": ["glub_death"]
     },
     "attributes": {
       "base_hp": 220,
@@ -2093,7 +2096,8 @@
       }
     },
     "audio": {
-      "hit": 1
+      "hurt_sounds": ["brovle_hurt_1", "brovle_hurt_2", "brovle_hurt_3"],
+      "death_sounds": ["brovle_death"]
     },
     "attributes": {
       "base_hp": 180,
@@ -2129,6 +2133,56 @@
           "mythic": true
         }
       ]
+    }
+  },
+  "buzzle": {
+    "metadata": {
+      "name": "Buzzle",
+      "id": 43,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [30, 30],
+      "sprite_dimensions": [40, 40],
+      "offset": [0, 0],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [900.0, 900.0],
+      "hostile_range": [400.0, 400.0],
+      "friction": 0.99,
+      "gravity": 0.0
+    },
+    "visual": {
+      "effect_type": 3,
+      "effect_size": 0
+    },
+    "audio": {
+      "hurt_sounds": ["hit_squeak"],
+      "death_sounds": ["high_death"]
+    },
+    "attributes": {
+      "base_hp": 30,
+      "base_damage": 1.0,
+      "speed": 6.0,
+      "loot_multiplier": 2.0,
+      "drop_range": [2, 3],
+      "respawn_distance": 1,
+      "permadeath": false,
+      "team": 1
+    },
+    "animation": {
+      "duration": 2,
+      "framerate": 20
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false,
+      "map_collision": true,
+      "player_collision": false,
+      "hurt_on_contact": true,
+      "uncrushable": false,
+      "foreground": true,
+      "rare_drops": false
     }
   }
 }

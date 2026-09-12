@@ -1022,6 +1022,12 @@
     },
     {
       "folder": "shadow",
+      "label": "blockade.json",
+      "region": "shadow",
+      "room_id": 1706
+    },
+    {
+      "folder": "shadow",
       "label": "east_death_road.json",
       "region": "shadow",
       "room_id": 1700

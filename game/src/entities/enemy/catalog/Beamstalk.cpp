@@ -22,6 +22,7 @@ Beamstalk::Beamstalk(automa::ServiceProvider& svc, world::Map& map, sf::Vector2<
 	directions.actual = Direction(start_direction);
 	set_root(map);
 	init.start();
+	flags.state.set(StateFlags::vulnerable); // always vulnerable
 }
 
 void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -33,8 +34,6 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 		return;
 	}
 	post_beam.update();
-	flags.state.set(StateFlags::vulnerable); // always vulnerable
-	hurt_sound.update();
 
 	Enemy::update(svc, map, player);
 	auto offset = get_collider().dimensions * 0.5f + sf::Vector2f{-40.f * directions.actual.as_float(), -128.f};
@@ -45,15 +44,6 @@ void Beamstalk::update(automa::ServiceProvider& svc, world::Map& map, player::Pl
 	bp.x += 84.f * directions.actual.as_float();
 	bp.y -= 16.f;
 	beam.get().set_barrel_point(bp);
-
-	if (flags.state.test(StateFlags::hurt) && !hurt_sound.running()) {
-		m_services->soundboard.flags.beast.set(audio::Beast::hurt);
-		hurt_effect.start(128);
-		flags.state.reset(StateFlags::hurt);
-		hurt_sound.start();
-	}
-
-	hurt_effect.update();
 
 	if (is_hostile() && !hostility_triggered() && !post_beam.running()) { request(BeamstalkState::charge); }
 	if (just_died()) { m_services->soundboard.flags.beamstalk.set(audio::Beamstalk::death); }

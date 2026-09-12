@@ -29,6 +29,9 @@ class Chain {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool average = true);
 	void set_gravity(float g) { parameters.gravity = g; }
 	void set_position(sf::Vector2f to_position);
+	void set_rest_length(float const to);
+	void set_spring_constant(float const to);
+	void set_dampen(float const to);
 	void force_endpoints(sf::Vector2f start, sf::Vector2f end);
 	void set_end_position(sf::Vector2f to_position);
 	void lock_ends();

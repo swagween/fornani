@@ -10,7 +10,20 @@
     "overturned": {
       "ambience": { "interior": "none", "exterior": "overturned" },
       "black": [12, 12, 20],
-      "spike_variations": 3
+      "spike_variations": 3,
+      "vines": {
+        "tag": "vines",
+        "dimensions": [64, 64],
+        "variations": 4,
+        "tapers": 3,
+        "gravity": 14.0,
+        "rest_length": 16.0,
+        "angles": 1,
+        "treasure": true,
+        "dampen": 1.0,
+        "spring_dampen": 0.995,
+        "spring_constant": 0.06
+      }
     },
     "pioneer": {
       "black": [16, 8, 28],
@@ -52,6 +65,23 @@
       "platform_sound": "industrial",
       "black": [19, 18, 16],
       "max_light": 3.0
+    },
+    "shadow": {
+      "ambience": { "interior": "none", "exterior": "none" },
+      "black": [23, 22, 14],
+      "spike_variations": 3,
+      "vines": {
+        "tag": "shadow_chains",
+        "dimensions": [32, 32],
+        "variations": 6,
+        "tapers": 1,
+        "gravity": 10.0,
+        "rest_length": 2.0,
+        "dampen": 0.2,
+        "spring_dampen": 0.9,
+        "spring_constant": 0.08,
+        "chain": {}
+      }
     }
   }
 }

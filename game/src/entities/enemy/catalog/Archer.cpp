@@ -58,15 +58,6 @@ void Archer::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		if (random::percent_chance(4) && !caution.danger()) { request(ArcherState::run); }
 	}
 
-	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
-		m_services->soundboard.flags.archer.set(audio::Archer::hurt);
-		sound.hurt_sound_cooldown.start();
-		hurt_effect.start(128);
-		flags.state.reset(StateFlags::hurt);
-	}
-
-	hurt_effect.update();
-
 	if (is_hostile() && !hostility_triggered() && !cooldowns.post_jump.running()) { request(ArcherState::run); }
 
 	if (is_alert() && !is_hostile() && svc.ticker.every_x_ticks(900) && !cooldowns.post_shoot.running()) { request(ArcherState::shoot); }

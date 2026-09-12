@@ -15,7 +15,8 @@ enum class MineAttributes : std::uint8_t { mercurial };
 
 class Mine final : public Animatable {
   public:
-	Mine(automa::ServiceProvider& svc, world::Map& map, MineType type);
+	Mine(automa::ServiceProvider& svc, world::Map& map, MineType type, int index = 0);
+	void submit(Renderer& renderer);
 
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
@@ -27,6 +28,7 @@ class Mine final : public Animatable {
 	void set_attribute(MineAttributes const to_set, bool on = true) { on ? m_attributes.set(to_set) : m_attributes.reset(to_set); }
 
 	[[nodiscard]] auto is_exploded() const -> bool { return m_state == MineState::exploded; }
+	[[nodiscard]] auto get_index() const -> std::size_t { return m_index; }
 
   private:
 	shape::RegisteredCollider m_collider;
@@ -34,6 +36,7 @@ class Mine final : public Animatable {
 	MineState m_state{};
 	MineType m_type{};
 	util::BitFlags<MineAttributes> m_attributes{};
+	std::size_t m_index{};
 
 	io::Logger m_logger{"Mine"};
 };

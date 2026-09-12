@@ -1,5 +1,5 @@
 {
   "file": 2,
-  "region": "shadow",
-  "room": "east_death_road.json"
+  "region": "nightside",
+  "room": "service_elevator.json"
 }

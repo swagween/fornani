@@ -4,6 +4,7 @@ nani_add_sources(
         Beamsprout.cpp
         Beamstalk.cpp
         Brovle.cpp
+        Buzzle.cpp
         Caster.cpp
         Crow.cpp
         Demon.cpp

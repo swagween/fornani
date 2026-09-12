@@ -10,8 +10,8 @@
 
 namespace fornani::world {
 
-Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id)
-	: Animatable(svc, "incinerite", {16, 16}), m_chunk_id{chunk_id}, health{40.f}, hit_energy{2.99f}, m_map{&map}, m_collider{map, {32.f, 32.f}} {
+Incinerite::Incinerite(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id, IncineriteVariant variant)
+	: Animatable(svc, variant == IncineriteVariant::blastite ? "blastite" : "incinerite", {16, 16}), m_chunk_id{chunk_id}, health{40.f}, hit_energy{2.99f}, m_map{&map}, m_collider{map, {32.f, 32.f}}, m_variant{variant} {
 	m_collider.get()->physics.position = position;
 	set_parameters({0, 3, 24, -1});
 	push_and_set_animation("default", {0, 1, 24, -1});

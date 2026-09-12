@@ -236,6 +236,16 @@ void Chain::set_position(sf::Vector2f to_position) {
 	if (linked) { links[0].cousin = &links.back(); }
 }
 
+void Chain::set_rest_length(float const to) {
+	for (std::size_t i = 1; i < links.size(); ++i) { links[i].get_params().rest_length = to; }
+}
+void Chain::set_spring_constant(float const to) {
+	for (std::size_t i = 1; i < links.size(); ++i) { links[i].get_params().spring_constant = to; }
+}
+void Chain::set_dampen(float const to) {
+	for (std::size_t i = 1; i < links.size(); ++i) { links[i].get_params().dampen_factor = to; }
+}
+
 void Chain::force_endpoints(sf::Vector2f start, sf::Vector2f end) {
 	set_position(start);
 	set_end_position(end);

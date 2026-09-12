@@ -55,7 +55,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	}
 	for (auto& i : map.incinerite_blocks) { handle_collision(i->get_bounding_box(), size); }
 	for (auto& i : map.incinerite_blocks) {
-		if (m_hitbox.overlaps(i->get_bounding_box())) { i->hit(); }
+		if (m_hitbox.overlaps(i->get_bounding_box()) && i->is(IncineriteVariant::incinerite)) { i->hit(); }
 	}
 	for (auto& e : map.enemy_catalog.enemies) {
 		if (m_hitbox.overlaps(e->get_collider().bounding_box) && e->get_team() != m_team && !e->is_invincible()) { e->hurt(svc, m_damage); }

@@ -2,14 +2,15 @@
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entities/world/Mine.hpp>
+#include <fornani/graphics/Renderer.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::entity {
 
-Mine::Mine(automa::ServiceProvider& svc, world::Map& map, MineType type) : Animatable(svc, "mine", {40, 40}), m_collider(map, 20.f), m_type{type} {
+Mine::Mine(automa::ServiceProvider& svc, world::Map& map, MineType type, int index) : Animatable(svc, "mine", {40, 40}), m_collider(map, 20.f), m_type{type} {
+	m_index = static_cast<std::size_t>(index);
 	set_frame(random::random_range(0, 1));
-	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
@@ -36,6 +37,14 @@ void Mine::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	} else {
 		get_collider().render(win, cam);
 	}
+}
+
+void Mine::submit(Renderer& renderer) {
+	auto const pos = get_collider().get_global_center() - Animatable::get_f_dimensions();
+	auto const& frame = get_sprite().getTextureRect();
+
+	sf::FloatRect dest{pos, sf::Vector2f{frame.size}};
+	renderer.submit(get_sprite().getTexture(), dest, frame, RenderLayer::platforms);
 }
 
 void Mine::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, player::Player& player) {
