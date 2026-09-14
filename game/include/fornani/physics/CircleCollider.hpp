@@ -37,6 +37,7 @@ class CircleCollider : public ICollider {
 
 	[[nodiscard]] auto collided() const -> bool { return m_flags.test(CircleColliderFlags::collided); }
 	[[nodiscard]] auto collides_with(Shape const& shape) const -> bool { return sensor.within_bounds(shape); }
+	[[nodiscard]] auto is_very_near(Shape const& shape) const -> bool { return sensor.is_very_near(shape); }
 	[[nodiscard]] auto get_collision_result(Shape& shape) const -> sf::Vector2i;
 	[[nodiscard]] auto position() const -> sf::Vector2f { return physics.position; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f;

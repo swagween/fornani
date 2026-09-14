@@ -3,12 +3,14 @@
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/physics/CircleCollider.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Math.hpp>
 #include <algorithm>
 
 namespace fornani::components {
 
 constexpr auto circle_vicinity_v = sf::Vector2f{80.f, 80.f};
+constexpr auto near_distance_buffer_v = 2.f;
 
 CircleSensor::CircleSensor() : CircleSensor(32.f) {}
 
@@ -54,6 +56,16 @@ bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 }
 
 bool CircleSensor::within_bounds(shape::CircleCollider const& shape) const { return (bounds.getGlobalBounds().getCenter() - shape.get_global_center()).length() < bounds.getRadius() + shape.get_radius(); }
+
+bool CircleSensor::is_very_near(shape::CircleCollider const& shape) const { return (bounds.getGlobalBounds().getCenter() - shape.get_global_center()).length() < bounds.getRadius() + shape.get_radius() + near_distance_buffer_v; }
+
+bool CircleSensor::is_very_near(shape::Shape const& shape) const {
+	if (shape.non_square()) { return shape.circle_SAT(bounds); }
+	auto const x = std::clamp(bounds.getPosition().x, shape.get_position().x, shape.get_position().x + shape.get_dimensions().x);
+	auto const y = std::clamp(bounds.getPosition().y, shape.get_position().y, shape.get_position().y + shape.get_dimensions().y);
+	sf::Vector2 const closest{x, y};
+	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius() + near_distance_buffer_v;
+}
 
 sf::Vector2f CircleSensor::get_overlap(shape::CircleCollider const& shape) const { return (bounds.getGlobalBounds().getCenter() - shape.get_global_center()).normalized(); }
 

@@ -4,5 +4,6 @@ nani_add_headers(
         HeldItem.hpp
         Item.hpp
         Loot.hpp
+        Postcard.hpp
 )
 add_subdirectory(types)

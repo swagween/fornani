@@ -11,6 +11,7 @@
 
 namespace fornani::vfx {
 
+enum class ChainMode : std::uint8_t { spring, rigid };
 enum class ChainFlags : std::uint8_t { ignore_player_collision, linked, broken, no_collision };
 
 struct ChainParameters {
@@ -27,6 +28,7 @@ class Chain {
 	Chain(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2i dim, SpringParameters params, sf::Vector2f position, int num_links, bool reversed = false, float spacing = 0.f, bool linked = false);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, float dampen = 1.f);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, bool average = true);
+	void set_mode(ChainMode const to) { m_mode = to; }
 	void set_gravity(float g) { parameters.gravity = g; }
 	void set_position(sf::Vector2f to_position);
 	void set_rest_length(float const to);
@@ -43,11 +45,16 @@ class Chain {
 	float compute_resistance();
 
 	sf::Vector2f get_tangent(std::size_t i) const;
+
+	[[nodiscard]] auto get_mode() const -> ChainMode { return m_mode; }
 	[[nodiscard]] bool moving() const;
 	[[nodiscard]] auto get_recoil_force() const -> sf::Vector2f { return -m_avg_velocity * parameters.resistance; }
 	[[nodiscard]] auto get_percentage_colliding() const -> float;
 	[[nodiscard]] auto contains_point(sf::Vector2f test) const -> bool;
 	[[nodiscard]] auto is_destroyed() const -> bool;
+
+  private:
+	void solve_constraints();
 
   public:
 	std::vector<Spring> links{};
@@ -57,6 +64,7 @@ class Chain {
 	ChainParameters parameters{};
 
   private:
+	ChainMode m_mode;
 	sf::Vector2f m_root{};
 	std::optional<sf::Vector2f> m_centroid{};
 	sf::Vector2f m_avg_velocity{};

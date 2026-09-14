@@ -512,6 +512,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& f : fire) { f.update(svc, *player, *this, context.console); }
 
 	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
+	for (auto& m : mines) { m->update(svc, *this, *player); }
 	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& chest : chests) { chest->update(svc, *this, context.console, *player); }
@@ -615,6 +616,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
 	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
+	for (auto& mine : mines) { mine->submit(renderer); }
 	for (auto& brittle : brittle_blocks) { brittle->render(svc, win, cam); }
 	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
@@ -926,6 +928,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 		if (proj.destruction_initiated()) { continue; }
 		proj.register_chunk(get_chunk_id_from_position(proj.get_position()));
 		for (auto& platform : platforms) { platform->on_hit(svc, *this, proj); }
+		for (auto& mine : mines) { mine->on_hit(svc, *this, proj, *player); }
 		for (auto& breakable : breakables) { breakable->on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
 		for (auto destructible : get_entities<Destructible>()) { destructible->on_hit(svc, *this, proj); }
@@ -963,6 +966,10 @@ void Map::generate_collidable_layer(bool live) {
 		if (cell.is_brittle()) { brittle_blocks.push_back(std::make_unique<BrittleBlock>(*m_services, *this, cell.position(), chunk_id)); }
 		if (cell.is_checkpoint()) { checkpoints.push_back(Checkpoint(*m_services, cell.position())); }
 		if (cell.is_fire()) { fire.push_back(Fire(*m_services, cell.position(), cell.value)); }
+		if (cell.is_mine()) {
+			mines.push_back(std::make_unique<entity::Mine>(*m_services, *this, entity::MineType::floating));
+			mines.back()->set_position(cell.position());
+		}
 		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index, m_attributes.sky_limit)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
 	}
 	m_static_entity_texture.display();
@@ -1193,6 +1200,7 @@ void Map::clear() {
 	home_points.clear();
 	waterfalls.clear();
 	m_explosions.clear();
+	mines.clear();
 	m_chain_explosions.clear();
 	m_weather.reset();
 	m_weather_specs.reset();

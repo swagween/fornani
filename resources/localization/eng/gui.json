@@ -57,7 +57,8 @@
     "already_have_max_item": "You already have the maximum amount of that item.",
     "insufficient_funds": "You cannot afford that item.",
     "journal_updated": "Journal updated.",
-    "quest_completed": "Quest completed: "
+    "quest_completed": "Quest completed: ",
+    "add_postcard": "Added postcard to album."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - ",

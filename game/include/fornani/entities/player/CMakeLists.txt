@@ -2,6 +2,7 @@ nani_add_headers(
         AbilityManager.hpp
         Catalog.hpp
         Inventory.hpp
+        PhotoAlbum.hpp
         Piggybacker.hpp
         Player.hpp
         PlayerAnimation.hpp

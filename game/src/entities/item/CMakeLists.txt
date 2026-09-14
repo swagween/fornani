@@ -4,5 +4,6 @@ nani_add_sources(
         HeldItem.cpp
         Item.cpp
         Loot.cpp
+        Postcard.cpp
 )
 add_subdirectory(types)

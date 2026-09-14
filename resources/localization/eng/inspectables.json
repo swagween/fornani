@@ -1651,6 +1651,21 @@
       }
     ]
   },
+  "to_nightside385022344364045": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "To Nightside Station >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "to_pioneer_trail385022350131227": {
     "series": [
       {

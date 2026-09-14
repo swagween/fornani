@@ -2,6 +2,7 @@ nani_add_sources(
         AbilityManager.cpp
         Catalog.cpp
         Inventory.cpp
+        PhotoAlbum.cpp
         Piggybacker.cpp
         Player.cpp
         PlayerAnimation.cpp

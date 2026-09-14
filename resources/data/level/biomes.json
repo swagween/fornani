@@ -72,15 +72,17 @@
       "spike_variations": 3,
       "vines": {
         "tag": "shadow_chains",
-        "dimensions": [32, 32],
-        "variations": 6,
-        "tapers": 1,
-        "gravity": 10.0,
-        "rest_length": 2.0,
-        "dampen": 0.2,
-        "spring_dampen": 0.9,
-        "spring_constant": 0.08,
-        "chain": {}
+        "dimensions": [13, 13],
+        "variations": 4,
+        "gravity": 18.0,
+        "rest_length": 18.0,
+        "angles": 1,
+        "dampen": 0.15,
+        "spring_dampen": 0.99,
+        "spring_constant": 0.2,
+        "chain": {
+          "rigid": true
+        }
       }
     }
   }

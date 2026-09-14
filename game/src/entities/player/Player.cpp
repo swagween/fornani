@@ -81,6 +81,8 @@ void Player::serialize(dj::Json& out) const {
 	out["item_log"] = dj::Json::empty_array();
 	for (auto& item : catalog.inventory.item_log_view()) { out["items"].push_back(item); }
 
+	catalog.album.serialize(out["photo_album"]);
+
 	// equipped items
 	out["equipped_items"] = dj::Json::empty_array();
 	for (auto const& item : catalog.inventory.equipped_items_view()) { out["equipped_items"].push_back(item); }
@@ -111,6 +113,7 @@ void Player::unserialize(dj::Json const& in) {
 		give_item(item["label"].as_string(), item["quantity"].as<int>(), true);
 		if (item["revealed"].as_bool()) { catalog.inventory.reveal_item(m_services->data.item_id_from_label(item["label"].as_string())); }
 	}
+	catalog.album.unserialize(*m_services, in["photo_album"]);
 
 	auto start = std::chrono::steady_clock::now();
 	// wardrobe

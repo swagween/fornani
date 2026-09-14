@@ -39,6 +39,7 @@ class Explosion : public Flaggable<ExplosionFlags> {
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 
 	[[nodiscard]] auto is_done() const -> bool { return m_lifetime.is_almost_complete(); }
+	[[nodiscard]] auto get_sensor() const -> components::CircleSensor const& { return m_sensor; };
 
   private:
 	components::CircleSensor m_sensor;

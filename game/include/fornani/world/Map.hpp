@@ -11,6 +11,7 @@
 #include <fornani/entities/world/Explosion.hpp>
 #include <fornani/entities/world/Fire.hpp>
 #include <fornani/entities/world/Laser.hpp>
+#include <fornani/entities/world/Mine.hpp>
 #include <fornani/entities/world/TestMobile.hpp>
 #include <fornani/entities/world/Waterfall.hpp>
 #include <fornani/entity/EntitySet.hpp>
@@ -155,6 +156,7 @@ class Map {
 	sf::Vector2f get_nearest_target_point(sf::Vector2f from);
 	sf::Vector2f get_switch_block_position(int id) const;
 	sf::Vector2f last_checkpoint();
+	std::vector<Explosion> const& get_explosions() { return m_explosions; }
 
 	void debug();
 
@@ -237,6 +239,7 @@ class Map {
 	std::vector<sf::Vector2f> target_points{};
 	std::vector<sf::Vector2f> home_points{};
 	std::vector<std::unique_ptr<Waterfall>> waterfalls{};
+	std::vector<std::unique_ptr<entity::Mine>> mines{};
 
 	// vfx
 	std::vector<Fire> fire{};

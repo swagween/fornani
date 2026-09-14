@@ -79,14 +79,8 @@ void Caster::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		parts.wand.update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center());
 	}
 
-	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) {
-		m_services->soundboard.play_sound("caster_hurt", get_collider().get_center());
-		sound.hurt_sound_cooldown.start();
-		hurt_effect.start(128);
-		flags.state.reset(StateFlags::hurt);
-		cooldowns.pre_invisibility.start();
-	}
-	hurt_effect.update();
+	if (flags.state.test(StateFlags::hurt) && !sound.hurt_sound_cooldown.running()) { cooldowns.pre_invisibility.start(); }
+
 	if (cooldowns.pre_invisibility.is_almost_complete()) {
 		teleport();
 		cooldowns.pre_invisibility.cancel();

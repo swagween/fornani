@@ -14,7 +14,7 @@ namespace fornani {
 constexpr auto simulations_v = 32;
 
 Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, bool reversed, std::vector<int> const platform_indeces)
-	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position(), length, reversed, 2.f), m_services(&svc), m_init{64} {
+	: Entity(svc, "vines", 0), m_length(length), m_chain(svc, {0.995f, 0.08f, static_cast<float>(size) * 0.5f, 14.f}, get_world_position() + constants::f_cell_vec * 0.5f, length, reversed, 2.f), m_services(&svc), m_init{64} {
 	for (auto const& i : platform_indeces) {
 		if (i == -1) { continue; }
 		add_platform(svc, i);
@@ -23,7 +23,8 @@ Vine::Vine(automa::ServiceProvider& svc, int length, int size, bool foreground, 
 	m_init.start();
 }
 
-Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in, "vines"), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position(), in["length"].as<int>(), false, 2.f), m_init{64} {
+Vine::Vine(automa::ServiceProvider& svc, dj::Json const& in)
+	: Entity(svc, in, "vines"), m_services(&svc), m_chain(svc, {0.995f, 0.06f, 16.f, 14.f}, get_world_position() + constants::f_cell_vec * 0.5f, in["length"].as<int>(), false, 2.f), m_init{64} {
 	unserialize(in);
 	m_json.emplace(in);
 	m_init.start();
@@ -42,6 +43,7 @@ void Vine::init(automa::ServiceProvider& svc, world::Map& map) {
 	m_chain.set_spring_constant(in_vine["spring_constant"].as<float>());
 	m_chain.set_dampen(in_vine["spring_dampen"].as<float>());
 	m_angles = in_vine["angles"].as<int>();
+	if (in_vine["chain"]["rigid"].as_bool()) { m_chain.set_mode(vfx::ChainMode::rigid); }
 	batch = true;
 	p_animatable.center();
 	auto index = util::Circuit(variations);
@@ -203,7 +205,10 @@ void Vine::submit(Renderer& renderer) {
 		auto rotation_angle = (link.get_bob() - link.get_anchor()).normalized();
 		auto idx = 0;
 		if (m_angles > 1) { idx = spro.get_sprite_angle_index(); }
-		auto const pos = util::round_to_even(link.get_bob() - p_animatable.get_f_dimensions());
+		auto const weight = 0.8f;
+		auto const position = link.get_anchor() * (1.f - weight) + link.get_bob() * weight;
+		auto const lpos = m_chain.get_mode() == vfx::ChainMode::rigid ? position : link.get_bob();
+		auto const pos = lpos - p_animatable.get_f_dimensions();
 		auto const& frame =
 			sf::IntRect({static_cast<int>((static_cast<float>(i) / static_cast<float>(m_length)) * static_cast<float>(m_tapers) * idx) * p_animatable.get_dimensions().x, encodings.at(i).at(0) * p_animatable.get_dimensions().y},
 						p_animatable.get_dimensions());

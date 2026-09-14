@@ -311,7 +311,9 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": -1
+      "hit": -1,
+      "hurt_sounds": ["demon_hurt"],
+      "death_sounds": ["standard_death"]
     },
     "attributes": {
       "base_hp": 108,
@@ -360,7 +362,9 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": -1
+      "hit": -1,
+      "hurt_sounds": ["caster_hurt"],
+      "death_sounds": ["standard_death"]
     },
     "attributes": {
       "base_hp": 62,

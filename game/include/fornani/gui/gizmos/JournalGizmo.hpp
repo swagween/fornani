@@ -14,7 +14,7 @@ struct QuestEntry {
 	sf::Vector2f offset{};
 };
 
-enum class JournalSection : std::uint8_t { quest, bestiary, END };
+enum class JournalSection : std::uint8_t { quest, bestiary, postcards, music, END };
 
 class JournalGizmo : public Gizmo {
   public:
@@ -25,6 +25,8 @@ class JournalGizmo : public Gizmo {
 
 	[[nodiscard]] auto is_quest() const -> bool { return m_section == JournalSection::quest; }
 	[[nodiscard]] auto is_bestiary() const -> bool { return m_section == JournalSection::bestiary; }
+	[[nodiscard]] auto is_postcards() const -> bool { return m_section == JournalSection::postcards; }
+	[[nodiscard]] auto is_music() const -> bool { return m_section == JournalSection::music; }
 	[[nodiscard]] auto is_section(JournalSection test) const -> bool { return m_section == test; }
 
   private:

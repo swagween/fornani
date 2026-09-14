@@ -65,8 +65,9 @@ void Incinerite::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile
 	if (proj.get_collider().collides_with(m_collider.get()->bounding_box)) { proj.handle_hard_hit(svc, map); }
 }
 
-void Incinerite::hit() {
-	health.inflict(1.f);
+void Incinerite::hit(float amount) {
+	if (energy > constants::tiny_value) { amount *= 2.f; }
+	health.inflict(amount);
 	energy = hit_energy;
 }
 

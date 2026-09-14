@@ -10,7 +10,7 @@ namespace fornani::vfx {
 constexpr auto y_dampen_v = 0.3f;
 
 Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing, bool linked)
-	: m_root(position), parameters{.resistance{0.85f}, .tensile_strength{0.3f}, .rigidity{0.7f}, .external_dampen{0.07f}, .gravity{1.f}} {
+	: m_root(position), parameters{.resistance{0.85f}, .tensile_strength{0.3f}, .rigidity{0.7f}, .external_dampen{0.07f}, .gravity{1.f}}, m_mode{ChainMode::spring} {
 	if (!linked) {
 		for (int i{0}; i < num_links; ++i) { links.push_back(Spring({params})); }
 		parameters.gravity = params.grav;
@@ -24,7 +24,7 @@ Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f
 				link.cousin = &links.at(ctr - 1);
 				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 			}
-			link.set_bob(link.get_anchor() + sf::Vector2f{0.f, sign * spacing});
+			link.set_bob(link.get_anchor() + sf::Vector2f{random::random_range_float(-constants::small_value, constants::small_value), sign * spacing});
 			++ctr;
 		}
 	} else {
@@ -50,7 +50,7 @@ Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f
 	}
 }
 
-vfx::Chain::Chain(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2i dim, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing, bool linked)
+Chain::Chain(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2i dim, SpringParameters params, sf::Vector2f position, int num_links, bool reversed, float spacing, bool linked)
 	: Chain(svc, params, position, num_links, reversed, spacing, linked) {
 	sprite.emplace(svc, tag, dim);
 	sprite->center();
@@ -67,19 +67,28 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		auto external_force = sf::Vector2f{};
 		auto ctr{0};
 		for (auto& link : links) {
-			if (ctr < links.size() - 1) { link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor()); }
-			if (!link.is_locked()) {
-				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
-			}
 			if (link.sensor.within_bounds(player.get_collider().bounding_box)) {
 				link.sensor.activate();
-				external_force = {player.get_collider().physics.velocity.x * parameters.external_dampen * dampen, player.get_collider().physics.velocity.y * parameters.external_dampen * y_dampen_v * dampen};
+				if (m_mode == ChainMode::spring) {
+					external_force = {player.get_collider().physics.velocity.x * parameters.external_dampen * dampen, player.get_collider().physics.velocity.y * parameters.external_dampen * y_dampen_v * dampen};
+				} else {
+					external_force = player.get_collider().physics.velocity * dampen;
+				}
 			} else {
 				link.sensor.deactivate();
 			}
-			link.update(svc, parameters.gravity, external_force, !link.is_locked(), m_free ? true : ctr == links.size() - 1);
+
+			if (ctr < links.size() - 1 && m_mode == ChainMode::spring) { link.set_bob(links.at(static_cast<std::size_t>(ctr + 1)).get_anchor()); }
+			if (!link.is_locked() && m_mode == ChainMode::spring) {
+				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
+			}
+			auto const free = m_free || m_mode == ChainMode::rigid ? true : ctr == links.size() - 1;
+			link.update(svc, parameters.gravity, external_force, !link.is_locked(), free, m_mode == ChainMode::rigid);
+
 			++ctr;
 		}
+
+		if (m_mode == ChainMode::rigid) { solve_constraints(); }
 
 		return;
 	}
@@ -185,6 +194,7 @@ void Chain::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			}
 		}
 	}
+
 	// keep ring centered
 	if (m_centroid && !flags.test(ChainFlags::broken)) {
 		sf::Vector2f center{};
@@ -243,7 +253,11 @@ void Chain::set_spring_constant(float const to) {
 	for (std::size_t i = 1; i < links.size(); ++i) { links[i].get_params().spring_constant = to; }
 }
 void Chain::set_dampen(float const to) {
-	for (std::size_t i = 1; i < links.size(); ++i) { links[i].get_params().dampen_factor = to; }
+	for (std::size_t i = 1; i < links.size(); ++i) {
+		links[i].get_params().dampen_factor = to;
+		links[i].variables.bob_physics.set_global_friction(to);
+		links[i].variables.anchor_physics.set_global_friction(to);
+	}
 }
 
 void Chain::force_endpoints(sf::Vector2f start, sf::Vector2f end) {
@@ -345,6 +359,41 @@ auto Chain::is_destroyed() const -> bool {
 		if (l.get_fade().running()) { return false; }
 	}
 	return true;
+}
+
+void Chain::solve_constraints() {
+	for (int iteration{0}; iteration < 8; ++iteration) {
+		for (auto& link : links) {
+			if (!link.cousin) { continue; }
+
+			auto& anchor = link.cousin.value();
+
+			auto const delta = link.get_bob() - anchor->get_bob();
+			auto const distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+
+			if (distance <= constants::tiny_value) { continue; }
+
+			auto const direction = delta / distance;
+			auto const rest_length = link.get_params().rest_length;
+
+			if (distance > rest_length) {
+				auto const correction = distance - rest_length;
+
+				link.set_bob(link.get_bob() - direction * correction);
+
+				auto const velocity = link.variables.bob_physics.velocity;
+				auto const radial_velocity = velocity.x * direction.x + velocity.y * direction.y;
+
+				if (radial_velocity > 0.f) {
+					auto const impulse = radial_velocity * 0.5f;
+
+					link.variables.bob_physics.velocity -= direction * impulse;
+
+					if (!anchor->is_locked()) { anchor->variables.bob_physics.velocity += direction * impulse; }
+				}
+			}
+		}
+	}
 }
 
 } // namespace fornani::vfx

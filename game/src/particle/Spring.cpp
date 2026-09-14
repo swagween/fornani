@@ -31,7 +31,7 @@ void Spring::calculate() {
 	variables.anchor_physics.acceleration = -variables.spring_force;
 }
 
-void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force, bool loose, bool sag) {
+void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2f external_force, bool loose, bool sag, bool rigid) {
 	m_fade.update();
 	variables.bob_physics.gravity = sag ? custom_grav : 0.f;
 	variables.anchor_physics.gravity = sag ? custom_grav : 0.f;
@@ -43,6 +43,24 @@ void Spring::update(automa::ServiceProvider& svc, float custom_grav, sf::Vector2
 		variables.anchor_physics.update(svc);
 	}
 	bob = variables.bob_physics.position;
+
+	if (rigid) {
+		auto const delta = bob - anchor;
+		auto const distance = std::sqrt(delta.x * delta.x + delta.y * delta.y);
+
+		if (distance > get_params().rest_length && distance > constants::tiny_value) {
+			auto const direction = delta / distance;
+
+			bob = anchor + direction * get_params().rest_length;
+			variables.bob_physics.position = bob;
+
+			auto const velocity = variables.bob_physics.velocity;
+			auto const radial_velocity = velocity.x * direction.x + velocity.y * direction.y;
+
+			if (radial_velocity > 0.f) { variables.bob_physics.velocity -= direction * radial_velocity; }
+		}
+	}
+
 	if (loose) { anchor = variables.anchor_physics.position; }
 	sensor.bounds.setPosition(bob);
 }
@@ -76,20 +94,20 @@ void Spring::simulate(float custom_grav, bool loose, bool sag) {
 
 void Spring::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	bob_shape.setRadius(8.f);
-	anchor_shape.setRadius(6.f);
+	anchor_shape.setRadius(3.f);
 	bob_shape.setOrigin({bob_shape.getRadius(), bob_shape.getRadius()});
 	anchor_shape.setOrigin({anchor_shape.getRadius(), anchor_shape.getRadius()});
 	bob_shape.setFillColor(sf::Color::Transparent);
-	anchor_shape.setFillColor(sf::Color::Transparent);
+	anchor_shape.setFillColor(colors::pioneer_dark_red);
 	bob_shape.setPosition(bob - cam);
 	anchor_shape.setPosition(anchor - cam);
 	bob_shape.setOutlineThickness(-2);
 	anchor_shape.setOutlineThickness(-2);
 	bob_shape.setOutlineColor(sf::Color::Green);
-	anchor_shape.setOutlineColor(sf::Color::Yellow);
+	anchor_shape.setOutlineColor(colors::red);
 	win.draw(bob_shape);
 	win.draw(anchor_shape);
-	sensor.render(win, cam);
+	// sensor.render(win, cam);
 }
 
 void Spring::calculate_force() {

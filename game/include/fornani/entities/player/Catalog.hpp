@@ -1,14 +1,15 @@
 
 #pragma once
-#include "fornani/entities/player/AbilityManager.hpp"
-#include "fornani/entities/player/Inventory.hpp"
-#include "fornani/entities/player/Wardrobe.hpp"
+
+#include <fornani/entities/player/Inventory.hpp>
+#include <fornani/entities/player/PhotoAlbum.hpp>
+#include <fornani/entities/player/Wardrobe.hpp>
 
 namespace fornani::player {
 
 struct Catalog {
 	Inventory inventory;
-	AbilityManager abilities{};
+	PhotoAlbum album{};
 	Wardrobe wardrobe{};
 };
 

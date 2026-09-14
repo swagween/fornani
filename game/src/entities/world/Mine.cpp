@@ -11,8 +11,7 @@ namespace fornani::entity {
 Mine::Mine(automa::ServiceProvider& svc, world::Map& map, MineType type, int index) : Animatable(svc, "mine", {40, 40}), m_collider(map, 20.f), m_type{type} {
 	m_index = static_cast<std::size_t>(index);
 	set_frame(random::random_range(0, 1));
-	get_collider().set_attribute(shape::ColliderAttributes::no_collision);
-	get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
+	// get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);
 	get_collider().set_exclusion_target(shape::ColliderTrait::enemy);
@@ -27,6 +26,16 @@ void Mine::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	for (auto const& e : map.enemy_catalog.enemies) {
 		if (get_collider().collides_with(e->get_collider().bounding_box)) { explode(svc, map); }
 	}
+	for (auto const& i : map.incinerite_blocks) {
+		if (get_collider().is_very_near(i->get_bounding_box()) && i->is(world::IncineriteVariant::blastite)) { explode(svc, map); }
+	}
+	for (auto const& e : map.get_explosions()) {
+		if (e.get_sensor().within_bounds(get_collider())) { explode(svc, map); }
+	}
+	for (auto const& m : map.mines) {
+		if (m.get() == this) { continue; }
+		if (m->get_collider().sensor.is_very_near(get_collider()) && !is_exploded() && !m->is_exploded()) { explode(svc, map); }
+	}
 }
 
 void Mine::render(sf::RenderWindow& win, sf::Vector2f cam) {
@@ -40,6 +49,7 @@ void Mine::render(sf::RenderWindow& win, sf::Vector2f cam) {
 }
 
 void Mine::submit(Renderer& renderer) {
+	if (is_exploded()) { return; }
 	auto const pos = get_collider().get_global_center() - Animatable::get_f_dimensions();
 	auto const& frame = get_sprite().getTextureRect();
 

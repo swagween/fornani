@@ -33,7 +33,7 @@ class Incinerite : public Animatable {
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj, int power = 1);
-	void hit();
+	void hit(float amount = 1.f);
 
 	shape::Shape& get_bounding_box() { return m_collider.get()->bounding_box; }
 	shape::Shape& get_hurtbox() { return m_collider.get()->hurtbox; }
