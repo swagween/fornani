@@ -42,6 +42,7 @@ struct EventRegistry {
 	RemoveItemByIDEvent remove_item_by_id_event{};
 	GiveBonusHealthEvent give_bonus_health_event{};
 	SetQuestProgressionEvent set_quest_progression_event{};
+	AcquirePostcardEvent acquire_postcard_event{};
 
 	LoadFileEvent load_file_event{};
 	NewFileEvent new_file_event{};

@@ -32,6 +32,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	svc.events.remove_weapon_by_id_event.attach_to(p_slot, &Dojo::remove_gun_by_id, this);
 	svc.events.remove_item_event.attach_to(p_slot, &Dojo::remove_item, this);
 	svc.events.remove_item_by_id_event.attach_to(p_slot, &Dojo::remove_item_by_id, this);
+	svc.events.acquire_postcard_event.attach_to(p_slot, &Dojo::acquire_postcard, this);
 
 	// gameplay events
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
@@ -369,6 +370,8 @@ void Dojo::remove_gun_by_id(ServiceProvider& svc, int id) {
 }
 
 void Dojo::remove_item_by_id(ServiceProvider& svc, int id) { remove_item(svc, svc.data.item_label_from_id(id)); }
+
+void Dojo::acquire_postcard(ServiceProvider& svc, int id) { player->catalog.album.add_postcard(svc, "test"); }
 
 void Dojo::equip_item(ServiceProvider& svc, int id) {
 	auto equipped = player->equip_item(id);

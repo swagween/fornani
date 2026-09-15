@@ -6,7 +6,8 @@ namespace fornani::data {
 TextManager::TextManager(ResourceFinder& finder, Localization& localization)
 	: fonts{.title = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/kongtext.ttf"}},
 			.basic = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/pixelFJ8pt1.ttf"}},
-			.config = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/Vera.ttf"}}} {
+			.config = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/Vera.ttf"}},
+			.gibberish = FontSpec{sf::Font{finder.resource_path() + "/text/fonts/bokkish.ttf"}}} {
 	auto const code = localization.get_language_code();
 	if (code == "ara") {
 		fonts.basic.font = sf::Font{finder.resource_path() + "/text/fonts/fs-pixel-sans-unicode-regular.ttf"};
@@ -54,6 +55,8 @@ TextManager::TextManager(ResourceFinder& finder, Localization& localization)
 
 	fonts.title.font.setSmooth(false);
 	fonts.basic.font.setSmooth(false);
+	fonts.gibberish.glyph_size = 16;
+	fonts.gibberish.font.setSmooth(false);
 }
 
 } // namespace fornani::data

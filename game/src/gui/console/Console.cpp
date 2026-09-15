@@ -29,6 +29,7 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, OutputTyp
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
 	load_and_launch(type);
+	if (source["gibberish"].as_bool() && m_writer) { m_writer->set_font(svc.text.fonts.gibberish); }
 }
 
 Console::Console(StableID speaker, automa::ServiceProvider& svc, dj::Json const& source, OutputType type) : Console(svc, source, type) { m_speaker_id.emplace(speaker); }
@@ -37,6 +38,7 @@ Console::Console(automa::ServiceProvider& svc, dj::Json const& source, std::stri
 	if (type == OutputType::no_skip) { m_exit_stall.start(); }
 	set_source(source);
 	load_and_launch(key, type, target_index);
+	if (source["gibberish"].as_bool() && m_writer) { m_writer->set_font(svc.text.fonts.gibberish); }
 }
 
 void Console::update(automa::ServiceProvider& svc) {
@@ -80,6 +82,10 @@ void Console::update(automa::ServiceProvider& svc) {
 			}
 			if (code.is(MessageCodeType::set_cutscene_progression)) {
 				m_services->events.set_cutscene_progression_event.dispatch(code.value);
+				processed = true;
+			}
+			if (code.is(MessageCodeType::acquire_postcard)) {
+				m_services->events.acquire_postcard_event.dispatch(*m_services, code.value);
 				processed = true;
 			}
 			if (code.is(MessageCodeType::set_quest_progression) && m_process_code_before) {
@@ -300,6 +306,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 				for (auto const& cde : response_codes.value()) {
 					if (cde.is_response()) { m_writer->set_suite(cde.value); }
 					if (cde.is_start_battle()) { m_services->events.start_battle_event.dispatch(); }
+					if (cde.is(MessageCodeType::acquire_postcard)) { m_services->events.acquire_postcard_event.dispatch(*m_services, cde.value); }
 					if (cde.is_pop_conversation()) {
 						m_services->events.npc_pop_conversation_event.dispatch();
 						auto label = m_services->data.get_npc_label_from_id(cde.value);
@@ -382,6 +389,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 				if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
 				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }
 				if (code.is_open_vendor() && m_process_code_after) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
+				if (code.is(MessageCodeType::acquire_postcard)) { m_services->events.acquire_postcard_event.dispatch(*m_services, code.value); }
 				if (code.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, code.value); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
 				if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }

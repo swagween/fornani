@@ -144,6 +144,7 @@ void TextWriter::load_single_message(std::string_view message) {
 
 void TextWriter::load_message(dj::Json& source) {
 	flush();
+	if (source["gibberish"].as_bool()) { set_font(m_services->text.fonts.gibberish); }
 	suite = DialogueSuite{source, m_font->font, *m_services, -1};
 	for (auto& msg : suite->suite) {
 		for (auto& m : msg) { stylize(m.data); }
@@ -156,6 +157,7 @@ void TextWriter::load_message(dj::Json& source) {
 
 void TextWriter::load_message(dj::Json& source, std::string_view key, int target_index) {
 	flush();
+	if (source["gibberish"].as_bool()) { set_font(m_services->text.fonts.gibberish); }
 	suite = DialogueSuite{source, m_font->font, *m_services, key, target_index};
 	for (auto& msg : suite->suite) {
 		for (auto& m : msg) { stylize(m.data); }

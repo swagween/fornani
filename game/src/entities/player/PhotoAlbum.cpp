@@ -14,6 +14,11 @@ void PhotoAlbum::unserialize(automa::ServiceProvider& svc, dj::Json const& in) {
 	for (auto const& postcard : in.as_array()) { m_postcards.push_back(Postcard{svc, postcard.as_string()}); }
 }
 
+void PhotoAlbum::add_postcard(automa::ServiceProvider& svc, int index) {
+	m_postcards.push_back(Postcard{svc, svc.data.postcards[index]["tag"].as_string_view()});
+	svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["add_postcard"].as_string());
+}
+
 void PhotoAlbum::add_postcard(automa::ServiceProvider& svc, std::string_view tag) {
 	m_postcards.push_back(Postcard{svc, tag});
 	svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["add_postcard"].as_string());

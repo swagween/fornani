@@ -30,6 +30,7 @@ class Dojo final : public GameplayState {
 	void acquire_gun_from_console(ServiceProvider& svc, int id);
 	void remove_gun_by_id(ServiceProvider& svc, int id);
 	void remove_item_by_id(ServiceProvider& svc, int id);
+	void acquire_postcard(ServiceProvider& svc, int id);
 	void equip_item(ServiceProvider& svc, int id);
 	void use_item(ServiceProvider& svc, int id);
 	void open_vendor(ServiceProvider& svc, int id);

@@ -92,20 +92,6 @@
           1,
           1
         ],
-        "id": 99649,
-        "modifier": 66,
-        "position": [
-          20,
-          14
-        ],
-        "tag": "bronze_bracelet",
-        "type": 2
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
         "id": 74276,
         "modifier": 0,
         "position": [
@@ -196,6 +182,42 @@
           0
         ],
         "variant": 0
+      }
+    ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": true,
+        "key": "den_postcard",
+        "position": [
+          20,
+          14
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "output": 1,
+            "suite": [
+              [
+                {
+                  "codes": [
+                    [
+                      28,
+                      0
+                    ]
+                  ],
+                  "message": "You find a postcard atop a stone bedestal."
+                }
+              ]
+            ]
+          }
+        ]
       }
     ],
     "portals": [
@@ -4460,7 +4482,7 @@
         0,
         0,
         0,
-        0,
+        404,
         0,
         0,
         0,

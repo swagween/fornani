@@ -44,7 +44,8 @@ enum class MessageCodeType : std::uint8_t {
 	purchase,
 	give_bonus_health,
 	open_builder,
-	set_quest_progression
+	set_quest_progression,
+	acquire_postcard
 };
 
 enum class CodeSource : std::uint8_t { suite, response };

@@ -26,6 +26,7 @@ class TextManager {
 		FontSpec title{};
 		FontSpec basic{};
 		FontSpec config{};
+		FontSpec gibberish{};
 	} fonts{};
 
   private:

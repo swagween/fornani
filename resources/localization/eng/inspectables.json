@@ -1024,6 +1024,48 @@
       }
     ]
   },
+  "den_postcard0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  28,
+                  0
+                ]
+              ],
+              "message": "You find a postcard atop a stone bedestal."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "den_postcard385022344560654": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  28,
+                  0
+                ]
+              ],
+              "message": "You find a postcard atop a stone bedestal."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "dougs_house385022344036383": {
     "series": [
       {

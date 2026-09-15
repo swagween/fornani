@@ -160,6 +160,7 @@ class DataManager final {
 	dj::Json portal{};
 	dj::Json vehicle{};
 	dj::Json inspectables{};
+	dj::Json postcards{};
 
 	// enemy
 	dj::Json enemy{};
