@@ -13,8 +13,8 @@
 
 namespace fornani::gui {
 
-enum class InventoryGizmoFlags : std::uint8_t { is_item_hovered };
-enum class InventoryZoneType : std::uint8_t { ability, key, collectible, useable, gizmo, COUNT };
+enum class InventoryGizmoFlags : std::uint8_t { is_item_hovered, no_useable_items };
+enum class InventoryZoneType : std::uint8_t { ability, key, unique, equippable, collectible, useable, gizmo, COUNT };
 
 class InventoryGizmo : public Gizmo {
   public:

@@ -19,9 +19,15 @@ void Shockwave::start() {
 void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	lifetime.update();
 	if (lifetime.is_complete()) { return; }
-	position = position + m_parameters.speed;
+
+	position += m_parameters.speed;
 	if (svc.ticker.every_x_ticks(m_parameters.frequency)) {
 		map.effects.push_back(entity::Effect(svc, "small_explosion", position, {0.f, -0.1f}, m_parameters.style));
+		if (auto surface_y = map.get_middleground_surface_y(position.x, position.y, constants::f_cell_size * 1.5f, constants::f_cell_size * 1.5f)) {
+			position.y = *surface_y - hit.bounds.getRadius() * 0.2f;
+		} else {
+			lifetime.cancel();
+		}
 		hit.bounds.setPosition(position);
 	}
 }

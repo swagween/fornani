@@ -202,7 +202,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 								break;
 							}
 						}
-						destination_inventory.add_item(svc.data.item, item_lbl);
+						destination_inventory.add_item(svc.data, item_lbl);
 						player.give_drop(item::DropType::orb, exchange);
 						p_orb_indicator.add(exchange);
 						p_balance += exchange;

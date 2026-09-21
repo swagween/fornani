@@ -6,4 +6,3 @@ nani_add_headers(
         Loot.hpp
         Postcard.hpp
 )
-add_subdirectory(types)

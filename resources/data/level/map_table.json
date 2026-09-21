@@ -68,6 +68,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "pizzeria.json",
+      "region": "ashtown",
+      "room_id": 1313
+    },
+    {
+      "folder": "ashtown",
       "label": "sarah_banes_house.json",
       "region": "ashtown",
       "room_id": 1304
@@ -1022,9 +1028,21 @@
     },
     {
       "folder": "shadow",
+      "label": "binos_house.json",
+      "region": "shadow",
+      "room_id": 1850
+    },
+    {
+      "folder": "shadow",
       "label": "blockade.json",
       "region": "shadow",
       "room_id": 1706
+    },
+    {
+      "folder": "shadow",
+      "label": "concourse.json",
+      "region": "shadow",
+      "room_id": 1708
     },
     {
       "folder": "shadow",
@@ -1046,6 +1064,12 @@
     },
     {
       "folder": "shadow",
+      "label": "exhaust_tunnel.json",
+      "region": "shadow",
+      "room_id": 1707
+    },
+    {
+      "folder": "shadow",
       "label": "lodge.json",
       "region": "shadow",
       "room_id": 1705
@@ -1055,6 +1079,12 @@
       "label": "north_death_road.json",
       "region": "shadow",
       "room_id": 1704
+    },
+    {
+      "folder": "shadow",
+      "label": "north_under.json",
+      "region": "shadow",
+      "room_id": 1800
     },
     {
       "folder": "shadow",

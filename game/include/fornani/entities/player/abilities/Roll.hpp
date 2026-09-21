@@ -5,7 +5,7 @@
 namespace fornani::player {
 class Roll : public Ability {
   public:
-	Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction);
+	Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, float const multiplier);
 	void update(shape::Collider& collider, PlayerController& controller) override;
 
   private:

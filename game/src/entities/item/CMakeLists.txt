@@ -6,4 +6,3 @@ nani_add_sources(
         Loot.cpp
         Postcard.cpp
 )
-add_subdirectory(types)

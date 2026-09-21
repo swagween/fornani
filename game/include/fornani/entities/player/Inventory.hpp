@@ -1,6 +1,8 @@
 
 #pragma once
 
+#include <fornani/core/Fwd.hpp>
+#include <fornani/core/ItemConstants.hpp>
 #include <fornani/entities/item/Item.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/systems/Register.hpp>
@@ -26,7 +28,7 @@ struct ItemStack {
 class Inventory {
   public:
 	/// @brief Adds item to inventory.
-	void add_item(dj::Json const& source, std::string_view label);
+	void add_item(data::DataManager& data, std::string_view label);
 	void remove_item(std::string_view tag, int amount);
 	void reveal_item(int item_id);
 	void add_equip_slot(int amount = 1) { m_open_equip_slots = std::clamp(m_open_equip_slots + amount, 0, num_equippable_items_v); }
@@ -41,6 +43,7 @@ class Inventory {
 	[[nodiscard]] auto get_latest_item() const -> std::optional<std::string_view> { return m_latest_item; };
 	[[nodiscard]] auto can_build(dj::Json const& product) const -> bool;
 	[[nodiscard]] auto get_number_of_items(item::ItemType type) const -> std::size_t;
+	[[nodiscard]] auto get_number_of_equipped_items() const -> int;
 
 	Register<ItemStack> const& items_view() const { return m_items; }
 	Register<std::string> const& item_log_view() const { return m_item_log; }

@@ -820,6 +820,8 @@ auto Player::can_be_stunned() const -> bool { return !is_stunned() && !cooldowns
 
 auto Player::on_water_surface() const -> bool { return (get_collider().has_flag_set(shape::ColliderFlags::in_water) || cooldowns.water_exit.running()) && !get_collider().has_flag_set(shape::ColliderFlags::submerged); }
 
+auto Player::get_roll_multiplier() const -> float { return has_item_equipped("athletic_band") ? 18.f : 13.f; }
+
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? get_collider().dimensions.x * 0.5f : 0.f;
@@ -1197,7 +1199,7 @@ void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_o
 }
 
 void Player::give_item(std::string_view label, int amount, bool from_save) {
-	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data.item, label); }
+	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data, label); }
 	if (label == "cridium_shard" && !from_save) { set_flag(PlayerFlags::health_increase); }
 	if (label == "dog_leash" && !from_save) {
 		// m_services->quest_table.set_quest_progression("rescue_justin", 0, QuestRequirementType::loose);

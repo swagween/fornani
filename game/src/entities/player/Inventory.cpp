@@ -5,9 +5,9 @@
 
 namespace fornani::player {
 
-void Inventory::add_item(dj::Json const& source, std::string_view label) {
+void Inventory::add_item(data::DataManager& data, std::string_view label) {
 	if (!has_item(label)) {
-		m_items.add({std::make_unique<item::Item>(source, label), 1});
+		m_items.add({std::make_unique<item::Item>(data, label), 1});
 	} else {
 		++find_item_stack(label)->quantity;
 	}
@@ -154,6 +154,10 @@ auto Inventory::can_build(dj::Json const& product) const -> bool {
 
 auto Inventory::get_number_of_items(item::ItemType type) const -> std::size_t {
 	return std::ranges::count_if(m_items, [type](auto const& item) { return item.item->get_type() == type; });
+}
+
+auto Inventory::get_number_of_equipped_items() const -> int {
+	return std::ranges::count_if(m_equipped_items, [](auto const& i) { return i != -1; });
 }
 
 } // namespace fornani::player

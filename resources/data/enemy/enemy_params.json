@@ -1498,7 +1498,9 @@
       }
     },
     "audio": {
-      "hit": -1
+      "hit": -1,
+      "hurt_sounds": ["hellion_hurt"],
+      "death_sounds": ["hellion_death"]
     },
     "attributes": {
       "base_hp": 110,
@@ -1980,7 +1982,7 @@
       "hit": 1
     },
     "attributes": {
-      "base_hp": 120,
+      "base_hp": 100,
       "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 4.0,
@@ -2187,6 +2189,67 @@
       "uncrushable": false,
       "foreground": true,
       "rare_drops": false
+    }
+  },
+  "demolisher": {
+    "metadata": {
+      "name": "Demolisher",
+      "id": 44,
+      "variant": "beast"
+    },
+    "physical": {
+      "dimensions": [70, 70],
+      "sprite_dimensions": [80, 80],
+      "offset": [0, -35],
+      "alert_range": [900.0, 400.0],
+      "hostile_range": [300.0, 80.0],
+      "friction": 0.98,
+      "gravity": 12.0
+    },
+    "visual": {
+      "effect_type": 3,
+      "effect_size": 1
+    },
+    "audio": {
+      "hurt_sounds": ["brovle_hurt_1", "brovle_hurt_2", "brovle_hurt_3"],
+      "death_sounds": ["brovle_death"]
+    },
+    "attributes": {
+      "base_hp": 220,
+      "base_damage": 2.0,
+      "speed": 0.5,
+      "loot_multiplier": 8.0,
+      "drop_range": [10, 14],
+      "rare_drop_id": 0,
+      "respawn_distance": 0,
+      "permadeath": false,
+      "size": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "sturdy": true,
+      "crusher": true,
+      "map_collision": true,
+      "player_collision": true,
+      "foreground": true,
+      "rare_drops": false
+    },
+    "treasure": {
+      "chance": 0.1,
+      "items": [
+        {
+          "tag": "silver_bracelet",
+          "chance": 0.9,
+          "mythic": false
+        },
+        {
+          "tag": "brinium",
+          "chance": 0.1,
+          "mythic": true
+        }
+      ]
     }
   }
 }

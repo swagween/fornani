@@ -9,6 +9,10 @@ namespace automa {
 struct ServiceProvider;
 }
 
+namespace data {
+class DataManager;
+}
+
 namespace world {
 class Map;
 }

@@ -7,6 +7,8 @@
 
 namespace fornani::shape {
 
+constexpr static auto cross(sf::Vector2f a, sf::Vector2f b) -> float { return a.x * b.y - a.y * b.x; }
+
 Shape::Shape(sf::Vector2f dim, int num_vertices) {
 	vertices.reserve(num_vertices);
 	vertices.push_back({});
@@ -333,12 +335,27 @@ bool Shape::overlaps(sf::Vector2f point) const {
 }
 
 bool Shape::contains_point(sf::Vector2f point) {
-	bool ret{true};
-	if (vertices.at(0).x > point.x) { ret = false; }
-	if (vertices.at(1).x < point.x) { ret = false; }
-	if (vertices.at(0).y > point.y) { ret = false; }
-	if (vertices.at(2).y < point.y) { ret = false; }
-	return ret;
+	if (non_square()) {
+		auto const& a = vertices[0];
+		auto const& b = vertices[1];
+		auto const& c = vertices[2];
+
+		auto const ab = b - a;
+		auto const bc = c - b;
+		auto const ca = a - c;
+
+		auto const ap = point - a;
+		auto const bp = point - b;
+		auto const cp = point - c;
+
+		auto const cross_ab = cross(ab, ap);
+		auto const cross_bc = cross(bc, bp);
+		auto const cross_ca = cross(ca, cp);
+
+		return (cross_ab >= 0.f && cross_bc >= 0.f && cross_ca >= 0.f) || (cross_ab <= 0.f && cross_bc <= 0.f && cross_ca <= 0.f);
+	}
+
+	return vertices.at(0).x <= point.x && vertices.at(1).x >= point.x && vertices.at(0).y <= point.y && vertices.at(2).y >= point.y;
 }
 
 void Shape::render(sf::RenderWindow& win, sf::Vector2f cam, sf::Color color) {
@@ -417,6 +434,27 @@ auto Shape::get_sloped_vertex(bool lower) const -> sf::Vector2f {
 
 	if (lower) { return vertices[first].y > vertices[second].y ? vertices[first] : vertices[second]; }
 	return vertices[first].y < vertices[second].y ? vertices[first] : vertices[second];
+}
+
+std::optional<float> Shape::get_surface_y(float x) const {
+	auto y_at_x = [](sf::Vector2f a, sf::Vector2f b, float x) -> float {
+		auto const t = (x - a.x) / (b.x - a.x);
+		return a.y + t * (b.y - a.y);
+	};
+
+	if (non_square()) {
+		auto const& a = vertices[0];
+		auto const& b = vertices[1];
+		auto const& c = vertices[2];
+
+		if (x < std::min({a.x, b.x, c.x}) || x > std::max({a.x, b.x, c.x})) { return std::nullopt; }
+
+		return y_at_x(a, b, x);
+	}
+
+	if (x >= vertices[0].x && x <= vertices[1].x) { return vertices[0].y; }
+
+	return std::nullopt;
 }
 
 float Shape::get_height_at(float x) const {

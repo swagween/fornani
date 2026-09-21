@@ -1098,6 +1098,7 @@ bool Map::overlaps_corner(components::CircleSensor& sensor, LR dir) {
 			if (cell.is_platform()) { continue; }
 			if (cell.is_ramp()) { continue; }
 			if (below_cell.is_solid()) { continue; }
+			if (below_cell.is_ramp()) { continue; }
 			auto& left_cell = grid.get_cell(left_index);
 			auto& right_cell = grid.get_cell(right_index);
 			cell.collision_check = true;
@@ -1300,6 +1301,9 @@ bool Map::overlaps_middleground(shape::Shape& test) {
 bool Map::overlaps_middleground(sf::Vector2f test) {
 	for (auto& cell : get_middleground()->grid.cells) {
 		if (cell.bounding_box.contains_point(test) && cell.is_solid()) { return true; }
+		if (cell.is_ramp()) {
+			if (cell.bounding_box.contains_point(test)) { return true; }
+		}
 	}
 	return false;
 }
@@ -1309,6 +1313,27 @@ sf::Vector2f Map::compute_mtv(sf::Vector2f test) {
 		if (cell.bounding_box.contains_point(test) && cell.is_solid()) { return cell.bounding_box.compute_mtv(test); }
 	}
 	return {};
+}
+
+std::optional<float> Map::get_middleground_surface_y(float x, float y, float upward_search_range, float downward_search_range) {
+	auto& grid = get_middleground()->grid;
+
+	auto const top = get_index_at_position({x, y - upward_search_range});
+	auto const bottom = get_index_at_position({x, y + downward_search_range});
+
+	std::optional<float> surface_y;
+
+	for (auto index{top}; index <= bottom; index += dimensions.x) {
+		if (index >= dimensions.x * dimensions.y || index < 0) { break; }
+		auto& cell = grid.get_cell(static_cast<int>(index));
+		if (!cell.is_collidable()) { continue; }
+		if (!cell.exposed) { continue; }
+		auto const candidate = cell.bounding_box.get_surface_y(x);
+		if (!candidate) { continue; }
+		if (!surface_y || std::abs(*candidate - y) < std::abs(*surface_y - y)) { surface_y = candidate; }
+	}
+
+	return surface_y;
 }
 
 auto Map::get_music_balance() const -> float { return music_balance.get(); }

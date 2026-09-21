@@ -11,6 +11,10 @@ class HUDGun final : public HUDWidget {
 
 	void update(automa::ServiceProvider& svc, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset = {}) override;
+	[[nodiscard]] auto get_offset(bool scaled = true) const -> sf::Vector2f override;
+
+  private:
+	float m_height{};
 };
 
 } // namespace fornani::gui

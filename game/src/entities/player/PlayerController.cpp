@@ -194,7 +194,7 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 	if (svc.input_system.digital(input::DigitalAction::slide).triggered) {
 		auto can_roll = !m_ability;
 		if (is(AbilityType::dash) && player.get_collider().grounded()) { can_roll = true; }
-		if (can_roll && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.get_collider(), player.get_actual_direction()); }
+		if (can_roll && player.can_roll() && sprint) { m_ability = std::make_unique<Roll>(svc, map, player.get_collider(), player.get_actual_direction(), player.get_roll_multiplier()); }
 	}
 	if (m_ability) {
 		if (m_ability.value()->is(AbilityType::roll)) { input_flags.reset(InputState::slide_in_air); }

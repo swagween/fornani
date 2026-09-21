@@ -25,6 +25,9 @@ Brovle::Brovle(automa::ServiceProvider& svc, world::Map& map, int variant) : Ene
 	m_sword_wave = entity::WeaponPackage{svc, "javelin"};
 	m_sword_wave->get().set_team(arms::Team::guardian);
 
+	m_attack.set_constant_radius(46.f);
+	m_second_attack.set_constant_radius(36.f);
+
 	get_collider().physics.set_friction_componentwise({0.95f, 0.99f});
 }
 
@@ -37,8 +40,25 @@ void Brovle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_switch_sides.update();
 	if (m_switch_sides.is_complete()) { m_switch_sides.start(); }
 
-	// bomb variant stuff
+	// attacks
+	auto yoff = is_state(BrovleState::slash) && p_animatable.animation.get_frame_count() == 3 ? -40.f : 26.f;
+	m_second_attack.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 18.f, yoff});
+	m_attack.hit.deactivate();
+	m_second_attack.hit.deactivate();
+	if (is_state(BrovleState::sweep) && p_animatable.animation.get_frame_count() == 2) {
+		m_attack.hit.activate();
+		m_second_attack.hit.activate();
+	}
+	if (is_state(BrovleState::slash) && p_animatable.animation.get_frame_count() == 3) {
+		m_attack.hit.activate();
+		m_second_attack.hit.activate();
+	}
+	m_attack.hurt_player(player, 1.f, {Enemy::directions.desired.as_float() * 0.2f, -0.2f});
+	m_attack.cancel_projectiles(svc, map, get_team(), 0.06f);
+	m_second_attack.hurt_player(player, 1.f, {Enemy::directions.desired.as_float() * 0.2f, -0.2f});
+	m_second_attack.cancel_projectiles(svc, map, get_team(), 0.06f);
 	if (m_sword_wave) { m_sword_wave->update(svc, map, *this); }
+	m_attack.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 70.f, -6.f});
 
 	// shoot
 	if (has_flag_set(BrovleFlags::projectile) && !health.is_dead()) {
@@ -57,6 +77,8 @@ void Brovle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 void Brovle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
+	m_attack.render(win, cam);
+	m_second_attack.render(win, cam);
 	if (health.is_dead()) { return; }
 }
 

@@ -7,7 +7,8 @@
 
 namespace fornani::player {
 
-Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction) : Ability(svc, map, collider, direction), m_request{32}, m_multiplier{13.0f}, m_soundboard{&svc.soundboard} {
+Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, float const multiplier)
+	: Ability(svc, map, collider, direction), m_request{32}, m_multiplier{multiplier}, m_soundboard{&svc.soundboard} {
 	m_type = AbilityType::roll;
 	m_state = AnimState::roll;
 	m_duration.start(64);

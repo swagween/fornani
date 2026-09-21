@@ -7,6 +7,7 @@ nani_add_headers(
         Buzzle.hpp
         Caster.hpp
         Crow.hpp
+        Demolisher.hpp
         Demon.hpp
         DumpsterDiver.hpp
         Eyebit.hpp

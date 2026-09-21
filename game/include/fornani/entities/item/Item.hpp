@@ -4,6 +4,8 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 #include <fornani/core/Common.hpp>
+#include <fornani/core/Fwd.hpp>
+#include <fornani/core/ItemConstants.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Polymorphic.hpp>
@@ -26,13 +28,12 @@ struct ItemStats {
 	int stack_limit{1};
 };
 
-enum class ItemType : std::uint8_t { ability, key, collectible, useable, gizmo, apparel, plugin };
 enum class ItemFlags : std::uint8_t { sellable, readable, equippable, wearable, invisible, useable, buildable, ingredient };
 enum class ItemState : std::uint8_t { revealed, equipped };
 
 class Item : public Polymorphic {
   public:
-	Item(dj::Json const& source, std::string_view label);
+	Item(data::DataManager& data, std::string_view label);
 
 	virtual void render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position);
 

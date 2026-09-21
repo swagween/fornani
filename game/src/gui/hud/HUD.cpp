@@ -10,7 +10,7 @@ constexpr auto f_pad = 4.f;
 
 HUD::HUD(automa::ServiceProvider& svc, player::Player& player)
 	: m_origin{f_distance_from_edge, svc.window->f_screen_dimensions().y - f_distance_from_edge}, hearts{svc, player, {0.f, 0.f}, {11.f, 11.f}}, gun{svc, player, "heads_up_display_gun", {}, {44, 9}},
-	  orbs{svc, player, "heads_up_display_orb_font", {}, {9, 10}}, ammo{svc, player, "heads_up_display_ammo", {}, {5, 14}} {
+	  orbs{svc, player, "heads_up_display_orb_font", {}, {9, 10}}, ammo{svc, player, "heads_up_display_ammo", {}, {5, 14}}, item{svc, player, "hud_item_slot", {}, {6, 6}} {
 	set_position(m_origin);
 }
 
@@ -31,6 +31,8 @@ void HUD::render(automa::ServiceProvider& svc, player::Player& player, sf::Rende
 	ammo.render(svc, player, win, offset);
 	offset += sign * ammo.HUDAmmo::get_offset();
 	gun.render(svc, player, win, offset);
+	offset += sign * gun.get_offset();
+	item.render(svc, player, win, offset);
 	for (auto& e : m_effects) { e.render(win, {}); }
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
@@ -36,6 +37,8 @@ class Brovle final : public Enemy, public StateMachine<BrovleState>, public Flag
 	util::Cooldown m_jump_time;
 	util::Cooldown m_switch_sides;
 	std::optional<entity::WeaponPackage> m_sword_wave{};
+	entity::Attack m_attack{};
+	entity::Attack m_second_attack{};
 	entity::Caution m_caution{};
 
 	bool change_state(BrovleState next, anim::Parameters params);

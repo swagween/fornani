@@ -4,5 +4,6 @@ nani_add_headers(
         HUDOrbs.cpp
         HUDAmmo.cpp
         HUDGun.cpp
+        HUDItem.cpp
         HUD.cpp
 )

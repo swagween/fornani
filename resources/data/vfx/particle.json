@@ -87,8 +87,8 @@
     "animated": true,
     "colliding": false,
     "animation": {
-      "lookup": 1,
-      "duration": 5,
+      "lookup": 0,
+      "duration": 6,
       "framerate": 34,
       "loop": 0
     }
@@ -737,6 +737,24 @@
     "load": 3,
     "rate": 2.0,
     "expulsion": 4.0,
+    "expulsion_variance": 3.0,
+    "cone": 0.98,
+    "friction": 0.999,
+    "elasticity": 0.0,
+    "gravity": 0.0,
+    "lifespan": 160,
+    "lifespan_variance": 90,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": false,
+    "fader": true,
+    "color": "save"
+  },
+
+  "flip": {
+    "load": 8,
+    "rate": 2.0,
+    "expulsion": 6.0,
     "expulsion_variance": 3.0,
     "cone": 0.98,
     "friction": 0.999,

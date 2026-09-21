@@ -7,6 +7,7 @@ nani_add_sources(
         Buzzle.cpp
         Caster.cpp
         Crow.cpp
+        Demolisher.cpp
         Demon.cpp
         DumpsterDiver.cpp
         Eyebit.cpp

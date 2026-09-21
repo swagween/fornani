@@ -1,4 +1,34 @@
 {
+  "ambroses_oddities0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ambrose's Oddities -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "ambroses_oddities385022347051028": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ambrose's Oddities -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "ashtown385022343905331": {
     "series": [
       {
@@ -8,6 +38,66 @@
           [
             {
               "message": "- Ashtown -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "ashtown_jeweler0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown Jewels -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "ashtown_jeweler385022350721068": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown Jewels -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "ashtown_preservatory0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown Preservatory -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "ashtown_preservatory385022348492818": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown Preservatory -"
             }
           ]
         ]
@@ -864,6 +954,36 @@
       }
     ]
   },
+  "carlos_pizzeria0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Welcome to Carlo's Pizzeria: The best pizza in the Blue District! 10 orbs/slice; 15 orb meal-deal"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "carlos_pizzeria385022345412636": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "Welcome to Carlo's Pizzeria: The best pizza in the Blue District! 10 orbs/slice; 15 orb meal-deal"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "caution1385022345805884": {
     "series": [
       {
@@ -1038,7 +1158,7 @@
                   0
                 ]
               ],
-              "message": "You find a postcard atop a stone bedestal."
+              "message": "You find a postcard atop a stone pedestal."
             }
           ]
         ]
@@ -1059,7 +1179,7 @@
                   0
                 ]
               ],
-              "message": "You find a postcard atop a stone bedestal."
+              "message": "You find a postcard atop a stone pedestal."
             }
           ]
         ]
@@ -1105,6 +1225,36 @@
           [
             {
               "message": "- Gaia's House -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "general_goods0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown General Goods -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "general_goods385022346526753": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Ashtown General Goods -"
             }
           ]
         ]
@@ -1537,6 +1687,21 @@
           [
             {
               "message": "- Pioneer Trail -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "pnr385022344626187": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "It is beyond here, the point of no returning."
             }
           ]
         ]

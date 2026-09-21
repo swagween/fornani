@@ -259,6 +259,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] bool is_swimming() const;
 	[[nodiscard]] auto can_be_stunned() const -> bool;
 	[[nodiscard]] auto on_water_surface() const -> bool;
+	[[nodiscard]] auto get_roll_multiplier() const -> float;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 

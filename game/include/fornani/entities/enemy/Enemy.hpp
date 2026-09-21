@@ -218,6 +218,7 @@ class Enemy : public Mobile {
 	sf::Vector2f m_death_position{};
 
 	util::Cooldown hurt_effect{};
+	util::Cooldown hurt_flash_effect{};
 	util::Cooldown m_crush;
 
 	EnemyChannel m_custom_channel{};

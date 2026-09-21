@@ -17,19 +17,10 @@ Hellion::Hellion(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map
 }
 
 void Hellion::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	if (just_died()) { m_services->soundboard.play_sound("hellion_death", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
 	if (died()) { return; }
 
-	if (flags.state.test(StateFlags::hurt)) {
-		hurt_effect.start();
-		if (sound.hurt_sound_cooldown.is_complete()) {
-			svc.soundboard.play_sound("hellion_hurt");
-			svc.soundboard.play_sound("hit_squeak");
-		}
-		flags.state.reset(StateFlags::hurt);
-		sound.hurt_sound_cooldown.start();
-	}
+	if (hurt_effect.just_started()) { svc.soundboard.play_sound("hit_squeak"); }
 
 	m_target = player.get_collider().get_center() + sf::Vector2f{0.f, -20.f} - m_poison.barrel_point();
 	m_poison.update(svc, map, *this, true);

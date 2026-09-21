@@ -1,11 +1,15 @@
 
+#include <fornani/core/ItemConstants.hpp>
 #include <fornani/entities/item/Item.hpp>
+#include <fornani/setup/DataManager.hpp>
 #include <fornani/utils/Constants.hpp>
+#include <ranges>
 
 namespace fornani::item {
 
-Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_type{ItemType::key} {
+Item::Item(data::DataManager& data, std::string_view label) : m_label{label}, m_type{ItemType::key} {
 
+	auto const& source = data.item;
 	auto const& arr = source.as_array();
 	auto it = std::find_if(arr.begin(), arr.end(), [&](auto const& v) { return v["tag"].as_string() == label; });
 
@@ -45,6 +49,12 @@ Item::Item(dj::Json const& source, std::string_view label) : m_label{label}, m_t
 	m_stats.value = in_data["value"].as<int>();
 	m_stats.rarity = static_cast<Rarity>(in_data["rarity"].as<int>());
 	m_stats.apparel_type = in_data["apparel_type"].is_number() ? in_data["apparel_type"].as<int>() : -1;
+
+	// calculate origin from key
+	auto const table_dim = get_item_table_dimensions(m_type);
+	auto const& idx = data.item_indeces.at(m_label);
+	auto const actual_idx = in_data["index"] ? in_data["index"].as<int>() : idx;
+	if (!in_data["invisible"].as_bool()) { m_table_origin = {actual_idx % table_dim.x, actual_idx / table_dim.x}; }
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {

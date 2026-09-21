@@ -523,6 +523,27 @@
       }
     ]
   },
+  "dora": {
+    "id": 48,
+    "vendor_id": 48,
+    "dimensions": [32, 32],
+    "sprite_dimensions": [20, 20],
+    "sprite_offset": [0, -1],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 40, -1, false]
+      }
+    ],
+    "vendor": {
+      "upcharge": 0.4,
+      "stock_size": 8,
+      "common_items": ["screwdriver", "soda"],
+      "uncommon_items": ["save_plugin", "vendor_plugin"],
+      "rare_items": ["punk_pants", "punk_shirt", "punk_hair_dye"],
+      "guaranteed_finite_items": ["athletic_band"]
+    }
+  },
   "spencer": {
     "id": 6,
     "dimensions": [24, 24],

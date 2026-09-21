@@ -14,10 +14,12 @@ CornerFlip::CornerFlip(automa::ServiceProvider& svc, world::Map& map, shape::Col
 	p_force = 0.4f;
 	svc.soundboard.play_sound("nani_perfect_walljump");
 	collider.physics.zero();
-	svc.ticker.freeze_frame(0.025f);
-
+	svc.ticker.freeze_frame(0.03f);
+	auto const pos = collider.get_top() + sf::Vector2f{direction.as_float() * 12.f, 0.f};
+	map.spawn_effect(svc, "small_sparkle", pos);
 	m_duration.start(16);
 	m_beginning.start();
+	map.spawn_emitter(svc, "flip", pos, {});
 }
 
 void CornerFlip::update(shape::Collider& collider, PlayerController& controller) {

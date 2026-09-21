@@ -13,7 +13,7 @@ namespace fornani::enemy {
 
 Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned, int variant, sf::Vector2<int> start_direction)
 	: Mobile(svc, map, "enemy_" + std::string{label}, sf::Vector2i{svc.data.enemy[label]["physical"]["sprite_dimensions"][0].as<int>(), svc.data.enemy[label]["physical"]["sprite_dimensions"][1].as<int>()}), metadata{.variant{variant}},
-	  label(label), health_indicator{svc}, hurt_effect{128}, m_freeze{12}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160}, m_crush{6} {
+	  label(label), health_indicator{svc}, hurt_effect{128}, hurt_flash_effect{16}, m_freeze{12}, m_health_bar{svc, colors::mythic_green}, health{svc.data.enemy[label]["attributes"]["base_hp"].as<float>()}, m_weakness{160}, m_crush{6} {
 
 	get_collider().set_trait(shape::ColliderTrait::enemy);
 	if (spawned) { flags.general.set(GeneralFlags::spawned); }
@@ -227,6 +227,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// hurt
 	if (flags.state.test(StateFlags::hurt)) {
 		if (!hurt_effect.running()) { hurt_effect.start(); }
+		hurt_flash_effect.start();
 		auto const at = get_collider().get_center();
 		if (sound.hurt_sound_cooldown.is_complete()) {
 			svc.soundboard.play_sound("hit", at);
@@ -249,6 +250,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	if (hurt_effect.running() && !flags.state.test(StateFlags::no_shake)) { shake(); }
 	hurt_effect.update();
+	hurt_flash_effect.update();
 
 	// shake
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
@@ -350,16 +352,11 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 
 void Enemy::submit(FlatShader& shader, sf::RenderWindow& win) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
-	if (debug::is_debug()) {
-		shader.finalize(colors::blue);
-		shader.submit(win, p_animatable.get_sprite());
-		return;
-	}
 	if (flags.state.test(StateFlags::invisible)) { return; }
-	if (hurt_effect.get_normalized() > 0.9f) {
+	if (hurt_flash_effect.get_normalized() > 0.6f) {
 		shader.finalize(colors::ui_white);
 		shader.submit(win, p_animatable.get_sprite());
-	} else if (hurt_effect.get_normalized() > 0.8f) {
+	} else if (hurt_flash_effect.get_normalized() > 0.2f) {
 		shader.finalize(colors::black);
 		shader.submit(win, p_animatable.get_sprite());
 	}

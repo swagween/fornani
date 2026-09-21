@@ -744,9 +744,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 
 							if (ImGui::BeginTabItem("Inventory")) {
+								if (ImGui::Button("Give All Items")) {
+									for (auto const& i : services.data.item.as_array()) { player->give_item(i["tag"].as_string(), 1); }
+								}
 								ImGui::Text("Equipped Items:");
 								for (auto const& ei : player->catalog.inventory.equipped_items_view()) {
 									ImGui::Text("[%i]", ei);
+									ImGui::Text("Number of Equipped Items: %i", player->catalog.inventory.get_number_of_equipped_items());
 									ImGui::SameLine();
 								}
 								ImGui::EndTabItem();

@@ -193,6 +193,7 @@ class DataManager final {
 	automa::ServiceProvider* m_services;
 	std::unordered_map<int, npc::Vendor> marketplace{};
 	std::unordered_map<int, int> npc_locations{};
+	std::unordered_map<std::string, int> item_indeces{};
 	std::vector<EnemyState> fallen_enemies{};
 
 	TimeTrialRegistry time_trial_registry{};

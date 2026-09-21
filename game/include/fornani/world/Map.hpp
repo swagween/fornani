@@ -165,6 +165,7 @@ class Map {
 	bool overlaps_middleground(shape::Shape& test);
 	bool overlaps_middleground(sf::Vector2f test);
 	sf::Vector2f compute_mtv(sf::Vector2f test);
+	std::optional<float> get_middleground_surface_y(float x, float y, float upward_search_range, float downward_search_range);
 
 	[[nodiscard]] auto get_style_id() const -> int { return m_biome.get_id(); }
 	[[nodiscard]] auto get_special_drop_id() const -> int { return m_attributes.special_drop_id; }

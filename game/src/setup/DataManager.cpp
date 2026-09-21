@@ -1,6 +1,7 @@
 
 #include "fornani/setup/DataManager.hpp"
 #include <fornani/core/Common.hpp>
+#include <fornani/core/ItemConstants.hpp>
 #include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/io/Codec.hpp>
 #include <fornani/io/FileSerializer.hpp>
@@ -226,6 +227,16 @@ void DataManager::load_game_data(ResourceFinder& finder) {
 		for (auto& item : entry.second["vendor"]["rare_items"].as_array()) { vendor.rare_items.push_back(item.as_string().data()); }
 		for (auto& item : entry.second["vendor"]["guaranteed_finite_items"].as_array()) { vendor.guaranteed_finite_items.push_back(item.as_string().data()); }
 		NANI_LOG_INFO(m_logger, "Created Vendor in marketplace with ID {}", entry.second["id"].as<int>());
+	}
+
+	auto counts = std::array<int, static_cast<std::size_t>(item::ItemType::COUNT)>{};
+
+	for (auto [i, item] : std::views::enumerate(item.as_array())) {
+		auto category = static_cast<item::ItemType>(item["category"].as<int>());
+		auto index = static_cast<std::size_t>(category);
+
+		item_indeces.insert({item["tag"].as_string(), counts.at(index)});
+		++counts.at(index);
 	}
 }
 

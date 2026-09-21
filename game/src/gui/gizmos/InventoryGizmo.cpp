@@ -1,5 +1,6 @@
 
 #include "fornani/gui/gizmos/InventoryGizmo.hpp"
+#include <fornani/core/ItemConstants.hpp>
 #include <fornani/events/InventoryEvent.hpp>
 #include <numbers>
 #include "fornani/entities/player/Player.hpp"
@@ -13,9 +14,12 @@ namespace fornani::gui {
 InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Inventory", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic},
 	  m_lid_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "inventory", 128, util::InterpolationType::cubic}, m_sprite{svc.assets.get_texture("inventory_gizmo")},
-	  m_item_sprite{svc.assets.get_texture("inventory_items")}, m_zones{InventoryZone{{9, 1}, {38.f, 36.f}, {414.f, 18.f}}, InventoryZone{{11, 4}, {36.f, 36.f}, {50.f, 116.f}}, InventoryZone{{8, 1}, {42.f, 62.f}, {124.f, 280.f}},
-																		InventoryZone{{8, 1}, {42.f, 62.f}, {124.f, 341.f}}, InventoryZone{{8, 1}, {60.f, 36.f}, {404.f, 430.f}}},
-	  m_selector(std::make_unique<InventorySelector>(m_zones.at(InventoryZoneType::key).table_dimensions, m_zones.at(InventoryZoneType::key).cell_size)), m_orb_display(svc), m_services(&svc), m_equipped_items_position{472.f, 106.f},
+	  m_item_sprite{svc.assets.get_texture("inventory_items")},
+	  m_zones{InventoryZone{item::get_item_table_dimensions(item::ItemType::ability), {38.f, 36.f}, {414.f, 18.f}},		 InventoryZone{item::get_item_table_dimensions(item::ItemType::key), {6.f, 36.f}, {108.f, 44.f}},
+			  InventoryZone{item::get_item_table_dimensions(item::ItemType::unique), {36.f, 36.f}, {50.f, 80.f}},		 InventoryZone{item::get_item_table_dimensions(item::ItemType::equippable), {36.f, 36.f}, {50.f, 200.f}},
+			  InventoryZone{item::get_item_table_dimensions(item::ItemType::collectible), {38.f, 62.f}, {124.f, 280.f}}, InventoryZone{item::get_item_table_dimensions(item::ItemType::useable), {38.f, 62.f}, {20.f, 436.f}},
+			  InventoryZone{item::get_item_table_dimensions(item::ItemType::gizmo), {60.f, 36.f}, {404.f, 430.f}}},
+	  m_selector(std::make_unique<InventorySelector>(m_zones.at(InventoryZoneType::key).table_dimensions, m_zones.at(InventoryZoneType::key).cell_size)), m_orb_display(svc), m_services(&svc), m_equipped_items_position{506.f, 104.f},
 	  m_menu_offset{96.f, -16.f}, m_player{&player} {
 	m_zones.set_location(InventoryZoneType::key);
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
@@ -50,7 +54,9 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 
 	auto& current_zone = m_zones.current();
 
-	if (get_zone_type() == InventoryZoneType::key) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
+	if (get_zone_type() == InventoryZoneType::key) { m_selector->set_lookup({{448, 164}, {18, 22}}); }
+	if (get_zone_type() == InventoryZoneType::unique) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
+	if (get_zone_type() == InventoryZoneType::equippable) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::collectible) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::useable) { m_selector->set_lookup({{448, 0}, {18, 18}}); }
 	if (get_zone_type() == InventoryZoneType::gizmo) { m_selector->set_lookup({{448, 18}, {22, 22}}); }
@@ -74,6 +80,8 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	m_lid_path.update();
 	auto selector_offset = sf::Vector2f{};
 	if (get_zone_type() == InventoryZoneType::key) { selector_offset = sf::Vector2f{2.f, 2.f}; }
+	if (get_zone_type() == InventoryZoneType::unique) { selector_offset = sf::Vector2f{2.f, 2.f}; }
+	if (get_zone_type() == InventoryZoneType::equippable) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::collectible) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::useable) { selector_offset = sf::Vector2f{2.f, 2.f}; }
 	if (get_zone_type() == InventoryZoneType::gizmo) { selector_offset = sf::Vector2f{6.f, 6.f}; }
@@ -116,7 +124,7 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 
 		// draw equipment slots
 		auto num_equip_slots = player.catalog.inventory.find_item_stack("equip_slot") == nullptr ? 0 : player.catalog.inventory.find_item_stack("equip_slot")->quantity;
-		auto equip_slot_offset = sf::Vector2f{466.f, 100.f};
+		auto equip_slot_offset = sf::Vector2f{502.f, 100.f};
 		for (auto i = 0; i < num_equip_slots + 1; ++i) {
 			m_sprite.setTextureRect(sf::IntRect{{448, 63}, {22, 22}});
 			m_sprite.setPosition(get_placement() + m_path.get_position() - cam + equip_slot_offset + sf::Vector2f{0.f, static_cast<float>(i) * 44.f});
@@ -133,12 +141,22 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 		auto count_offset = sf::Vector2f{32.f, 39.f};
 		m_orb_display.render(win, get_placement() + m_path.get_position() - cam + orb_offset);
 
+		m_flags.set(InventoryGizmoFlags::no_useable_items);
 		for (auto& item : player.catalog.inventory.items_view()) {
 			if (item.item->is_invisible()) { continue; }
 			auto zone_type = static_cast<InventoryZoneType>(item.item->get_type());
 			if (!m_zones.contains(zone_type)) { continue; }
+			if (zone_type == InventoryZoneType::useable) {
+				m_flags.reset(InventoryGizmoFlags::no_useable_items);
+				m_sprite.setTextureRect(sf::IntRect{{0, 499}, {89, 39}});
+				m_sprite.setPosition(get_placement() + m_path.get_position() - cam + sf::Vector2f{10.f, 424.f});
+				shader.submit(win, palette, m_sprite);
+			}
 			auto const& zone = m_zones.at(zone_type);
 			auto where = get_placement() + m_path.get_position() - cam + zone.render_offset + item.item->get_f_origin().componentWiseMul(zone.cell_size) - sf::Vector2f{2.f, 2.f};
+			if (zone_type == InventoryZoneType::key) {
+				// if () {}
+			}
 			item.item->render(win, m_item_sprite, where);
 			for (auto& display : m_number_displays) {
 				if (display.matches(item.item->get_id())) { display.render(win, where + count_offset); }
@@ -268,6 +286,7 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 
 void InventoryGizmo::switch_zones(int modulation) {
 	m_zones.modulate(modulation);
+	if (m_zones.get_zone() == InventoryZoneType::useable && m_flags.test(InventoryGizmoFlags::no_useable_items)) { m_zones.modulate(modulation); }
 	auto position = m_selector->get_position();
 	auto& current_zone = m_zones.current();
 	m_selector = std::make_unique<InventorySelector>(current_zone.table_dimensions, current_zone.cell_size);

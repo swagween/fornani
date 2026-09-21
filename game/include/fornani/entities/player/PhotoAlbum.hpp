@@ -4,6 +4,7 @@
 #include <djson/json.hpp>
 #include <fornani/core/Fwd.hpp>
 #include <fornani/entities/item/Postcard.hpp>
+#include <fornani/systems/Register.hpp>
 #include <vector>
 
 namespace fornani {
@@ -17,7 +18,7 @@ class PhotoAlbum {
 	void add_postcard(automa::ServiceProvider& svc, std::string_view tag);
 
   private:
-	std::vector<Postcard> m_postcards{};
+	Register<Postcard> m_postcards{};
 };
 
 } // namespace fornani

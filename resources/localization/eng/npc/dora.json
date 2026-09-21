@@ -1,0 +1,41 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "What have you got for sale?"
+        },
+        {
+          "codes": [[1, 2]],
+          "message": "Tell me about the Ashtown Bandit."
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": false,
+              "tag": "cajole_doug"
+            }
+          ],
+          "codes": [[1, 3]],
+          "message": "You know Doug?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "What do you want?"
+        }
+      ],
+      [{ "codes": [[20, 48]], "message": "Don't waste your money here." }],
+      [
+        { "message": "What do you want me to say? He's some loser who broke into my apartment and stole my CD player." },
+        { "codes": [[1, 0]], "message": "What do you want me to say? He's some loser who broke into my apartment and stole my CD player." }
+      ],
+      [{ "message": "Doug Bowman? The guy who works the drills?" }, { "codes": [[1, 0]], "message": "Yeah, I know him. Look, don't tell him I said this, but I think he's pretty cute." }]
+    ]
+  }
+}

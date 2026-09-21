@@ -14,6 +14,7 @@
 #include <fornani/entities/enemy/catalog/Buzzle.hpp>
 #include <fornani/entities/enemy/catalog/Caster.hpp>
 #include <fornani/entities/enemy/catalog/Crow.hpp>
+#include <fornani/entities/enemy/catalog/Demolisher.hpp>
 #include <fornani/entities/enemy/catalog/Demon.hpp>
 #include <fornani/entities/enemy/catalog/DumpsterDiver.hpp>
 #include <fornani/entities/enemy/catalog/Eyebit.hpp>
@@ -90,6 +91,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(41, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Glub>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(42, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Brovle>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(43, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Buzzle>(svc, map); });
+	EnemyRegistry::register_factory(44, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Demolisher>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

@@ -2,7 +2,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-
+#include <optional>
 #include <vector>
 
 namespace fornani::shape {
@@ -55,6 +55,7 @@ class Shape {
 	[[nodiscard]] auto right() const -> float { return get_position().x + get_dimensions().x; }
 	[[nodiscard]] auto top() const -> float { return get_position().y; }
 	[[nodiscard]] auto bottom() const -> float { return get_position().y + get_dimensions().y; }
+	std::optional<float> get_surface_y(float x) const;
 	[[nodiscard]] float get_height_at(float x) const;
 	[[nodiscard]] float get_radial_factor() const;
 

@@ -371,7 +371,7 @@ void Dojo::remove_gun_by_id(ServiceProvider& svc, int id) {
 
 void Dojo::remove_item_by_id(ServiceProvider& svc, int id) { remove_item(svc, svc.data.item_label_from_id(id)); }
 
-void Dojo::acquire_postcard(ServiceProvider& svc, int id) { player->catalog.album.add_postcard(svc, "test"); }
+void Dojo::acquire_postcard(ServiceProvider& svc, int id) { player->catalog.album.add_postcard(svc, id); }
 
 void Dojo::equip_item(ServiceProvider& svc, int id) {
 	auto equipped = player->equip_item(id);

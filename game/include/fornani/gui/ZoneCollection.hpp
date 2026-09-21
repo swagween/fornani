@@ -19,6 +19,12 @@ class ZoneCollection {
 		requires(sizeof...(Zones) == Count)
 		: m_zones{std::forward<Zones>(zones)...}, m_zone_iterator(Count) {}
 
+	auto begin() { return m_zones.begin(); }
+	auto end() { return m_zones.end(); }
+
+	auto begin() const { return m_zones.begin(); }
+	auto end() const { return m_zones.end(); }
+
 	InventoryZone& current() { return m_zones.at(m_zone_iterator.get()); }
 	InventoryZone& at(Enum zone) { return m_zones.at(static_cast<std::size_t>(zone)); }
 	InventoryZone const& at(Enum zone) const { return m_zones.at(static_cast<std::size_t>(zone)); }

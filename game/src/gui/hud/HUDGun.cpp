@@ -16,10 +16,13 @@ void HUDGun::render(automa::ServiceProvider& svc, player::Player& player, sf::Re
 		auto pointer_index{0};
 		auto pad = 2.f;
 		auto const hotbar_size = player.hotbar.value().size();
+		m_height = 0.f;
 		for (int i = 0; i < hotbar_size; ++i) {
 			auto gun_index = svc.data.get_gun_id_from_tag(player.hotbar.value().get_tag(i));
 			auto pointer_exclusion = i == player.hotbar.value().get_selection() ? 0 : 10;
-			auto y_pos = get_root().y - (i * p_animatable->get_f_dimensions().y * constants::f_scale_factor) - i * pad;
+			auto const adjustment = (i * p_animatable->get_f_dimensions().y * constants::f_scale_factor);
+			auto const y_pos = get_root().y - adjustment - i * pad;
+			m_height += adjustment - i * pad;
 			p_animatable->set_texture_rect(sf::IntRect{{p_animatable->get_dimensions().x + pointer_exclusion, p_animatable->get_dimensions().y * gun_index}, p_animatable->get_dimensions()});
 			p_animatable->set_position(sf::Vector2f{get_root().x + pointer_exclusion * constants::f_scale_factor, y_pos} + offset);
 			win.draw(*p_animatable);
@@ -32,5 +35,7 @@ void HUDGun::render(automa::ServiceProvider& svc, player::Player& player, sf::Re
 		}
 	}
 }
+
+auto HUDGun::get_offset(bool scaled) const -> sf::Vector2f { return HUDWidget::get_offset() + sf::Vector2f{0.f, m_height + 2.f}; }
 
 } // namespace fornani::gui

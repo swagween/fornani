@@ -4,6 +4,7 @@
 #include <fornani/gui/hud/HUDAmmo.hpp>
 #include <fornani/gui/hud/HUDGun.hpp>
 #include <fornani/gui/hud/HUDHearts.hpp>
+#include <fornani/gui/hud/HUDItem.hpp>
 #include <fornani/gui/hud/HUDOrbs.hpp>
 #include <fornani/particle/Effect.hpp>
 
@@ -39,6 +40,7 @@ class HUD final {
 	HUDOrbs orbs;
 	HUDAmmo ammo;
 	HUDGun gun;
+	HUDItem item;
 };
 
 } // namespace fornani::gui
