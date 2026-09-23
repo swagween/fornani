@@ -1,5 +1,82 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 2,
+        "depth": -0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          54,
+          13
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 3,
+        "depth": 0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          63,
+          11
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 0,
+        "depth": -0.10000000149011612,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          73,
+          8
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 3,
+        "depth": -0.699999988079071,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          34,
+          13
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 2,
+        "depth": -0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          23,
+          16
+        ],
+        "tag": "large_vines"
+      }
+    ],
     "chests": [
       {
         "dimensions": [

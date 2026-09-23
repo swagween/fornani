@@ -37,7 +37,7 @@ void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& pla
 	collider.physics.previous_position = m_steering.physics.position;
 	sensor.set_position(m_steering.physics.position + collider.dimensions * 0.5f - sf::Vector2f{0.f, 16.f});
 	m_health.update();
-	sprite.update(util::round_to_even(m_steering.physics.position - sf::Vector2f{-2.f, 10.f}));
+	sprite.update(m_steering.physics.position - sf::Vector2f{-2.f, 10.f});
 	if (state != SpawnablePlatformState::dormant) { svc.soundboard.repeat_sound("flower_spin", m_id.get(), sensor.bounds.getPosition()); }
 	state_function = state_function();
 }

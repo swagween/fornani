@@ -1,5 +1,127 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 2,
+        "depth": 0.10000000149011612,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          23,
+          13
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          40,
+          8
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 3,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          36,
+          25
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          57,
+          11
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          52,
+          26
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          57,
+          17
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": -0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          33,
+          15
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          27,
+          13
+        ],
+        "tag": "growth"
+      }
+    ],
     "chests": [
       {
         "dimensions": [

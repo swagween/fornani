@@ -238,6 +238,24 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "key_menu_shift_1",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "key_menu_shift_2",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "key_menu_shift_3",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "jump_low",
     "bus": "gameplay",
     "volume": 1.0,

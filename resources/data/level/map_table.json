@@ -608,6 +608,12 @@
     },
     {
       "folder": "overturned",
+      "label": "cranny.json",
+      "region": "overturned",
+      "room_id": 265
+    },
+    {
+      "folder": "overturned",
       "label": "crash_site.json",
       "region": "overturned",
       "room_id": 204

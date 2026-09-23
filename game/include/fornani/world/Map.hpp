@@ -264,6 +264,7 @@ class Map {
 	struct {
 		util::Cooldown fade_obscured{};
 		util::Cooldown loading{};
+		util::Cooldown enter_from_bottom;
 	} cooldowns{};
 
 	// debug

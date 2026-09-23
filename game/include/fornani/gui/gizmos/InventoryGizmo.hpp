@@ -9,11 +9,12 @@
 #include <fornani/gui/OrbDisplay.hpp>
 #include <fornani/gui/ZoneCollection.hpp>
 #include <fornani/gui/gizmos/DescriptionGizmo.hpp>
+#include <fornani/utils/Cooldown.hpp>
 #include <optional>
 
 namespace fornani::gui {
 
-enum class InventoryGizmoFlags : std::uint8_t { is_item_hovered, no_useable_items };
+enum class InventoryGizmoFlags : std::uint8_t { is_item_hovered, no_useable_items, moved_left, moved_right, switched };
 enum class InventoryZoneType : std::uint8_t { ability, key, unique, equippable, collectible, useable, gizmo, COUNT };
 
 class InventoryGizmo : public Gizmo {
@@ -22,6 +23,7 @@ class InventoryGizmo : public Gizmo {
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
+
 	[[nodiscard]] auto is_item_hovered() const -> int { return m_flags.test(InventoryGizmoFlags::is_item_hovered); }
 	[[nodiscard]] auto get_zone_type() const -> InventoryZoneType { return m_zones.get_zone(); }
 
@@ -29,12 +31,14 @@ class InventoryGizmo : public Gizmo {
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 
+	void move_horizontal(audio::Soundboard& soundboard);
 	void handle_menu_selection(player::Player& player, int selection);
 	void switch_zones(int modulation);
 	void write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam);
 
 	[[nodiscard]] auto zone_match(item::ItemType type) const -> bool { return static_cast<InventoryZoneType>(type) == get_zone_type(); }
 
+  private:
 	ZoneCollection<InventoryZoneType> m_zones;
 
 	int m_current_item_lookup{};
@@ -49,6 +53,8 @@ class InventoryGizmo : public Gizmo {
 	OrbDisplay m_orb_display;
 	std::vector<NumberDisplay> m_number_displays{};
 	std::optional<MiniMenu> m_item_menu{};
+
+	util::Cooldown m_horizontal_toggle;
 
 	sf::Sprite m_sprite;
 	sf::Sprite m_item_sprite;

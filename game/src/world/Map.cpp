@@ -85,7 +85,8 @@
 
 namespace fornani::world {
 
-Map::Map(automa::ServiceProvider& svc, player::Player& player) : player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}}, m_flat_shader{svc.finder} {}
+Map::Map(automa::ServiceProvider& svc, player::Player& player)
+	: player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}, .enter_from_bottom{180}}, m_flat_shader{svc.finder} {}
 
 Map::~Map() {
 	m_destroying = true;
@@ -398,6 +399,10 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 
 	update_balance(svc);
 
+	// entry
+	if (cooldowns.enter_from_bottom.running()) { player->get_collider().physics.acceleration.x = player::sprint_speed_v * player->get_actual_direction().as_float(); }
+	cooldowns.enter_from_bottom.update();
+
 	// weather
 	if (svc.ticker.every_x_ticks(24)) {
 		if (m_weather && !m_attributes.properties.test(MapProperties::interior)) {
@@ -566,6 +571,9 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto a : get_entities<Animator>()) {
 			if (!a->is_foreground()) { a->render(m_entity_texture, cam); }
 		}
+		for (auto a : get_entities<AmbientProp>()) {
+			if (!a->is_in_front()) { a->flat_shade(win, cam, m_flat_shader); }
+		}
 		for (auto s : get_entities<SavePoint>()) { s->submit(renderer); }
 		renderer.flush();
 
@@ -702,6 +710,10 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 0); }
 
+	for (auto a : get_entities<AmbientProp>()) {
+		if (a->is_in_front()) { a->flat_shade(win, cam, m_flat_shader); }
+	}
+
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
 	if (debug::is_debug()) {
@@ -803,7 +815,7 @@ bool Map::handle_entry(player::Player& player, util::Cooldown& enter_room) {
 			}
 			if (portal->is_bottom()) {
 				player.get_collider().physics.acceleration.y = -player.physics_stats.jump_velocity;
-				player.apply_impulse({player::walk_speed_v * player.get_actual_direction().as_float(), 0.f});
+				cooldowns.enter_from_bottom.start();
 			}
 			if (portal->is_top() && underwater) {
 				player.get_collider().physics.acceleration.y = player.physics_stats.jump_velocity;

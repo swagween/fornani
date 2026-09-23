@@ -39,6 +39,7 @@ class Item : public Polymorphic {
 
 	void reveal();
 	void set_equipped(bool to);
+	void set_table_origin(sf::Vector2i const to) { m_table_origin = to; }
 	std::vector<std::string> generate_menu_list(dj::Json const& in) const;
 
 	[[nodiscard]] auto get_id() const -> int { return m_id; }

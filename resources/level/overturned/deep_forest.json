@@ -3,6 +3,7 @@
     "ambient_props": [
       {
         "channel": 0,
+        "depth": 0,
         "dimensions": [
           1,
           1
@@ -17,6 +18,7 @@
       },
       {
         "channel": 0,
+        "depth": 0,
         "dimensions": [
           1,
           1
@@ -28,6 +30,66 @@
           24
         ],
         "tag": "cattail"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          60,
+          26
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          75,
+          17
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 3,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          62,
+          25
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          49,
+          22
+        ],
+        "tag": "growth"
       }
     ],
     "chests": [

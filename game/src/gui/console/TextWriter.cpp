@@ -32,7 +32,6 @@ TextWriter::TextWriter(automa::ServiceProvider& svc, std::string_view message, s
 }
 
 void TextWriter::start() {
-
 	if (!suite) { return; }
 	if (m_iterators.current_suite_set >= suite->suite.size()) { return; }
 	if (suite->suite.at(m_iterators.current_suite_set).empty()) { return; }
@@ -46,7 +45,6 @@ void TextWriter::start() {
 }
 
 void TextWriter::update() {
-
 	bounds_box.setPosition(m_bounds.position);
 	bounds_box.setSize(m_bounds.size);
 	m_delay.update();

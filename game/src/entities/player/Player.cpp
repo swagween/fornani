@@ -820,7 +820,7 @@ auto Player::can_be_stunned() const -> bool { return !is_stunned() && !cooldowns
 
 auto Player::on_water_surface() const -> bool { return (get_collider().has_flag_set(shape::ColliderFlags::in_water) || cooldowns.water_exit.running()) && !get_collider().has_flag_set(shape::ColliderFlags::submerged); }
 
-auto Player::get_roll_multiplier() const -> float { return has_item_equipped("athletic_band") ? 18.f : 13.f; }
+auto Player::get_roll_multiplier() const -> float { return has_item_equipped("athletic_band") ? 15.f : 13.f; }
 
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};

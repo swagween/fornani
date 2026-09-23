@@ -43,6 +43,8 @@ void DescriptionGizmo::set_offset(sf::Vector2f const offset) { m_additional_offs
 
 void DescriptionGizmo::adjust_bounds(sf::Vector2f const adjustment) { m_bounds.position -= adjustment; }
 
+void DescriptionGizmo::adjust_size(sf::Vector2f const adjustment) { m_bounds.size += adjustment; }
+
 void DescriptionGizmo::write(automa::ServiceProvider& svc, std::string_view message, FontSpec& font) {
 	if (!m_text) { m_text = TextWriter(svc, message, m_bounds); }
 	m_text->set_font(font);

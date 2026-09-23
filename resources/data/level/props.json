@@ -13,6 +13,33 @@
     "dimensions": [64, 64],
     "destroy_effect": "grass_burst"
   },
+  "growth": {
+    "num_frames": 5,
+    "sensitivity": 0.001,
+    "radius": 60.0,
+    "dimensions": [96, 96],
+    "destroy_effect": "grass_burst",
+    "color_shift": {
+      "hues": [
+        [61, 48, 82],
+        [12, 12, 20]
+      ],
+      "range": [-1.0, 0]
+    }
+  },
+  "large_vines": {
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 60.0,
+    "dimensions": [256, 400],
+    "color_shift": {
+      "hues": [
+        [61, 48, 82],
+        [12, 12, 20]
+      ],
+      "range": [-1.0, 0]
+    }
+  },
   "pink_flower": {
     "num_frames": 5,
     "sensitivity": 0.001,
