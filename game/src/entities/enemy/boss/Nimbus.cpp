@@ -10,8 +10,8 @@
 namespace fornani::enemy {
 
 Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "nimbus"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc} {
-	auto fr = 8;
-	p_animatable.set_animations({{"idle", {93, 4, fr * 4, -1}},
+	auto fr = 6;
+	p_animatable.set_animations({{"idle", {93, 4, fr * 8, -1}},
 								 {"jump", {1, 7, fr * 5, 0, true}},
 								 {"land", {8, 7, fr * 3, 0}},
 								 {"get_up", {12, 2, fr * 4, 0}},

@@ -1,5 +1,21 @@
 {
   "entities": {
+    "chests": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 75995,
+        "modifier": 14,
+        "position": [
+          45,
+          11
+        ],
+        "tag": "wraith",
+        "type": 0
+      }
+    ],
     "cutscene_triggers": [
       {
         "contingencies": [

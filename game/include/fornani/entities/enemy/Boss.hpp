@@ -8,7 +8,7 @@
 
 namespace fornani::enemy {
 
-enum class BossFlags : std::uint8_t { start_battle, battle_mode, second_phase, post_death, end_battle };
+enum class BossFlags : std::uint8_t { start_battle, battle_mode, second_phase, post_death, end_battle, defeated_player };
 
 class Boss : public Enemy, public Flaggable<BossFlags> {
   public:

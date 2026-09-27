@@ -984,10 +984,16 @@ void Player::hurt(float amount, bool force) {
 		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
 		if (amount > 1.f) {
 			if (!health.is_dead()) { m_sprite_shake.start(); }
-			m_services->ticker.freeze_frame(0.7f, 1.f);
+			m_services->ticker.freeze_frame(3.5f, 4.f);
 		} else {
-			m_services->ticker.freeze_frame(0.5f, 1.f);
+			m_services->ticker.freeze_frame(2.5f, 4.f);
 		}
+		if (m_map) {
+			m_map.value()->sound_impact();
+			m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
+			// m_map.value()->spawn_effect(*m_services, "hurt_spark", hurtbox.get_center());
+		}
+		m_services->soundboard.play_sound("impact");
 	}
 }
 

@@ -238,6 +238,48 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "lynx_hurt_2",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "lynx_hurt_3",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "lynx_hurt_4",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "lynx_defeat",
+    "bus": "gameplay",
+    "volume": 0.7,
+    "pitch_offset": 0.0
+  },
+  {
+    "label": "enemy_impact",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "beast_hurt",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "henchman_hurt",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.15
+  },
+  {
     "label": "key_menu_shift_1",
     "bus": "gameplay",
     "volume": 1.0,

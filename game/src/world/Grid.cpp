@@ -274,7 +274,8 @@ void Grid::seed_vertex(int index) {
 	}
 	auto above = static_cast<int>(index - dimensions.x);
 	if (above >= 0) {
-		if (cells.at(static_cast<std::size_t>(above)).is_occupied()) { tile.flags.set(TileState::covered); }
+		auto const& above_cell = cells.at(static_cast<std::size_t>(above));
+		if (above_cell.is_occupied() && !above_cell.is_special() && !above_cell.is_ceiling_ramp()) { tile.flags.set(TileState::covered); }
 	}
 }
 

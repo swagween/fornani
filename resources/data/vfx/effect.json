@@ -210,6 +210,11 @@
     "framerate": 18,
     "dimensions": [16, 16]
   },
+  "hurt_spark": {
+    "frame_count": 5,
+    "framerate": 18,
+    "dimensions": [40, 40]
+  },
   "press": {
     "frame_count": 5,
     "framerate": 20,
@@ -227,6 +232,13 @@
     "frame_count": 5,
     "framerate": 16,
     "dimensions": [48, 48],
+    "x_reflection": true,
+    "y_reflection": true
+  },
+  "grass_burst": {
+    "frame_count": 5,
+    "framerate": 24,
+    "dimensions": [64, 64],
     "x_reflection": true,
     "y_reflection": true
   },

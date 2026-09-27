@@ -149,7 +149,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_pressed->control) { restart_trial(levelpath); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
 					auto view = services.window->get_view();
-					view.zoom(0.5f);
+					view.zoom(0.95f);
 					services.window->get().setView(view);
 					m_zooming = !m_zooming;
 				}

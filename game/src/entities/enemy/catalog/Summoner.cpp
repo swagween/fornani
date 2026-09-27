@@ -39,7 +39,6 @@ Summoner::Summoner(automa::ServiceProvider& svc, world::Map& map, int variant)
 }
 
 void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-	if (just_died()) { m_services->soundboard.play_sound("summoner_death", get_collider().get_center()); }
 
 	m_cooldowns.post_summon.update();
 	m_cooldowns.post_hurt.update();
@@ -108,14 +107,6 @@ void Summoner::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	}
 
 	if (incoming_projectile.und != UND::neutral) { request(SummonerState::vertical_pulse); }
-
-	// hurt
-	if (flags.state.test(StateFlags::hurt)) {
-		if (!hurt_effect.running()) { hurt_effect.start(128); }
-		if (!m_cooldowns.post_hurt.running()) { random::percent_chance(50) ? m_services->soundboard.flags.summoner.set(audio::Summoner::hurt_1) : m_services->soundboard.flags.summoner.set(audio::Summoner::hurt_2); }
-		m_cooldowns.post_hurt.start();
-		flags.state.reset(StateFlags::hurt);
-	}
 
 	// gameplay logic
 	if (get_collider().get_center().x < m_home.x || get_collider().get_center().x > m_home.y) {

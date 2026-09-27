@@ -2,6 +2,7 @@
 #pragma once
 
 #include <editor/util/Constants.hpp>
+#include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <cmath>
 #include <optional>
@@ -45,6 +46,7 @@ class Tool : public fornani::UniquePolymorphic {
 	[[nodiscard]] auto scaled_position() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::floor(position.x / 32.f)), static_cast<std::uint32_t>(std::floor(position.y / 32.f))}; }
 	[[nodiscard]] auto scaled_position_ceiling() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::ceil(position.x / 32.f)), static_cast<std::uint32_t>(std::ceil(position.y / 32.f))}; }
 	[[nodiscard]] auto f_scaled_position() const -> sf::Vector2f { return {static_cast<float>(scaled_position().x), static_cast<float>(scaled_position().y)}; }
+	[[nodiscard]] auto f_scaled_position(float scale) const -> sf::Vector2f { return sf::Vector2f{sf::Vector2<std::uint32_t>{sf::Vector2f{std::floor(position.x), std::floor(position.y)} / scale}}; }
 	[[nodiscard]] auto scaled_clicked_position() const -> sf::Vector2<std::uint32_t> { return {static_cast<std::uint32_t>(std::floor(clicked_position.x / 32.f)), static_cast<std::uint32_t>(std::floor(clicked_position.y / 32.f))}; }
 	[[nodiscard]] auto get_window_position() const -> sf::Vector2f { return window_position; }
 	[[nodiscard]] auto get_window_position_scaled() const -> sf::Vector2f { return window_position / 32.f; }

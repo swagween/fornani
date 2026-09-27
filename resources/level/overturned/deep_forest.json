@@ -77,6 +77,21 @@
         "tag": "growth"
       },
       {
+        "channel": 2,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          54,
+          79
+        ],
+        "tag": "growth"
+      },
+      {
         "channel": 1,
         "depth": 0,
         "dimensions": [
@@ -86,8 +101,38 @@
         "foreground": false,
         "id": 0,
         "position": [
-          49,
-          22
+          54,
+          67
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 3,
+        "depth": 0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          50,
+          70
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": 0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          48,
+          69
         ],
         "tag": "growth"
       }
@@ -52817,7 +52862,7 @@
         0,
         0,
         200,
-        0,
+        169,
         0,
         0,
         0,

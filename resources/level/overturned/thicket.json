@@ -3,6 +3,7 @@
     "ambient_props": [
       {
         "channel": 1,
+        "depth": 0,
         "dimensions": [
           1,
           1

@@ -519,5 +519,26 @@
         "parallax": 0.72
       }
     ]
+  },
+  "grove": {
+    "dimensions": [480, 256],
+    "layers": [
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.0
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.1
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.86
+      },
+      {
+        "scroll_speed": 0.0,
+        "parallax": 0.92
+      }
+    ]
   }
 }

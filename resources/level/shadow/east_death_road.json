@@ -181,6 +181,23 @@
           0
         ],
         "source_id": 1700
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 1708,
+        "dimensions": [
+          4,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          77,
+          47
+        ],
+        "source_id": 1700
       }
     ]
   },

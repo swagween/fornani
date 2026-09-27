@@ -8,14 +8,14 @@
 
 namespace fornani::shape {
 
-constexpr auto slidebox_height_v = 8.f;
+constexpr auto slidebox_height_v = 10.f;
 constexpr auto headbox_height_v = 6.f;
 
 Collider::Collider() : ICollider{{default_dim, default_dim}}, m_ricochet{20} {
 	dimensions = sf::Vector2f{default_dim, default_dim};
 	headbox.set_dimensions(sf::Vector2f(dimensions.x, headbox_height_v));
 	jumpbox.set_dimensions(sf::Vector2f(dimensions.x, default_jumpbox_height));
-	slidebox.set_dimensions(sf::Vector2f(dimensions.x, slidebox_height_v));
+	slidebox.set_dimensions(sf::Vector2f(dimensions.x + 2.f, slidebox_height_v));
 	hurtbox.set_dimensions(sf::Vector2f(dimensions.x - 8.f, dimensions.y - 8.f));
 	sync_components();
 }
@@ -24,7 +24,7 @@ Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : ICollider{dim}, 
 	bounding_box.set_dimensions(dim);
 	headbox.set_dimensions(sf::Vector2f(dim.x, headbox_height_v));
 	jumpbox.set_dimensions(sf::Vector2f(dim.x, default_jumpbox_height));
-	slidebox.set_dimensions(sf::Vector2f(dim.x, slidebox_height_v));
+	slidebox.set_dimensions(sf::Vector2f(dim.x + 2.f, slidebox_height_v));
 	hurtbox.set_dimensions(sf::Vector2f(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y));
 	sync_components();
 }
@@ -48,7 +48,7 @@ void Collider::sync_components() {
 	predictive_combined.set_position(sf::Vector2f{physics.position.x + physics.apparent_velocity().x, physics.position.y + physics.apparent_velocity().y});
 	headbox.set_position(sf::Vector2f{physics.position.x, physics.position.y - headbox_height_v});
 	jumpbox.set_position(sf::Vector2f{physics.position.x, physics.position.y + dimensions.y});
-	slidebox.set_position(sf::Vector2f{physics.position.x, physics.position.y + dimensions.y});
+	slidebox.set_position(sf::Vector2f{physics.position.x - 1.f, physics.position.y + dimensions.y - 2.f});
 	hurtbox.set_position(sf::Vector2f(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.get_dimensions().x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.get_dimensions().y * 0.5f) - (hurtbox_offset.y * 0.5f)));
 	vertical.set_position(sf::Vector2f{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
 	horizontal.set_position(sf::Vector2f{physics.position.x + depth_buffer, physics.position.y + dimensions.y * 0.5f - 0.5f});
@@ -96,6 +96,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 
 	// let's first settle all actual block collisions
 	auto is_on_ramp = slidebox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp();
+	auto const skip_the_corner = tile.ramp_adjacent();
 	if (!is_ramp) {
 		if (collision_depths) {
 			collision_depths.value().calculate(*this, cell);
@@ -125,7 +126,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			correct_y(mtvs.combined);
 			sync_components();
 		}
-		auto skip_the_corner = tile.ramp_adjacent();
 		if (predictive_horizontal.SAT(cell) && !skip_the_corner && !vert) {
 			mtvs.horizontal.x > 0.f ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision);
 			flags.dash.set(Dash::dash_cancel_collision);
@@ -185,6 +185,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, positive_input); }
 			if (!has_flag_set(ColliderFlags::submerged) || has_flag_set(ColliderFlags::sink)) {
 				physics.position.y = cell.get_position().y + cell.get_dimensions().y - maximum_ramp_height - dimensions.y;
+				set_flag(ColliderFlags::on_ramp);
 			} else if (jumpbox.SAT(cell)) {
 				physics.velocity.y += -2.1f;
 			}
@@ -240,6 +241,7 @@ void Collider::detect_map_collision(world::Map& map) {
 	flags.external_state.reset(ExternalState::tile_debug_flag);
 	flags.perma_state = {};
 	flags.state.reset(State::tickwise_ramp_collision);
+	set_flag(ColliderFlags::on_ramp, false);
 
 	auto& grid = map.get_middleground()->grid;
 	auto tt = p_vicinity.vertices.at(0);
@@ -256,6 +258,8 @@ void Collider::detect_map_collision(world::Map& map) {
 			if (index >= grid.cells.size() || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable()) { continue; }
+			// if (has_flag_set(ColliderFlags::on_ramp) && !cell.is_ramp()) { continue; }
+			if (cell.ramp_adjacent() && cell.covered()) { continue; }
 			cell.collision_check = true;
 			handle_map_collision(cell);
 		}

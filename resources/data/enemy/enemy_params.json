@@ -144,20 +144,20 @@
   "eyebot": {
     "metadata": {
       "name": "Eyebot",
-      "id": 2,
+      "id": 4,
       "variant": "beast"
     },
     "physical": {
+      "size": 3,
       "dimensions": [48, 48],
-      "sprite_dimensions": [64, 64],
-      "spritesheet_dimensions": [3, 2],
+      "sprite_dimensions": [32, 32],
       "offset": [16, 16],
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [600.0, 600.0],
       "hostile_range": [500.0, 500.0],
       "friction": 0.98,
-      "gravity": 0.0
+      "gravity": 0.1
     },
     "visual": {
       "effect_type": 2,
@@ -176,10 +176,6 @@
       "permadeath": false,
       "team": 1
     },
-    "animation": {
-      "duration": 2,
-      "framerate": 20
-    },
     "general": {
       "mobile": true,
       "gravity": false,
@@ -193,7 +189,7 @@
   "eyebit": {
     "metadata": {
       "name": "Eyebit",
-      "id": 3,
+      "id": 5,
       "variant": "beast"
     },
     "physical": {
@@ -464,6 +460,7 @@
       "hit": -1
     },
     "attributes": {
+      "size": 0,
       "base_hp": 6,
       "base_damage": 0.0,
       "speed": 0.9,
@@ -510,9 +507,11 @@
       "hit_effect": "green_blood"
     },
     "audio": {
-      "hit": -1
+      "hurt_sounds": ["beast_hurt"],
+      "death_sounds": ["beast_growl"]
     },
     "attributes": {
+      "size": 3,
       "base_hp": 108,
       "base_damage": 0.0,
       "speed": 0.9,
@@ -561,6 +560,7 @@
       "hit": -1
     },
     "attributes": {
+      "size": 4,
       "base_hp": 164,
       "base_damage": 4.0,
       "speed": 0.9,
@@ -606,6 +606,7 @@
       "hit": -1
     },
     "attributes": {
+      "size": 1,
       "base_hp": 40,
       "base_damage": 4.0,
       "speed": 0.5,
@@ -648,9 +649,10 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": -1
+      "custom_sounds": true
     },
     "attributes": {
+      "size": 4,
       "base_hp": 900,
       "base_damage": 4.0,
       "speed": 0.5,
@@ -689,12 +691,18 @@
     },
     "visual": {
       "effect_type": 0,
-      "effect_size": 1
+      "effect_size": 1,
+      "effects_overlay": {
+        "dimensions": [96, 62],
+        "offset": [0, 0]
+      }
     },
     "audio": {
-      "hit": -1
+      "hurt_sounds": ["lynx_hurt_1", "lynx_hurt_2", "lynx_hurt_3", "lynx_hurt_4"],
+      "death_sounds": ["lynx_defeat"]
     },
     "attributes": {
+      "size": 2,
       "base_hp": 1300,
       "base_damage": 4.0,
       "speed": 2.5,
@@ -736,9 +744,11 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": -1
+      "hurt_sounds": ["summoner_hurt_1", "summoner_hurt_2"],
+      "death_sounds": ["summoner_death"]
     },
     "attributes": {
+      "size": 2,
       "base_hp": 210,
       "base_damage": 4.0,
       "speed": 2.5,
@@ -1090,7 +1100,7 @@
       "hit_effect": "green_blood"
     },
     "audio": {
-      "hit": -1
+      "hurt_sounds": ["beast_hurt"]
     },
     "attributes": {
       "base_hp": 60,
@@ -2248,6 +2258,69 @@
           "tag": "brinium",
           "chance": 0.1,
           "mythic": true
+        }
+      ]
+    }
+  },
+  "henchman": {
+    "metadata": {
+      "name": "Henchman",
+      "id": 45,
+      "variant": "skycorps"
+    },
+    "physical": {
+      "dimensions": [160, 160],
+      "sprite_dimensions": [176, 176],
+      "offset": [0, -93],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [800.0, 800.0],
+      "hostile_range": [500.0, 500.0],
+      "friction": 0.99,
+      "gravity": 32.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1,
+      "effects_overlay": {
+        "dimensions": [379, 176],
+        "offset": [0, 0]
+      }
+    },
+    "audio": {
+      "hurt_sounds": ["henchman_hurt_1"],
+      "death_sounds": ["downward"]
+    },
+    "attributes": {
+      "size": 4,
+      "base_hp": 1000,
+      "base_damage": 4.0,
+      "speed": 2.5,
+      "loot_multiplier": 10.0,
+      "drop_range": [45, 50],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": true,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": true,
+      "secobndary_collider": true,
+      "crusher": true,
+      "sturdy": true,
+      "foreground": true,
+      "rare_drops": true
+    },
+    "treasure": {
+      "chance": 1.0,
+      "items": [
+        {
+          "tag": "athletic_band",
+          "chance": 1.0,
+          "mythic": false
         }
       ]
     }

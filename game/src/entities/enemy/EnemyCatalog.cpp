@@ -2,6 +2,7 @@
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
 #include <fornani/entities/enemy/boss/GrandMastiff.hpp>
 #include <fornani/entities/enemy/boss/Haunch.hpp>
+#include <fornani/entities/enemy/boss/Henchman.hpp>
 #include <fornani/entities/enemy/boss/Lynx.hpp>
 #include <fornani/entities/enemy/boss/Miaag.hpp>
 #include <fornani/entities/enemy/boss/Minigus.hpp>
@@ -92,6 +93,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(42, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Brovle>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(43, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Buzzle>(svc, map); });
 	EnemyRegistry::register_factory(44, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Demolisher>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(45, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Henchman>(svc, map); });
 }
 
 void EnemyCatalog::update() {

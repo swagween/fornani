@@ -1,5 +1,37 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 0,
+        "depth": 0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          33,
+          2
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": 0.6000000238418579,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          39,
+          7
+        ],
+        "tag": "large_vines"
+      }
+    ],
     "chests": [
       {
         "dimensions": [
@@ -297,6 +329,19 @@
           9,
           33
         ]
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": true,
+        "id": 0,
+        "length": 8,
+        "position": [
+          38,
+          2
+        ]
       }
     ],
     "water": [
@@ -392,7 +437,7 @@
       false
     ],
     "flags": {
-      "obscuring": false,
+      "obscuring": true,
       "reverse_obscuring": false
     },
     "ignore_lighting": [

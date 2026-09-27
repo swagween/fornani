@@ -1,5 +1,277 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 0,
+        "depth": -0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          23,
+          3
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": 0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          39,
+          6
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 2,
+        "depth": -0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          11,
+          3
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": 0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          29,
+          32
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 2,
+        "depth": 0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          40,
+          26
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 0,
+        "depth": -0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          33,
+          26
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 3,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          67,
+          12
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          72,
+          12
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          64,
+          10
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": -0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          66,
+          12
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          59,
+          46
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          106,
+          9
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          104,
+          17
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": -0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          108,
+          8
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          86,
+          26
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          56,
+          47
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          23,
+          13
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 3,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          68,
+          42
+        ],
+        "tag": "growth"
+      }
+    ],
     "chests": [
       {
         "dimensions": [
@@ -30251,8 +30523,8 @@
         0,
         0,
         0,
-        0,
-        0,
+        503,
+        503,
         0,
         150,
         96,
@@ -30363,8 +30635,8 @@
         0,
         0,
         0,
-        150,
-        166,
+        503,
+        503,
         0,
         462,
         463,
@@ -31798,8 +32070,8 @@
         0,
         0,
         0,
-        503,
-        503,
+        0,
+        0,
         503,
         0,
         0,
@@ -31910,7 +32182,7 @@
         0,
         0,
         0,
-        503,
+        0,
         503,
         503,
         0,
@@ -36971,7 +37243,7 @@
         0,
         0,
         0,
-        0,
+        119,
         0,
         0,
         0,
@@ -37083,7 +37355,7 @@
         0,
         0,
         0,
-        0,
+        167,
         0,
         0,
         0,
@@ -37309,8 +37581,8 @@
         0,
         0,
         183,
-        0,
-        0,
+        96,
+        132,
         0,
         0,
         0,
@@ -37420,10 +37692,10 @@
         0,
         0,
         0,
-        0,
-        147,
-        164,
-        0,
+        119,
+        96,
+        96,
+        120,
         0,
         0,
         0,
@@ -37532,6 +37804,10 @@
         0,
         0,
         0,
+        135,
+        96,
+        96,
+        168,
         0,
         0,
         0,
@@ -37640,13 +37916,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        151,
+        116,
+        146,
         0,
         0,
         0,
@@ -44591,7 +44863,7 @@
         0,
         0,
         0,
-        163,
+        0,
         0,
         0,
         0,

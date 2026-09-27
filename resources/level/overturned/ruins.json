@@ -1,5 +1,37 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 2,
+        "depth": -0.699999988079071,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          7,
+          21
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 3,
+        "depth": 0.8999999761581421,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          22,
+          13
+        ],
+        "tag": "large_vines"
+      }
+    ],
     "chests": [
       {
         "dimensions": [

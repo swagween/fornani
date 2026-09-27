@@ -86,7 +86,7 @@
 namespace fornani::world {
 
 Map::Map(automa::ServiceProvider& svc, player::Player& player)
-	: player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}, .enter_from_bottom{180}}, m_flat_shader{svc.finder} {}
+	: player(&player), enemy_catalog(svc), m_services(&svc), cooldowns{.fade_obscured{util::Cooldown(128)}, .loading{util::Cooldown(24)}, .enter_from_bottom{60}}, m_flat_shader{svc.finder} {}
 
 Map::~Map() {
 	m_destroying = true;
@@ -400,7 +400,10 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	update_balance(svc);
 
 	// entry
-	if (cooldowns.enter_from_bottom.running()) { player->get_collider().physics.acceleration.x = player::sprint_speed_v * player->get_actual_direction().as_float(); }
+	auto const erc = cooldowns.enter_from_bottom.get_normalized();
+	auto const lh = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::left);
+	auto const rh = svc.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::right);
+	if (erc < 0.5f && erc > 0.1f && !lh && !rh) { player->apply_impulse({0.35f * player->get_actual_direction().as_float(), 0.f}); }
 	cooldowns.enter_from_bottom.update();
 
 	// weather
@@ -571,9 +574,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto a : get_entities<Animator>()) {
 			if (!a->is_foreground()) { a->render(m_entity_texture, cam); }
 		}
-		for (auto a : get_entities<AmbientProp>()) {
-			if (!a->is_in_front()) { a->flat_shade(win, cam, m_flat_shader); }
-		}
+
 		for (auto s : get_entities<SavePoint>()) { s->submit(renderer); }
 		renderer.flush();
 
@@ -660,7 +661,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		}
 		if (i == m_middleground) {
 			for (auto n : get_entities<AmbientProp>()) {
-				if (n->is_foreground()) { n->render(win, cam, 1.f); }
+				if (n->is_foreground()) { n->is_light_shaded() ? n->render(m_entity_texture, cam) : n->render(win, cam, 1.f); }
 			}
 		}
 	}
@@ -710,10 +711,12 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 0); }
 
-	for (auto a : get_entities<AmbientProp>()) {
-		if (a->is_in_front()) { a->flat_shade(win, cam, m_flat_shader); }
+	auto const& props = get_entities<AmbientProp>();
+	auto render_order = std::views::iota(std::size_t{0}, props.size()) | std::ranges::to<std::vector>();
+	std::ranges::sort(render_order, {}, [props](auto index) { return props[index]->get_depth(); });
+	for (auto const index : render_order) {
+		if (props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
 	}
-
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
 	if (debug::is_debug()) {
@@ -756,12 +759,21 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
+
+		// ambient props
+		auto const& props = get_entities<AmbientProp>();
+		auto render_order = std::views::iota(std::size_t{0}, props.size()) | std::ranges::to<std::vector>();
+		std::ranges::sort(render_order, {}, [props](auto index) { return props[index]->get_depth(); });
+		for (auto const index : render_order) {
+			if (!props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
+		}
+
 		for (auto [i, layer] : std::views::enumerate(get_layers())) {
 			if (i == 1) {
 				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
 				if (m_entities) {
 					for (auto n : get_entities<AmbientProp>()) {
-						if (!n->is_foreground()) { n->render(win, cam, 1.f); }
+						if (!n->is_foreground()) { n->is_light_shaded() ? n->render(m_entity_texture, cam) : n->render(win, cam, 1.f); }
 					}
 					for (auto n : get_entities<NPC>()) {
 						n->render_props(win, cam, DrawOrder::back);
@@ -987,8 +999,14 @@ void Map::generate_collidable_layer(bool live) {
 	m_static_entity_texture.display();
 }
 
-void Map::generate_layer_textures(automa::ServiceProvider& svc) const {
-	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(svc.assets.get_tileset(std::string{get_biome_string()}), m_attributes.properties.test(MapProperties::day_night_shift)); }
+void Map::generate_layer_textures(automa::ServiceProvider& svc) {
+	auto const& texture = svc.assets.get_tileset(std::string{get_biome_string()});
+	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(texture, m_attributes.properties.test(MapProperties::day_night_shift)); }
+	m_tileset_image = texture.copyToImage();
+	auto const size = texture.getSize();
+
+	NANI_LOG_INFO(m_logger, "Tileset size: {}x{}", size.x, size.y);
+	NANI_LOG_INFO(m_logger, "Image size: {}x{}", m_tileset_image.getSize().x, m_tileset_image.getSize().y);
 }
 
 void Map::register_collider(std::unique_ptr<shape::ICollider> collider) {
@@ -1231,6 +1249,14 @@ void Map::wrap(sf::Vector2f& position) const {
 	if (position.y > real_dimensions.y) { position.y = 0.f; }
 }
 
+void Map::set_balance(float const to, audio::BalanceTarget const target) {
+	switch (target) {
+	case audio::BalanceTarget::music: music_balance.set(to); break;
+	case audio::BalanceTarget::ambience: ambience_balance.set(to); break;
+	default: break;
+	}
+}
+
 void Map::set_target_balance(float const to, audio::BalanceTarget const target) {
 	switch (target) {
 	case audio::BalanceTarget::music: music_balance.set_target(to); break;
@@ -1365,6 +1391,36 @@ auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f
 
 auto Map::get_random_home_point() const -> sf::Vector2f { return random::random_element(home_points); }
 
+auto Map::get_actual_tile_color(int index) const -> sf::Color {
+	auto const cycle = m_services->world_clock.as_trio();
+	auto const from_cycle = m_services->world_clock.get_previous_as_trio();
+
+	auto const current = get_tile_color(cycle, index);
+
+	if (!m_services->world_clock.is_transitioning()) { return current; }
+
+	auto const previous = get_tile_color(from_cycle, index);
+	auto const transition = m_services->world_clock.get_transition();
+
+	if (from_cycle <= cycle) { return color_lerp(current, previous, transition); }
+
+	return color_lerp(current, previous, transition);
+}
+
+auto Map::get_tile_color(int tod, int index) const -> sf::Color {
+	if (!m_attributes.properties.test(MapProperties::day_night_shift)) { tod = 0; }
+	tod = std::clamp(tod, 0, 2);
+	auto constexpr tiles_per_row = constants::tileset_dimensions.x;
+
+	auto const tile_x = index % tiles_per_row;
+	auto const tile_y = index / tiles_per_row;
+
+	auto const x = static_cast<unsigned>(tile_x * constants::i_cell_resolution + tod * 256);
+	auto const y = static_cast<unsigned>(tile_y * constants::i_cell_resolution);
+
+	return m_tileset_image.getPixel({x, y});
+}
+
 auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && !is_interior()) || has_property(MapProperties::toxic); }
 
 auto Map::get_ambience_balance() const -> float { return ambience_balance.get(); }
@@ -1443,6 +1499,15 @@ void Map::update_balance(automa::ServiceProvider& svc) {
 	} else {
 		set_target_balance(1.f, audio::BalanceTarget::ambience);
 	}
+}
+
+void Map::sound_impact() {
+	set_balance(0.f, audio::BalanceTarget::music);
+	set_balance(0.f, audio::BalanceTarget::ambience);
+	update_balance(*m_services);
+	m_services->ambience_player.set_balance(0.f);
+	m_services->music_player.set_balance(1.f);
+	m_services->music_player.update();
 }
 
 } // namespace fornani::world

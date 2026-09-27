@@ -1,5 +1,22 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 2,
+        "depth": -0.800000011920929,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          16,
+          12
+        ],
+        "tag": "large_vines"
+      }
+    ],
     "enemies": [
       {
         "dimensions": [

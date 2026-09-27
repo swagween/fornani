@@ -132,6 +132,10 @@ void EntityEditor::handle_keyboard_events(Canvas& canvas, sf::Keyboard::Scancode
 void EntityEditor::render(Canvas& canvas, sf::RenderWindow& win, sf::Vector2f offset) {
 	if (!canvas.editable()) { return; }
 	if (!current_entity) { return; }
+	if (current_entity.value()->get_label() == "ambient_props") {
+		current_entity.value()->set_grid_position(scaled_position());
+		current_entity.value()->render(win, offset, canvas.f_cell_size());
+	}
 
 	if (!disable_highlight) {
 		sf::RectangleShape box{};

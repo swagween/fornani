@@ -248,7 +248,6 @@ class Enemy : public Mobile {
 	} visual;
 
 	struct {
-		audio::Enemy hit_flag{};
 		util::Cooldown hurt_sound_cooldown{24};
 	} sound{};
 

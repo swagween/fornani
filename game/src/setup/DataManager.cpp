@@ -246,6 +246,13 @@ void DataManager::save_quests() {
 	save_current();
 }
 
+void DataManager::increment_boss_victory(std::string_view label) {
+	auto& save = files.at(current_save).save_data;
+	auto current = save["boss_victories"]["label"]["count"].as<int>();
+	save["boss_victories"]["label"]["count"] = ++current;
+	save_current();
+}
+
 void DataManager::save_dialogue_quests() {
 	auto& save = files.at(current_save).save_data;
 	m_services->quest_table.serialize_dialogue(save);
@@ -708,6 +715,11 @@ auto DataManager::get_enemy_label_from_id(int id) const -> std::optional<std::st
 		if (entry["metadata"]["id"].as<int>() == id) { return key; }
 	}
 	return std::nullopt;
+}
+
+auto DataManager::get_number_of_boss_victories(std::string_view label) const -> int {
+	auto const& save = files.at(current_save).save_data;
+	return save["boss_victories"]["label"]["count"].as<int>();
 }
 
 int DataManager::get_room_index(int id) {

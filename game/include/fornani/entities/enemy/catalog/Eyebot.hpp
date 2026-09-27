@@ -8,7 +8,7 @@ namespace fornani::enemy {
 
 enum class EyebotState : std::uint8_t { idle, turn };
 
-class Eyebot final : public Enemy {
+class Eyebot final : public Enemy, StateMachine<EyebotState> {
 
   public:
 	explicit Eyebot(automa::ServiceProvider& svc, world::Map& map);
@@ -19,14 +19,10 @@ class Eyebot final : public Enemy {
 	fsm::StateFunction update_turn();
 
   private:
-	util::BitFlags<EyebotState> state{};
+	bool change_state(EyebotState next, anim::Parameters params);
 
-	// packages
-	util::Cooldown seeker_cooldown{};
-
-	// lookup, duration, framerate, num_loops
-	anim::Parameters idle{0, 4, 28, -1};
-	anim::Parameters turn{4, 1, 38, 0};
+  private:
+	components::SteeringBehavior m_steering{};
 };
 
 } // namespace fornani::enemy

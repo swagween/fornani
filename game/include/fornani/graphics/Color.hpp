@@ -36,4 +36,40 @@ static inline sf::Color gradient_color(std::span<sf::Color const> colors, float 
 	return color_lerp(colors[left], colors[right], t);
 }
 
+template <typename T>
+static inline sf::Color gradient_color(std::span<T const> colors, float alpha) {
+	assert(!colors.empty());
+
+	alpha = std::clamp(alpha, 0.0f, 1.0f);
+
+	if (colors.size() == 1) { return colors.front(); }
+
+	float const position = alpha * (colors.size() - 1);
+
+	auto const left = static_cast<std::size_t>(std::floor(position));
+	auto const right = std::min(left + 1, colors.size() - 1);
+
+	float const t = position - left;
+
+	return color_lerp(colors[left], colors[right], t);
+}
+
+template <typename T, typename F>
+static inline sf::Color gradient_color(std::span<T const> colors, float alpha, F&& get_color) {
+	assert(!colors.empty());
+
+	alpha = std::clamp(alpha, 0.0f, 1.0f);
+
+	if (colors.size() == 1) { return get_color(colors.front()); }
+
+	float const position = alpha * (colors.size() - 1);
+
+	auto const left = static_cast<std::size_t>(std::floor(position));
+	auto const right = std::min(left + 1, colors.size() - 1);
+
+	float const t = position - left;
+
+	return color_lerp(get_color(colors[left]), get_color(colors[right]), t);
+}
+
 } // namespace fornani

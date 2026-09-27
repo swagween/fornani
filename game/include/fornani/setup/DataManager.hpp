@@ -59,6 +59,7 @@ class DataManager final {
 	void load_game_data(ResourceFinder& finder);
 	void save_progress(player::Player& player, int save_point_id);
 	void save_quests();
+	void increment_boss_victory(std::string_view label);
 	void save_dialogue_quests();
 	void save_seed();
 	void save_current();
@@ -129,6 +130,7 @@ class DataManager final {
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] std::unordered_map<std::string, int> const& loot_register() const noexcept { return m_loot; }
 	[[nodiscard]] Register<EnemyRecord> const& get_bestiary() const noexcept { return m_bestiary; }
+	[[nodiscard]] auto get_number_of_boss_victories(std::string_view label) const -> int;
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);

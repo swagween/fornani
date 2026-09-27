@@ -8,63 +8,59 @@
 namespace fornani::enemy {
 
 Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, "eyebot") {
-	p_animatable.animation.set_params(idle);
-	seeker_cooldown.start(2);
+	p_animatable.set_animations({{"idle", {0, 4, 32, -1}}, {"turn", {4, 1, 32, 0}}});
+	p_animatable.animation.set_params(get_params("idle"));
+	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable
+	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
+	get_collider().physics.set_friction_componentwise({0.98f, 0.98f});
 }
 
 void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
-
 	if (just_died()) {
 		for (int i{0}; i < 3; ++i) {
 			auto const randx = random::random_range_float(-60.f, 60.f);
 			auto const randy = random::random_range_float(-60.f, 60.f);
-			sf::Vector2 const rand_vec{randx, randy};
+			sf::Vector2f const rand_vec{randx, randy};
 			sf::Vector2f const spawn = get_collider().physics.position + rand_vec;
 			map.spawn_enemy(5, spawn);
 		}
 	}
+	Enemy::update(svc, map, player);
+	if (died()) { return; }
 
-	if (died()) {
-		update(svc, map, player);
-		return;
-	}
-	seeker_cooldown.update();
-	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable
+	face_player(player);
+
+	auto force = is_hostile() ? 0.0002f : 0.0001f;
+	m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
 
 	// reset animation states to determine next animation state
-	directions.desired.lnr = (player.get_collider().physics.position.x < get_collider().physics.position.x) ? LNR::left : LNR::right;
+	if (directions.actual.lnr != directions.desired.lnr) { request(EyebotState::turn); }
 
 	state_function = state_function();
-
-	if (player.get_collider().bounding_box.overlaps(physical.alert_range)) { get_collider().sync_components(); }
-
-	Enemy::update(svc, map, player);
 }
 
 fsm::StateFunction Eyebot::update_idle() {
-	p_animatable.animation.label = "idle";
-	if (state.test(EyebotState::turn)) {
-		state.reset(EyebotState::idle);
-		p_animatable.animation.set_params(turn);
-		return EYEBOT_BIND(update_turn);
-	}
-	state = {};
-	state.set(EyebotState::idle);
-	return std::move(state_function);
+	p_state.actual = EyebotState::idle;
+	if (change_state(EyebotState::turn, get_params("turn"))) { return EYEBOT_BIND(update_turn); }
+	return EYEBOT_BIND(update_idle);
 };
 
 fsm::StateFunction Eyebot::update_turn() {
-	p_animatable.animation.label = "turn";
-	if (p_animatable.animation.complete()) {
-		p_animatable.flip();
-		state = {};
-		state.set(EyebotState::idle);
-		p_animatable.animation.set_params(idle);
-		return EYEBOT_BIND(update_idle);
+	p_state.actual = EyebotState::turn;
+	if (p_animatable.animation.is_complete()) {
+		request_flip();
+		request(EyebotState::idle);
+		if (change_state(EyebotState::idle, get_params("idle"))) { return EYEBOT_BIND(update_idle); }
 	}
-	state = {};
-	state.set(EyebotState::turn);
 	return EYEBOT_BIND(update_turn);
+}
+
+bool Eyebot::change_state(EyebotState next, anim::Parameters params) {
+	if (p_state.desired == next) {
+		p_animatable.animation.set_params(params);
+		return true;
+	}
+	return false;
 };
 
 } // namespace fornani::enemy

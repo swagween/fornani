@@ -128,7 +128,7 @@ class Map {
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
-	void generate_layer_textures(automa::ServiceProvider& svc) const;
+	void generate_layer_textures(automa::ServiceProvider& svc);
 
 	void register_collider(std::unique_ptr<shape::ICollider> collider);
 	void unregister_collider(shape::ICollider* collider);
@@ -149,7 +149,9 @@ class Map {
 	void clear();
 	void wrap(sf::Vector2f& position) const;
 	void set_target_balance(float const to, audio::BalanceTarget const target);
+	void set_balance(float const to, audio::BalanceTarget const target);
 	void update_balance(automa::ServiceProvider& svc);
+	void sound_impact();
 	std::vector<std::unique_ptr<world::Layer>>& get_layers();
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
@@ -194,6 +196,8 @@ class Map {
 	[[nodiscard]] auto get_music_balance() const -> float;
 	[[nodiscard]] auto get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f;
 	[[nodiscard]] auto get_random_home_point() const -> sf::Vector2f;
+	[[nodiscard]] auto get_actual_tile_color(int index) const -> sf::Color;
+	[[nodiscard]] auto get_tile_color(int cycle, int index) const -> sf::Color;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -334,6 +338,7 @@ class Map {
 	std::vector<std::unique_ptr<BrittleBlock>> brittle_blocks{};
 	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<std::unique_ptr<Pushable>> pushables{};
+	sf::Image m_tileset_image{};
 };
 
 } // namespace fornani::world

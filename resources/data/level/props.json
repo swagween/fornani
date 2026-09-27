@@ -1,5 +1,6 @@
 {
   "cattail": {
+    "category": "foliage",
     "num_frames": 9,
     "sensitivity": 0.001,
     "radius": 20.0,
@@ -7,52 +8,67 @@
     "destroy_effect": "grass_burst"
   },
   "reeds": {
+    "category": "foliage",
+    "health": 4.0,
     "num_frames": 3,
     "sensitivity": 0.001,
     "radius": 16.0,
     "dimensions": [64, 64],
     "destroy_effect": "grass_burst"
   },
+  "guts": {
+    "category": "organic",
+    "health": 4.0,
+    "num_frames": 3,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [64, 64],
+    "animation": [
+      { "label": "still", "params": { "lookup": 0, "duration": 1, "framerate": 80, "num_loops": 12 } },
+      { "label": "throb", "params": { "lookup": 1, "duration": 2, "framerate": 60, "num_loops": 0 } }
+    ]
+  },
   "growth": {
+    "category": "foliage",
+    "health": 16.0,
     "num_frames": 5,
     "sensitivity": 0.001,
     "radius": 60.0,
     "dimensions": [96, 96],
     "destroy_effect": "grass_burst",
     "color_shift": {
-      "hues": [
-        [61, 48, 82],
-        [12, 12, 20]
-      ],
+      "hues": [{ "tile": 45 }, { "color": [12, 12, 20] }],
       "range": [-1.0, 0]
     }
   },
   "large_vines": {
+    "category": "foliage",
     "num_frames": 1,
     "sensitivity": 0.0,
+    "depth_multiplier": 0.2,
     "radius": 60.0,
     "dimensions": [256, 400],
     "color_shift": {
-      "hues": [
-        [61, 48, 82],
-        [12, 12, 20]
-      ],
+      "hues": [{ "tile": 45 }, { "color": [12, 12, 20] }],
       "range": [-1.0, 0]
     }
   },
   "pink_flower": {
+    "category": "foliage",
     "num_frames": 5,
     "sensitivity": 0.001,
     "radius": 16.0,
     "dimensions": [64, 64]
   },
   "orange_flower": {
+    "category": "foliage",
     "num_frames": 5,
     "sensitivity": 0.001,
     "radius": 16.0,
     "dimensions": [64, 64]
   },
   "pioneer_base": {
+    "category": "landmark",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,
@@ -60,6 +76,7 @@
     "offset": [-11.0, -9.0]
   },
   "totaled_championj5": {
+    "category": "vehicle",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,
@@ -68,6 +85,7 @@
     "emitter": { "tag": "smoke", "frequency": 180, "offset": [0.0, -32.0] }
   },
   "exhaust_pipe": {
+    "category": "structure",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,
@@ -76,6 +94,7 @@
     "emitter": { "tag": "exhaust", "frequency": 100, "offset": [0.0, -16.0] }
   },
   "drill": {
+    "category": "structure",
     "num_frames": 6,
     "framerate": 80,
     "sensitivity": 0.0,
@@ -85,6 +104,7 @@
     "emitter": { "tag": "exhaust", "frequency": 140, "offset": [64.0, -16.0] }
   },
   "championj5": {
+    "category": "vehicle",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,
@@ -92,6 +112,7 @@
     "offset": [22.0, -18.0]
   },
   "nephridiopore": {
+    "category": "organic",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,
@@ -99,6 +120,7 @@
     "offset": [48.0, 16.0]
   },
   "worm_back": {
+    "category": "landmark",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,
@@ -106,6 +128,7 @@
     "offset": [16.0, 16.0]
   },
   "worm_front": {
+    "category": "landmark",
     "num_frames": 1,
     "sensitivity": 0.0,
     "radius": 16.0,

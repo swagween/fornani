@@ -1,6 +1,7 @@
 
 #pragma once
 
+#include <djson/json.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -22,6 +23,7 @@ struct Parameters {
 	bool repeat_last_frame{};
 	bool interruptible{};
 	std::optional<std::string> target{};
+	static auto from_json(dj::Json const& in) -> Parameters;
 };
 
 enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete, inverted };

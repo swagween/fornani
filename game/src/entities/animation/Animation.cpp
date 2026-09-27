@@ -93,4 +93,14 @@ int Animation::get_frame() const { return frame.canceled() ? params.lookup : par
 
 auto Animation::is_first_loop() const -> bool { return global_counter.get_count() < params.duration * params.framerate; }
 
+auto Parameters::from_json(dj::Json const& in) -> Parameters {
+	Parameters ret{};
+	ret.lookup = in["lookup"].as<int>();
+	ret.duration = in["duration"].as<int>();
+	ret.framerate = in["framerate"].as<int>();
+	ret.num_loops = in["num_loops"].as<int>();
+	ret.repeat_last_frame = in["repeat_last_frame"].as_bool();
+	return ret;
+}
+
 } // namespace fornani::anim

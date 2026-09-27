@@ -3,6 +3,7 @@
     "ambient_props": [
       {
         "channel": 0,
+        "depth": 0,
         "dimensions": [
           1,
           1
@@ -14,6 +15,231 @@
           105
         ],
         "tag": "pioneer_base"
+      },
+      {
+        "channel": 0,
+        "depth": -0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          8,
+          36
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 2,
+        "depth": 0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          8,
+          40
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": -0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          11,
+          42
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0.6000000238418579,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          10,
+          53
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": -0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          15,
+          52
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          9,
+          57
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 3,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          15,
+          43
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          54,
+          46
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          49,
+          48
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          51,
+          47
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": -0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          48,
+          41
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 2,
+        "depth": -0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          56,
+          46
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 2,
+        "depth": -1,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          33,
+          102
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          14,
+          68
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": 0.6000000238418579,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          58,
+          71
+        ],
+        "tag": "large_vines"
       }
     ],
     "chests": [
@@ -33398,8 +33624,8 @@
         468,
         469,
         479,
-        198,
-        0,
+        96,
+        182,
         0,
         0,
         0,
@@ -40504,8 +40730,8 @@
         0,
         0,
         0,
-        163,
-        0,
+        161,
+        162,
         0,
         0,
         0,
@@ -40633,7 +40859,7 @@
         0,
         0,
         0,
-        0,
+        144,
         0,
         0,
         0,

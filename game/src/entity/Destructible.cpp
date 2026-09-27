@@ -17,7 +17,7 @@ Destructible::Destructible(automa::ServiceProvider& svc, dj::Json const& in) : E
 }
 
 Destructible::Destructible(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in) : Destructible(svc, in) {
-	owned_collider.emplace(map, sf::Vector2f{constants::f_cell_vec - sf::Vector2f{2.f, 2.f}});
+	owned_collider.emplace(map, sf::Vector2f{constants::f_cell_vec - sf::Vector2f{constants::tiny_value, constants::tiny_value}});
 	collider = *owned_collider;
 	init(svc, in);
 	p_animatable.set_texture_rect(sf::IntRect{{map.get_style_id() * constants::i_cell_resolution, 0}, constants::i_resolution_vec});

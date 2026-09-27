@@ -1,5 +1,157 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 2,
+        "depth": 0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          6,
+          10
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0.30000001192092896,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          5,
+          6
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 3,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          9,
+          10
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          11,
+          10
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          21,
+          9
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          28,
+          6
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 0,
+        "depth": -0.6000000238418579,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          19,
+          10
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 2,
+        "depth": -0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          7,
+          10
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 3,
+        "depth": -0.699999988079071,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          5,
+          2
+        ],
+        "tag": "large_vines"
+      },
+      {
+        "channel": 1,
+        "depth": 0.8999999761581421,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          22,
+          3
+        ],
+        "tag": "large_vines"
+      }
+    ],
     "npcs": [
       {
         "background": false,
