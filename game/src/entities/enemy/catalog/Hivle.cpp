@@ -21,7 +21,8 @@ Hivle::Hivle(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy
 	p_state.actual = HivleState::idle;
 
 	m_variant = static_cast<HivleVariant>(variant);
-	m_javelin = entity::WeaponPackage{svc, "javelin"};
+	auto const tag = m_variant == HivleVariant::javelin_tosser ? "javelin" : "mud_ball";
+	m_javelin = entity::WeaponPackage{svc, tag};
 	m_javelin->get().set_team(arms::Team::guardian);
 
 	get_collider().physics.set_friction_componentwise({0.995f, 0.999f});

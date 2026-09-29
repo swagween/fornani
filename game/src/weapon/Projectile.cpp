@@ -68,6 +68,10 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 		metadata.explosion->volatility = in_data["explosion"]["volatility"].as<int>();
 		metadata.explosion->stun = in_data["explosion"]["stun"].as_bool();
 	}
+	if (in_data["impact"]) {
+		metadata.impact.emplace(in_data["impact"]);
+		metadata.attributes.set(ProjectileAttributes::impact);
+	}
 
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
@@ -139,9 +143,32 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (variables.state.test(arms::ProjectileState::destroyed)) { m_weapon->decrement_projectiles(); }
 }
 
+void Projectile::handle_impact(automa::ServiceProvider& svc, world::Map& map) {
+	for (auto& p : map.active_projectiles) {
+		if (&p == this) { continue; }
+		if (p.get_collider().is_very_near(get_collider())) {
+			destroy(false);
+			p.handle_successful_hit(svc, map);
+			if (metadata.impact) {
+				auto const& i = *metadata.impact;
+				auto const pos = get_collider().get_global_center();
+				map.spawn_effect(svc, i.effect, pos, {}, i.channel);
+				map.spawn_emitter(svc, i.emitter, pos, {}, {4.f, 4.f}, colors::white, i.channel);
+				if (i.result) {
+					if (i.result->block_type) {
+						auto const block_pos = pos - constants::f_cell_vec * 0.5f;
+						if (i.result->block_type.value() == "brittle") { map.brittle_blocks.push_back(std::make_unique<world::BrittleBlock>(svc, map, block_pos, map.get_chunk_id_from_position(block_pos), true)); }
+					}
+				}
+			}
+		}
+	}
+}
+
 void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map) {
 	if (!is_stuck()) { physical.collider.update(svc); }
 	if (transcendent()) { return; }
+	if (is_impactable()) { handle_impact(svc, map); }
 	if (reflect()) {
 		physical.collider.handle_map_collision(map);
 		if (physical.collider.collided() && !m_reflected.running()) {
@@ -322,6 +349,17 @@ void Projectile::handle_player_hit(automa::ServiceProvider& svc, world::Map& map
 		player.stun(metadata.specifications.stun_multiplier);
 	} else {
 		player.hurt(metadata.specifications.base_damage);
+	}
+}
+
+ImpactAttributes::ImpactAttributes(dj::Json const& in) {
+	effect = in["effect"].as_string();
+	emitter = in["emitter"].as_string();
+	channel = in["channel"].as<int>();
+	if (in["result"]) {
+		result.emplace();
+		if (in["result"]["block"]) { result->block_type = in["result"]["block"].as_string(); }
+		if (in["result"]["enemy"]) { result->enemy_spawn = in["result"]["enemy"].as<int>(); }
 	}
 }
 

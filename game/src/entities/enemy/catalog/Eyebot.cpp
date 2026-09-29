@@ -13,16 +13,14 @@ Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, 
 	flags.state.set(StateFlags::vulnerable); // eyebot is always vulnerable
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
 	get_collider().physics.set_friction_componentwise({0.98f, 0.98f});
+	flags.general.reset(GeneralFlags::gravity);
 }
 
 void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (just_died()) {
 		for (int i{0}; i < 3; ++i) {
-			auto const randx = random::random_range_float(-60.f, 60.f);
-			auto const randy = random::random_range_float(-60.f, 60.f);
-			sf::Vector2f const rand_vec{randx, randy};
-			sf::Vector2f const spawn = get_collider().physics.position + rand_vec;
-			map.spawn_enemy(5, spawn);
+			sf::Vector2f const spawn = get_collider().get_center() + random::random_vector_float(-6.f, 6.f);
+			map.spawn_enemy(5, spawn, true);
 		}
 	}
 	Enemy::update(svc, map, player);

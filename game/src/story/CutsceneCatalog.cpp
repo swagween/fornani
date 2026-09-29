@@ -3,6 +3,7 @@
 #include <fornani/story/cutscene/AshtownCall.hpp>
 #include <fornani/story/cutscene/BanditConfrontation.hpp>
 #include <fornani/story/cutscene/BanditEncounter.hpp>
+#include <fornani/story/cutscene/BattleArena.hpp>
 #include <fornani/story/cutscene/BitCell.hpp>
 #include <fornani/story/cutscene/BrynPostMiaag.hpp>
 #include <fornani/story/cutscene/EncounterLynx.hpp>
@@ -63,6 +64,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 1310: cutscenes.push_back(std::make_unique<SpencerReveal>(svc)); break;
 	case 407: cutscenes.push_back(std::make_unique<FamilyReunion>(svc)); break;
 	case 607: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc, map, player)); break;
+	case arena_id_v: cutscenes.push_back(std::make_unique<BattleArena>(svc, map)); break;
 	default: NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id); return;
 	}
 	m_register.add(id);

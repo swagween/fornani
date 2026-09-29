@@ -157,7 +157,7 @@
       "alert_range": [600.0, 600.0],
       "hostile_range": [500.0, 500.0],
       "friction": 0.98,
-      "gravity": 0.1
+      "gravity": 0.0
     },
     "visual": {
       "effect_type": 2,
@@ -2007,6 +2007,7 @@
       "mobile": true,
       "gravity": true,
       "map_collision": true,
+      "hurt_on_contact": true,
       "player_collision": false,
       "foreground": true,
       "rare_drops": false
@@ -2069,6 +2070,7 @@
       "map_collision": true,
       "player_collision": true,
       "rare_drops": true,
+      "hurt_on_contact": true,
       "secondary_collider": true,
       "no_soft_collision": true
     },
@@ -2133,6 +2135,7 @@
       "map_collision": true,
       "player_collision": false,
       "foreground": true,
+      "hurt_on_contact": true,
       "rare_drops": false
     },
     "treasure": {
@@ -2243,6 +2246,7 @@
       "crusher": true,
       "map_collision": true,
       "player_collision": true,
+      "hurt_on_contact": true,
       "foreground": true,
       "rare_drops": false
     },

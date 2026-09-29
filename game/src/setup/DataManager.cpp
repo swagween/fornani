@@ -188,6 +188,8 @@ void DataManager::load_game_data(ResourceFinder& finder) {
 	assert(!portal.is_null());
 	vehicle = *dj::Json::from_file((finder.resource_path() + "/data/level/vehicle.json").c_str());
 	assert(!vehicle.is_null());
+	arenas = *dj::Json::from_file((finder.resource_path() + "/data/enemy/arenas.json").c_str());
+	assert(!arenas.is_null());
 
 	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());

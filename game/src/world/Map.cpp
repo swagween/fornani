@@ -381,6 +381,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 
 	m_attributes.border_color = Color{svc.data.biomes["properties"][m_biome.get_label()]["black"]};
 	if (entities.is_object()) { m_entities = EntitySet(svc, *this, svc.finder, entities, m_metadata.room); }
+	m_attributes.sky_limit = svc.data.biomes["properties"][m_biome.get_label()]["sky_limit"].as<int>();
 
 	auto u_dim = sf::Vector2u{real_dimensions};
 	if (!m_entity_texture.resize(u_dim)) { NANI_LOG_WARN(m_logger, "Failed to resize entity texture!"); }
@@ -1173,7 +1174,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 			auto index = i + j;
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
-			if (!cell.is_collidable()) { continue; }
+			if (!cell.is_collidable() || cell.is_cage()) { continue; }
 			if (cell.is_platform() && (world::is_above_platform(cell, collider.get_radius() + collider.get_global_center().y) || collider.physics.actual_velocity().y < 0.f)) { continue; }
 			cell.collision_check = true;
 			collider.handle_collision(cell.bounding_box);
@@ -1451,7 +1452,6 @@ MapAttributes::MapAttributes(dj::Json const& in) {
 	if (in["properties"]["lighting"].as_bool()) { properties.set(MapProperties::lighting); }
 	if (in["properties"]["interior"].as_bool()) { properties.set(MapProperties::interior); }
 	if (in["properties"]["toxic"].as_bool()) { properties.set(MapProperties::toxic); }
-	if (in["properties"]["sky_limit"]) { sky_limit = in["properties"]["sky_limit"].as<int>(); }
 	if (in["minimap"].as_bool()) { properties.set(MapProperties::minimap); }
 
 	if (in["camera_effects"]) {
@@ -1479,7 +1479,6 @@ void MapAttributes::serialize(dj::Json& out) {
 	out["properties"]["lighting"] = properties.test(fornani::world::MapProperties::lighting);
 	out["properties"]["interior"] = properties.test(fornani::world::MapProperties::interior);
 	out["properties"]["toxic"] = properties.test(fornani::world::MapProperties::toxic);
-	out["properties"]["sky_limit"] = sky_limit;
 
 	out["music"] = music;
 	NANI_LOG_DEBUG(m_logger, "Serialized music: {}", music);

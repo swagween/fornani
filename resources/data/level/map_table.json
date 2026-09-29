@@ -500,6 +500,12 @@
     },
     {
       "folder": "nightside",
+      "label": "crane_arm.json",
+      "region": "nightside",
+      "room_id": 916
+    },
+    {
+      "folder": "nightside",
       "label": "lower_plant.json",
       "region": "nightside",
       "room_id": 909
@@ -1043,6 +1049,12 @@
       "label": "willetts_room.json",
       "region": "pioneer",
       "room_id": 303
+    },
+    {
+      "folder": "shadow",
+      "label": "arena.json",
+      "region": "shadow",
+      "room_id": 1709
     },
     {
       "folder": "shadow",

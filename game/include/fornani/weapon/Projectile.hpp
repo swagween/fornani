@@ -31,7 +31,7 @@ class Weapon;
 enum class ProjectileType : std::uint8_t { bullet, missile, melee, laser };
 enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic };
+enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic, impact };
 struct ProjectileSpecifications {
 	float base_damage{};
 	float power{};
@@ -61,12 +61,26 @@ struct ExplosionAttributes {
 	bool stun{};
 };
 
+struct ImpactResult {
+	std::optional<std::string> block_type{};
+	std::optional<int> enemy_spawn{};
+};
+
+struct ImpactAttributes {
+	ImpactAttributes(dj::Json const& in);
+	std::string effect{};
+	std::string emitter{};
+	int channel{};
+	std::optional<ImpactResult> result{};
+};
+
 enum class ProjectileState : std::uint8_t { initialized, destruction_initiated, destroyed, whiffed, poof, contact, stuck };
 
 class Projectile : public Animatable {
   public:
 	Projectile(automa::ServiceProvider& svc, std::string_view label, int id, Weapon& weapon, bool enemy);
 	void update(automa::ServiceProvider& svc, player::Player& player);
+	void handle_impact(automa::ServiceProvider& svc, world::Map& map);
 	void handle_collision(automa::ServiceProvider& svc, world::Map& map);
 	void on_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
 	void on_explode(automa::ServiceProvider& svc, world::Map& map);
@@ -117,6 +131,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto reflect() const -> bool { return metadata.attributes.test(ProjectileAttributes::reflect); }
 	[[nodiscard]] auto sticky() const -> bool { return metadata.attributes.test(ProjectileAttributes::sticky); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
+	[[nodiscard]] auto is_impactable() const -> bool { return metadata.attributes.test(ProjectileAttributes::impact); }
 
   private:
 	void handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
@@ -130,6 +145,7 @@ class Projectile : public Animatable {
 		ProjectileSpecifications specifications{};
 		util::BitFlags<ProjectileAttributes> attributes{};
 		std::optional<ExplosionAttributes> explosion{};
+		std::optional<ImpactAttributes> impact{};
 	} metadata{};
 
 	struct {

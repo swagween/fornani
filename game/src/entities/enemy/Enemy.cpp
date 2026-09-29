@@ -392,11 +392,6 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 			proj.increment_hits();
 		}
 		if (proj.can_damage()) {
-			if (!m_freeze.running()) {
-				auto rate = proj.has_attribute(arms::ProjectileAttributes::automatic) ? 0.022f : 0.048f;
-				svc.ticker.freeze_frame(rate);
-				m_freeze.start();
-			}
 			if (proj.has_attribute(arms::ProjectileAttributes::explode_on_impact)) { proj.on_explode(svc, map); }
 			if (m_weakness.running()) {
 				proj.multiply(2.f);
@@ -415,13 +410,11 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 				default: svc.soundboard.play_sound("hit", get_collider().get_center()); break;
 				}
 			}
-
-			if (health.is_dead() && !flags.general.test(GeneralFlags::post_death_render)) {
-				for (auto i = 0; i < 3; ++i) {
-					auto random_vector = random::random_vector_float(-0.5f, 0.5f);
-					map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), proj.get_direction().as_vector() * 0.7f + random_vector, visual.effect_type));
-				}
-				if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center(), get_collider().physics.actual_velocity() * 0.5f); }
+			if (health.is_dead() && !flags.general.test(GeneralFlags::post_death_render)) { kill(svc, map, proj.get_direction().as_vector()); }
+			if (!m_freeze.running()) {
+				auto rate = proj.has_attribute(arms::ProjectileAttributes::automatic) ? 0.022f : 0.048f;
+				svc.ticker.freeze_frame(rate);
+				m_freeze.start();
 			}
 			if (proj.has_critical_damage()) {
 				svc.soundboard.flags.projectile.set(audio::Projectile::critical_hit);
@@ -441,6 +434,18 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 		}
 	}
 	if (!proj.persistent() && (!died() || just_died())) { proj.destroy(false); }
+}
+
+void Enemy::kill(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f direction) {
+	if (!health.is_dead()) { health.kill(); }
+	if (!just_died()) { return; }
+	svc.ticker.freeze_frame(0.4f);
+	m_freeze.start();
+	for (auto i = 0; i < 3; ++i) {
+		auto random_vector = random::random_vector_float(-0.5f, 0.5f);
+		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), direction * 0.7f + random_vector, visual.effect_type));
+	}
+	if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center(), get_collider().physics.actual_velocity() * 0.5f); }
 }
 
 void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {

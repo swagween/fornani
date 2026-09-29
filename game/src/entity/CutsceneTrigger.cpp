@@ -2,6 +2,7 @@
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/CutsceneTrigger.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <fornani/story/cutscene/BattleArena.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani {
@@ -29,6 +30,7 @@ void CutsceneTrigger::serialize(dj::Json& out) {
 void CutsceneTrigger::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	if (in["attributes"]["callbox"].as_bool()) { m_attributes.set(CutsceneTriggerAttributes::callbox); }
+	if (get_id() == arena_id_v) { m_attributes.set(CutsceneTriggerAttributes::arena); }
 }
 
 void CutsceneTrigger::expose() { Entity::expose(); }
@@ -65,7 +67,10 @@ void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[ma
 		m_flags.reset(CutsceneTriggerFlags::hovered);
 	}
 	if (is_activated()) {
-		if (get_id() != 0) { svc.events.launch_cutscene_event.dispatch(svc, get_id()); }
+		if (get_id() != 0) {
+			auto const id = m_attributes.test(CutsceneTriggerAttributes::arena) ? arena_id_v : get_id();
+			svc.events.launch_cutscene_event.dispatch(svc, id);
+		}
 		m_flags.reset(CutsceneTriggerFlags::activated);
 		m_flags.set(CutsceneTriggerFlags::pushed);
 	}

@@ -163,6 +163,7 @@ class DataManager final {
 	dj::Json vehicle{};
 	dj::Json inspectables{};
 	dj::Json postcards{};
+	dj::Json arenas{};
 
 	// enemy
 	dj::Json enemy{};

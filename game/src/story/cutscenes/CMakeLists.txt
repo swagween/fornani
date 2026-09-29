@@ -4,6 +4,7 @@ nani_add_sources(
   BanditConfrontation.cpp
   SpencerReveal.cpp
   BanditEncounter.cpp
+  BattleArena.cpp
   BitCell.cpp
   BrynPostMiaag.cpp
   EncounterMinigus.cpp

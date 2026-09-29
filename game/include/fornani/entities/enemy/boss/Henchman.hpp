@@ -51,8 +51,7 @@ class Henchman final : public Boss, public StateMachine<HenchmanState> {
 
 	struct {
 		std::array<entity::Attack, 3> slash{};
-		entity::Shockwave left_shockwave;
-		entity::Shockwave right_shockwave;
+		std::vector<entity::Shockwave> shockwaves{};
 	} m_attacks{};
 
 	util::BitFlags<HenchmanFlags> m_flags{};

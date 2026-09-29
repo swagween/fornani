@@ -10,8 +10,8 @@
 
 namespace fornani::world {
 
-BrittleBlock::BrittleBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id)
-	: Animatable(svc, "brittle_blocks", {18, 18}), m_chunk_id{chunk_id}, health{70.f}, hit_energy{2.99f}, m_map{&map}, m_collider{map, {32.f, 32.f}}, m_death{1600} {
+BrittleBlock::BrittleBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id, bool transient)
+	: Animatable(svc, "brittle_blocks", {18, 18}), m_chunk_id{chunk_id}, health{70.f}, hit_energy{2.99f}, m_map{&map}, m_collider{map, {32.f, 32.f}}, m_death{1600}, m_transient{transient} {
 	m_collider.get()->physics.position = position;
 	push_and_set_animation("default", {0, 3, 24, -1});
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
@@ -23,7 +23,7 @@ void BrittleBlock::update(automa::ServiceProvider& svc, Map& map, player::Player
 	m_collider.get()->sync_components();
 	m_collider.get()->set_attribute(shape::ColliderAttributes::no_collision, is_destroyed());
 	if (m_death.running()) {
-		m_death.update();
+		if (!m_transient) { m_death.update(); }
 		if (m_death.is_almost_complete()) {
 			m_death.cancel();
 			svc.soundboard.play_sound("block_toggle");

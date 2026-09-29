@@ -6,8 +6,9 @@
 #include <fornani/utils/BitFlags.hpp>
 
 namespace fornani::shape {
+class Collider;
 class CircleCollider;
-}
+} // namespace fornani::shape
 
 namespace fornani::components {
 
@@ -23,6 +24,7 @@ class CircleSensor {
 	sf::CircleShape drawable{};
 	bool within_bounds(sf::Vector2f const point) const;
 	bool within_bounds(shape::Shape const& shape) const;
+	bool within_bounds(shape::Collider const& shape) const;
 	bool within_bounds(shape::CircleCollider const& shape) const;
 	bool is_very_near(shape::CircleCollider const& shape) const;
 	bool is_very_near(shape::Shape const& shape) const;

@@ -7,7 +7,7 @@
 
 namespace fornani::enemy {
 
-constexpr auto brovle_framerate = 16;
+constexpr auto brovle_framerate = 14;
 
 Brovle::Brovle(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(svc, map, "brovle"), m_services{&svc}, m_jump_time{64}, m_switch_sides{2400} {
 	p_animatable.set_animations({{"idle", {0, 4, brovle_framerate * 3, 2}},
@@ -34,6 +34,7 @@ Brovle::Brovle(automa::ServiceProvider& svc, world::Map& map, int variant) : Ene
 void Brovle::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (just_died()) { svc.soundboard.play_sound("beast_damage", get_collider().get_center()); }
 	Enemy::update(svc, map, player);
+	if (health.is_dead()) { return; }
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 	m_jump_time.update();
@@ -77,8 +78,8 @@ void Brovle::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 
 void Brovle::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 	Enemy::render(svc, win, cam);
-	m_attack.render(win, cam);
-	m_second_attack.render(win, cam);
+	// m_attack.render(win, cam);
+	// m_second_attack.render(win, cam);
 	if (health.is_dead()) { return; }
 }
 
@@ -98,7 +99,7 @@ fsm::StateFunction Brovle::update_idle() {
 
 fsm::StateFunction Brovle::update_run() {
 	p_state.actual = BrovleState::run;
-	get_collider().physics.velocity.x = directions.actual.as_float() * 8.f;
+	get_collider().physics.velocity.x = directions.actual.as_float() * 9.5f;
 	if (change_state(BrovleState::turn, get_params("turn"))) { return BROVLE_BIND(update_turn); }
 	if (p_animatable.animation.is_complete()) {
 		if (get_collider().grounded()) {
@@ -136,7 +137,7 @@ fsm::StateFunction Brovle::update_jump() {
 
 fsm::StateFunction Brovle::update_slash() {
 	p_state.actual = BrovleState::slash;
-	if (p_animatable.frame_action(4)) {}
+	if (p_animatable.animation.get_frame_count() >= 3) { get_collider().physics.velocity.x = directions.actual.as_float() * 6.f; }
 	if (p_animatable.animation.is_complete()) {
 		request(BrovleState::idle);
 		if (change_state(BrovleState::idle, get_params("idle"))) { return BROVLE_BIND(update_idle); }
@@ -146,7 +147,7 @@ fsm::StateFunction Brovle::update_slash() {
 
 fsm::StateFunction Brovle::update_sweep() {
 	p_state.actual = BrovleState::sweep;
-	if (p_animatable.frame_action(4)) {}
+	if (p_animatable.animation.get_frame_count() >= 2) { get_collider().physics.velocity.x = directions.actual.as_float() * 6.f; }
 	if (p_animatable.animation.is_complete()) {
 		request(BrovleState::idle);
 		if (change_state(BrovleState::idle, get_params("idle"))) { return BROVLE_BIND(update_idle); }

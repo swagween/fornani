@@ -33,6 +33,7 @@ void Demolisher::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	m_switch_sides.update();
 	if (m_switch_sides.is_complete()) { m_switch_sides.start(); }
 	if (just_died()) { m_shockwaves.clear(); }
+	if (health.is_dead()) { return; }
 
 	// spikey helmet
 	m_helmet.set_position(get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 8.f, -28.f});

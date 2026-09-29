@@ -2,6 +2,7 @@ nani_add_headers(
   AirTravel.hpp
   AshtownCall.hpp
   BanditConfrontation.hpp
+  BattleArena.hpp
   SpencerReveal.hpp
   BanditEncounter.hpp
   BitCell.hpp

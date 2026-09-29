@@ -24,7 +24,7 @@ class Map;
 
 class BrittleBlock : public Animatable {
   public:
-	BrittleBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id);
+	BrittleBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int chunk_id, bool transient = false);
 	BrittleBlock(BrittleBlock&&) = delete;
 	BrittleBlock& operator=(BrittleBlock&&) = delete;
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
@@ -44,6 +44,7 @@ class BrittleBlock : public Animatable {
 	shape::RegisteredCollider m_collider;
 	Map* m_map;
 	int m_chunk_id{};
+	bool m_transient{};
 	float energy{};
 	float dampen{0.1f};
 	float hit_energy{8.f};

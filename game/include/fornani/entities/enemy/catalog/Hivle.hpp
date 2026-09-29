@@ -9,7 +9,7 @@
 namespace fornani::enemy {
 
 enum class HivleState : std::uint8_t { idle, turn, toss, run, jump, jumpsquat, land };
-enum class HivleVariant : std::uint8_t { javelin_tosser };
+enum class HivleVariant : std::uint8_t { javelin_tosser, mud_chucker };
 enum class HivleFlags : std::uint8_t { toss };
 
 class Hivle final : public Enemy, public StateMachine<HivleState>, public Flaggable<HivleFlags> {

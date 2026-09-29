@@ -3,6 +3,7 @@
 #include <fornani/core/Debug.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/physics/CircleCollider.hpp>
+#include <fornani/physics/Collider.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/Math.hpp>
 #include <algorithm>
@@ -54,6 +55,8 @@ bool CircleSensor::within_bounds(shape::Shape const& shape) const {
 	sf::Vector2 const closest{x, y};
 	return util::magnitude(closest - bounds.getPosition()) < bounds.getRadius();
 }
+
+bool CircleSensor::within_bounds(shape::Collider const& shape) const { return within_bounds(shape.bounding_box); }
 
 bool CircleSensor::within_bounds(shape::CircleCollider const& shape) const { return (bounds.getGlobalBounds().getCenter() - shape.get_global_center()).length() < bounds.getRadius() + shape.get_radius(); }
 

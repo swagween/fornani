@@ -9,9 +9,8 @@
 
 namespace fornani::enemy {
 
-Henchman::Henchman(automa::ServiceProvider& svc, world::Map& map)
-	: Boss(svc, map, "henchman"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc}, m_attacks{.left_shockwave{{30, 600, 3, {-1.2f, 0.f}}}, .right_shockwave{{30, 600, 3, {1.2f, 0.f}}}} {
-	auto fr = 48;
+Henchman::Henchman(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "henchman"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc} {
+	auto const fr = 48;
 	p_animatable.set_animations({{"idle", {0, 6, 28, 3}},
 								 {"prepare_downward_cut", {6, 2, 64, 0}},
 								 {"prepare_upward_cut", {11, 2, 64, 0}},
@@ -21,7 +20,7 @@ Henchman::Henchman(automa::ServiceProvider& svc, world::Map& map)
 								 {"forward_slash", {22, 6, fr, 0}},
 								 {"whistle", {28, 8, fr, 0}},
 								 {"turn", {36, 7, 32, 0}},
-								 {"jumpsquat", {43, 3, 32, 0, true}},
+								 {"jumpsquat", {43, 3, fr, 0, true}},
 								 {"jump", {46, 3, fr, 0, true}},
 								 {"hop", {46, 3, 32, 0, true}},
 								 {"back_hop", {46, 3, 32, 0, true}},
@@ -31,7 +30,7 @@ Henchman::Henchman(automa::ServiceProvider& svc, world::Map& map)
 	m_slash_wave.get().set_team(arms::Team::skycorps);
 	flags.general.set(GeneralFlags::has_invincible_channel);
 	flags.state.set(StateFlags::vulnerable);
-	start_battle();
+	m_boundary.x = std::numeric_limits<float>::max();
 	for (auto const& pt : map.home_points) {
 		m_boundary.x = std::min(pt.x, m_boundary.x);
 		m_boundary.y = std::max(pt.x, m_boundary.x);
@@ -40,10 +39,20 @@ Henchman::Henchman(automa::ServiceProvider& svc, world::Map& map)
 
 void Henchman::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	Boss::update(svc, map, player);
+	if (!has_flag_set(BossFlags::battle_mode) && player.get_collider().get_center().x > m_boundary.x && !health.is_dead()) { start_battle(); }
 	if (consume_flag(BossFlags::start_battle)) {
 		svc.music_player.load(svc.finder, "scuffle");
 		svc.music_player.play_looped();
 		svc.data.switch_destructible_state(71001, true);
+	}
+	if (has_flag_set(BossFlags::end_battle) && !has_flag_set(BossFlags::post_death)) {
+		svc.data.switch_destructible_state(71001, true);
+		svc.music_player.pause();
+		set_flag(BossFlags::post_death);
+		svc.music_player.load(svc.finder, "none");
+		svc.music_player.play_looped();
+		m_attacks.shockwaves.clear();
+		map.clear_enemies({45});
 	}
 
 	// logic
@@ -54,15 +63,16 @@ void Henchman::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	auto bp = Enemy::get_collider().get_center();
 	m_slash_wave.get().set_barrel_point(bp);
 
-	m_attacks.left_shockwave.origin = Enemy::get_collider().physics.position + sf::Vector2f{0.f, Enemy::get_collider().bounding_box.get_dimensions().y};
-	m_attacks.right_shockwave.origin = Enemy::get_collider().physics.position + Enemy::get_collider().bounding_box.get_dimensions();
-	m_attacks.left_shockwave.update(svc, map);
-	m_attacks.right_shockwave.update(svc, map);
+	// shockwaves
+	for (auto& s : m_attacks.shockwaves) {
+		if (s.hit.active()) { player.hurt(); }
+		s.update(svc, map);
+		s.handle_player(player);
+	}
+	std::erase_if(m_attacks.shockwaves, [](auto const& s) { return s.lifetime.is_almost_complete(); });
 
 	// melee attacks
 	if (Boss::has_flag_set(BossFlags::battle_mode)) {
-		m_attacks.left_shockwave.hurt_player(player);
-		m_attacks.right_shockwave.hurt_player(player);
 		for (auto& slash : m_attacks.slash) {
 			auto damage = 1.f;
 			slash.disable();
@@ -89,6 +99,10 @@ void Henchman::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 			}
 			slash.hurt_player(player, damage, {directions.desired.as_float() * 0.4f, -0.2f});
 			slash.cancel_projectiles(svc, map, get_team());
+			for (auto& e : map.enemy_catalog.enemies) {
+				if (e.get() == this) { continue; }
+				if (slash.hit.within_bounds(e->get_collider()) && slash.hit.active()) { e->kill(svc, map); }
+			}
 		}
 	}
 
@@ -127,16 +141,22 @@ void Henchman::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, s
 
 fsm::StateFunction Henchman::update_idle() {
 	p_state.actual = HenchmanState::idle;
-	if (change_state(HenchmanState::prepare_downward_cut, Enemy::get_params("prepare_downward_cut"))) { return HENCHMAN_BIND(update_prepare_downward_cut); }
-	if (change_state(HenchmanState::prepare_upward_cut, Enemy::get_params("prepare_upward_cut"))) { return HENCHMAN_BIND(update_prepare_upward_cut); }
-	if (change_state(HenchmanState::whistle, Enemy::get_params("whistle"))) { return HENCHMAN_BIND(update_whistle); }
-	if (change_state(HenchmanState::turn, Enemy::get_params("turn"))) { return HENCHMAN_BIND(update_turn); }
-	if (change_state(HenchmanState::knife_toss, Enemy::get_params("knife_toss"))) { return HENCHMAN_BIND(update_knife_toss); }
-	if (change_state(HenchmanState::jumpsquat, Enemy::get_params("jumpsquat"))) { return HENCHMAN_BIND(update_jumpsquat); }
-	if (change_state(HenchmanState::jump, Enemy::get_params("jumpsquat"))) { return HENCHMAN_BIND(update_jumpsquat); }
-	if (change_state(HenchmanState::back_hop, Enemy::get_params("back_hop"))) { return HENCHMAN_BIND(update_back_hop); }
-	if (change_state(HenchmanState::hop, Enemy::get_params("hop"))) { return HENCHMAN_BIND(update_hop); }
+	if (has_flag_set(BossFlags::battle_mode)) {
+		if (change_state(HenchmanState::prepare_downward_cut, Enemy::get_params("prepare_downward_cut"))) { return HENCHMAN_BIND(update_prepare_downward_cut); }
+		if (change_state(HenchmanState::prepare_upward_cut, Enemy::get_params("prepare_upward_cut"))) { return HENCHMAN_BIND(update_prepare_upward_cut); }
+		if (change_state(HenchmanState::whistle, Enemy::get_params("whistle"))) { return HENCHMAN_BIND(update_whistle); }
+		if (change_state(HenchmanState::turn, Enemy::get_params("turn"))) { return HENCHMAN_BIND(update_turn); }
+		if (change_state(HenchmanState::knife_toss, Enemy::get_params("knife_toss"))) { return HENCHMAN_BIND(update_knife_toss); }
+		if (change_state(HenchmanState::jumpsquat, Enemy::get_params("jumpsquat"))) { return HENCHMAN_BIND(update_jumpsquat); }
+		if (change_state(HenchmanState::jump, Enemy::get_params("jumpsquat"))) { return HENCHMAN_BIND(update_jumpsquat); }
+		if (change_state(HenchmanState::back_hop, Enemy::get_params("back_hop"))) { return HENCHMAN_BIND(update_back_hop); }
+		if (change_state(HenchmanState::hop, Enemy::get_params("hop"))) { return HENCHMAN_BIND(update_hop); }
+	}
 	if (p_animatable.animation.is_complete() && get_collider().grounded()) {
+		if (!has_flag_set(BossFlags::battle_mode)) {
+			request(HenchmanState::idle);
+			if (change_state(HenchmanState::idle, Enemy::get_params("idle"))) { return HENCHMAN_BIND(update_idle); }
+		}
 		request(HenchmanState::jumpsquat);
 		if (change_state(HenchmanState::jumpsquat, Enemy::get_params("jumpsquat"))) { return HENCHMAN_BIND(update_jumpsquat); }
 	}
@@ -160,11 +180,16 @@ fsm::StateFunction Henchman::update_land() {
 		m_services->camera_controller.shake(10, 0.3f, 200, 20);
 		m_services->soundboard.play_sound("vibration", get_collider().get_center());
 		m_services->soundboard.play_sound("delay_crash", get_collider().get_center());
-		m_attacks.left_shockwave.start();
-		m_attacks.right_shockwave.start();
+		auto const shockwave_speed = 1.2f;
+		m_attacks.shockwaves.push_back(entity::Shockwave{{30, 600, 3, {shockwave_speed * directions.actual.as_float(), 0.f}}});
+		m_attacks.shockwaves.back().origin = Enemy::get_collider().get_bottom();
+		m_attacks.shockwaves.back().start();
+		m_attacks.shockwaves.push_back(entity::Shockwave{{30, 600, 3, {-shockwave_speed * directions.actual.as_float(), 0.f}}});
+		m_attacks.shockwaves.back().origin = Enemy::get_collider().get_bottom();
+		m_attacks.shockwaves.back().start();
 	}
 	if (p_animatable.animation.is_complete()) {
-		if (m_flags.consume(HenchmanFlags::retreated)) {
+		if (m_flags.consume(HenchmanFlags::retreated) && !m_cooldowns.post_whistle.running()) {
 			request(HenchmanState::whistle);
 			if (change_state(HenchmanState::whistle, Enemy::get_params("whistle"))) { return HENCHMAN_BIND(update_whistle); }
 		}
@@ -227,7 +252,7 @@ fsm::StateFunction Henchman::update_forward_slash() {
 fsm::StateFunction Henchman::update_whistle() {
 	p_state.actual = HenchmanState::whistle;
 	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("haunch_whistle", get_collider().get_center()); }
-	if (p_animatable.animation.get_frame_count() == 5 && !m_cooldowns.post_whistle.running()) {
+	if (p_animatable.animation.get_frame_count() == 5 && !m_cooldowns.post_whistle.running() && has_flag_set(BossFlags::battle_mode)) {
 		for (auto i = 0; i < 2; ++i) {
 			auto pos = get_collider().get_top() + sf::Vector2f{0.f, -140.f} + random::random_vector_float(-200.f, 200.f);
 			m_map->spawn_enemy(4, pos);

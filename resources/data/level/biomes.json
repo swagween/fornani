@@ -5,6 +5,7 @@
     "firstwind": {
       "ambience": { "interior": "industrial", "exterior": "firstwind" },
       "platform_sound": "industrial",
+      "sky_limit": 10,
       "black": [12, 12, 20]
     },
     "overturned": {
@@ -33,16 +34,24 @@
       "ambience": { "interior": "industrial", "exterior": "firstwind" },
       "platform_sound": "industrial",
       "black": [12, 12, 20],
+      "sky_limit": 10,
       "max_light": 3.0
     },
     "kariba": {
       "black": [12, 12, 20],
       "max_light": 3.0
     },
+    "ashtown": {
+      "platform_sound": "industrial",
+      "black": [16, 9, 11],
+      "sky_limit": 10,
+      "max_light": 3.0
+    },
     "junkyard": {
       "ambience": { "interior": "industrial", "exterior": "firstwind" },
       "platform_sound": "industrial",
       "black": [16, 9, 11],
+      "sky_limit": 10,
       "max_light": 3.0
     },
     "worm": {
@@ -64,6 +73,7 @@
     "nightside": {
       "platform_sound": "industrial",
       "black": [19, 18, 16],
+      "sky_limit": 10,
       "max_light": 3.0
     },
     "shadow": {
@@ -93,6 +103,7 @@
         "tag": "grove_chains",
         "dimensions": [13, 13],
         "variations": 4,
+        "sky_limit": 10,
         "gravity": 18.0,
         "rest_length": 18.0,
         "angles": 1,
