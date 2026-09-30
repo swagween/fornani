@@ -18,7 +18,7 @@
       },
       {
         "channel": 0,
-        "depth": 0,
+        "depth": -0.20000000298023224,
         "dimensions": [
           1,
           1
@@ -26,10 +26,10 @@
         "foreground": false,
         "id": 0,
         "position": [
-          28,
-          7
+          34,
+          8
         ],
-        "tag": "guts"
+        "tag": "big_guts"
       }
     ],
     "enemies": [
@@ -205,7 +205,6 @@
       "environmental_randomness": true,
       "interior": true,
       "lighting": true,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

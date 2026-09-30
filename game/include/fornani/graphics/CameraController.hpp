@@ -27,6 +27,8 @@ class CameraController {
 	void constrain();
 	void set_owner(CameraOwner to);
 	void set_position(sf::Vector2f to) { m_position = to; }
+	void add_anchor(sf::Vector2f position, float weight);
+	void update();
 
 	[[nodiscard]] auto is_shaking() const -> bool { return shake_properties.shaking; }
 	[[nodiscard]] auto get_frequency() const -> int { return shake_properties.frequency; }
@@ -45,6 +47,8 @@ class CameraController {
 	CameraState m_state{};
 	CameraOwner m_owner{};
 	sf::Vector2f m_position{};
+	sf::Vector2f m_anchor_position{};
+	float m_anchor_weight{};
 };
 
 } // namespace fornani::graphics

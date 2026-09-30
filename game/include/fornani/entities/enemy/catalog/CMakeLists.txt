@@ -12,6 +12,7 @@ nani_add_headers(
         DumpsterDiver.hpp
         Eyebit.hpp
         Eyebot.hpp
+        Fiend.hpp
         Frdog.hpp
         Glub.hpp
         Golem.hpp

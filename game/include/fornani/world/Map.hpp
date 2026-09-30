@@ -35,6 +35,7 @@
 #include <fornani/weapon/Projectile.hpp>
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/BrittleBlock.hpp>
+#include <fornani/world/CameraAnchor.hpp>
 #include <fornani/world/Checkpoint.hpp>
 #include <fornani/world/HazardMap.hpp>
 #include <fornani/world/Incinerite.hpp>
@@ -338,6 +339,7 @@ class Map {
 	std::vector<std::unique_ptr<BrittleBlock>> brittle_blocks{};
 	std::vector<std::unique_ptr<entity::Chest>> chests{};
 	std::vector<std::unique_ptr<Pushable>> pushables{};
+	std::vector<CameraAnchor> m_camera_anchors{};
 	sf::Image m_tileset_image{};
 };
 

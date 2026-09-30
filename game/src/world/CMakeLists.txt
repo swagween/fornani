@@ -2,6 +2,7 @@ nani_add_sources(
         Breakable.cpp
         BrittleBlock.cpp
         Camera.cpp
+        CameraAnchor.cpp
         Checkpoint.cpp
         Grid.cpp
         HazardMap.cpp

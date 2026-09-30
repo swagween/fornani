@@ -76,6 +76,12 @@
       "sky_limit": 10,
       "max_light": 3.0
     },
+    "abandoned": {
+      "black": [19, 18, 16],
+      "spike_variations": 3,
+      "sky_limit": 10,
+      "max_light": 3.0
+    },
     "shadow": {
       "ambience": { "interior": "none", "exterior": "none" },
       "black": [23, 22, 14],

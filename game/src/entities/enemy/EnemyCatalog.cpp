@@ -20,6 +20,7 @@
 #include <fornani/entities/enemy/catalog/DumpsterDiver.hpp>
 #include <fornani/entities/enemy/catalog/Eyebit.hpp>
 #include <fornani/entities/enemy/catalog/Eyebot.hpp>
+#include <fornani/entities/enemy/catalog/Fiend.hpp>
 #include <fornani/entities/enemy/catalog/Frdog.hpp>
 #include <fornani/entities/enemy/catalog/Glub.hpp>
 #include <fornani/entities/enemy/catalog/Grappler.hpp>
@@ -56,7 +57,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(5, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Eyebit>(svc, map, p.spawned); });
 	EnemyRegistry::register_factory(6, [](auto& svc, auto& map, auto& ctx, EnemyParameters const&) { return std::make_unique<Minigus>(svc, map, ctx); });
 	EnemyRegistry::register_factory(7, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Demon>(svc, map, p.variant); });
-	EnemyRegistry::register_factory(8, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Caster>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(8, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Caster>(svc, map, p); });
 	EnemyRegistry::register_factory(9, [](auto& svc, auto& map, auto&, EnemyParameters const&) { return std::make_unique<Archer>(svc, map); });
 	EnemyRegistry::register_factory(10, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Beamstalk>(svc, map, p.dir); });
 	EnemyRegistry::register_factory(11, [](auto& svc, auto& map, auto&, EnemyParameters const&) { return std::make_unique<Meatsquash>(svc, map); });
@@ -94,6 +95,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(43, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Buzzle>(svc, map); });
 	EnemyRegistry::register_factory(44, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Demolisher>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(45, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Henchman>(svc, map); });
+	EnemyRegistry::register_factory(46, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Fiend>(svc, map, p.variant); });
 }
 
 void EnemyCatalog::update() {

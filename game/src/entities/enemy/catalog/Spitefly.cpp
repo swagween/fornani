@@ -35,6 +35,7 @@ Spitefly::Spitefly(automa::ServiceProvider& svc, world::Map& map, int variant) :
 		state_function = std::bind(&Spitefly::update_awaken, this);
 		attributes.base_hp = 8;
 		health.set_capacity(8.f);
+		get_collider().physics.gravity = 0.7f;
 	}
 }
 
@@ -51,10 +52,9 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	if (m_bomb_part) { m_bomb_part->update(svc, map, player, directions.actual, p_animatable.get_scale(), get_collider().get_center()); }
 
 	if (is_active()) {
-		auto force = is_albino() ? 0.00012f : 0.0001f;
+		auto force = is_albino() ? 0.00011f : 0.0001f;
 		if (is_albino()) {
-			get_collider().physics.set_friction_componentwise({1.f, 0.99f});
-			m_steering.thrust_seek(Enemy::get_collider().physics, player.get_collider().get_center() + random::random_vector_float(-4.f, 4.f), {0.017f, .118f, .991f, 260.f});
+			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
 		} else {
 			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
 		}

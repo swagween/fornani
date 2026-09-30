@@ -97,4 +97,13 @@ inline int map_to_frame(float value, float min, float max, int min_frame, int ma
 	return static_cast<int>(std::round(frame_float));
 }
 
+[[nodiscard]] static auto average(std::vector<sf::Vector2f> const& points) -> sf::Vector2f {
+	if (points.empty()) { return {}; }
+
+	auto result = sf::Vector2f{};
+	for (auto const& point : points) { result += point; }
+
+	return result / static_cast<float>(points.size());
+}
+
 } // namespace fornani::util

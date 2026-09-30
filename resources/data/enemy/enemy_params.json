@@ -2119,7 +2119,7 @@
     },
     "attributes": {
       "base_hp": 180,
-      "base_damage": 2.0,
+      "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 6.0,
       "drop_range": [10, 14],
@@ -2229,7 +2229,7 @@
     },
     "attributes": {
       "base_hp": 220,
-      "base_damage": 2.0,
+      "base_damage": 1.0,
       "speed": 0.5,
       "loot_multiplier": 8.0,
       "drop_range": [10, 14],
@@ -2327,6 +2327,55 @@
           "mythic": false
         }
       ]
+    }
+  },
+  "fiend": {
+    "metadata": {
+      "name": "Fiend",
+      "id": 46,
+      "variant": "guardian"
+    },
+    "physical": {
+      "dimensions": [44, 74],
+      "sprite_dimensions": [71, 81],
+      "offset": [0, -41],
+      "alert_range": [900.0, 300.0],
+      "hostile_range": [700.0, 280.0],
+      "friction": 0.98,
+      "gravity": 22.0
+    },
+    "visual": {
+      "effect_type": 3,
+      "effect_size": 1,
+      "effects_overlay": {
+        "dimensions": [171, 135],
+        "offset": [0, 0]
+      }
+    },
+    "audio": {
+      "hurt_sounds": ["brovle_hurt_1", "brovle_hurt_2", "brovle_hurt_3"],
+      "death_sounds": ["brovle_death"]
+    },
+    "attributes": {
+      "base_hp": 130,
+      "base_damage": 1.0,
+      "speed": 0.5,
+      "loot_multiplier": 8.0,
+      "drop_range": [10, 14],
+      "rare_drop_id": 0,
+      "respawn_distance": 0,
+      "permadeath": false,
+      "size": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "foreground": true,
+      "hurt_on_contact": true,
+      "rare_drops": true
     }
   }
 }

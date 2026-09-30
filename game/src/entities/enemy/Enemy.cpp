@@ -2,6 +2,7 @@
 #include "fornani/entities/enemy/Enemy.hpp"
 #include <imgui.h>
 #include <fornani/core/Debug.hpp>
+#include <fornani/entities/enemy/EnemyRegistry.hpp>
 #include <fornani/world/Map.hpp>
 #include <algorithm>
 #include <numbers>
@@ -150,6 +151,8 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 
 	p_animatable.center();
 }
+
+Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, EnemyParameters const& params) : Enemy(svc, map, label, params.spawned, params.variant, params.dir) {}
 
 void Enemy::set_stable_id(std::pair<int, sf::Vector2<int>> code) {
 	metadata.stable_id = StableID::from(code.first, code.second.x, code.second.y);
@@ -439,8 +442,8 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 void Enemy::kill(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f direction) {
 	if (!health.is_dead()) { health.kill(); }
 	if (!just_died()) { return; }
-	svc.ticker.freeze_frame(0.4f);
-	m_freeze.start();
+	auto const freeze = 0.2f + static_cast<float>(attributes.size) * 0.1f;
+	svc.ticker.freeze_frame(freeze);
 	for (auto i = 0; i < 3; ++i) {
 		auto random_vector = random::random_vector_float(-0.5f, 0.5f);
 		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), direction * 0.7f + random_vector, visual.effect_type));

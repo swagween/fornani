@@ -43,7 +43,8 @@ enum class TileType : std::uint8_t {
 	brittle,
 	cage,
 	blastite,
-	mine
+	mine,
+	camera_anchor
 };
 enum class TileState : std::uint8_t { ramp_adjacent, big_ramp, covered, border };
 
@@ -69,6 +70,7 @@ constexpr auto get_type_by_value(int const val) -> TileType {
 	if (val == special_index_v + 57) { return TileType::brittle; }
 	if (val == special_index_v + 58) { return TileType::cage; }
 	if (val == special_index_v + 59) { return TileType::mine; }
+	if (val == special_index_v + 60) { return TileType::camera_anchor; }
 	if (val == special_index_v + 62) { return TileType::spike_orienter; }
 	if (val == special_index_v + 63) { return TileType::spike; }
 	return TileType::empty;
@@ -109,6 +111,7 @@ struct Tile {
 	[[nodiscard]] auto is_brittle() const -> bool { return type == TileType::brittle; }
 	[[nodiscard]] auto is_cage() const -> bool { return type == TileType::cage; }
 	[[nodiscard]] auto is_mine() const -> bool { return type == TileType::mine; }
+	[[nodiscard]] auto is_camera_anchor() const -> bool { return type == TileType::camera_anchor; }
 	[[nodiscard]] auto is_spawner() const -> bool { return type == TileType::spawner; }
 	[[nodiscard]] auto is_target() const -> bool { return type == TileType::target; }
 	[[nodiscard]] auto is_home() const -> bool { return type == TileType::home; }
@@ -117,7 +120,8 @@ struct Tile {
 	[[nodiscard]] auto is_checkpoint() const -> bool { return type == TileType::checkpoint; }
 	[[nodiscard]] auto is_fire() const -> bool { return type == TileType::bonfire || type == TileType::campfire; }
 	[[nodiscard]] auto is_special() const -> bool {
-		return is_pushable() || is_breakable() || is_incinerite() || is_blastite() || is_target() || is_checkpoint() || is_fire() || is_mine() || is_spike() || is_spike_orienter() || is_home() || is_waterfall() || is_brittle();
+		return is_pushable() || is_breakable() || is_incinerite() || is_blastite() || is_target() || is_checkpoint() || is_fire() || is_mine() || is_camera_anchor() || is_spike() || is_spike_orienter() || is_home() || is_waterfall() ||
+			   is_brittle();
 	}
 	[[nodiscard]] auto ramp_adjacent() const -> bool { return flags.test(TileState::ramp_adjacent); }
 	[[nodiscard]] auto covered() const -> bool { return flags.test(TileState::covered); }

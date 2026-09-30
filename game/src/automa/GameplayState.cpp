@@ -62,6 +62,7 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	GameState::tick_update(svc, engine);
+	svc.camera_controller.update();
 }
 
 void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {

@@ -15,6 +15,8 @@ struct EnemyWave {
 	std::vector<WaveSpawn> ids{};
 };
 
+enum class BattleArenaFlags : std::uint8_t { final_wave };
+
 class BattleArena final : public Cutscene {
   public:
 	explicit BattleArena(automa::ServiceProvider& svc, world::Map& map);
@@ -22,6 +24,10 @@ class BattleArena final : public Cutscene {
 
   private:
 	std::vector<EnemyWave> m_waves{};
+	sf::Vector2f m_focus_point{};
+	int m_destructible_id{};
+
+	util::BitFlags<BattleArenaFlags> m_flags{};
 };
 
 } // namespace fornani

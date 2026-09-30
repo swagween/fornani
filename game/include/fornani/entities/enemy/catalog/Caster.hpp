@@ -11,11 +11,12 @@ namespace fornani::enemy {
 
 enum class CasterState : std::uint8_t { idle, turn, signal, dormant, prepare };
 enum class CasterVariant : std::uint8_t { apprentice, tyrant };
+enum class CasterFlags : std::uint8_t { no_sleep };
 
 class Caster final : public Enemy, StateMachine<CasterState> {
 
   public:
-	Caster(automa::ServiceProvider& svc, world::Map& map, int variant);
+	Caster(automa::ServiceProvider& svc, world::Map& map, EnemyParameters const& params);
 	void update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
 	void gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) override;
@@ -31,6 +32,7 @@ class Caster final : public Enemy, StateMachine<CasterState> {
 
   private:
 	CasterVariant m_variant{};
+	util::BitFlags<CasterFlags> m_flags{};
 
 	components::SteeringBehavior m_steering{};
 	entity::WeaponPackage energy_ball;

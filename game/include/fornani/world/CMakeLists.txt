@@ -2,6 +2,7 @@ nani_add_headers(
         Breakable.hpp
         BrittleBlock.hpp
         Camera.hpp
+        CameraAnchor.hpp
         Grid.hpp
         HazardMap.hpp
         Incinerite.hpp

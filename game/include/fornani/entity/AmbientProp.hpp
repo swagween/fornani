@@ -53,7 +53,7 @@ class AmbientProp : public Entity {
 	void expose() override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
-	void render(sf::RenderTexture& tex, sf::Vector2f cam);
+	void render(sf::RenderWindow& win, sf::RenderTexture& tex, sf::Vector2f cam);
 	void flat_shade(sf::RenderWindow& win, sf::Vector2f cam, FlatShader& shader);
 
 	[[nodiscard]] auto is_foreground() const -> bool { return m_params ? m_params->attributes.test(AmbientPropAttributes::foreground) : false; }

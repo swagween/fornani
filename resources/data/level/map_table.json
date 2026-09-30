@@ -866,6 +866,12 @@
     },
     {
       "folder": "overturned",
+      "label": "pit.json",
+      "region": "overturned",
+      "room_id": 267
+    },
+    {
+      "folder": "overturned",
       "label": "pond.json",
       "region": "overturned",
       "room_id": 262

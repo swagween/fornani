@@ -12,6 +12,7 @@ nani_add_sources(
         DumpsterDiver.cpp
         Eyebit.cpp
         Eyebot.cpp
+        Fiend.cpp
         Frdog.cpp
         Glub.cpp
         Golem.cpp

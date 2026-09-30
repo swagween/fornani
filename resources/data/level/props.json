@@ -28,6 +28,14 @@
       { "label": "throb", "params": { "lookup": 1, "duration": 2, "framerate": 60, "num_loops": 0 } }
     ]
   },
+  "big_guts": {
+    "category": "organic",
+    "health": 4.0,
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [480, 256]
+  },
   "growth": {
     "category": "foliage",
     "health": 16.0,

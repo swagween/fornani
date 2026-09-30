@@ -545,6 +545,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
+	for (auto& anchor : m_camera_anchors) { anchor.update(svc, *this, *player); }
 	for (auto& pl : point_lights) { pl.update(); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
@@ -662,7 +663,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		}
 		if (i == m_middleground) {
 			for (auto n : get_entities<AmbientProp>()) {
-				if (n->is_foreground()) { n->is_light_shaded() ? n->render(m_entity_texture, cam) : n->render(win, cam, 1.f); }
+				if (n->is_foreground()) { n->is_light_shaded() ? n->render(win, m_entity_texture, cam) : n->render(win, cam, 1.f); }
 			}
 		}
 	}
@@ -716,7 +717,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	auto render_order = std::views::iota(std::size_t{0}, props.size()) | std::ranges::to<std::vector>();
 	std::ranges::sort(render_order, {}, [props](auto index) { return props[index]->get_depth(); });
 	for (auto const index : render_order) {
-		if (props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
+		if (props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(win, m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
 	}
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
 
@@ -766,7 +767,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 		auto render_order = std::views::iota(std::size_t{0}, props.size()) | std::ranges::to<std::vector>();
 		std::ranges::sort(render_order, {}, [props](auto index) { return props[index]->get_depth(); });
 		for (auto const index : render_order) {
-			if (!props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
+			if (!props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(win, m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
 		}
 
 		for (auto [i, layer] : std::views::enumerate(get_layers())) {
@@ -774,7 +775,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
 				if (m_entities) {
 					for (auto n : get_entities<AmbientProp>()) {
-						if (!n->is_foreground()) { n->is_light_shaded() ? n->render(m_entity_texture, cam) : n->render(win, cam, 1.f); }
+						if (!n->is_foreground()) { n->is_light_shaded() ? n->render(win, m_entity_texture, cam) : n->render(win, cam, 1.f); }
 					}
 					for (auto n : get_entities<NPC>()) {
 						n->render_props(win, cam, DrawOrder::back);
@@ -995,6 +996,7 @@ void Map::generate_collidable_layer(bool live) {
 			mines.push_back(std::make_unique<entity::Mine>(*m_services, *this, entity::MineType::floating));
 			mines.back()->set_position(cell.position());
 		}
+		if (cell.is_camera_anchor()) { m_camera_anchors.push_back(CameraAnchor{cell.bounding_box.get_center()}); }
 		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index, m_attributes.sky_limit)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
 	}
 	m_static_entity_texture.display();

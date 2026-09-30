@@ -38,6 +38,8 @@ class FlatShader;
 
 namespace fornani::enemy {
 
+struct EnemyParameters;
+
 using EntityHandle = std::uint64_t;
 
 enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
@@ -128,6 +130,7 @@ struct Flags {
 class Enemy : public Mobile {
   public:
 	Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, bool spawned = false, int variant = 0, sf::Vector2<int> start_direction = {-1, 0});
+	Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view label, EnemyParameters const& params);
 
 	void set_stable_id(std::pair<int, sf::Vector2<int>> code);
 

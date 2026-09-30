@@ -7,12 +7,11 @@
 
 namespace fornani::enemy {
 
-Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
-	: Enemy(svc, map, "caster"), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
-	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(variant)}, m_target_force{0.0003f}, m_debug{} {
+Caster::Caster(automa::ServiceProvider& svc, world::Map& map, EnemyParameters const& params)
+	: Enemy(svc, map, "caster", params), m_services(&svc), m_map(&map), parts{.scepter{svc.assets.get_texture("caster_scepter"), 2.0f, 0.85f, {-16.f, 38.f}}, .wand{svc.assets.get_texture("caster_wand"), 2.0f, 0.85f, {-40.f, 48.f}}},
+	  energy_ball(svc, "energy_ball"), m_variant{static_cast<CasterVariant>(params.variant)}, m_target_force{0.0003f}, m_debug{} {
 	p_animatable.set_animations({{"idle", {0, 4, 28, -1}}, {"turn", {9, 3, 18, 0}}, {"prepare", {9, 3, 18, 0}}, {"signal", {4, 4, 28, 2}}, {"dormant", {8, 1, 32, -1}}});
 	p_animatable.animation.set_params(get_params("dormant"));
-	if (map.get_style_id() == 5) { cooldowns.awaken = util::Cooldown{4}; }
 	get_collider().physics.set_friction_componentwise({0.964f, 0.964f});
 	get_collider().flags.general.set(shape::General::complex);
 	get_collider().set_flag(shape::ColliderFlags::simple);
@@ -24,6 +23,7 @@ Caster::Caster(automa::ServiceProvider& svc, world::Map& map, int variant)
 	if (m_variant == CasterVariant::apprentice) { flags.general.reset(GeneralFlags::rare_drops); }
 
 	cooldowns.awaken.start();
+	if (params.spawned) { m_flags.set(CasterFlags::no_sleep); }
 	parts.scepter.sprite->setTextureRect(sf::IntRect{{0, 0}, scepter_dimensions});
 	parts.wand.sprite->setTextureRect(sf::IntRect{{0, 0}, wand_dimensions});
 }
@@ -204,7 +204,7 @@ fsm::StateFunction Caster::update_dormant() {
 		shake();
 		m_services->soundboard.flags.world.set(audio::World::pushable_move);
 	}
-	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot)) {
+	if (cooldowns.awaken.is_complete() || flags.state.test(StateFlags::shot) || m_flags.test(CasterFlags::no_sleep)) {
 		cooldowns.awaken.cancel();
 		flags.state.set(StateFlags::vulnerable);
 		m_map->effects.push_back(entity::Effect(*m_services, "small_explosion", get_collider().physics.position));
