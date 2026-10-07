@@ -195,9 +195,23 @@ void Player::update(world::Map& map) {
 
 	// item use logic
 	handle_item_logic();
-	if (map.is_toxic() && cooldowns.suffocate.is_complete() && !m_animation_machine.is_state(AnimState::sleep)) {
-		cooldowns.suffocate.start();
-		if (!has_item_equipped("gas_mask")) { hurt(); }
+
+	// toxicity
+	add_toxicity(-0.001f);
+	if (counters.toxicity.get() >= 1.f) {
+		hurt();
+		counters.toxicity.reset();
+		set_flag(PlayerFlags::poisoned);
+	}
+	if (counters.toxicity.get() < 0.f) { counters.toxicity.reset(); }
+	if (map.is_toxic() && !m_animation_machine.is_state(AnimState::sleep)) {
+		if (!has_item_equipped("gas_mask")) { add_toxicity(0.005f); }
+	}
+	auto color = colors::mythic_green;
+	if (counters.toxicity.running()) {
+		auto cvec = std::vector{colors::transparent, colors::mythic_green};
+		color = gradient_color(cvec, counters.toxicity.get());
+		flat_shade(color);
 	}
 
 	// stun logic
@@ -802,6 +816,8 @@ void Player::piggyback(int id) {
 	}
 }
 
+void Player::add_toxicity(float amount) { counters.toxicity.update(amount); }
+
 auto Player::has_weapon(std::string_view tag) const -> bool {
 	if (!arsenal) { return false; }
 	return arsenal->has(tag);
@@ -881,7 +897,16 @@ void Player::update_camera() {
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
 	}
 	auto focus = has_collider() ? get_camera_focus_point() : m_services->camera_controller.get_position();
-	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) { m_camera.camera.center(focus, force_multiplier); }
+
+	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) {
+		if (auto const anchor = m_services->camera_controller.get_anchor_position()) {
+			constexpr float anchor_strength = 0.75f;
+			auto const influence = std::min(m_services->camera_controller.get_anchor_weight(), 1.f) * anchor_strength;
+			focus += (*anchor - focus) * influence;
+		}
+
+		m_camera.camera.center(focus, force_multiplier);
+	}
 	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::system)) { m_camera.camera.center(m_services->camera_controller.get_position()); }
 	m_camera.camera.update(*m_services);
 }
@@ -974,7 +999,11 @@ void Player::hurt(float amount, bool force) {
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : cooldowns.suffocate.started() ? "nani_stun" : "nani_hurt";
+		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp"
+				   : cooldowns.stun.started()															  ? "nani_stun"
+				   : consume_flag(PlayerFlags::poisoned)												  ? "nani_stun"
+				   : amount > 1.f																		  ? "nani_double_hurt"
+																										  : "nani_hurt";
 		m_services->soundboard.play_sound(tag);
 		hurt_cooldown.start(2);
 		if (health.is_dead() && !is_dead()) {

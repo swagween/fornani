@@ -9,6 +9,8 @@
 
 namespace fornani {
 
+enum class SceneContextFlags : std::uint8_t { has_dialog };
+
 struct SceneContext {
 	SceneContext(automa::ServiceProvider& svc);
 	std::optional<std::unique_ptr<gui::Console>> console;
@@ -20,6 +22,7 @@ struct SceneContext {
 		if (auto& themed_black = biome) { black = Color{svc.data.biomes["properties"][*themed_black]["black"]}; }
 		return black;
 	}
+	util::BitFlags<SceneContextFlags> flags{};
 };
 
 } // namespace fornani

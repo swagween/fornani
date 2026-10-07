@@ -6,6 +6,7 @@
 #include <fornani/events/InventoryEvent.hpp>
 #include <fornani/graphics/rewards/AbilityRewardSequence.hpp>
 #include <fornani/graphics/rewards/HealthRewardSequence.hpp>
+#include <fornani/gui/dialogs/AirTravelDialog.hpp>
 #include <fornani/gui/dialogs/BuilderDialog.hpp>
 #include <fornani/gui/dialogs/VendorDialog.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -37,6 +38,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	// gameplay events
 	svc.events.open_vendor_event.attach_to(p_slot, &Dojo::open_vendor, this);
 	svc.events.open_builder_event.attach_to(p_slot, &Dojo::open_builder, this);
+	svc.events.open_air_travel_event.attach_to(p_slot, &Dojo::open_air_travel, this);
 	svc.events.launch_cutscene_event.attach_to(p_slot, &Dojo::launch_cutscene, this);
 	svc.events.press_permanent_switch_event.attach_to(p_slot, &Dojo::press_permanent_switch, this);
 	svc.events.add_map_marker_event.attach_to(p_slot, &Dojo::add_map_marker, this);
@@ -401,6 +403,11 @@ void Dojo::open_builder(ServiceProvider& svc, int id) {
 	m_dialog_id = id;
 }
 
+void Dojo::open_air_travel(ServiceProvider& svc, int id) {
+	m_flags.set(GameplayFlags::open_air_travel);
+	m_dialog_id = id;
+}
+
 void Dojo::launch_cutscene(ServiceProvider& svc, int id) { m_cutscenes.add(CutsceneSpec{id, 0}); }
 
 void Dojo::press_permanent_switch(ServiceProvider& svc, int id) { m_cutscenes.add(CutsceneSpec{2, id}); }
@@ -415,7 +422,7 @@ void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int quest
 
 bool Dojo::check_for_vendor(ServiceProvider& svc) {
 	if (p_context.console) { return false; }
-	if (m_flags.test(GameplayFlags::open_vendor) || m_flags.test(GameplayFlags::open_builder)) {
+	if (m_flags.test(GameplayFlags::open_vendor) || m_flags.test(GameplayFlags::open_builder) || m_flags.test(GameplayFlags::open_air_travel)) {
 		if (p_context.transition.is(graphics::TransitionState::inactive)) {
 			p_context.transition.start();
 			NANI_LOG_DEBUG(m_logger, "Dialog Started");
@@ -430,6 +437,10 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 			if (m_flags.test(GameplayFlags::open_builder)) {
 				p_dialog = std::make_unique<gui::BuilderDialog>(svc, *m_map, *player, m_dialog_id);
 				m_flags.reset(GameplayFlags::open_builder);
+			}
+			if (m_flags.test(GameplayFlags::open_air_travel)) {
+				p_dialog = std::make_unique<gui::AirTravelDialog>(svc, *m_map, *player, m_dialog_id);
+				m_flags.reset(GameplayFlags::open_air_travel);
 			}
 			svc.input_system.set_action_set(input::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);

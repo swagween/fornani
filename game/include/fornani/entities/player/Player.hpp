@@ -98,6 +98,7 @@ struct PhysicsStats {
 
 struct Counters {
 	int invincibility{};
+	util::FloatCounter toxicity{};
 };
 
 struct CornerSensor {
@@ -137,7 +138,8 @@ enum class PlayerFlags : std::uint8_t {
 	encumbered,
 	knocked_over,
 	heavy,
-	flat_shaded
+	flat_shaded,
+	poisoned
 };
 enum class Triggers : std::uint8_t { hurt };
 
@@ -209,6 +211,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_demo_position(sf::Vector2f const to) { m_demo_position = to; }
 	void place_at_demo_position() { set_position(m_demo_position); }
 	void reveal_item(int id) { catalog.inventory.reveal_item(id); }
+	void add_toxicity(float amount = 0.1f);
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }

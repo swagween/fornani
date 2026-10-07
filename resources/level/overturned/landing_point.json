@@ -1,5 +1,72 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 0,
+        "depth": 0.4000000059604645,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          27,
+          9
+        ],
+        "tag": "growth"
+      },
+      {
+        "channel": 1,
+        "depth": -0.20000000298023224,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          25,
+          10
+        ],
+        "tag": "growth"
+      }
+    ],
+    "cutscene_triggers": [
+      {
+        "attributes": {
+          "callbox": true
+        },
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 998,
+        "position": [
+          23,
+          10
+        ]
+      }
+    ],
+    "npcs": [
+      {
+        "background": false,
+        "dimensions": [
+          1,
+          1
+        ],
+        "direction": -1,
+        "face_player": true,
+        "hidden": true,
+        "id": 270,
+        "label": "aviator_bryn",
+        "position": [
+          5,
+          11
+        ],
+        "start_busy": false
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": false,
@@ -75,7 +142,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -471,6 +537,9 @@
         45,
         45,
         45,
+        395,
+        395,
+        396,
         45,
         45,
         45,
@@ -478,9 +547,6 @@
         45,
         45,
         45,
-        45,
-        45,
-        45,
         0,
         0,
         0,
@@ -503,9 +569,9 @@
         45,
         45,
         45,
-        45,
-        45,
-        45,
+        411,
+        411,
+        412,
         45,
         45,
         45,
@@ -935,6 +1001,9 @@
         0,
         0,
         0,
+        0,
+        0,
+        0,
         403,
         0,
         0,
@@ -982,6 +1051,9 @@
         0,
         0,
         0,
+        79,
+        13,
+        75,
         0,
         0,
         0,
@@ -1011,15 +1083,9 @@
         0,
         0,
         0,
+        31,
         0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
+        27,
         0,
         0,
         0,
@@ -2510,7 +2576,7 @@
         0,
         0,
         0,
-        0,
+        488,
         0,
         0,
         0,

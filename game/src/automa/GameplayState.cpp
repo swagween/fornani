@@ -26,6 +26,8 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 	p_context.transition.update(*player);
 
+	p_dialog.has_value() ? p_context.flags.set(SceneContextFlags::has_dialog) : p_context.flags.reset(SceneContextFlags::has_dialog);
+
 	// cutscenes
 	p_context.cutscene_catalog.update(svc, p_context, *m_map, *player);
 
@@ -62,7 +64,6 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	}
 
 	GameState::tick_update(svc, engine);
-	svc.camera_controller.update();
 }
 
 void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {

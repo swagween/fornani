@@ -331,6 +331,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 					if (cde.is(MessageCodeType::give_bonus_health)) { m_services->events.give_bonus_health_event.dispatch(cde.value); }
 					if (cde.is_open_vendor()) { m_services->events.open_vendor_event.dispatch(*m_services, cde.value); }
 					if (cde.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, cde.value); }
+					if (cde.is(MessageCodeType::open_air_travel) && m_process_code_after) { m_services->events.open_air_travel_event.dispatch(*m_services, cde.value); }
 					if (cde.is(MessageCodeType::launch_cutscene)) { m_services->events.launch_cutscene_event.dispatch(*m_services, cde.value); }
 					if (cde.is_item()) {
 						m_services->events.acquire_item_from_console_event.dispatch(*m_services, cde.value);
@@ -391,6 +392,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 				if (code.is_open_vendor() && m_process_code_after) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
 				if (code.is(MessageCodeType::acquire_postcard)) { m_services->events.acquire_postcard_event.dispatch(*m_services, code.value); }
 				if (code.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, code.value); }
+				if (code.is(MessageCodeType::open_air_travel) && m_process_code_after) { m_services->events.open_air_travel_event.dispatch(*m_services, code.value); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
 				if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }
 				if (code.is(MessageCodeType::launch_cutscene)) { m_services->events.launch_cutscene_event.dispatch(*m_services, code.value); }

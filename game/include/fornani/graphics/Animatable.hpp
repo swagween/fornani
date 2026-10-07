@@ -18,6 +18,7 @@ class Animatable : public Drawable {
 	void set_animations(std::unordered_map<std::string, anim::Parameters, TransparentHash, TransparentEqual> const& list);
 	void set_parameters(anim::Parameters params) { animation.set_params(params); }
 	void set_framerate(int to) { animation.params.framerate = to; }
+	void set_num_loops(int to) { animation.params.num_loops = to; }
 	void set_channel(int to);
 	void set_frame(int to);
 	void set_dimensions(sf::Vector2i const to) { m_dimensions = to; }

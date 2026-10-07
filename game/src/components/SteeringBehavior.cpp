@@ -85,7 +85,6 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 	sf::Vector2f random_offset{random::random_range_float(-1.f, 1.f), random::random_range_float(-1.f, 1.f)};
 	desired_dir = (desired_dir + random_offset * jitter).normalized();
 
-	if (physics.velocity.length() < constants::tiny_value) { physics.velocity = random::random_vector_float(-constants::small_value, constants::small_value); }
 	sf::Vector2f forward = physics.velocity.normalized();
 
 	if (forward.length() < constants::tiny_value) { forward = desired_dir; }
@@ -96,6 +95,8 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 		forward = physics.velocity / physics.actual_speed();
 		forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
 	}
+
+	forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
 
 	float alignment = util::dot(forward, desired_dir);
 
@@ -108,6 +109,30 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 	}
 
 	physics.velocity *= params.damping;
+}
+
+void SteeringBehavior::arrive(components::PhysicsComponent& physics, sf::Vector2f point, ThrustParameters params) {
+	sf::Vector2f to_target = point - physics.position;
+	float distance = to_target.length();
+
+	if (distance < constants::tiny_value) { return; }
+
+	sf::Vector2f desired_dir = to_target / distance;
+
+	// Speed we can afford to have at this distance and still stop on the target.
+	// The 0.8 margin keeps braking inside what the thrust can actually deliver.
+	float brake_decel = params.thrust_power * 0.8f;
+	float braking_speed = std::sqrt(2.f * brake_decel * distance);
+	float desired_speed = std::min(10.f, braking_speed);
+
+	sf::Vector2f desired_velocity = desired_dir * desired_speed;
+	sf::Vector2f steering = desired_velocity - physics.velocity;
+
+	// Thrust is limited, so clamp the correction
+	float steering_length = steering.length();
+	if (steering_length > params.thrust_power) { steering *= params.thrust_power / steering_length; }
+
+	physics.apply_force(steering);
 }
 
 void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2f point, float strength, float max_force) {

@@ -3,6 +3,7 @@
     "ambient_props": [
       {
         "channel": 0,
+        "depth": 0,
         "dimensions": [
           1,
           1
@@ -17,11 +18,12 @@
       },
       {
         "channel": 0,
+        "depth": 0.10000000149011612,
         "dimensions": [
           1,
           1
         ],
-        "foreground": true,
+        "foreground": false,
         "id": 0,
         "position": [
           40,
@@ -810,7 +812,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

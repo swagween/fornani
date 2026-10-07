@@ -7,6 +7,7 @@
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
 #include <fornani/particle/Sparkler.hpp>
+#include <fornani/utils/Circuit.hpp>
 
 #define LYNX_BIND(f) std::bind(&Lynx::f, this)
 
@@ -35,6 +36,11 @@ enum class LynxState : std::uint8_t {
 	fall_over
 };
 enum class LynxFlags : std::uint8_t { conversing, just_levitated, player_defeated, slammed };
+
+struct LynxExplosion {
+	Animatable effect;
+	sf::Vector2f point;
+};
 
 class Lynx final : public Boss {
   public:
@@ -86,6 +92,7 @@ class Lynx final : public Boss {
 		util::Cooldown post_levitate;
 		util::Cooldown start_levitate;
 		util::Cooldown throw_shuriken;
+		util::Cooldown spawn_explosion;
 		util::Cooldown post_defeat;
 		util::Cooldown stall;
 	} m_cooldowns{};
@@ -98,8 +105,10 @@ class Lynx final : public Boss {
 		std::array<entity::Attack, 3> slash{};
 		entity::Shockwave left_shockwave;
 		entity::Shockwave right_shockwave;
+		entity::Attack explosion{};
 	} m_attacks{};
 
+	util::Circuit m_alternator{2};
 	sf::Vector2f m_seek_friction;
 
 	util::BitFlags<LynxFlags> m_flags{};
@@ -107,6 +116,7 @@ class Lynx final : public Boss {
 	bool change_state(LynxState next, anim::Parameters params);
 	vfx::Sparkler m_magic;
 	Animatable m_sword_slam;
+	std::vector<LynxExplosion> m_explosions{};
 	shape::Shape m_distant_range{};
 
 	components::SteeringBehavior m_steering{};
@@ -121,6 +131,8 @@ class Lynx final : public Boss {
 
 	sf::Vector2f m_player_target{};
 	sf::Vector2f m_home{};
+	sf::Vector2f m_explosion_target{};
+	sf::Vector2f m_player_center{};
 };
 
 } // namespace fornani::enemy

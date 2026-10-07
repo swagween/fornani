@@ -30,6 +30,7 @@ class SteeringBehavior {
 	void inertial_seek(components::PhysicsComponent& physics, sf::Vector2f point, float max_speed, float max_force);
 	void spring_seek(components::PhysicsComponent& physics, sf::Vector2f point, float stiffness, float damping);
 	void thrust_seek(components::PhysicsComponent& physics, sf::Vector2f point, ThrustParameters params);
+	void arrive(components::PhysicsComponent& physics, sf::Vector2f point, ThrustParameters params);
 
 	void evade(PhysicsComponent& physics, sf::Vector2f point, float strength = 0.01f, float max_force = 8.f);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);

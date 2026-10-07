@@ -545,6 +545,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& spike : spikes) { spike.update(svc, *player, *this); }
 	// for (auto& vine : vines) { vine->update(svc, *this, *player); }
 	for (auto& timer_block : timer_blocks) { timer_block.update(svc, *this, *player); }
+	m_services->camera_controller.clear_anchors();
 	for (auto& anchor : m_camera_anchors) { anchor.update(svc, *this, *player); }
 	for (auto& pl : point_lights) { pl.update(); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }

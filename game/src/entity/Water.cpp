@@ -80,12 +80,14 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 			}
 			svc.soundboard.repeat_sound("regenerate");
 		}
-		if (m_type == WaterType::toxic) { player.hurt(); }
 	} else {
 		set_flag(WaterFlags::touched, false);
 		m_replenish_cooldown.cancel();
 	}
 	if (m_bounding_box.contains_point(player.hurtbox.get_center())) {
+		if (m_type == WaterType::toxic) {
+			if (!player.has_item_equipped("purifier")) { player.add_toxicity(0.004f); }
+		}
 		if (!has_flag_set(WaterFlags::splashed)) {
 			svc.soundboard.flags.world.set(audio::World::splash);
 			map.spawn_effect(svc, "splash", sf::Vector2f{player.get_collider().get_center().x, m_bounding_box.get_position().y}, {}, get_i_type());
@@ -101,11 +103,11 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 		player.exit_water();
 	}
 
-	m_wave_timer.update(0.005f);
+	m_wave_timer.update(m_type == WaterType::toxic ? 0.001f : 0.005f);
 	auto phase = m_wave_timer.get();
 	auto wrapped = std::fmod(phase, 2.f * std::numbers::pi);
-	m_wave_shift.x = std::cos(wrapped);
-	m_wave_shift.y = std::sin(2.f * wrapped);
+	m_wave_shift.x = m_type == WaterType::toxic ? 0.f : std::cos(wrapped);
+	m_wave_shift.y = std::sin(2.f * wrapped) + 2.f;
 	if (phase >= 2.f * std::numbers::pi) { m_wave_timer.reset(); }
 	auto pos = get_world_position() == sf::Vector2f{0.f, 0.f} ? -constants::f_cell_vec : get_world_position();
 	m_bounding_box.set_position(pos);

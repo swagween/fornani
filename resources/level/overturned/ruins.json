@@ -262,7 +262,6 @@
       "environmental_randomness": true,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -10699,7 +10698,7 @@
         0,
         0,
         0,
-        0,
+        508,
         0,
         0,
         0,

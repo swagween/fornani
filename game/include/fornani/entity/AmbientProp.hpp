@@ -57,7 +57,7 @@ class AmbientProp : public Entity {
 	void flat_shade(sf::RenderWindow& win, sf::Vector2f cam, FlatShader& shader);
 
 	[[nodiscard]] auto is_foreground() const -> bool { return m_params ? m_params->attributes.test(AmbientPropAttributes::foreground) : false; }
-	[[nodiscard]] auto is_in_front() const -> bool { return m_variables.depth > -constants::tiny_value; }
+	[[nodiscard]] auto is_in_front() const -> bool { return m_variables.depth > 0.f; }
 	[[nodiscard]] auto is_interactable() const -> bool { return m_flags.test(AmbientPropFlags::interactable); }
 	[[nodiscard]] auto is_flat_shaded() const -> bool { return m_flags.test(AmbientPropFlags::flat_shaded); }
 	[[nodiscard]] auto is_light_shaded() const -> bool { return m_flags.test(AmbientPropFlags::light_shaded); }

@@ -20,12 +20,12 @@ void CameraController::add_anchor(sf::Vector2f position, float weight) {
 	m_anchor_weight += weight;
 }
 
-void CameraController::update() {
-	if (m_anchor_weight > 0.f) {
-		auto const target = m_anchor_position / m_anchor_weight;
-		set_position(target);
-	}
+std::optional<sf::Vector2f> CameraController::get_anchor_position() const {
+	if (m_anchor_weight <= 0.f) { return std::nullopt; }
+	return m_anchor_position / m_anchor_weight;
+}
 
+void CameraController::clear_anchors() {
 	m_anchor_position = {};
 	m_anchor_weight = 0.f;
 }

@@ -60,4 +60,23 @@ void Cutscene::set_progress(int const to) {
 	if (debug) { NANI_LOG_DEBUG(p_logger, "set cutscene progress to {}", to); }
 }
 
+void Cutscene::debug_window() {
+	static auto sz = ImVec2{180.f, 250.f};
+	ImGui::SetNextWindowSize(sz);
+	if (ImGui::Begin("Cutscene Debug")) {
+		ImGui::Text("Progress: %i", progress);
+		ImGui::SeparatorText("Cooldowns");
+		ImGui::Text("Beginning: ");
+		ImGui::ProgressBar(cooldowns.beginning.get_normalized());
+		ImGui::Text("Pause: ");
+		ImGui::ProgressBar(cooldowns.pause.get_normalized());
+		ImGui::Text("Long Pause: ");
+		ImGui::ProgressBar(cooldowns.long_pause.get_normalized());
+		ImGui::Text("End: ");
+		ImGui::ProgressBar(cooldowns.end.get_normalized());
+		ImGui::SeparatorText("Controls");
+		ImGui::End();
+	}
+}
+
 } // namespace fornani

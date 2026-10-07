@@ -1,5 +1,6 @@
 
 #include "fornani/story/CutsceneCatalog.hpp"
+#include <fornani/story/cutscene/AirTravel.hpp>
 #include <fornani/story/cutscene/AshtownCall.hpp>
 #include <fornani/story/cutscene/BanditConfrontation.hpp>
 #include <fornani/story/cutscene/BanditEncounter.hpp>
@@ -65,6 +66,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 407: cutscenes.push_back(std::make_unique<FamilyReunion>(svc)); break;
 	case 607: cutscenes.push_back(std::make_unique<RetrieveLynx>(svc, map, player)); break;
 	case arena_id_v: cutscenes.push_back(std::make_unique<BattleArena>(svc, map)); break;
+	case air_travel_id_v: cutscenes.push_back(std::make_unique<AirTravel>(svc, map)); break;
 	default: NANI_LOG_INFO(m_logger, "You forgot to add cutscene {} to catalog.", id); return;
 	}
 	m_register.add(id);

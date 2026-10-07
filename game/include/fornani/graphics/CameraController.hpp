@@ -28,13 +28,15 @@ class CameraController {
 	void set_owner(CameraOwner to);
 	void set_position(sf::Vector2f to) { m_position = to; }
 	void add_anchor(sf::Vector2f position, float weight);
-	void update();
+	void clear_anchors();
+	std::optional<sf::Vector2f> get_anchor_position() const;
 
 	[[nodiscard]] auto is_shaking() const -> bool { return shake_properties.shaking; }
 	[[nodiscard]] auto get_frequency() const -> int { return shake_properties.frequency; }
 	[[nodiscard]] auto get_energy() const -> float { return shake_properties.energy; }
 	[[nodiscard]] auto get_start_time() const -> int { return shake_properties.start_time; }
 	[[nodiscard]] auto get_dampen_factor() const -> float { return shake_properties.dampen_factor; }
+	[[nodiscard]] auto get_anchor_weight() const -> float { return m_anchor_weight; }
 	[[nodiscard]] auto get_shake_properties() const -> ShakeProperties { return shake_properties; }
 
 	[[nodiscard]] auto get_state() const -> CameraState { return m_state; }

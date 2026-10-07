@@ -400,5 +400,44 @@
         }
       ]
     ]
+  },
+  "90": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [
+            [4, 4],
+            [5, 3],
+            [29, 0]
+          ],
+          "message": "Hey Nani! Where to?"
+        }
+      ]
+    ]
+  },
+  "91": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "codes": [[23, 10]],
+          "message": "Let's go!"
+        }
+      ]
+    ]
+  },
+  "92": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "messages": ["Just ring if you need me!", "Another time, then!", "Stay safe, Nani!"]
+        }
+      ]
+    ]
   }
 }

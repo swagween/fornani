@@ -36,6 +36,9 @@ class Cutscene : public UniquePolymorphic {
 	void set_progress(int const to);
 
   protected:
+	void debug_window();
+
+  protected:
 	util::BitFlags<CutsceneFlags> flags{};
 	int progress{};
 	int total_conversations{};

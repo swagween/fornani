@@ -151,6 +151,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			svc.soundboard.flags.item.set(audio::Item::orb_max);
 		}
 		deactivate();
+		map.spawn_effect(svc, "drop_collect", get_collider().get_global_center());
 	}
 }
 

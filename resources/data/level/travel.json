@@ -1,0 +1,17 @@
+{
+  "landing_sites": {
+    "270": {
+      "character": 34,
+      "suite": 90,
+      "vehicle": "champion_j5",
+      "already_present": false
+    }
+  },
+  "air_travel_dialog": {
+    "locations": [
+      { "tag": "woodshine", "position": [163, 111] },
+      { "tag": "pioneer base", "position": [111, 128] },
+      { "tag": "ashtown", "position": [243, 123] }
+    ]
+  }
+}

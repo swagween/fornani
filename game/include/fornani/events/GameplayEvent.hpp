@@ -12,6 +12,7 @@ struct PressPermanentSwitchEvent : Event<automa::ServiceProvider&, int> {};
 struct SetCutsceneProgressionEvent : Event<int> {};
 struct OpenVendorEvent : Event<automa::ServiceProvider&, int> {};
 struct OpenBuilderEvent : Event<automa::ServiceProvider&, int> {};
+struct OpenAirTravelEvent : Event<automa::ServiceProvider&, int> {};
 struct AddMapMarkerEvent : Event<automa::ServiceProvider&, int, int, int> {};
 struct PlaySongEvent : Event<int> {};
 struct StartBattleEvent : Event<> {};

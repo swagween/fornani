@@ -4,7 +4,7 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 260.f} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 600.f} {
 	p_animatable.push_and_set_animation("flying", {0, 1, 24, -1});
 	p_animatable.push_animation("land", {1, 4, 24, 0});
 	p_animatable.push_animation("grounded", {5, 1, 24, -1});
@@ -36,7 +36,7 @@ void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 		auto max_vel = 8.f;
 		auto t = std::clamp(get_collider().physics.velocity.lengthSquared() / max_vel, 0.f, 1.f);
 		auto pitch = std::lerp(0.5f, 1.1f, get_collider().physics.velocity.lengthSquared());
-		svc.soundboard.repeat_sound("champion_j5_propeller", 1, get_collider().get_center(), pitch);
+		svc.soundboard.repeat_sound("champion_j5_propeller", 977, get_collider().get_center(), pitch);
 	}
 
 	if (flags.test(ChampionJ5Flags::interactable)) {

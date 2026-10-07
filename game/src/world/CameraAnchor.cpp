@@ -16,6 +16,7 @@ void CameraAnchor::update(automa::ServiceProvider& svc, world::Map& map, player:
 	constexpr float influence_radius = 400.f;
 
 	if (length >= influence_radius) { return; }
+
 	auto const t = length / influence_radius;
 	auto const weight = 1.f - t * t * (3.f - 2.f * t);
 
