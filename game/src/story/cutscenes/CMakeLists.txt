@@ -14,6 +14,7 @@ nani_add_sources(
   HaunchIntro.cpp
   HaunchEscape.cpp
         LadyNimbusIntro.cpp
+        Landing.cpp
         LothAtWorm.cpp
         PioneerBaseDebrief.cpp
         MainIntro.cpp

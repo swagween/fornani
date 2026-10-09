@@ -15,7 +15,7 @@ namespace fornani {
 class FlatShader;
 
 enum class AmbientPropAttributes : std::uint8_t { foreground, audio };
-enum class AmbientPropFlags : std::uint8_t { interactable, flat_shaded, light_shaded };
+enum class AmbientPropFlags : std::uint8_t { interactable, flat_shaded, light_shaded, hidden };
 
 struct AmbientColor : public Color {
 	AmbientColor(dj::Json const& in, int index) : Color{in}, tile_index{index} {}
@@ -55,15 +55,18 @@ class AmbientProp : public Entity {
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
 	void render(sf::RenderWindow& win, sf::RenderTexture& tex, sf::Vector2f cam);
 	void flat_shade(sf::RenderWindow& win, sf::Vector2f cam, FlatShader& shader);
+	void set_hidden(bool const to) { to ? m_flags.set(AmbientPropFlags::hidden) : m_flags.reset(AmbientPropFlags::hidden); }
 
 	[[nodiscard]] auto is_foreground() const -> bool { return m_params ? m_params->attributes.test(AmbientPropAttributes::foreground) : false; }
 	[[nodiscard]] auto is_in_front() const -> bool { return m_variables.depth > 0.f; }
 	[[nodiscard]] auto is_interactable() const -> bool { return m_flags.test(AmbientPropFlags::interactable); }
 	[[nodiscard]] auto is_flat_shaded() const -> bool { return m_flags.test(AmbientPropFlags::flat_shaded); }
 	[[nodiscard]] auto is_light_shaded() const -> bool { return m_flags.test(AmbientPropFlags::light_shaded); }
+	[[nodiscard]] auto is_hidden() const -> bool { return m_flags.test(AmbientPropFlags::hidden); }
 	[[nodiscard]] auto is_destructible() const -> bool { return m_health.has_value(); }
 	[[nodiscard]] auto is_destroyed() const -> bool { return is_destructible() ? m_health->is_dead() : false; }
 	[[nodiscard]] auto get_depth() const -> float { return m_variables.depth; }
+	[[nodiscard]] auto get_tag() const -> std::string_view { return m_tag; }
 
   private:
 	void init(automa::ServiceProvider& svc);

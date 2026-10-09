@@ -410,10 +410,11 @@
     "lookup": [12, 1],
     "origin": [8, 3],
     "actual_title": "Heart Keychain",
-    "naive_description": "A heart keychain. You attach it to your belt and it gives you extra life.",
-    "unique": false,
+    "naive_description": "When it equipped, it will triple the likelihood that any loot drop will contain a heart.",
+    "unique": true,
     "equippable": true,
-    "rarity": 1
+    "sellable": true,
+    "value": 1400
   },
   {
     "tag": "cridium_shard",
@@ -1266,5 +1267,25 @@
     "unique": true,
     "invisible": true,
     "value": 1200
+  },
+  {
+    "tag": "magazine",
+    "category": 3,
+    "lookup": [10, 3],
+    "actual_title": "Magazine",
+    "naive_description": "Adds one extra ammo to the currently equipped weapon.",
+    "unique": true,
+    "equippable": true,
+    "sellable": true,
+    "value": 2000
+  },
+  {
+    "tag": "radar_beacon",
+    "category": 4,
+    "lookup": [8, 3],
+    "actual_title": "Radar Beacon",
+    "naive_description": "When fixed to a signal tower, this emits a radar signal detectable by aircraft.",
+    "unique": false,
+    "value": 5000
   }
 ]

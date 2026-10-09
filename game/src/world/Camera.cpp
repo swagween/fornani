@@ -1,9 +1,8 @@
-#include "fornani/world/Camera.hpp"
 
+#include "fornani/world/Camera.hpp"
+#include <algorithm>
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
-
-#include <algorithm>
 
 namespace fornani {
 
@@ -17,6 +16,10 @@ void Camera::update(automa::ServiceProvider& svc) {
 		begin_shake();
 		svc.camera_controller.cancel();
 	}
+	m_physics.simple_update();
+}
+
+void Camera::frame_update() {
 	m_shake.timer.update();
 	if (m_shake.timer.running()) {
 		m_flags.set(CameraFlags::shake);
@@ -35,7 +38,6 @@ void Camera::update(automa::ServiceProvider& svc) {
 		auto randy = random::random_range_float(-diff, diff);
 		m_final_position = m_physics.position + sf::Vector2f{randx, randy};
 	}
-	m_physics.simple_update();
 }
 
 void Camera::set_bounds(sf::Vector2f to_bounds) { m_bounds.size = to_bounds; }

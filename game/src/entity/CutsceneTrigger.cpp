@@ -2,6 +2,7 @@
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/CutsceneTrigger.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <fornani/story/cutscene/AirTravel.hpp>
 #include <fornani/story/cutscene/BattleArena.hpp>
 #include <fornani/world/Map.hpp>
 
@@ -31,6 +32,7 @@ void CutsceneTrigger::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	if (in["attributes"]["callbox"].as_bool()) { m_attributes.set(CutsceneTriggerAttributes::callbox); }
 	if (get_id() == arena_id_v) { m_attributes.set(CutsceneTriggerAttributes::arena); }
+	if (get_id() == air_travel_id_v) { m_attributes.set(CutsceneTriggerAttributes::persistent); }
 }
 
 void CutsceneTrigger::expose() { Entity::expose(); }
@@ -52,7 +54,7 @@ void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[ma
 		if (!svc.quest_table.are_contingencies_met(*p_contingencies)) { return; }
 	}
 	m_hover_trigger.update();
-	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && !is_pushed()) {
+	if (player.get_collider().bounding_box.overlaps(m_bounding_box) && (!is_pushed() || m_attributes.test(CutsceneTriggerAttributes::persistent))) {
 		if (m_attributes.test(CutsceneTriggerAttributes::callbox)) {
 			if (player.controller.inspecting()) { m_flags.set(CutsceneTriggerFlags::activated); }
 			if (!m_flags.test(CutsceneTriggerFlags::hovered)) {

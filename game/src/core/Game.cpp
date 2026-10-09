@@ -324,12 +324,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Draw Calls: %i", debug::draw_calls);
 					ImGui::SliderInt("Calls", &debug::draw_calls, 0, 500, "%i", ImGuiSliderFlags_NoInput | ImGuiSliderFlags_Logarithmic);
 					debug::draw_calls = 0;
-					ImGui::Separator();
-					ImGui::Text("Camera");
-					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);
-					ImGui::Text("Actual Position: (%.2f, %.2f)", player->get_actual_camera_position().x, player->get_actual_camera_position().y);
-					ImGui::Text("Camera state: %s", services.camera_controller.is_free() ? "free" : "constrained");
-					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
 					ImGui::Text("World Time: %s", services.world_clock.get_string().c_str());
 					ImGui::Text("Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_time_of_day()));
 					ImGui::Text("Previous Time of Day: %s", services.world_clock.tod_as_string(services.world_clock.get_previous_time_of_day()));
@@ -346,6 +340,22 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("World clock transitioning? %s", services.world_clock.is_transitioning() ? "yes" : "no");
 					ImGui::SliderInt("Clock Speed", &clock_speed, 4, 196);
 					services.world_clock.set_speed(clock_speed);
+					ImGui::EndTabItem();
+				}
+				if (ImGui::BeginTabItem("Camera")) {
+					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);
+					ImGui::Text("Actual Position: (%.2f, %.2f)", player->get_actual_camera_position().x, player->get_actual_camera_position().y);
+					ImGui::Text("Camera state: %s", services.camera_controller.is_free() ? "free" : "constrained");
+					static int freq = 6;
+					static float ener = 2.4f;
+					static int time = 900;
+					static int damp = 30;
+					ImGui::SliderInt("freq", &freq, 1, 30);
+					ImGui::SliderFloat("energy", &ener, 0.1f, 5.f, "%.3f");
+					ImGui::SliderInt("time", &time, 40, 2000);
+					ImGui::SliderInt("dampen", &damp, 1, 500);
+					if (ImGui::Button("Shake")) { services.camera_controller.shake(freq, ener, time, damp); }
+					if (ImGui::Button("Toggle Freedom")) { services.camera_controller.is_free() ? services.camera_controller.constrain() : services.camera_controller.free(); }
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Ticker")) {

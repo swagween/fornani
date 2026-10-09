@@ -176,7 +176,7 @@ fsm::StateFunction Henchman::update_jump() {
 
 fsm::StateFunction Henchman::update_land() {
 	p_state.actual = HenchmanState::land;
-	if (p_animatable.animation.just_started()) {
+	if (p_animatable.animation.just_started() && !health.is_dead()) {
 		m_services->camera_controller.shake(10, 0.3f, 200, 20);
 		m_services->soundboard.play_sound("vibration", get_collider().get_center());
 		m_services->soundboard.play_sound("delay_crash", get_collider().get_center());

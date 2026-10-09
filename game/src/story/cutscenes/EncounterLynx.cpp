@@ -13,6 +13,7 @@ EncounterLynx::EncounterLynx(automa::ServiceProvider& svc) : Cutscene(svc, 227, 
 	auto prog = svc.quest_table.get_quest_progression("defeat_lynx");
 	progress = prog == 0 ? 0 : prog == 1 ? 10 : 20;
 	if (progress > 10 || progress == 0) { svc.music_player.stop(); }
+	if (progress == 20) { flags.set(CutsceneFlags::initialized); }
 }
 
 void EncounterLynx::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {

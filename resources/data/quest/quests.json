@@ -493,5 +493,31 @@
     "target": 2,
     "objectives": [],
     "displayed": false
+  },
+
+  {
+    "tag": "collect_radar_beacons",
+    "target": 10,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "title": "Landing Points",
+    "tag": "landing_points",
+    "displayed": false,
+    "subquests": [
+      {
+        "tag": "pioneer_base",
+        "id": 209
+      },
+      {
+        "tag": "woodshine",
+        "id": 270
+      },
+      {
+        "tag": "ashtown",
+        "id": 1440
+      }
+    ]
   }
 ]

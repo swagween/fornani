@@ -999,6 +999,21 @@
       }
     ]
   },
+  "champ385022345936905": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "Looks like an old aircraft. Based on its condition, it won't be flying anytime soon..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "crouch_tut385022345543694": {
     "series": [
       {

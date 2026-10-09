@@ -67,6 +67,7 @@ struct QuestContingency {
 	QuestContingency(std::string_view to_tag, int const to_req, bool to_strict) : tag{to_tag}, requirement{to_req}, strict{to_strict} {}
 	QuestContingency(dj::Json const& in);
 	void serialize(dj::Json& out) const;
+	std::optional<Subquest> subquest{};
 
 	// for the dialogue editor
 	bool delete_me{};

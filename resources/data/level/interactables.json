@@ -1,0 +1,12 @@
+{
+  "signal_tower": {
+    "dimensions": [22, 43],
+    "offset": [0, 7],
+    "animation": [{ "label": "basic", "params": { "lookup": 0, "duration": 6, "framerate": 80, "num_loops": -1 } }]
+  },
+  "signal_beacon": {
+    "dimensions": [22, 43],
+    "offset": [0, 7],
+    "animation": [{ "label": "basic", "params": { "lookup": 0, "duration": 6, "framerate": 60, "num_loops": -1 } }]
+  }
+}

@@ -8,6 +8,7 @@ nani_add_headers(
   Entity.hpp
   EntitySet.hpp
         Inspectable.hpp
+        Interactable.hpp
         Light.hpp
         NPC.hpp
         Platform.hpp

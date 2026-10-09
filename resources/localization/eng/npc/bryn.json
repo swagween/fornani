@@ -887,6 +887,17 @@
           "message": "Tell me about the Ancient Kariba."
         },
         {
+          "codes": [[1, 7]],
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "collect_radar_beacons"
+            }
+          ],
+          "message": "So, you can fly now?"
+        },
+        {
           "codes": [[1, 1]],
           "contingencies": [
             {
@@ -1046,6 +1057,30 @@
             [1, 0]
           ],
           "message": "I should stop worrying so much... but it's easy to get lost in your thoughts when you stay cooped up in an old fort all day..."
+        }
+      ],
+      [
+        {
+          "codes": [[5, 1]],
+          "message": "Yes, indeed! Looks like all that hard work on the Champion J5 was worth it."
+        },
+        {
+          "codes": [[5, 0]],
+          "message": "Say, if you find any signal towers around the island, you can place a radar beacon there, and I should be able to detect it and come pick you up if you need."
+        },
+        {
+          "codes": [[2, 103]],
+          "message": "Here, we had a radar beacon lying around, so you might as well have it."
+        },
+        {
+          "message": "As for signal towers... I know there's one in Woodshine, but besides that I'm not sure. You'll have to ask around or stumble upon them yourself."
+        },
+        {
+          "codes": [
+            [5, 1],
+            [1, 0]
+          ],
+          "message": "I hope that helps you!"
         }
       ]
     ]

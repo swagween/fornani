@@ -124,5 +124,42 @@
   },
   "set_language": {
     "suite": [[{ "message": "New language setting will take effect the next time the game is opened." }]]
+  },
+  "no_radar_beacon": {
+    "response_mode": 1,
+    "hide_portrait": true,
+    "suite": [
+      [
+        {
+          "message": "This signal tower lacks a radar beacon."
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": false,
+              "tag": "collect_radar_beacons"
+            }
+          ],
+          "message": "Would you like to install one?",
+          "codes": [[1, 0]]
+        }
+      ]
+    ],
+    "responses": [
+      [
+        {
+          "message": "Yes",
+          "codes": [
+            [17, 103, 1],
+            [23, 40]
+          ]
+        },
+        {
+          "message": "No",
+          "codes": [[0, 0]]
+        }
+      ]
+    ]
   }
 }

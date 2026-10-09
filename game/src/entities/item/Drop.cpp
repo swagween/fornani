@@ -128,7 +128,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 
 	int v{};
 	if (type == DropType::heart) { v = rarity == Rarity::priceless || rarity == Rarity::rare ? 1 : 0; }
-	if (type == DropType::orb) { v = rarity == Rarity::priceless ? 3 : (rarity == Rarity::rare ? 2 : (rarity == Rarity::uncommon ? 1 : 0)); }
+	if (type == DropType::orb) { v = static_cast<int>(get_rarity()); }
 	if (type == DropType::gem) { v = special_id; }
 	set_channel(v);
 
@@ -151,7 +151,7 @@ void Drop::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 			svc.soundboard.flags.item.set(audio::Item::orb_max);
 		}
 		deactivate();
-		map.spawn_effect(svc, "drop_collect", get_collider().get_global_center());
+		map.spawn_effect(svc, "drop_collect", get_collider().get_global_center(), {}, get_type() == DropType::heart ? 4 : static_cast<int>(get_rarity()));
 	}
 }
 

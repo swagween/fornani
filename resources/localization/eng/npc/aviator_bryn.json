@@ -439,5 +439,27 @@
         }
       ]
     ]
+  },
+  "100": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "messages": ["See you around!", "Stay safe, Nani!"]
+        }
+      ]
+    ]
+  },
+  "101": {
+    "output": 2,
+    "responses": [],
+    "suite": [
+      [
+        {
+          "messages": ["See you inside!"]
+        }
+      ]
+    ]
   }
 }

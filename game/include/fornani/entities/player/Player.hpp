@@ -139,7 +139,8 @@ enum class PlayerFlags : std::uint8_t {
 	knocked_over,
 	heavy,
 	flat_shaded,
-	poisoned
+	poisoned,
+	refresh_weapons
 };
 enum class Triggers : std::uint8_t { hurt };
 
@@ -168,6 +169,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 
 	// member functions
 	void update(world::Map& map);
+	void frame_update();
 	void simple_update(); // collider-free update
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, sf::Vector2f forced_position);
@@ -243,7 +245,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
 	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
-	[[nodiscard]] auto switched_weapon() const -> bool { return hotbar->switched(); }
+	[[nodiscard]] auto switched_weapon() -> bool { return hotbar->switched() || consume_flag(PlayerFlags::refresh_weapons); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
 	[[nodiscard]] auto get_piggyback_socket() const -> sf::Vector2f { return m_piggyback_socket; }
 	[[nodiscard]] auto get_camera_position() const -> sf::Vector2f { return m_camera.camera.get_position(); }

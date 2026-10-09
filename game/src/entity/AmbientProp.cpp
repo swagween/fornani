@@ -116,7 +116,7 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		}
 		return;
 	}
-	if (spawn_denied() || is_flat_shaded() || is_destroyed()) { return; }
+	if (spawn_denied() || is_flat_shaded() || is_destroyed() || is_hidden()) { return; }
 	if (m_params) {
 		p_animatable.set_position(generate_position(win, cam));
 		win.draw(p_animatable);
@@ -132,7 +132,7 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 }
 
 void AmbientProp::render(sf::RenderWindow& win, sf::RenderTexture& tex, sf::Vector2f cam) {
-	if (spawn_denied() || is_destroyed()) { return; }
+	if (spawn_denied() || is_destroyed() || is_hidden()) { return; }
 	p_animatable.set_scale(constants::f_scale_vec);
 	p_animatable.set_position(generate_position(win, cam * 0.05f));
 	tex.draw(p_animatable);
@@ -140,7 +140,7 @@ void AmbientProp::render(sf::RenderWindow& win, sf::RenderTexture& tex, sf::Vect
 }
 
 void AmbientProp::flat_shade(sf::RenderWindow& win, sf::Vector2f cam, FlatShader& shader) {
-	if (spawn_denied() || is_destroyed()) { return; }
+	if (spawn_denied() || is_destroyed() || is_hidden()) { return; }
 	if (!is_flat_shaded()) {
 		render(win, cam, 1.f);
 		return;

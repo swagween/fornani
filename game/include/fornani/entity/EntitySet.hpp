@@ -13,6 +13,7 @@
 #include <fornani/entity/Enemy.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/entity/Inspectable.hpp>
+#include <fornani/entity/Interactable.hpp>
 #include <fornani/entity/Light.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/entity/Platform.hpp>

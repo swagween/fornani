@@ -31,6 +31,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	create_map.emplace("teleporters", &create_entity<Teleporter>);
 	create_map.emplace("timer_blocks", &create_entity<TimerBlock>);
 	create_map.emplace("inspectables", &create_entity<Inspectable>);
+	create_map.emplace("interactables", &create_entity<Interactable>);
 	create_map.emplace("ambient_props", &create_entity<AmbientProp>);
 	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
 	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);

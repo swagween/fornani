@@ -29,6 +29,7 @@ struct EventRegistry {
 	AbilityRewardSequenceEvent ability_acquisition_event{};
 	TransitionEvent transition_event{};
 	LoadRoomEvent load_room_event{};
+	TravelToRoomEvent travel_to_room_event{};
 
 	AcquireItemFromConsoleEvent acquire_item_from_console_event{};
 	AcquireItemEvent acquire_item_event{};

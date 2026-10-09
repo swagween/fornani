@@ -454,6 +454,8 @@ void Player::update(world::Map& map) {
 	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
 }
 
+void Player::frame_update() { m_camera.camera.frame_update(); }
+
 void Player::simple_update() {
 	handle_turning();
 	p_animatable.tick();
@@ -1023,6 +1025,7 @@ void Player::hurt(float amount, bool force) {
 			// m_map.value()->spawn_effect(*m_services, "hurt_spark", hurtbox.get_center());
 		}
 		m_services->soundboard.play_sound("impact");
+		m_services->camera_controller.shake(2, 0.05f, 200, 50);
 	}
 }
 
@@ -1271,6 +1274,12 @@ EquipmentStatus Player::equip_item(int id) {
 		ret == EquipmentStatus::equipped || ret == EquipmentStatus::swapped ? catalog.wardrobe.equip(ApparelType::hairstyle, 1) : catalog.wardrobe.unequip(ApparelType::hairstyle);
 		wardrobe_widget.update(*this);
 	}
+	if (id == 102) {
+		set_flag(PlayerFlags::refresh_weapons);
+		if (arsenal) {
+			for (auto& w : arsenal->get_loadout()) { w->ammo.magazine.add_bonus(1); }
+		}
+	}
 
 	// check for gas mask swapping
 	if (!std::ranges::contains(catalog.inventory.equipped_items_view(), 56) && ret == EquipmentStatus::swapped) {
@@ -1378,6 +1387,8 @@ void Player::handle_item_logic() {
 	} else {
 		get_collider().p_physics_properties.water_friction = {m_physics_data["properties"]["water_friction"][0].as<float>(), m_physics_data["properties"]["water_friction"][1].as<float>()};
 	}
+	m_services->quest_table.set_quest_progression("collect_radar_beacons", get_item_count("radar_beacon"), QuestRequirementType::strict);
+	if (has_item_equipped("magazine")) { equipped_weapon().ammo.add(); }
 
 	if (m_currently_held_item) {
 		m_currently_held_item->update();

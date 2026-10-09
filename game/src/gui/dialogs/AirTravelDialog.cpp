@@ -8,12 +8,14 @@
 namespace fornani::gui {
 
 fornani::gui::AirTravelDialog::AirTravelDialog(automa::ServiceProvider& svc, world::Map& map, player::Player& player, int vendor_id)
-	: IDialog(svc, map, player, vendor_id, "air_travel"), m_flat_shader{svc.finder}, m_backdrop{svc, "air_travel_backdrop"}, m_marker{svc, "landing_point_marker", {16, 16}}, m_indicator{svc, "corner_selector", {32, 32}} {
+	: IDialog(svc, map, player, vendor_id, "air_travel"), m_flat_shader{svc.finder}, m_backdrop{svc, "air_travel_backdrop"}, m_marker{svc, "landing_point_marker", {16, 16}}, m_indicator{svc, "corner_selector", {32, 32}},
+	  m_made_selection{80} {
 	auto const& in = svc.data.travel["air_travel_dialog"];
 	for (auto const& location : in["locations"].as_array()) {
-		m_destinations.push_back(LandingPoint{{svc.text.fonts.title.font}, {location["position"][0].as<float>(), location["position"][1].as<float>()}});
+		if (svc.quest_table.get_quest_progression("landing_points", {location["tag"].as_string(), location["destination"].as<int>()}) == 0) { continue; }
+		m_destinations.push_back(LandingPoint{{svc.text.fonts.title.font}, {location["position"][0].as<float>(), location["position"][1].as<float>()}, location["destination"].as<int>()});
 		auto& t = m_destinations.back().tag;
-		t.setString(location["tag"].as_string());
+		t.setString(location["title"].as_string());
 		t.setCharacterSize(svc.text.fonts.title.glyph_size);
 	};
 	m_selector.emplace(sf::Vector2i{1, static_cast<int>(m_destinations.size())}, sf::Vector2f{32.f, 32.f});
@@ -33,6 +35,12 @@ void AirTravelDialog::update(automa::ServiceProvider& svc, world::Map& map, play
 
 	m_marker.tick();
 	m_indicator.tick();
+	m_made_selection.update();
+	if (m_made_selection.is_almost_complete()) {
+		close();
+		if (m_target_room) { svc.events.travel_to_room_event.dispatch(*m_target_room); }
+	}
+	if (m_made_selection.running()) { return; }
 
 	if (controller.menu_move(input::MoveDirection::up)) {
 		svc.soundboard.play_sound("menu_shift");
@@ -58,7 +66,14 @@ void AirTravelDialog::update(automa::ServiceProvider& svc, world::Map& map, play
 		p_state = is_buying() ? DialogState::sell : DialogState::buy;
 		svc.soundboard.flags.menu.set(audio::Menu::select);
 	}
-	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {}
+	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
+		if (m_selector) {
+			m_target_room.emplace(m_destinations.at(m_selector->get_current_selection()).destination);
+			m_made_selection.start();
+			svc.soundboard.play_sound("menu_select");
+			spawn_effect(svc, "pioneer_select", m_indicator.get_window_position());
+		}
+	}
 	if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
 		close();
 		svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
@@ -92,7 +107,7 @@ void AirTravelDialog::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 	}
 
 	if (m_selector) { m_selector->render(win, p_selector_sprite.get_sprite(), {2.f, 2.f}, {}); }
-	win.draw(m_indicator);
+	if (!m_made_selection.running()) { win.draw(m_indicator); }
 
 	IDialog::post_render(svc, win, renderer);
 }

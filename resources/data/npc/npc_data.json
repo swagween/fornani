@@ -393,7 +393,7 @@
       "common_items": ["flashbang", "soda"],
       "uncommon_items": ["feather", "flippers"],
       "rare_items": ["brinium", "skycorps_tee", "indigum", "magnet"],
-      "guaranteed_finite_items": ["velvet_rose"]
+      "guaranteed_finite_items": ["velvet_rose", "radar_beacon"]
     }
   },
   "bandit": {

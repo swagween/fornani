@@ -279,7 +279,11 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	svc.data.set_npc_location(m_id.get(), m_current_location);
 
 	if (consume_flag(NPCFlags::piggyback)) { player.piggyback(m_id.get()); }
-	if (is_hidden()) { return; }
+	if (is_hidden()) {
+		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false);
+		get_collider().set_attribute(shape::ColliderAttributes::no_collision, false);
+		return;
+	}
 
 	m_indicator.tick();
 	m_busy_timer.update();

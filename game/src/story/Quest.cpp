@@ -219,9 +219,17 @@ auto QuestTable::readout(std::string_view tag, std::string_view identifier) cons
 auto QuestTable::are_contingencies_met(QuestContingencySet const& set) const -> bool {
 	for (auto const& contingency : set.contingencies) {
 		if (contingency.strict) {
-			if (get_quest_progression(contingency.tag) != contingency.requirement) { return false; }
+			if (contingency.subquest) {
+				if (get_quest_progression(contingency.tag, *contingency.subquest) != contingency.requirement) { return false; }
+			} else {
+				if (get_quest_progression(contingency.tag) != contingency.requirement) { return false; }
+			}
 		} else {
-			if (get_quest_progression(contingency.tag) < contingency.requirement) { return false; }
+			if (contingency.subquest) {
+				if (get_quest_progression(contingency.tag, *contingency.subquest) < contingency.requirement) { return false; }
+			} else {
+				if (get_quest_progression(contingency.tag) < contingency.requirement) { return false; }
+			}
 		}
 	}
 	return true;
@@ -233,6 +241,7 @@ QuestContingency::QuestContingency(dj::Json const& in) {
 	tag = in["tag"].as_string();
 	requirement = in["requirement"].as<int>();
 	strict = in["strict"].as_bool();
+	if (in["subquest"]) { subquest.emplace(in["subquest"]["tag"].as_string(), in["subquest"]["id"].as<int>()); }
 }
 
 void QuestContingency::serialize(dj::Json& out) const {
@@ -240,6 +249,10 @@ void QuestContingency::serialize(dj::Json& out) const {
 	entry["tag"] = tag;
 	entry["requirement"] = requirement;
 	entry["strict"] = strict;
+	if (subquest) {
+		entry["subquest"]["tag"] = subquest->tag;
+		entry["subquest"]["id"] = subquest->id;
+	}
 	out.push_back(entry);
 }
 

@@ -9,7 +9,7 @@
 namespace fornani {
 
 enum class CutsceneTriggerFlags : std::uint8_t { activated, pushed, hovered };
-enum class CutsceneTriggerAttributes : std::uint8_t { callbox, arena };
+enum class CutsceneTriggerAttributes : std::uint8_t { callbox, arena, persistent };
 
 class CutsceneTrigger : public Entity {
   public:

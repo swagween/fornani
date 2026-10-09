@@ -26,6 +26,7 @@ class Camera {
   public:
 	Camera();
 	void update(automa::ServiceProvider& svc);
+	void frame_update();
 	void set_bounds(sf::Vector2f to_bounds);
 	void center(sf::Vector2f new_position, float const force_multiplier = 1.f);
 	void force_center(sf::Vector2f new_position);

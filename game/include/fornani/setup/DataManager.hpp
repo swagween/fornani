@@ -165,6 +165,7 @@ class DataManager final {
 	dj::Json postcards{};
 	dj::Json arenas{};
 	dj::Json travel{};
+	dj::Json interactables{};
 
 	// enemy
 	dj::Json enemy{};

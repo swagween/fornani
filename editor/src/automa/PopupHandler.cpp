@@ -48,6 +48,31 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		}
 		close_popup();
 	}
+	if (ImGui::BeginPopupModal("Interactable Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static bool activate_on_contact{};
+		static int channel{};
+		static std::string tag{"signal_tower"};
+
+		ImGui::Separator();
+		ImGui::InputInt("Channel", &channel);
+
+		if (ImGui::BeginCombo("Type", tag.c_str())) {
+			for (auto const& [key, prop] : svc.data.interactables.as_object()) {
+				if (ImGui::Selectable(key.c_str())) { tag = key; }
+			}
+			ImGui::EndCombo();
+		}
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			// switch to entity tool, and store the specified inspectable for placement
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::Interactable>(svc, tag, channel);
+			ImGui::CloseCurrentPopup();
+		}
+		close_popup();
+	}
 	if (ImGui::BeginPopupModal("Inspectable Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static bool activate_on_contact{};

@@ -29,6 +29,7 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 		bryn->hide();
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 4, {209});
 		svc.quest_table.set_quest_progression("npc_dialogue", {"bryn", 300}, 2, {209});
+		svc.quest_table.set_quest_progression("landing_points", {"pioneer_base", 209}, 1, {209});
 
 		Cutscene::end(svc, player);
 	}

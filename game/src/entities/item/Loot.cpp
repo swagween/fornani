@@ -13,6 +13,7 @@ Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player
 	position = pos;
 
 	std::string_view key{};
+	auto const heart_chance = player.has_item_equipped("heart_keychain") ? heart_chance_v * 3.f : heart_chance_v;
 	for (int i = 0; i < drop_rate; ++i) {
 		if (random::percent_chance(gem_chance_v * properties.gem_multiplier) && properties.special) {
 			key = "gems";

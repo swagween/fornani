@@ -22,7 +22,7 @@ void HUDGun::render(automa::ServiceProvider& svc, player::Player& player, sf::Re
 			auto pointer_exclusion = i == player.hotbar.value().get_selection() ? 0 : 10;
 			auto const adjustment = (i * p_animatable->get_f_dimensions().y * constants::f_scale_factor);
 			auto const y_pos = get_root().y - adjustment - i * pad;
-			m_height += adjustment - i * pad;
+			m_height = std::max(m_height, adjustment + pad);
 			p_animatable->set_texture_rect(sf::IntRect{{p_animatable->get_dimensions().x + pointer_exclusion, p_animatable->get_dimensions().y * gun_index}, p_animatable->get_dimensions()});
 			p_animatable->set_position(sf::Vector2f{get_root().x + pointer_exclusion * constants::f_scale_factor, y_pos} + offset);
 			win.draw(*p_animatable);
@@ -36,6 +36,6 @@ void HUDGun::render(automa::ServiceProvider& svc, player::Player& player, sf::Re
 	}
 }
 
-auto HUDGun::get_offset(bool scaled) const -> sf::Vector2f { return HUDWidget::get_offset() + sf::Vector2f{0.f, m_height + 2.f}; }
+auto HUDGun::get_offset(bool scaled) const -> sf::Vector2f { return HUDWidget::get_offset() + sf::Vector2f{0.f, m_height + 6.f}; }
 
 } // namespace fornani::gui

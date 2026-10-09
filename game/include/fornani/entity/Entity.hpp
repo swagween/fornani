@@ -32,6 +32,7 @@ class Entity : public IWorldPositionable, Polymorphic {
 	void set_handle(EntityHandle to) { m_handle = to; }
 	void set_position(sf::Vector2u to_position);
 	void set_stable_id(int room_id) { p_stable_id = StableID::from(room_id, get_grid_position().x, get_grid_position().y); }
+	void spawn() { p_flags.reset(EntityFlags::spawn_denied); }
 	bool repeatable{};
 	bool overwrite{};
 	bool unique{};

@@ -278,14 +278,16 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !is_invincible() && !flags.general.test(GeneralFlags::kick_immune)) {
 		if (!player.has_flag_set(player::PlayerFlags::dash_kick) && !player.controller.is_dash_kick_cooling_down()) {
-			hurt(4.f);
-			if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
-				get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.y = -2.f : get_collider().physics.acceleration.y = -280.f;
-				get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.x = -0.2f * player.get_actual_direction().as_float()
-																		  : get_collider().physics.acceleration.x = -4.f * player.get_actual_direction().as_float();
+			if (player.can_dash_kick()) {
+				hurt(4.f);
+				if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
+					get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.y = -2.f : get_collider().physics.acceleration.y = -280.f;
+					get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.x = -0.2f * player.get_actual_direction().as_float()
+																			  : get_collider().physics.acceleration.x = -4.f * player.get_actual_direction().as_float();
+				}
+				m_weakness.start();
+				player.set_flag(player::PlayerFlags::dash_kick);
 			}
-			m_weakness.start();
-			player.set_flag(player::PlayerFlags::dash_kick);
 		}
 	}
 

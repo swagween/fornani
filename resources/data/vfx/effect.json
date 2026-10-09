@@ -206,14 +206,21 @@
     "dimensions": [8, 8]
   },
   "drop_collect": {
-    "frame_count": 3,
-    "framerate": 18,
-    "dimensions": [32, 32]
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [32, 32],
+    "x_reflection": true,
+    "y_reflection": true
   },
   "spark": {
     "frame_count": 5,
     "framerate": 18,
     "dimensions": [16, 16]
+  },
+  "pioneer_select": {
+    "frame_count": 5,
+    "framerate": 18,
+    "dimensions": [32, 32]
   },
   "hurt_spark": {
     "frame_count": 5,

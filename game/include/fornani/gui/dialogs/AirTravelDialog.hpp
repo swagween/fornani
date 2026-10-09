@@ -15,6 +15,7 @@ enum class LandingPointFlags : std::uint8_t { selected, locked };
 struct LandingPoint {
 	sf::Text tag;
 	sf::Vector2f position{};
+	int destination{};
 	util::BitFlags<LandingPointFlags> flags{};
 };
 
@@ -32,6 +33,8 @@ class AirTravelDialog final : public IDialog {
 	Animatable m_marker;
 	Animatable m_indicator;
 	std::vector<LandingPoint> m_destinations{};
+	std::optional<int> m_target_room{};
+	util::Cooldown m_made_selection;
 
 	FlatShader m_flat_shader;
 

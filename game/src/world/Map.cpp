@@ -292,6 +292,10 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		timer_blocks.push_back(TimerBlock(svc, pos, type, entry["id"].as<int>()));
 	}
 
+	for (auto const& ct : get_entities<CutsceneTrigger>()) {
+		if (ct->get_id() == 998) {}
+	}
+
 	generate_layer_textures(svc);
 	cooldowns.fade_obscured.start();
 	cooldowns.loading.start();
@@ -775,7 +779,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 			if (i == 1) {
 				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
 				if (m_entities) {
-					for (auto n : get_entities<AmbientProp>()) {
+					for (auto n : props) {
 						if (!n->is_foreground()) { n->is_light_shaded() ? n->render(win, m_entity_texture, cam) : n->render(win, cam, 1.f); }
 					}
 					for (auto n : get_entities<NPC>()) {
@@ -783,6 +787,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 						if (n->is_background()) { n->render(win, cam); }
 					}
 					for (auto t : get_entities<Train>()) { t->render(win, cam, 1.f); }
+					for (auto i : get_entities<Interactable>()) { i->render(win, cam, 1.f); }
 				}
 			}
 			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
@@ -1237,6 +1242,7 @@ void Map::clear() {
 	m_explosions.clear();
 	mines.clear();
 	m_chain_explosions.clear();
+	m_camera_anchors.clear();
 	m_weather.reset();
 	m_weather_specs.reset();
 	fire.clear();

@@ -11,6 +11,7 @@ nani_add_headers(
   EncounterLynx.hpp
   EncounterMastiff.hpp
         LadyNimbusIntro.hpp
+        Landing.hpp
         LothAtWorm.hpp
         NightsideStation.hpp
         NightsideWall.hpp

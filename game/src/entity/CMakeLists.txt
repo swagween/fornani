@@ -8,6 +8,7 @@ nani_add_sources(
   EntitySet.cpp
   Destructible.cpp
         Inspectable.cpp
+        Interactable.cpp
         Light.cpp
         NPC.cpp
         Platform.cpp

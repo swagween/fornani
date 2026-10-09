@@ -616,6 +616,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		bool flag{};
 		if (ImGui::BeginMenu("Insert")) {
 			if (ImGui::MenuItem("Ambient Prop", NULL, &entity_popup)) { popup_label = "Ambient Prop"; }
+			if (ImGui::MenuItem("Interactable", NULL, &entity_popup)) { popup_label = "Interactable"; }
 			if (ImGui::MenuItem("Portal", NULL, &entity_popup)) { popup_label = "Portal"; }
 			if (ImGui::MenuItem("Inspectable", NULL, &entity_popup)) { popup_label = "Inspectable"; }
 			if (ImGui::MenuItem("Platform", NULL, &entity_popup)) { popup_label = "Platform"; }

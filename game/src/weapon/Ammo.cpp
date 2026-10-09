@@ -26,4 +26,6 @@ void Ammo::use(int amount) {
 	if (!infinite()) { magazine.inflict(static_cast<float>(amount), true); }
 }
 
+void Ammo::add(int const amount) { magazine.set_bonus(amount); }
+
 } // namespace fornani::arms

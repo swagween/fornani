@@ -217,7 +217,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	hud.update(svc, *player);
 }
 
-void Dojo::frame_update(ServiceProvider& svc) {}
+void Dojo::frame_update(ServiceProvider& svc) { player->frame_update(); }
 
 void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 

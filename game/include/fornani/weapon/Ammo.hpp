@@ -20,9 +20,10 @@ class Ammo {
 	void update();
 	void set_max(int amount);
 	void refill();
-	void use(int amount = 1);
-	[[nodiscard]] auto get_count() const -> int { return static_cast<int>(magazine.get_quantity()); }
-	[[nodiscard]] auto get_capacity() const -> int { return static_cast<int>(magazine.get_capacity()); }
+	void use(int const amount = 1);
+	void add(int const amount = 1);
+	[[nodiscard]] auto get_count() const -> int { return magazine.get_i_quantity(); }
+	[[nodiscard]] auto get_capacity() const -> int { return magazine.get_i_capacity(); }
 	[[nodiscard]] auto get_taken_point() const -> int { return static_cast<int>(magazine.get_taken_point()); }
 	[[nodiscard]] auto get_native_reload_time() const -> bool { return restored.get_native_time(); }
 	[[nodiscard]] auto get_current_reload_time() const -> bool { return restored.get(); }
