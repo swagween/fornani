@@ -122,7 +122,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	m_location_text.update();
 	if (m_location_text.is_writing()) { svc.soundboard.repeat_sound("console_speech"); }
 	if (m_intro.get() == 1200) { m_location_text.start(); }
-	m_nighthawk_steering.thrust_seek(sf::Vector2f{40.f, 300.f}, {0.031f, .118f, .991f, 260.f});
+	m_nighthawk_steering.thrust_seek(sf::Vector2f{40.f, 300.f}, {0.041f, .318f, .991f, 260.f});
 	m_nighthawk_steering.steering.smooth_random_walk(m_nighthawk_steering.physics, 0.007f, 48.f);
 	m_nighthawk.set_position(m_nighthawk_steering.physics.position);
 	if (svc.ticker.every_x_ticks(30)) { m_smoke_effects.push_back(entity::Effect(svc, "tiny_smoke", m_nighthawk_steering.physics.position + sf::Vector2f{16.f, 0.f})); }
@@ -165,10 +165,10 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (npcs.size() < 2) { return; }
 
 	auto target = sf::Vector2f{18.f, 21.f} * constants::f_cell_size;
-	m_gus_steering.thrust_seek(target, {0.08f, .118f, .991f, 260.f});
+	m_gus_steering.thrust_seek(target, {0.08f, .318f, .991f, 260.f});
 	if (!m_flags.test(RetrieveLynxFlags::arrived)) { gus->set_position(m_gus_steering.physics.position); }
 	if (gus->has_vehicle()) {
-		if (gus->get_vehicle().is_close_to_point(target, 32.f) && cooldowns.beginning.halfway()) {
+		if (gus->get_vehicle().is_close_to_point(target, 32.f) && cooldowns.beginning.halfway() && !m_flags.test(RetrieveLynxFlags::arrived	)) {
 			gus->set_flag(NPCFlags::airborne, false);
 			gus->set_flag(NPCFlags::in_vehicle, false);
 			gus->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false);

@@ -46,6 +46,13 @@ JournalGizmo::JournalGizmo(automa::ServiceProvider& svc, world::Map& map, sf::Ve
 		if (svc.data.active_quest == svc.quest_registry.get_index_from_tag(entry.tag)) { m_selected_quest = i; }
 	}
 	m_text.readout.setOrigin({10.f, m_text.readout.getLocalBounds().size.y * 1.5f});
+
+	// sort bestiary
+	for (auto& record : svc.data.get_bestiary()) {
+		if (m_services->data.enemy[record.tag]["metadata"]["boss"].as_bool()) { record.boss = true; }
+	}
+	std::stable_partition(svc.data.get_bestiary().begin(), svc.data.get_bestiary().end(), [](auto const& record) { return record.boss; });
+	std::stable_partition(m_text.listing.begin(), m_text.listing.end(), [&svc](auto const& entry) { return !svc.quest_table.is_quest_complete(entry.tag); });
 }
 
 void JournalGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -69,7 +76,7 @@ void JournalGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	float accumulated_offset = 0.f;
 	for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
 		auto selected = m_selector ? m_selector->get_current_selection() == i : true;
-		float target_y = i * m_spacing + accumulated_offset;
+		float target_y = i * m_spacing + accumulated_offset - m_scroll_offset.y;
 		entry.offset.y = std::lerp(entry.offset.y, target_y, 0.1f);
 		entry.offset.x = selected ? -4.f : 0.f;
 		if (selected && m_text.objective) { accumulated_offset = m_text.objective->current_message().data.getLocalBounds().size.y + 4.f; }
@@ -80,34 +87,81 @@ void JournalGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [
 	Gizmo::render(svc, win, player, shader, palette, cam, foreground);
 	if (is_foreground() != foreground) { return; }
 
-	auto sprite = sf::Sprite{m_screen.getTexture()};
-	sprite.setScale(constants::f_scale_vec);
-	sprite.setTextureRect(sf::IntRect{sf::Vector2i{m_path.get_dimensions() * 0.3f}, sf::Vector2i{m_path.get_dimensions()}});
-	sprite.setPosition(get_placement() + m_path.get_position() - cam);
+	auto view = svc.window->get_view();
 
-	if (is_selected()) { win.draw(sprite); }
+	if (!m_screen_sprite) { m_screen_sprite.emplace(m_screen.getTexture()); }
+	m_screen_sprite->setScale(constants::f_scale_vec);
+	m_screen_sprite->setTextureRect(sf::IntRect{sf::Vector2i{m_path.get_dimensions() * 0.3f}, svc.window->i_screen_dimensions()});
+
+	auto const target_pos = get_placement() + m_path.get_position() - cam;
+	static auto scroll_offset = 0.f;
+	scroll_offset = std::lerp(scroll_offset, m_scroll_offset.y * 0.95f, 0.1f);
+	m_screen_sprite->setPosition(target_pos - sf::Vector2f{0.f, scroll_offset});
+
+	auto const sd = svc.window->f_screen_dimensions();
+	auto const scissor_pos = target_pos.componentWiseDiv(sd);
+	auto const scissor_size = (m_path.get_dimensions() * constants::f_scale_factor).componentWiseDiv(sd);
+
+	view.setScissor({scissor_pos, scissor_size});
+	svc.window->set_view(view);
+
+	if (is_selected() && m_screen_sprite) { win.draw(*m_screen_sprite); }
+
+	svc.window->restore_view();
 
 	m_text.readout.setPosition(m_questlog_position - cam);
 	win.draw(m_text.readout);
+
+	if (!m_selector) { return; }
+
+	auto height = 0.f;
+	auto const& bestiary = m_services->data.get_bestiary();
+	auto const current = static_cast<int>(m_selector->get_current_selection());
+	auto const entry_count = static_cast<int>(m_text.listing.size());
+	auto const threshold = 7;
+
 	for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
-		auto pos = m_questlog_position - cam + entry.offset;
+		auto const index = static_cast<int>(i);
+		auto const pos = m_questlog_position - cam + entry.offset;
 		entry.title.setPosition(pos);
-		if (is_selected() || i == m_selected_quest) { win.draw(entry.title); }
-		svc.quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_dark_red);
+
+		if (is_quest()) { svc.quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_dark_red); }
+		if (is_bestiary() && index < static_cast<int>(bestiary.size())) { bestiary[index].boss ? entry.title.setFillColor(colors::blue) : entry.title.setFillColor(colors::pioneer_dark_red); }
 		if (!is_selected()) { is_hovered() ? entry.title.setFillColor(colors::pioneer_mid_red) : entry.title.setFillColor(colors::pioneer_dark_red); }
+
+		auto const window_size = threshold * 2 + 1;
+		auto const max_first = std::max(0, entry_count - window_size);
+		auto const first_visible = std::clamp(current - threshold, 0, max_first);
+		auto const last_visible = std::min(entry_count - 1, first_visible + window_size - 1);
+
+		auto const visible = index >= first_visible && index <= last_visible;
+
+		height = static_cast<float>(first_visible) * m_spacing;
+
+		// Indicate hidden entries at the visible boundaries.
+		if (visible && first_visible > 0 && index == first_visible) { entry.title.setFillColor(colors::navy_blue); }
+		if (visible && last_visible < entry_count - 1 && index == last_visible) { entry.title.setFillColor(colors::navy_blue); }
+		if (current == index) {
+			if (is_quest()) { svc.quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_red); }
+			if (is_bestiary() && index < static_cast<int>(bestiary.size())) { bestiary[index].boss ? entry.title.setFillColor(colors::periwinkle) : entry.title.setFillColor(colors::pioneer_red); }
+		}
+		if ((is_selected() || index == m_selected_quest) && visible) { win.draw(entry.title); }
 		if (!m_selector) { continue; }
-		if (!is_selected() || !m_text.objective || m_selector->get_current_selection() != i) { continue; }
-		auto spacing = 1.5f;
-		m_services->quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_red);
+		if (!is_selected() || !m_text.objective || current != index) { continue; }
+
+		auto const spacing = 1.5f;
 		m_text.objective->set_bounds(sf::FloatRect{pos + sf::Vector2f{32.f, entry.title.getLocalBounds().size.y * spacing}, m_path.get_dimensions()}, true);
 		m_text.objective->write_instant_message(win);
 	}
+	m_scroll_offset.y = height;
 
 	if (m_selector && is_selected() && !m_text.listing.empty()) {
 		m_selector->render(win, m_selector_sprite, cam, {});
 		m_indicator.set_position(m_text.listing.at(m_selected_quest).title.getPosition() + sf::Vector2f{-8.f, 11.f});
 		if (is_quest()) { win.draw(m_indicator); }
 	}
+
+	// debug_window();
 }
 
 bool JournalGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
@@ -124,11 +178,11 @@ bool JournalGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]
 
 	if (!m_selector) { return Gizmo::handle_inputs(controller, soundboard); }
 	if (m_text.listing.empty()) { return Gizmo::handle_inputs(controller, soundboard); }
-	if (controller.menu_move(input::MoveDirection::up)) {
+	if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
 		if (m_selector->move_direction({0, -1}).up()) {}
 		refresh();
 	}
-	if (controller.menu_move(input::MoveDirection::down)) {
+	if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
 		if (m_selector->move_direction({0, 1}).down()) {}
 		refresh();
 	}
@@ -172,11 +226,22 @@ void JournalGizmo::refresh() {
 	set_text();
 	m_services->soundboard.play_sound("menu_shift");
 
-	for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
-		m_services->quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_dark_red);
-		if (!m_selector) { continue; }
-		if (!is_selected() || !m_text.objective || m_selector->get_current_selection() != i) { continue; }
-		m_services->quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_red);
+	if (is_quest()) {
+		for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
+			m_services->quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_dark_red);
+			if (!m_selector) { continue; }
+			if (!is_selected() || !m_text.objective || m_selector->get_current_selection() != i) { continue; }
+			m_services->quest_table.is_quest_complete(entry.tag) ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_red);
+		}
+	}
+	if (is_bestiary()) {
+		auto const& bestiary = m_services->data.get_bestiary();
+		for (auto [i, entry] : std::views::enumerate(m_text.listing)) {
+			bestiary[i].boss ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_dark_red);
+			if (!m_selector) { continue; }
+			if (!is_selected() || !m_text.objective || m_selector->get_current_selection() != i) { continue; }
+			bestiary[i].boss ? entry.title.setFillColor(colors::periwinkle) : entry.title.setFillColor(colors::pioneer_dark_red);
+		}
 	}
 }
 
@@ -192,15 +257,25 @@ void JournalGizmo::set_text() {
 	}
 	if (is_bestiary()) {
 		auto const& bestiary = m_services->data.get_bestiary();
-		auto it = std::find_if(bestiary.begin(), bestiary.end(), [&](auto const& e) { return e.tag == m_text.listing.at(m_selector->get_current_selection()).tag; });
-		if (it != bestiary.end()) { m_text.objective->load_single_message(m_services->data.gui_text["bestiary"]["fallen"].as_string() + std::to_string(it->fallen)); }
+		auto& current = m_text.listing.at(m_selector->get_current_selection());
+		auto it = std::find_if(bestiary.begin(), bestiary.end(), [&](auto const& e) { return e.tag == current.tag; });
+		if (it != bestiary.end()) {
+			if (it->boss) {
+				auto const lc = m_services->data.get_number_of_boss_victories(it->tag);
+				m_text.objective->load_single_message(m_services->data.gui_text["bestiary"]["lives_claimed"].as_string() + std::to_string(lc));
+			} else {
+				m_text.objective->load_single_message(m_services->data.gui_text["bestiary"]["fallen"].as_string() + std::to_string(it->fallen));
+			}
+		}
 		m_text.objective->set_font_color(colors::pioneer_mid_red);
+		if (it->boss) { m_text.objective->set_font_color(colors::blue); }
 	}
 }
 
 void JournalGizmo::switch_sections(automa::ServiceProvider& svc) {
 	m_text.listing.clear();
 	m_text.objective.reset();
+	m_services->soundboard.play_sound("menu_select");
 	switch (m_section) {
 	case JournalSection::quest:
 		m_text.readout.setString(svc.data.gui_text["journal"]["quest"].as_string());
@@ -230,10 +305,11 @@ void JournalGizmo::switch_sections(automa::ServiceProvider& svc) {
 			entry.title.setCharacterSize(svc.text.fonts.title.glyph_size);
 			auto title = svc.data.enemy[e.tag]["metadata"]["name"].as_string();
 			entry.title.setString(title);
-			entry.title.setFillColor(colors::pioneer_dark_red);
+			e.boss ? entry.title.setFillColor(colors::navy_blue) : entry.title.setFillColor(colors::pioneer_dark_red);
 			m_text.listing.push_back(entry);
 		}
 		break;
+	case JournalSection::postcards: m_text.readout.setString(svc.data.gui_text["journal"]["photo_album"].as_string()); break;
 	}
 	m_text.readout.setOrigin({10.f, m_text.readout.getLocalBounds().size.y * 1.5f});
 	if (!m_text.listing.empty()) {
@@ -248,6 +324,18 @@ void JournalGizmo::switch_sections(automa::ServiceProvider& svc) {
 	m_text.objective.emplace(svc);
 	m_text.objective->set_font(svc.text.fonts.basic);
 	set_text();
+}
+
+void JournalGizmo::debug_window() {
+	ImGui::SetNextWindowSize(ImVec2{256.f, 128.f});
+	if (ImGui::Begin("Builder Debug")) {
+		if (m_selector) {
+			ImGui::Text("Selection: %i", m_selector->get_current_selection());
+			ImGui::Text("Selector Index: (%i, %i)", m_selector->get_index().x, m_selector->get_index().y);
+			ImGui::Text("Scroll Offset: (%.2f, %.2f)", m_scroll_offset.x, m_scroll_offset.y);
+		}
+		ImGui::End();
+	}
 }
 
 } // namespace fornani::gui

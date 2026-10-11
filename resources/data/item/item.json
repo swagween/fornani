@@ -1287,5 +1287,14 @@
     "naive_description": "When fixed to a signal tower, this emits a radar signal detectable by aircraft.",
     "unique": false,
     "value": 5000
+  },
+  {
+    "tag": "bane_house_key",
+    "category": 1,
+    "lookup": [11, 3],
+    "actual_title": "Sarah Bane's House Key",
+    "naive_description": "The key to Sarah Bane's house.",
+    "unique": true,
+    "is_key": true
   }
 ]

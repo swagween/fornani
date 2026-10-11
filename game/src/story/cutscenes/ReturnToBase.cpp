@@ -44,7 +44,7 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 	m_landed.update();
 
 	if (m_champion) {
-		if (m_champion->is_close_to_target(2.f)) { m_champion->flags.set(ChampionJ5Flags::interactable); }
+		if (m_champion->is_close_to_target(32.f)) { m_champion->flags.set(ChampionJ5Flags::interactable); }
 		m_champion->update(svc, map);
 	}
 

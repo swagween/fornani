@@ -884,7 +884,14 @@
         },
         {
           "codes": [[1, 5]],
-          "message": "Tell me about the Ancient Kariba."
+          "message": "Tell me about the Ancient Kariba.",
+          "contingencies": [
+            {
+              "requirement": 1,
+              "strict": false,
+              "tag": "radar_beacon_from_bryn"
+            }
+          ]
         },
         {
           "codes": [[1, 7]],
@@ -892,7 +899,7 @@
             {
               "requirement": 0,
               "strict": true,
-              "tag": "collect_radar_beacons"
+              "tag": "radar_beacon_from_bryn"
             }
           ],
           "message": "So, you can fly now?"
@@ -1069,7 +1076,10 @@
           "message": "Say, if you find any signal towers around the island, you can place a radar beacon there, and I should be able to detect it and come pick you up if you need."
         },
         {
-          "codes": [[2, 103]],
+          "codes": [
+            [2, 103],
+            [27, 40, 1]
+          ],
           "message": "Here, we had a radar beacon lying around, so you might as well have it."
         },
         {

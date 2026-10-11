@@ -18,7 +18,6 @@ NPC::NPC(automa::ServiceProvider& svc, dj::Json const& in)
 	repeatable = false;
 	copyable = false;
 	Mobile::p_animatable.center();
-	Mobile::p_animatable.center();
 	m_indicator.center();
 
 	NANI_LOG_DEBUG(Entity::m_logger, "Created NPC with label {}", m_label);
@@ -49,7 +48,6 @@ NPC::NPC(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in)
 	unserialize(in);
 	repeatable = false;
 	copyable = false;
-	Mobile::p_animatable.center();
 	Mobile::p_animatable.center();
 	m_indicator.center();
 
@@ -87,6 +85,7 @@ NPC::NPC(automa::ServiceProvider& svc, int id, std::string_view label, std::vect
 }
 
 void NPC::init(automa::ServiceProvider& svc, dj::Json const& in_data) {
+	m_textured = false;
 	svc.events.npc_voice_cue_event.attach_to(slot, &NPC::play_voice_cue, this);
 	svc.events.npc_pop_conversation_event.attach_to(slot, &NPC::pop_conversation, this);
 	svc.events.npc_piggyback_event.attach_to(slot, &NPC::piggyback_me, this);
@@ -352,13 +351,15 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		if (m_editor) {
 			highlighted ? drawbox.setFillColor(sf::Color{250, 80, 250, 60}) : drawbox.setFillColor(sf::Color::Transparent);
 			Entity::render(win, cam, size);
+			Mobile::p_animatable.set_position(get_f_grid_position() * size + cam);
+			win.draw(Mobile::p_animatable);
 		} else {
-			if (is_hidden() || m_state.test(NPCState::invisible)) { return; }
 			if (collider.has_value()) {
 				Mobile::p_animatable.set_position(get_collider().get_center() + m_offset - cam);
 				auto indicator_offset = sf::Vector2f{0.f, -constants::f_cell_size};
 				m_indicator.set_position(get_collider().get_top() + indicator_offset - cam);
 			}
+			if (is_hidden() || m_state.test(NPCState::invisible)) { return; }
 			if (m_vehicle && has_flag_set(NPCFlags::background)) {
 				m_vehicle->render(win, cam, DrawOrder::back);
 				if (!has_flag_set(NPCFlags::in_vehicle)) { m_vehicle->render(win, cam, DrawOrder::front); }

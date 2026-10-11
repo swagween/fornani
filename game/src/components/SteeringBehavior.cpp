@@ -96,17 +96,16 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 		forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
 	}
 
-	forward = (forward + (desired_dir - forward) * params.turn_rate).normalized();
-
 	float alignment = util::dot(forward, desired_dir);
 
-	float thrust_scale = 1.0f;
-	if (distance < params.arrival_radius) thrust_scale = distance / params.arrival_radius;
+	// Allow thrust while turning, but favor forward alignment.
+	float alignment_scale = std::clamp((alignment + 0.2f) / 1.2f, 0.f, 1.f);
 
-	if (alignment > 0.7f) {
-		float final_thrust = params.thrust_power * alignment * thrust_scale;
-		physics.apply_force(forward * final_thrust);
-	}
+	float thrust_scale = 1.f;
+	if (distance < params.arrival_radius) { thrust_scale = distance / params.arrival_radius; }
+
+	float final_thrust = params.thrust_power * alignment_scale * thrust_scale;
+	physics.apply_force(forward * final_thrust);
 
 	physics.velocity *= params.damping;
 }

@@ -80,6 +80,7 @@ class TextWriter {
 
 	[[nodiscard]] auto get_current_suite_set() const -> int { return m_iterators.current_suite_set; }
 	[[nodiscard]] auto get_index() const -> int { return m_iterators.index; }
+	[[nodiscard]] auto get_bounds() const -> sf::FloatRect const& { return m_bounds; }
 
 	void write_instant_message(sf::RenderWindow& win);
 	void write_gradual_message(sf::RenderWindow& win);

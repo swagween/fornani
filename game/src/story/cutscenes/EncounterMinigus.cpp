@@ -12,7 +12,6 @@ EncounterMinigus::EncounterMinigus(automa::ServiceProvider& svc) : Cutscene(svc,
 	cooldowns.beginning.set_and_start(40);
 	svc.music_player.stop();
 	svc.music_player.load(svc.finder, "minigus");
-	svc.music_player.play_looped();
 	progress = svc.quest_table.get_quest_progression("defeat_minigus") == 0 ? 0 : 10;
 }
 
@@ -25,6 +24,8 @@ void EncounterMinigus::update(automa::ServiceProvider& svc, SceneContext& contex
 	}
 
 	Cutscene::update(svc, context, map, player);
+	svc.camera_controller.set_owner(graphics::CameraOwner::player);
+	svc.camera_controller.constrain();
 
 	auto npcs = map.get_entities<NPC>();
 	auto it = std::ranges::find_if(npcs, [](auto& n) { return n->get_specifier() == 7; });
@@ -36,7 +37,7 @@ void EncounterMinigus::update(automa::ServiceProvider& svc, SceneContext& contex
 	if (context.console) { gus->disengage(); }
 
 	auto enemy_pos = gus_enemy != nullptr ? gus_enemy->get_collider().get_center() : player.get_collider().get_center();
-	auto camera_focus = progress < 10 ? (player.get_collider().get_center() + gus->get_collider().get_center()) * 0.5f : enemy_pos;
+	auto camera_focus = progress < 10 ? (player.get_collider().get_center() + gus->get_collider().get_center()) * 0.5f + sf::Vector2f{-80.f, 0.f} : enemy_pos;
 
 	auto prog = svc.quest_table.get_quest_progression("minigus_dialogue");
 	auto which = prog == 0 ? 1 : 4;
@@ -44,21 +45,42 @@ void EncounterMinigus::update(automa::ServiceProvider& svc, SceneContext& contex
 	switch (progress) {
 	case 0:
 		if (cooldowns.beginning.is_almost_complete()) {
-			gus->unhide();
-			gus->set_invisible();
-			gus->flush_and_push(which);
-			gus->force_engage();
+			svc.soundboard.play_sound("delay_crash");
+			svc.camera_controller.shake();
+			cooldowns.pause.start();
 			++progress;
 		}
 		break;
 	case 1:
+		if (cooldowns.pause.is_almost_complete()) {
+			gus_enemy->set_special_event();
+			++progress;
+		}
+		break;
+	case 2:
+		if (gus_enemy->get_collider().grounded()) {
+			cooldowns.long_pause.start();
+			++progress;
+		}
+		break;
+	case 3:
+		if (cooldowns.long_pause.is_almost_complete()) {
+			gus->unhide();
+			gus->set_invisible();
+			gus->flush_and_push(which);
+			gus->force_engage();
+			svc.music_player.play_looped();
+			++progress;
+		}
+		break;
+	case 4:
 		if (!context.console) {
 			gus->hide();
 			cooldowns.end.set_and_start(4);
 			++progress;
 		}
 		break;
-	case 2:
+	case 5:
 		if (!context.console) {}
 		break;
 	case 10:

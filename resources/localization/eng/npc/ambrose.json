@@ -9,7 +9,7 @@
         {
           "contingencies": [
             {
-              "requirement": 10,
+              "requirement": 3,
               "strict": false,
               "tag": "ashtown_bandit"
             }

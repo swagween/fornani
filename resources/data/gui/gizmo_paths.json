@@ -365,11 +365,11 @@
           "dimensions": [0, 0]
         },
         {
-          "position": [0, 186],
+          "position": [0, 226],
           "dimensions": [0, 0]
         },
         {
-          "position": [0, 180],
+          "position": [0, 220],
           "dimensions": [0, 0]
         }
       ]
@@ -378,7 +378,7 @@
       "label": "journal_close",
       "path": [
         {
-          "position": [0, 180],
+          "position": [0, 220],
           "dimensions": [0, 0]
         },
         {

@@ -15,7 +15,7 @@ BanditEncounter::BanditEncounter(automa::ServiceProvider& svc) : Cutscene(svc, 1
 
 void BanditEncounter::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		svc.quest_table.progress_quest("ashtown_bandit", 1, 1002);
+		svc.quest_table.set_quest_progression("ashtown_bandit", 1);
 		svc.music_player.resume();
 		Cutscene::end(svc, player);
 		return;

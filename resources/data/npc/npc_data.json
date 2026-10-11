@@ -323,11 +323,11 @@
     "animation": [
       {
         "label": "idle",
-        "parameters": [0, 8, 40, -1, false]
+        "parameters": [0, 1, 40, -1, false]
       },
       {
-        "label": "turn",
-        "parameters": [8, 3, 40, 0, false]
+        "label": "shift",
+        "parameters": [1, 6, 40, 0, false]
       }
     ]
   },
@@ -816,6 +816,7 @@
   },
   "aviator_bryn": {
     "id": 34,
+    "vendor_id": 34,
     "dimensions": [24, 24],
     "sprite_dimensions": [26, 26],
     "sprite_offset": [0, -11],

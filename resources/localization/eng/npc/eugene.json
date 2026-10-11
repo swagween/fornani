@@ -7,6 +7,7 @@
           "message": "Who are you?"
         },
         {
+          "contingencies": [{ "tag": "eugenes_letter", "requirement": 0, "strict": true }],
           "codes": [[1, 2]],
           "message": "You're a mailman?"
         },
@@ -58,7 +59,10 @@
           "message": "At first we lived in Nightside together, but I moved here after Skycorps drafted her for some secret project. I haven't seen her since."
         },
         {
-          "codes": [[2, 90]],
+          "codes": [
+            [2, 90],
+            [27, 41, 1]
+          ],
           "message": "Say, if you ever find yourself in Nightside, could you leave this at the post office? It'd mean a whole lot to me."
         },
         {

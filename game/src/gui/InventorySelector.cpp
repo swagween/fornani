@@ -6,7 +6,10 @@
 
 namespace fornani::gui {
 
-InventorySelector::InventorySelector(sf::Vector2i range, sf::Vector2f spacing) : m_selection{util::Circuit{range.x}, util::Circuit{range.y}}, m_table_dimensions{range}, m_spacing{spacing} { m_body.physics.set_global_friction(0.7f); };
+InventorySelector::InventorySelector(sf::Vector2i range, sf::Vector2f spacing) : m_selection{util::Circuit{range.x}, util::Circuit{range.y}}, m_table_dimensions{range}, m_spacing{spacing} {
+	m_body.physics.set_global_friction(0.7f);
+	assert(range.x != 0 && range.y != 0);
+};
 
 void InventorySelector::update() { m_body.update(); }
 

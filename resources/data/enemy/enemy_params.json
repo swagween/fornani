@@ -240,7 +240,8 @@
     "metadata": {
       "name": "Minigus",
       "id": 6,
-      "variant": "skycorps"
+      "variant": "skycorps",
+      "boss": true
     },
     "physical": {
       "dimensions": [64, 64],
@@ -258,7 +259,7 @@
       "effect_size": 1
     },
     "audio": {
-      "hit": -1
+      "hurt_sounds": ["minigus_hurt_1", "minigus_hurt_2", "minigus_hurt_3"]
     },
     "attributes": {
       "base_hp": 800,
@@ -631,7 +632,8 @@
     "metadata": {
       "name": "Miaag",
       "id": 14,
-      "variant": "demon"
+      "variant": "demon",
+      "boss": true
     },
     "physical": {
       "dimensions": [128, 128],
@@ -649,7 +651,8 @@
       "effect_size": 1
     },
     "audio": {
-      "custom_sounds": true
+      "custom_sounds": true,
+      "hurt_sounds": ["miaag_hurt"]
     },
     "attributes": {
       "size": 4,
@@ -676,7 +679,8 @@
     "metadata": {
       "name": "Lynx",
       "id": 15,
-      "variant": "skycorps"
+      "variant": "skycorps",
+      "boss": true
     },
     "physical": {
       "dimensions": [40, 40],
@@ -1130,7 +1134,8 @@
     "metadata": {
       "name": "Grand Mastiff",
       "id": 24,
-      "variant": "guardian"
+      "variant": "guardian",
+      "boss": true
     },
     "physical": {
       "dimensions": [80, 80],
@@ -1336,7 +1341,8 @@
     "metadata": {
       "name": "Haunch",
       "id": 28,
-      "variant": "skycorps"
+      "variant": "skycorps",
+      "boss": true
     },
     "physical": {
       "dimensions": [48, 80],
@@ -1713,7 +1719,8 @@
     "metadata": {
       "name": "Lady Nimbus",
       "id": 35,
-      "variant": "skycorps"
+      "variant": "skycorps",
+      "boss": true
     },
     "physical": {
       "dimensions": [40, 40],
@@ -2270,7 +2277,8 @@
     "metadata": {
       "name": "Henchman",
       "id": 45,
-      "variant": "skycorps"
+      "variant": "skycorps",
+      "boss": true
     },
     "physical": {
       "dimensions": [160, 160],

@@ -68,10 +68,15 @@ void AirTravelDialog::update(automa::ServiceProvider& svc, world::Map& map, play
 	}
 	if (svc.input_system.digital(input::DigitalAction::menu_select).triggered) {
 		if (m_selector) {
-			m_target_room.emplace(m_destinations.at(m_selector->get_current_selection()).destination);
-			m_made_selection.start();
-			svc.soundboard.play_sound("menu_select");
-			spawn_effect(svc, "pioneer_select", m_indicator.get_window_position());
+			if (m_destinations.at(m_selector->get_current_selection()).destination == map.room_id) {
+				svc.soundboard.play_sound("error");
+				svc.notifications.push_notification(svc, svc.data.gui_text["notifications"]["already_here"].as_string());
+			} else {
+				m_target_room.emplace(m_destinations.at(m_selector->get_current_selection()).destination);
+				m_made_selection.start();
+				svc.soundboard.play_sound("menu_select");
+				spawn_effect(svc, "pioneer_select", m_indicator.get_window_position());
+			}
 		}
 	}
 	if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {

@@ -473,6 +473,11 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Down............: %s", services.input_system.direction_held(input::AnalogAction::move, input::MoveDirection::down) ? "held" : "");
 					ImGui::Text("Left Triggered..: %i", left_triggered.get());
 					ImGui::Text("Movement cooldown.....: %i", player->controller.get_movement_cooldown());
+					ImGui::SeparatorText("Key Repeat");
+					ImGui::Text("Up..............: %s", services.input_system.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat) ? "pulse" : "");
+					ImGui::Text("Down............: %s", services.input_system.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat) ? "pulse" : "");
+					ImGui::Text("Left............: %s", services.input_system.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::repeat) ? "pulse" : "");
+					ImGui::Text("Right...........: %s", services.input_system.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::repeat) ? "pulse" : "");
 					ImGui::SeparatorText("Gamepad and Joystick");
 					ImGui::Text("Move Input: %.3f", services.input_system.analog(input::AnalogAction::move).x);
 					ImGui::Text("Pan Input: %.3f", services.input_system.analog(input::AnalogAction::pan).y);

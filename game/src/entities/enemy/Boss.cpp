@@ -19,7 +19,7 @@ void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (health.is_dead() && !has_flag_set(BossFlags::end_battle)) { end_battle(); }
 
 	// make sure boss stays in bounds;
-	if (!map.within_bounds(get_collider().get_center())) { m_oob_counter.update(); }
+	if (!map.within_bounds(get_collider().get_center()) && map.home_points.size() > 0) { m_oob_counter.update(); }
 	if (m_oob_counter.get_count() > 400) {
 		m_oob_counter.cancel();
 		Enemy::set_position(map.get_closest_home_point(get_collider().get_center()));

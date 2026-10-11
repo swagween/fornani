@@ -35,7 +35,7 @@ class Loader;
 namespace fornani::input {
 
 enum class ActionSet : std::uint8_t { Platformer, Menu, END };
-enum class DigitalActionQueryType : std::uint8_t { held, triggered, released };
+enum class DigitalActionQueryType : std::uint8_t { held, triggered, released, repeat };
 enum class InputDevice : std::uint8_t { none, keyboard, gamepad };
 enum class InputSystemSettings : std::uint8_t { gamepad_input_enabled, auto_sprint };
 enum class InputSystemFlags : std::uint8_t { gamepad_disconnected, keyboard_input_detected, changed_action_sets, key_was_pressed, any_key_pressed };
@@ -44,6 +44,12 @@ enum class InputSystemFlags : std::uint8_t { gamepad_disconnected, keyboard_inpu
 struct RawDigitalState {
 	bool held = false;	 // button/key is down
 	bool active = false; // valid in current action set
+};
+
+struct KeyRepeatState {
+	KeyRepeatState();
+	util::Cooldown key_repeat;
+	util::Cooldown key_delay;
 };
 
 struct RawAnalogState {
@@ -60,6 +66,7 @@ struct ResolvedDigitalState {
 	bool held = false;		// currently held
 	bool released = false;	// released this frame
 	bool locked = false;	// prevents retrigger until release
+	bool repeat = false;
 };
 
 struct ResolvedAnalogState {
@@ -76,6 +83,7 @@ struct DigitalActionData {
 	sf::Keyboard::Scancode primary_binding;
 	sf::Keyboard::Scancode secondary_binding;
 };
+
 struct AnalogActionData {
 	InputHandle_t steam_handle; // handle to SteamInput analog action
 	float x = 0.f;				// -1.0 … 1.0
@@ -240,6 +248,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	// --- Resolved (persistent) ---
 	std::array<ResolvedDigitalState, static_cast<size_t>(DigitalAction::END)> m_resolved_digital;
 	std::array<ResolvedAnalogState, static_cast<size_t>(AnalogAction::END)> m_resolved_analog;
+	std::array<KeyRepeatState, static_cast<size_t>(DigitalAction::END)> m_key_repeat{};
 
 	io::Logger m_logger{"Input"};
 

@@ -36,9 +36,12 @@ class JournalGizmo : public Gizmo {
 	void set_text();
 	void switch_sections(automa::ServiceProvider& svc);
 
+	void debug_window();
+
   private:
 	JournalSection m_section{};
 	sf::Vector2f m_questlog_position{};
+	sf::Vector2f m_scroll_offset{};
 	struct {
 		sf::Text readout;
 		std::vector<QuestEntry> listing{};
@@ -52,6 +55,7 @@ class JournalGizmo : public Gizmo {
 	util::RectPath m_path;
 	automa::ServiceProvider* m_services;
 	sf::Sprite m_selector_sprite;
+	std::optional<sf::Sprite> m_screen_sprite{};
 	Drawable m_indicator;
 	int m_selected_quest{};
 

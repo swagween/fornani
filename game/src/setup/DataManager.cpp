@@ -254,8 +254,8 @@ void DataManager::save_quests() {
 
 void DataManager::increment_boss_victory(std::string_view label) {
 	auto& save = files.at(current_save).save_data;
-	auto current = save["boss_victories"]["label"]["count"].as<int>();
-	save["boss_victories"]["label"]["count"] = ++current;
+	auto current = save["boss_victories"][label]["count"].as<int>();
+	save["boss_victories"][label]["count"] = ++current;
 	save_current();
 }
 
@@ -601,6 +601,7 @@ void DataManager::register_enemy(std::string_view tag) {
 			return;
 		}
 	}
+	m_services->notifications.push_notification(*m_services, gui_text["notifications"]["bestiary_updated"].as_string());
 	m_bestiary.add(EnemyRecord{tag.data(), 1});
 }
 
@@ -656,6 +657,8 @@ int DataManager::get_destructible_state(int id) const {
 	}
 	return -1;
 }
+
+auto DataManager::is_enemy_registered(std::string_view label) const -> bool { return std::ranges::find(m_bestiary, label, &EnemyRecord::tag) != m_bestiary.end(); }
 
 auto DataManager::item_id_from_label(std::string_view label) const -> int {
 	auto const& arr = item.as_array();
@@ -725,7 +728,7 @@ auto DataManager::get_enemy_label_from_id(int id) const -> std::optional<std::st
 
 auto DataManager::get_number_of_boss_victories(std::string_view label) const -> int {
 	auto const& save = files.at(current_save).save_data;
-	return save["boss_victories"]["label"]["count"].as<int>();
+	return save["boss_victories"][label]["count"].as<int>();
 }
 
 int DataManager::get_room_index(int id) {

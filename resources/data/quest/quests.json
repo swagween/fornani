@@ -112,6 +112,10 @@
       {
         "index": 0,
         "readout": "Collect all 24 vermite shards."
+      },
+      {
+        "index": 24,
+        "readout": "Collect all 24 vermite shards."
       }
     ],
     "displayed": true
@@ -325,7 +329,8 @@
   },
   {
     "tag": "ashtown_bandit",
-    "target": 11,
+    "title": "The Ashtown Bandit",
+    "target": 6,
     "objectives": [
       {
         "index": 1,
@@ -333,7 +338,7 @@
       },
       {
         "index": 2,
-        "readout": "Go to the top of the Yellow District at night to catch the Bandit in the act."
+        "readout": "Go to the top of the Yellow District at nighttime to catch the Bandit in the act."
       },
       {
         "index": 3,
@@ -352,6 +357,7 @@
   },
   {
     "tag": "find_spencer",
+    "title": "Old Classmates",
     "target": 11,
     "objectives": [
       {
@@ -367,14 +373,15 @@
   },
   {
     "tag": "cajole_doug",
-    "target": 10,
+    "title": "The Ill-Mannered Miner",
+    "target": 3,
     "objectives": [
       {
         "index": 1,
         "readout": "Get on Doug's good side."
       },
       {
-        "index": 2,
+        "index": 3,
         "readout": "Go to the top of the Yellow District at night to catch the theif who stole Doug's screwdriver."
       }
     ],
@@ -519,5 +526,29 @@
         "id": 1440
       }
     ]
+  },
+  {
+    "tag": "radar_beacon_from_bryn",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "eugenes_letter",
+    "title": "Special Delivery",
+    "target": 2,
+    "objectives": [
+      {
+        "index": 1,
+        "readout": "Take Eugene's letter to the post office in Forgetville."
+      }
+    ],
+    "displayed": true
+  },
+  {
+    "tag": "bandit_solved",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
   }
 ]

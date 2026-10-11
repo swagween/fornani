@@ -786,10 +786,28 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "miaag_hurt",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "summoner_death",
     "bus": "gameplay",
     "volume": 1.0,
     "pitch_offset": 0.1
+  },
+  {
+    "label": "summoner_hurt_1",
+    "bus": "gameplay",
+    "volume": 0.2,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "summoner_hurt_2",
+    "bus": "gameplay",
+    "volume": 0.2,
+    "pitch_offset": 0.2
   },
   {
     "label": "hit_squeak",

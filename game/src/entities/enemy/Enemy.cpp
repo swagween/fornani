@@ -186,7 +186,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 	if (just_died()) {
 		svc.data.kill_enemy(map.room_id, metadata.stable_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent));
-		svc.data.register_enemy(label);
+		if (!(flags.general.test(GeneralFlags::boss) && svc.data.is_enemy_registered(label))) { svc.data.register_enemy(label); }
 		if (!flags.state.test(StateFlags::special_death_mode)) {
 			auto const at = get_collider().get_center();
 			svc.stats.enemy.enemies_killed.update();

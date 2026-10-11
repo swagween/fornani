@@ -49,11 +49,12 @@ void Macrophage::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	get_collider().physics.apply_force(m_body->get_recoil_force() * 0.02f);
 	if (is_alert() || player.is_stunned()) {
 		auto force = std::lerp(0.002f, 0.006f, 1.f - m_body->get_percentage_colliding());
-		if (m_flags.test(MacrophageFlags::caught_player)) { force = 0.007f; }
+		if (m_flags.test(MacrophageFlags::caught_player)) { force = 0.07f; }
 		if (player.is_stunned()) {
 			m_steering.spring_seek(get_collider().physics, player.get_collider().get_center(), 0.005f, 0.9f);
+			m_steering.thrust_seek(get_collider().physics, player.get_collider().get_center(), ThrustParameters{force, .218f, .99f, 600.f});
 		} else {
-			m_steering.thrust_seek(get_collider().physics, player.get_collider().get_center(), ThrustParameters{force, .118f, .991f, 60.f});
+			m_steering.thrust_seek(get_collider().physics, player.get_collider().get_center(), ThrustParameters{force, .218f, .99f, 600.f});
 		}
 	} else {
 		m_steering.smooth_random_walk(Enemy::get_collider().physics, 0.0005f, 64.f);

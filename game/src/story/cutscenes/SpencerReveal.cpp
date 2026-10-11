@@ -21,7 +21,7 @@ void SpencerReveal::update(automa::ServiceProvider& svc, SceneContext& context, 
 		if (progress > 40) {
 			svc.quest_table.set_quest_progression("find_spencer", 11);
 			svc.quest_table.set_quest_progression("the_hoarder", 1);
-			svc.quest_table.set_quest_progression("ashtown_bandit", 11);
+			svc.events.set_quest_progression_event.dispatch(23, 6);
 		} else {
 			svc.quest_table.progress_quest("find_spencer", 1, 1310);
 		}

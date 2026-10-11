@@ -134,7 +134,7 @@ void AmbientProp::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 void AmbientProp::render(sf::RenderWindow& win, sf::RenderTexture& tex, sf::Vector2f cam) {
 	if (spawn_denied() || is_destroyed() || is_hidden()) { return; }
 	p_animatable.set_scale(constants::f_scale_vec);
-	p_animatable.set_position(generate_position(win, cam * 0.05f));
+	p_animatable.set_position(generate_position(win, {}));
 	tex.draw(p_animatable);
 	++debug::draw_calls;
 }

@@ -57,15 +57,17 @@
     "already_have_max_item": "You already have the maximum amount of that item.",
     "insufficient_funds": "You cannot afford that item.",
     "journal_updated": "Journal updated.",
+    "bestiary_updated": "Bestiary updated.",
     "quest_completed": "Quest completed: ",
-    "add_postcard": "Added postcard to album."
+    "add_postcard": "Added postcard to album.",
+    "already_here": "You are already here."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - ",
     "greatwing": "- Greatwing Airship - "
   },
   "menu": { "back_button": "< back", "completed": "<completed>" },
-  "journal": { "quest": "<Journal>", "bestiary": "<Bestiary>" },
+  "journal": { "quest": "<Journal>", "bestiary": "<Bestiary>", "photo_album": "<Photo Album>" },
   "file_menu": {
     "play": "play",
     "stats": "stats",
@@ -87,6 +89,7 @@
     "enter_end": " to continue."
   },
   "bestiary": {
-    "fallen": "fallen: "
+    "fallen": "fallen: ",
+    "lives_claimed": "lives claimed: "
   }
 }

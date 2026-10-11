@@ -264,7 +264,7 @@ void Player::update(world::Map& map) {
 		}
 	}
 
-	has_flag_set(PlayerFlags::cutscene) ? m_ear.seek(m_services->camera_controller.get_position(), 0.006f) : m_ear.seek(get_camera_focus_point(), 0.006f);
+	m_services->camera_controller.is_owned_by(graphics::CameraOwner::system) ? m_ear.seek(m_services->camera_controller.get_position(), 0.006f) : m_ear.seek(get_camera_focus_point(), 0.006f);
 
 	if (get_collider().has_flag_set(shape::ColliderFlags::submerged)) {
 		if (m_services->ticker.every_x_ticks(32)) { m_air_supply.inflict(1.f); }
@@ -1107,7 +1107,7 @@ void Player::bhop(float const multiplier) {
 }
 
 void Player::stun(float multiplier) {
-	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }
+	if (is_stunned() || cooldowns.stun_immunity.running() || is_dead()) { return; }
 	cooldowns.stun.set_and_start(std::round(static_cast<float>(m_attributes.stun_time) * multiplier));
 	m_services->soundboard.play_sound("stun");
 	shake_sprite();
@@ -1115,7 +1115,7 @@ void Player::stun(float multiplier) {
 }
 
 void Player::hurt_and_stun(float multiplier) {
-	if (is_stunned() || cooldowns.stun_immunity.running()) { return; }
+	if (is_stunned() || cooldowns.stun_immunity.running() || is_dead()) { return; }
 	stun(multiplier);
 	hurt(1.f, true);
 }
@@ -1228,21 +1228,13 @@ void Player::remove_from_hotbar(std::string_view tag) {
 }
 
 void Player::set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit) {
-	for (auto i{0}; i < to_outfit.size(); ++i) {
-		catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]);
-		if (static_cast<ApparelType>(i) == ApparelType::hairstyle) {
-			if (has_item_equipped("gas_mask")) { equip_item(56); }
-		}
-	}
+	for (auto i{0}; i < to_outfit.size(); ++i) { catalog.wardrobe.equip(static_cast<ApparelType>(i), to_outfit[i]); }
 }
 
 void Player::give_item(std::string_view label, int amount, bool from_save) {
 	for (auto i{0}; i < amount; ++i) { catalog.inventory.add_item(m_services->data, label); }
 	if (label == "cridium_shard" && !from_save) { set_flag(PlayerFlags::health_increase); }
-	if (label == "dog_leash" && !from_save) {
-		// m_services->quest_table.set_quest_progression("rescue_justin", 0, QuestRequirementType::loose);
-		m_services->events.set_quest_progression_event.dispatch(5, 0);
-	}
+	if (label == "dog_leash" && !from_save) { m_services->events.set_quest_progression_event.dispatch(5, 0); }
 	if (label == "vermite" && !from_save) { m_services->events.set_quest_progression_event.dispatch(3, catalog.inventory.get_quantity("vermite")); }
 	if (m_services->data.get_item_json_from_tag(label)["category"].as<int>() == 0 && !from_save) { set_flag(PlayerFlags::ability_acquisition); }
 }
@@ -1285,6 +1277,8 @@ EquipmentStatus Player::equip_item(int id) {
 	if (!std::ranges::contains(catalog.inventory.equipped_items_view(), 56) && ret == EquipmentStatus::swapped) {
 		catalog.wardrobe.unequip(ApparelType::hairstyle);
 		wardrobe_widget.update(*this);
+	} else {
+		catalog.wardrobe.equip(ApparelType::hairstyle, 1);
 	}
 
 	return ret;
@@ -1373,7 +1367,7 @@ void Player::handle_item_logic() {
 	if (has_item("screwdriver") && m_services->quest_table.get_quest_progression("pioneer_tech") == 1) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
 	if (has_item("velvet_rose")) { m_services->quest_table.set_quest_progression("cajole_doug", 2, QuestRequirementType::strict); }
 	if (has_weapon("gnat") && has_weapon("wasp")) { m_services->quest_table.set_quest_progression("build_scorpion", 1, QuestRequirementType::loose); }
-	if (has_item("golden_tiara") && m_services->quest_table.get_quest_progression("find_spencer") < 10) { m_services->quest_table.set_quest_progression("find_spencer", 10, QuestRequirementType::strict); }
+	if (has_item("golden_tiara") && m_services->quest_table.get_quest_progression("ashtown_bandit") < 5) { m_services->events.set_quest_progression_event.dispatch(23, 5); }
 	auto has_bonus_health = health.has_bonus() ? 1 : 0;
 	m_services->quest_table.set_quest_progression("bonus_health", has_bonus_health, QuestRequirementType::strict);
 	if (has_item_equipped("gas_mask") && !is_dead()) {

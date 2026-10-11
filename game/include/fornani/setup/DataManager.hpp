@@ -39,6 +39,7 @@ struct DestructibleRecord {
 struct EnemyRecord {
 	std::string tag{};
 	int fallen{};
+	bool boss{};
 	auto operator==(EnemyRecord const&) const -> bool = default;
 };
 
@@ -116,6 +117,7 @@ class DataManager final {
 		}
 		return false;
 	}
+	[[nodiscard]] auto is_enemy_registered(std::string_view label) const -> bool;
 	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return item[key]["tag"].as_string(); }
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
 	[[nodiscard]] auto get_gun_tag_from_id(int id) const -> std::optional<std::string_view>;
@@ -129,7 +131,7 @@ class DataManager final {
 	[[nodiscard]] auto get_npc_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] auto get_enemy_label_from_id(int id) const -> std::optional<std::string_view>;
 	[[nodiscard]] std::unordered_map<std::string, int> const& loot_register() const noexcept { return m_loot; }
-	[[nodiscard]] Register<EnemyRecord> const& get_bestiary() const noexcept { return m_bestiary; }
+	[[nodiscard]] Register<EnemyRecord>& get_bestiary() noexcept { return m_bestiary; }
 	[[nodiscard]] auto get_number_of_boss_victories(std::string_view label) const -> int;
 
 	int get_room_index(int id);

@@ -15,6 +15,7 @@ void HUDItem::update(automa::ServiceProvider& svc, player::Player& player) { HUD
 void HUDItem::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win, sf::Vector2f offset) {
 	HUDWidget::render(svc, player, win, offset);
 	if (!p_animatable) { return; }
+	if (player.catalog.inventory.get_number_of_equipped_items() == 0) { return; }
 	auto const pad = 2.f;
 	for (int i = 0; i < player.catalog.inventory.get_quantity("equip_slot") + 1; ++i) {
 		if (i < player.catalog.inventory.get_number_of_equipped_items()) { continue; }

@@ -312,12 +312,25 @@ void InputSystem::resolve_input() {
 			state.locked = false; // unlock when the button is released
 		}
 
+		state.repeat = false;
+
 		// Triggered only if not locked
 		if (pressed && !state.held && !state.locked) {
 			state.triggered = true;
 			state.locked = true; // lock until release
+			m_key_repeat[i].key_repeat.start();
+			state.repeat = true;
 		} else {
 			state.triggered = false;
+		}
+
+		// repeat
+		m_key_repeat[i].key_repeat.update();
+		m_key_repeat[i].key_delay.update();
+		// Repeating after the initial delay
+		if (state.held && m_key_repeat[i].key_repeat.is_complete() && m_key_repeat[i].key_delay.is_complete()) {
+			state.repeat = true;
+			m_key_repeat[i].key_delay.start();
 		}
 
 		// Update held
@@ -418,6 +431,7 @@ bool InputSystem::query_digital_axis(MoveDirection dir, DigitalActionQueryType t
 	case DigitalActionQueryType::held: return action.held;
 	case DigitalActionQueryType::triggered: return action.triggered;
 	case DigitalActionQueryType::released: return action.released;
+	case DigitalActionQueryType::repeat: return action.repeat;
 	}
 	return false;
 }
@@ -604,5 +618,7 @@ auto InputSystem::get_icon_lookup_by_action(DigitalAction action) const -> sf::V
 	auto source = get_digital_action_source(action);
 	return (source.controller_origin == k_EInputActionOrigin_None) ? gui::get_key_coordinates(source.key) : gui::get_controller_button_coordinates(source.controller_origin);
 }
+
+KeyRepeatState::KeyRepeatState() : key_repeat{64}, key_delay{17} {}
 
 } // namespace fornani::input

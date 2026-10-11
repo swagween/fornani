@@ -57,6 +57,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 	}
 
 	svc.soundboard.play_sound("load_game");
+	svc.ambience_player.volume.set_dynamic(0.0);
 }
 
 void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -96,6 +97,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (m_intro_shot.is_almost_complete()) { p_context.transition.start(); }
 	if (p_context.transition.is_black() && m_intro_shot.is_complete()) { m_flags.set(IntroFlags::established); }
 	if (p_context.transition.is_black() && m_flags.test(IntroFlags::established) && !m_flags.test(IntroFlags::cutscene_started)) {
+		svc.ambience_player.volume.set_dynamic(1.0);
 		svc.app_flags.set(AppFlags::in_game);
 		p_context.cutscene_catalog.push_cutscene(svc, *m_map, *player, 1);
 		p_context.transition.end();
@@ -154,7 +156,7 @@ void Intro::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	hud.update(svc, *player);
 }
 
-void Intro::frame_update(ServiceProvider& svc) {}
+void Intro::frame_update(ServiceProvider& svc) { player->frame_update(); }
 
 void Intro::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }

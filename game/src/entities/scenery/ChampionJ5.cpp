@@ -4,7 +4,7 @@
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.017f, .118f, .991f, 600.f} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.027f, .418f, .99f, 600.f} {
 	p_animatable.push_and_set_animation("flying", {0, 1, 24, -1});
 	p_animatable.push_animation("land", {1, 4, 24, 0});
 	p_animatable.push_animation("grounded", {5, 1, 24, -1});
@@ -52,7 +52,7 @@ void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 
 	// if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.seek(get_collider().physics, m_target, 0.00003f); }
 	if (get_collider().has_flag_set(shape::ColliderFlags::simple)) { m_steering.thrust_seek(get_collider().physics, m_target, m_thrust); }
-	if (is_close_to_target(0.03f) && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
+	if (is_close_to_target(4.f) && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
 
 	state_function = state_function();
 }

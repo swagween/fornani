@@ -15,7 +15,7 @@ BanditConfrontation::BanditConfrontation(automa::ServiceProvider& svc) : Cutscen
 
 void BanditConfrontation::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
 	if (complete()) {
-		svc.quest_table.set_quest_progression("ashtown_bandit", 10);
+		svc.events.set_quest_progression_event.dispatch(23, 3);
 		svc.music_player.resume();
 		Cutscene::end(svc, player);
 		return;
@@ -49,6 +49,8 @@ void BanditConfrontation::update(automa::ServiceProvider& svc, SceneContext& con
 	if (cooldowns.end.running()) { bandit->disengage(); }
 	if (cooldowns.beginning.is_almost_complete()) {
 		if (!context.console.has_value()) { bandit->force_engage(); }
+		player.set_idle();
+		player.controller.prevent_movement();
 	}
 	if (context.console) { bandit->disengage(); }
 

@@ -54,6 +54,7 @@ void Landing::update(automa::ServiceProvider& svc, SceneContext& context, world:
 		player.get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 		if (m_champion) { player.set_position(m_champion->get_passengers_seat()); }
 		player.set_sitting();
+		player.set_direction({LR::right});
 	} else {
 		player.get_collider().set_attribute(shape::ColliderAttributes::no_collision, false);
 		player.get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false);
@@ -63,7 +64,7 @@ void Landing::update(automa::ServiceProvider& svc, SceneContext& context, world:
 
 	if (m_champion) {
 		if (svc.ticker.every_x_ticks(8)) { m_jitter = random::random_vector_float(-8.f, 8.f); }
-		auto targetpos = map.get_random_home_point() - m_champion->get_collider().get_local_center() + m_jitter;
+		auto targetpos = map.get_random_home_point() - m_champion->get_collider().get_local_center() + m_jitter - sf::Vector2f{0.f, 36.f};
 		if (progress > 21) { targetpos = {1000.f, -500.f}; }
 		m_champion->set_target(targetpos);
 		if (m_champion->is_close_to_target(12.f) && !m_flags.test(LandingFlags::started)) {

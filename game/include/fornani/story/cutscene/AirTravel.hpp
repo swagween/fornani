@@ -9,7 +9,7 @@ namespace fornani {
 
 constexpr auto air_travel_id_v = 998;
 
-enum class AirTravelFlags : std::uint8_t { done, started, unavailable, launched_console, home_base };
+enum class AirTravelFlags : std::uint8_t { done, started, unavailable, launched_console, home_base, no_go };
 
 class AirTravel final : public Cutscene {
   public:

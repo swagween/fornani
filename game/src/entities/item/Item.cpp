@@ -54,7 +54,7 @@ Item::Item(data::DataManager& data, std::string_view label) : m_label{label}, m_
 	auto const table_dim = get_item_table_dimensions(m_type);
 	auto const& idx = data.item_indeces.at(m_label);
 	auto const actual_idx = in_data["index"] ? in_data["index"].as<int>() : idx;
-	if (!in_data["invisible"].as_bool()) { m_table_origin = {actual_idx % table_dim.x, actual_idx / table_dim.x}; }
+	if (!in_data["invisible"].as_bool() && !is_apparel()) { m_table_origin = {actual_idx % table_dim.x, actual_idx / table_dim.x}; }
 }
 
 void Item::render(sf::RenderWindow& win, sf::Sprite& sprite, sf::Vector2f position) {

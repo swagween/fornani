@@ -22,6 +22,11 @@ AirTravel::AirTravel(automa::ServiceProvider& svc, world::Map& map) : Cutscene(s
 	auto const& in = svc.data.travel["landing_sites"][std::to_string(map.room_id)];
 	if (svc.quest_table.get_quest_progression("landing_points", {in["tag"].as_string(), map.room_id}) < 1) { m_flags.set(AirTravelFlags::unavailable); }
 	if (in["home_base"].as_bool()) { m_flags.set(AirTravelFlags::home_base); }
+	auto npcs = map.get_entities<NPC>();
+	auto const character = in["character"].as<int>();
+	auto bit = std::ranges::find_if(npcs, [character](auto& n) { return n->get_specifier() == character; });
+	auto& pilot = *bit;
+	if (in["home_base"].as_bool()) { pilot->set_invisible(); }
 }
 
 void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, world::Map& map, player::Player& player) {
@@ -58,7 +63,7 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 	if (m_flags.test(AirTravelFlags::home_base) && context.transition.is_black()) {
 		m_flags.reset(AirTravelFlags::home_base);
 		context.transition.end();
-		pilot->unhide();
+		pilot->set_invisible(false);
 	}
 
 	if (complete() && !m_flags.test(AirTravelFlags::done) && context.transition.is_black()) {
@@ -71,6 +76,10 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			svc.events.launch_cutscene_event.dispatch(svc, landing_id_v);
 			player.get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 			player.get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+		}
+		for (auto& p : map.get_entities<AmbientProp>()) {
+			if (p->get_tag() == "championj5") { p->set_hidden(false); }
+			if (p->get_tag() == "totaled_championj5") { p->set_hidden(false); }
 		}
 	}
 
@@ -90,11 +99,19 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 	if (m_champion) {
 		if (svc.ticker.every_x_ticks(8)) { m_jitter = random::random_vector_float(-8.f, 8.f); }
 		auto targetpos = map.get_random_home_point() - m_champion->get_collider().get_local_center() + m_jitter;
-		if (progress > 21) { targetpos = {1000.f, -500.f}; }
+		if (progress > 21) {
+			targetpos = {map.get_random_home_point().x + 1000.f, -500.f};
+			player.get_collider().set_attribute(shape::ColliderAttributes::no_collision);
+			player.get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+			if (m_champion && !cooldowns.pause.running() && !m_flags.test(AirTravelFlags::no_go)) {
+				player.set_position(m_champion->get_passengers_seat());
+				player.set_sitting();
+				player.set_direction({LR::right});
+			}
+		}
 		if (home_base) {
 			targetpos = map.get_random_home_point() - m_champion->get_collider().get_local_center();
 			m_champion->get_collider().set_position(targetpos);
-			m_champion->flags.set(ChampionJ5Flags::interactable);
 		}
 		m_champion->set_target(targetpos);
 		if (m_champion->is_close_to_target(8.f) && !m_flags.test(AirTravelFlags::started)) {
@@ -102,7 +119,7 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			m_landed.start();
 			m_flags.set(AirTravelFlags::started);
 		}
-		m_champion->update(svc, map);
+		if (!context.flags.test(SceneContextFlags::has_dialog)) { m_champion->update(svc, map); }
 		pilot->set_position(m_champion->get_drivers_seat());
 		pilot->set_direction({LR::right});
 		pilot->set_flag(NPCFlags::airborne);
@@ -124,7 +141,7 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 
 	switch (progress) {
 	case 0:
-		if (!m_flags.test(AirTravelFlags::home_base)) { pilot->unhide(); }
+		pilot->unhide();
 		++progress;
 		break;
 	case 1: {
@@ -163,12 +180,17 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 			pilot->force_engage();
 			cooldowns.pause.start();
 			++progress;
+			m_flags.set(AirTravelFlags::no_go);
 		}
 		break;
 	}
 	case 21: {
 		if (!context.console && !cooldowns.pause.running() && !context.flags.test(SceneContextFlags::has_dialog) && context.transition.is(graphics::TransitionState::inactive)) {
 			cooldowns.pause.start();
+			if (!m_flags.test(AirTravelFlags::no_go)) {
+				player.set_jumping();
+				player.apply_impulse({-6.f, 0.f});
+			}
 			++progress;
 		}
 		break;

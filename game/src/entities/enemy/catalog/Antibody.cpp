@@ -33,8 +33,8 @@ void Antibody::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		request(AntibodyState::stun);
 	}
 	if ((is_alert() && !m_post_stun.running()) || !map.within_bounds(get_collider().get_center())) {
-		auto force = m_variant == AntibodyVariant::igg ? 0.02f : 0.025f;
-		m_steering.thrust_seek(get_collider().physics, player.get_collider().get_center(), ThrustParameters{force, .218f, .999, 40.f});
+		auto force = m_variant == AntibodyVariant::igg ? 0.03f : 0.045f;
+		m_steering.thrust_seek(get_collider().physics, player.get_collider().get_center(), ThrustParameters{force, .818f, .999, 400.f});
 	} else {
 		m_steering.smooth_random_walk(get_collider().physics, 0.005f, 64.f);
 	}
