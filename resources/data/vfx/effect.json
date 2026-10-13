@@ -28,6 +28,13 @@
     "x_reflection": true,
     "y_reflection": true
   },
+  "triangle_flash": {
+    "frame_count": 4,
+    "framerate": 8,
+    "dimensions": [48, 48],
+    "x_reflection": true,
+    "y_reflection": true
+  },
   "walljump": {
     "frame_count": 4,
     "framerate": 16,
@@ -224,7 +231,7 @@
   },
   "hurt_spark": {
     "frame_count": 5,
-    "framerate": 18,
+    "framerate": 10,
     "dimensions": [40, 40]
   },
   "press": {

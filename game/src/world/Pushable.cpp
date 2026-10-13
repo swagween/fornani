@@ -13,7 +13,7 @@
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style, int size)
-	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 1.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
+	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 0.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
 	  speed{size == 1 ? 1.5f : 1.3f}, m_blink{120}, m_intro{64} {
 	get_collider().physics.position = position;
 	get_collider().vert_threshold = 0.01f;
@@ -177,7 +177,7 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 void Pushable::handle_collision(shape::Collider& other) const { other.handle_collider_collision(*m_collider.get()); }
 
 void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
-	Drawable::set_position(collision_box.get_position() - cam + random_offset);
+	Drawable::set_position(collision_box.get_position() + sf::Vector2f{0.f, 0.5f} - cam + random_offset);
 	if (!debug::is_production()) {
 		get_collider().render(win, cam);
 		sf::RectangleShape box{};
@@ -232,11 +232,12 @@ void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Proje
 
 void Pushable::reset(automa::ServiceProvider& svc, world::Map& map) {
 	auto label = size == 1 ? "small_explosion" : "large_explosion";
-	map.effects.push_back(entity::Effect(svc, label, get_collider().get_center()));
+	auto const channel = map.get_effect_channel();
+	map.spawn_effect(svc, label, get_collider().get_center(), {}, channel);
 	get_collider().physics.position = start_position;
 	get_collider().physics.zero();
 	get_collider().sync_components();
-	map.effects.push_back(entity::Effect(svc, label, get_collider().get_center()));
+	map.spawn_effect(svc, label, get_collider().get_center(), {}, channel);
 	energy = 0.f;
 }
 

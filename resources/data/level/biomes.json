@@ -24,7 +24,8 @@
         "dampen": 1.0,
         "spring_dampen": 0.995,
         "spring_constant": 0.06
-      }
+      },
+      "effect_channel": 4
     },
     "pioneer": {
       "black": [16, 8, 28],
@@ -39,7 +40,8 @@
     },
     "kariba": {
       "black": [12, 12, 20],
-      "max_light": 3.0
+      "max_light": 3.0,
+      "effect_channel": 4
     },
     "ashtown": {
       "platform_sound": "industrial",
@@ -52,7 +54,8 @@
       "platform_sound": "industrial",
       "black": [16, 9, 11],
       "sky_limit": 10,
-      "max_light": 3.0
+      "max_light": 3.0,
+      "effect_channel": 3
     },
     "worm": {
       "platform_sound": "organic",
@@ -60,7 +63,8 @@
       "haze_highlight": [0, 91, 91],
       "haze_shadow": [0, 51, 91],
       "max_light": 4.0,
-      "spike_variations": 3
+      "spike_variations": 3,
+      "effect_channel": 1
     },
     "toxic": {
       "ambience": { "interior": "industrial", "exterior": "none" },
@@ -68,13 +72,15 @@
       "black": [13, 15, 14],
       "haze_highlight": [210, 241, 68],
       "haze_shadow": [29, 204, 129],
-      "max_light": 3.0
+      "max_light": 3.0,
+      "effect_channel": 1
     },
     "nightside": {
       "platform_sound": "industrial",
       "black": [19, 18, 16],
       "sky_limit": 10,
-      "max_light": 3.0
+      "max_light": 3.0,
+      "effect_channel": 2
     },
     "abandoned": {
       "black": [19, 18, 16],
@@ -98,7 +104,8 @@
         "spring_constant": 0.2,
         "chain": {
           "rigid": true
-        }
+        },
+        "effect_channel": 3
       }
     },
     "grove": {
@@ -119,7 +126,8 @@
         "chain": {
           "rigid": true
         }
-      }
+      },
+      "effect_channel": 7
     }
   }
 }

@@ -55,7 +55,9 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 									 {"melee_front_kick", {153, 5, 7 * nani_animation_rate_v, 0}},
 									 {"melee_side_kick", {158, 4, 7 * nani_animation_rate_v, 0}},
 									 {"melee_roundhouse_kick", {153, 4, 7 * nani_animation_rate_v, 0}},
-									 {"drink", {162, 12, 7 * nani_animation_rate_v, 0}}});
+									 {"drink", {162, 12, 7 * nani_animation_rate_v, 0}},
+									 {"gradual_ramp_death", {181, 1, nani_animation_rate_v, -1}},
+									 {"steep_ramp_death", {182, 1, nani_animation_rate_v, -1}}});
 
 	state_function = state_function();
 	m_player->p_animatable.animation.set_params(get_params("idle"));
@@ -774,6 +776,7 @@ fsm::StateFunction PlayerAnimation::update_die() {
 	if (m_player->has_collider()) {
 		m_player->p_animatable.animation.linger_on_frame(1, !m_player->get_collider().grounded());
 		m_player->get_collider().collision_depths = {};
+		if (m_player->get_collider().grounded() && m_player->get_collider().on_ramp()) { m_player->p_animatable.animation.set_params(get_params("steep_ramp_death")); }
 	}
 	m_player->controller.restrict_movement();
 	m_player->controller.prevent_movement();

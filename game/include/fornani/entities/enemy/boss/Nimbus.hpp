@@ -13,8 +13,30 @@
 
 namespace fornani::enemy {
 
-enum class NimbusState : std::uint8_t { idle, jump, land, get_up, prepare_forward_slash, forward_slash, prepare_twirl_cut, twirl_cut, flourish, downward_cut, upward_cut, turn, parry, begin_levitate, levitate, spellcast, double_aerial_slash };
-enum class NimbusFlags : std::uint8_t {};
+enum class NimbusState : std::uint8_t {
+	idle,
+	jump,
+	land,
+	get_up,
+	prepare_forward_slash,
+	forward_slash,
+	prepare_twirl_cut,
+	twirl_cut,
+	flourish,
+	downward_cut,
+	upward_cut,
+	turn,
+	parry,
+	begin_levitate,
+	levitate,
+	spellcast,
+	double_aerial_slash,
+	frenzy_prepare,
+	frenzy_quick_prepare,
+	frenzy_dash,
+	frenzy_cuts
+};
+enum class NimbusFlags : std::uint8_t { frenzy_contact, frenzy_over };
 
 class Nimbus final : public Boss, public StateMachine<NimbusState> {
   public:
@@ -41,6 +63,10 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	fsm::StateFunction update_levitate();
 	fsm::StateFunction update_spellcast();
 	fsm::StateFunction update_double_aerial_slash();
+	fsm::StateFunction update_frenzy_prepare();
+	fsm::StateFunction update_frenzy_quick_prepare();
+	fsm::StateFunction update_frenzy_dash();
+	fsm::StateFunction update_frenzy_cuts();
 
   private:
 	void debug();
@@ -49,11 +75,16 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
   private:
 	struct {
 		util::Cooldown post_slash{600};
+		util::Cooldown parry{800};
+		util::Cooldown post_jump{1800};
 	} m_cooldowns{};
 
 	struct {
 		std::array<entity::Attack, 3> slash{};
+		entity::Attack frenzy{};
 	} m_attacks{};
+
+	util::Counter m_triple_jump{};
 
 	util::BitFlags<NimbusFlags> m_flags{};
 

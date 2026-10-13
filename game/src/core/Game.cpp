@@ -684,6 +684,9 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("MTV horizontal: (%.2f, %.2f)", player->get_collider().mtv_snapshot.horizontal.x, player->get_collider().mtv_snapshot.horizontal.y);
 								ImGui::Text("MTV combined: (%.2f, %.2f)", player->get_collider().mtv_snapshot.combined.x, player->get_collider().mtv_snapshot.combined.y);
 								ImGui::Text("MTV actual: (%.2f, %.2f)", player->get_collider().mtv_snapshot.actual.x, player->get_collider().mtv_snapshot.actual.y);
+								ImGui::Text("Has Head Collision? %s", player->get_collider().flags.external_state.test(shape::ExternalState::head_collision) ? "Yes" : "No");
+								ImGui::Text("Has Left Collision? %s", player->get_collider().flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
+								ImGui::Text("Has Right Collision? %s", player->get_collider().flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Stunned? %s", player->is_stunned() ? "Yes" : "No");
 								if (ImGui::Button("Stun")) { player->stun(); }

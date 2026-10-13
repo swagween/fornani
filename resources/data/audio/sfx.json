@@ -792,6 +792,38 @@
     "pitch_offset": 0.1
   },
   {
+    "label": "nimbus_clang",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "hit_toxigat",
+    "bus": "gameplay",
+    "volume": 0.9,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "shot_toxigat",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.0,
+    "fade_in": 16,
+    "fade_out": 48
+  },
+  {
+    "label": "juicy_impact",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.1
+  },
+  {
+    "label": "clean_impact",
+    "bus": "gameplay",
+    "volume": 0.4,
+    "pitch_offset": 0.1
+  },
+  {
     "label": "summoner_death",
     "bus": "gameplay",
     "volume": 1.0,

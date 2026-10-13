@@ -928,7 +928,7 @@
       "texture_lookup": 20,
       "dimensions": [30, 8],
       "offsets": {
-        "global": [8.5, 5.5],
+        "global": [9.5, 5.5],
         "barrel": [38.0, 1.5],
         "stock": [0, 0]
       },
@@ -944,8 +944,8 @@
       "attributes": {
         "automatic": true,
         "gun": true,
-        "ammo": 6,
-        "reload": 380,
+        "ammo": 8,
+        "reload": 360,
         "cooldown_time": 20,
         "recoil": 0.15
       }
@@ -954,7 +954,7 @@
       "projectile": {
         "type": 0,
         "dimensions": [19.0, 19.0],
-        "radius": 6.0,
+        "radius": 5.0,
         "audio": { "hit": 2 },
         "attributes": {
           "base_damage": 9,

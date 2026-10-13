@@ -394,6 +394,11 @@ void Collider::handle_collider_collision(Collider const& collider, bool momentum
 			} else {
 				correct_y(overlap);
 			}
+			if (grounded()) {
+				correct_x({});
+				flags.external_state.set(ExternalState::head_collision);
+				if (!downhill()) { m_direction.left() ? flags.collision.set(Collision::has_left_collision) : flags.collision.set(Collision::has_right_collision); }
+			}
 		}
 	}
 	bool vert{};

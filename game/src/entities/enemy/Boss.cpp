@@ -49,6 +49,7 @@ void Boss::end_battle() {
 	set_flag(BossFlags::battle_mode, false);
 	p_health_bar.send_out();
 	p_services->soundboard.play_sound("boss_defeat");
+	p_services->soundboard.play_sound("boss_death");
 	p_services->ticker.freeze_frame(1.2f, 0.6f);
 	p_services->camera_controller.shake(4, 0.1f, 2000, 95);
 }

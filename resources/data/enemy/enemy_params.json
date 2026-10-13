@@ -1739,6 +1739,10 @@
       "death": {
         "size": 1,
         "style": "beast"
+      },
+      "effects_overlay": {
+        "dimensions": [64, 64],
+        "offset": [0, 0]
       }
     },
     "audio": {
@@ -1746,7 +1750,7 @@
       "death_sounds": ["nimbus_death"]
     },
     "attributes": {
-      "base_hp": 1300,
+      "base_hp": 600,
       "base_damage": 1.0,
       "speed": 16.0,
       "loot_multiplier": 50.0,

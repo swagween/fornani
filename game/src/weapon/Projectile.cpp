@@ -223,6 +223,7 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 		if (physical.sensor.value().within_bounds(player.hurtbox)) { handle_player_hit(svc, map, player); }
 		return;
 	}
+	if (player.is_intangible()) { return; }
 	if (physical.collider.collides_with(player.hurtbox)) {
 		handle_player_hit(svc, map, player);
 		destroy(false);
@@ -344,6 +345,7 @@ void Projectile::set_direction(CardinalDirection to) {
 }
 
 void Projectile::handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
+	if (player.is_intangible()) { return; }
 	if (metadata.attributes.test(ProjectileAttributes::explode_on_impact)) {
 		on_explode(svc, map);
 	} else if (metadata.specifications.stun_multiplier > constants::small_value) {

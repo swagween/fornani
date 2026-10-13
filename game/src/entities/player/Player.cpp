@@ -17,10 +17,11 @@ namespace fornani::player {
 constexpr auto wallslide_threshold_v = -0.16f;
 constexpr auto light_offset_v = 12.f;
 constexpr auto max_damage_v = 1024.f;
+constexpr auto default_sprite_offset_v = sf::Vector2f{10.f, -3.f};
 
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{10.f, -3.f}, m_sprite_overlay{svc, "nani", {26, 26}},
+	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{default_sprite_offset_v}, m_sprite_overlay{svc, "nani", {26, 26}},
 	  m_flat_shader{svc.finder}, m_corner_sensor{.left{6.f}, .right{6.f}} {
 
 	p_animatable.center();
@@ -495,6 +496,7 @@ void Player::simple_update() {
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
 
+	if (p_animatable.animation.get_frame() == 182) { sprite_offset += sf::Vector2f{0.f, 4.f}; }
 	m_sprite_position = collider.has_value() ? get_collider().get_position() + sprite_offset : m_sprite_position;
 	m_sprite_position.x += directions.actual.left() ? -1.f : 1.f;
 	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-4.f, 4.f); }
@@ -502,6 +504,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	m_sprite_position += m_shake_offset;
 	p_animatable.set_position(m_sprite_position - cam);
 	m_sprite_overlay.set_position(m_sprite_position - cam);
+	sprite_offset = default_sprite_offset_v;
 
 	// handle special render
 	set_flag(PlayerFlags::special_render, false);
@@ -1004,11 +1007,22 @@ void Player::walk() {
 	if (m_animation_machine.is_state(AnimState::dash)) { return; }
 	if (m_animation_machine.is_state(AnimState::roll)) { return; }
 	if (m_animation_machine.is_state(AnimState::sharp_turn)) { get_collider().physics.acceleration.x *= 0.1f; }
-	if (controller.moving_right() && !get_collider().has_right_collision()) {
-		get_collider().physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	auto const stuck_left = get_collider().has_left_collision() || (get_collider().has_head_collision() && directions.actual.left() && !get_collider().downhill());
+	auto const stuck_right = get_collider().has_right_collision() || (get_collider().has_head_collision() && directions.actual.right() && !get_collider().downhill());
+	auto const speed = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	if (controller.moving_right()) {
+		if (!stuck_right) {
+			get_collider().physics.acceleration.x = speed;
+		} else {
+			get_collider().physics.acceleration.x = -speed;
+		}
 	}
-	if (controller.moving_left() && !get_collider().has_left_collision()) {
-		get_collider().physics.acceleration.x = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	if (controller.moving_left()) {
+		if (!stuck_left) {
+			get_collider().physics.acceleration.x = speed;
+		} else {
+			get_collider().physics.acceleration.x = -speed;
+		}
 	}
 }
 
@@ -1043,7 +1057,7 @@ void Player::hurt(float amount, bool force) {
 		if (m_map) {
 			m_map.value()->sound_impact();
 			m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
-			// m_map.value()->spawn_effect(*m_services, "hurt_spark", hurtbox.get_center());
+			m_map.value()->spawn_frame_effect(*m_services, "hurt_spark", hurtbox.get_center());
 		}
 		m_services->soundboard.play_sound("impact");
 		auto const energy = amount > 1.f ? 0.15f : 0.05f;
@@ -1139,7 +1153,7 @@ void Player::stun(float multiplier) {
 }
 
 void Player::hurt_and_stun(float multiplier) {
-	if (is_stunned() || cooldowns.stun_immunity.running() || is_dead()) { return; }
+	if (is_stunned() || is_dead()) { return; }
 	stun(multiplier);
 	hurt(1.f, true);
 }

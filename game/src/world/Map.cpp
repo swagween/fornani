@@ -479,6 +479,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
+	std::erase_if(frame_effects, [](auto& e) { return e.done(); });
 	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
@@ -699,6 +700,10 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& laser : lasers) { laser.render(svc, win, cam); }
 	if (debug::is_production()) {
 		for (auto& effect : effects) { effect.submit(renderer); }
+		for (auto& effect : frame_effects) {
+			effect.update();
+			effect.submit(renderer);
+		}
 	} else {
 		for (auto& effect : effects) { effect.render(win, cam); }
 	}
@@ -905,6 +910,8 @@ void Map::spawn_projectile_at(automa::ServiceProvider& svc, arms::Weapon& weapon
 }
 
 void Map::spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel, float scale) { effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel, scale)); }
+
+void Map::spawn_frame_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel, int channel, float scale) { frame_effects.push_back(entity::Effect(svc, tag.data(), pos, vel, channel, scale)); }
 
 void Map::spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim, sf::Color color, int channel) {
 	active_emitters.push_back(std::make_unique<vfx::Emitter>(svc, *this, pos, dim, tag, color, dir, channel));
@@ -1249,6 +1256,7 @@ void Map::clear() {
 	// inspectables.clear();
 	// animators.clear();
 	effects.clear();
+	frame_effects.clear();
 	for (auto& scenery : scenery_layers) { scenery.clear(); }
 	lasers.clear();
 	spawners.clear();
@@ -1449,6 +1457,8 @@ auto Map::get_tile_color(int tod, int index) const -> sf::Color {
 
 	return m_tileset_image.getPixel({x, y});
 }
+
+auto Map::get_effect_channel() const -> int { return m_services->data.biomes["properties"][get_biome_string()]["effect_channel"].as<int>(); }
 
 auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && !is_interior()) || has_property(MapProperties::toxic); }
 

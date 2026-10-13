@@ -202,7 +202,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			case EnemySize::small: svc.soundboard.play_sound("small_death", at); break;
 			case EnemySize::medium: svc.soundboard.play_sound("standard_death", at); break;
 			case EnemySize::large: svc.soundboard.play_sound("low_death", at); break;
-			case EnemySize::giant: svc.soundboard.play_sound("very_low_death", at); break;
+			case EnemySize::giant: svc.soundboard.play_sound("boss_death", at); break;
 			default: svc.soundboard.play_sound("standard_death", at); break;
 			}
 			map.spawn_counter.update(-1);
@@ -238,10 +238,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	player.has_item_equipped("magnifying_glass") && !flags.general.test(GeneralFlags::boss) ? flags.state.set(StateFlags::health_exposed) : flags.state.reset(StateFlags::health_exposed);
 	auto const flash_rate = 32;
 	if (!flags.general.test(GeneralFlags::custom_channels)) { set_channel(EnemyChannel::standard); }
-	if (flags.general.test(GeneralFlags::has_invincible_channel)) {
-		flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility) ? set_channel(EnemyChannel::standard) : set_channel(EnemyChannel::invincible);
-	}
 	if (hurt_effect.running()) { set_channel((hurt_effect.get() / flash_rate) % 2 == 0 ? EnemyChannel::hurt_1 : EnemyChannel::hurt_2); }
+	if (flags.general.test(GeneralFlags::has_invincible_channel)) {
+		if (!flags.state.test(StateFlags::vulnerable) && !flags.state.test(StateFlags::pre_battle_invincibility)) { set_channel(EnemyChannel::invincible); }
+	}
 	if (flags.general.test(GeneralFlags::custom_channels)) { set_channel(m_custom_channel); }
 
 	if (hurt_effect.running() && !flags.state.test(StateFlags::no_shake)) { shake(); }

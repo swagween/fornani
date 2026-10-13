@@ -158,11 +158,11 @@ void PlayerController::update(automa::ServiceProvider& svc, world::Map& map, Pla
 		cooldowns.walljump_request.start();
 		if (can_walljump) {
 			m_ability = std::make_unique<Walljump>(svc, map, player.get_collider(), jump_direction, perfect);
+		} else if (can_corner_flip) {
+			m_ability = std::make_unique<CornerFlip>(svc, map, player.get_collider(), jump_direction);
 		} else if (can_doublejump && !player.can_dive()) {
 			m_ability = std::make_unique<Doublejump>(svc, map, player.get_collider());
 			player.m_ability_usage.doublejump.update();
-		} else if (can_corner_flip) {
-			m_ability = std::make_unique<CornerFlip>(svc, map, player.get_collider(), jump_direction);
 		}
 		if (player.can_dive() && !can_walljump) { m_ability = std::make_unique<Dive>(svc, map, player.get_collider()); }
 	}

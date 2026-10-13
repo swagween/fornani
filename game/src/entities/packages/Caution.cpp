@@ -63,7 +63,7 @@ bool Caution::is_ledge_detected(world::Map& map, shape::Collider& collider, Dire
 
 bool Caution::is_projectile_detected(world::Map& map, shape::Shape& zone, arms::Team friendly_fire) {
 	for (auto& proj : map.active_projectiles) {
-		if (proj.get_collider().collides_with(zone) && proj.get_team() != friendly_fire) { return true; }
+		if (proj.get_collider().collides_with(zone) && proj.get_team() != friendly_fire && !proj.is_stuck()) { return true; }
 	}
 	return false;
 }

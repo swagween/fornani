@@ -18,10 +18,18 @@ void Attack::set_position(sf::Vector2f position) {
 
 void Attack::handle_player(player::Player& player) { sensor.within_bounds(player.hurtbox) ? sensor.activate() : sensor.deactivate(); }
 
-bool Attack::hurt_player(player::Player& player, float damage, sf::Vector2f knockback) {
+bool Attack::hurt_player(player::Player& player, float damage, sf::Vector2f knockback, bool force) {
 	if (hit.within_bounds(player.hurtbox) && hit.active()) {
 		if (!player.invincible() && !player.health.is_dead()) { player.apply_impulse(knockback); }
-		player.hurt(damage);
+		player.hurt(damage, force);
+		return true;
+	}
+	return false;
+}
+
+bool Attack::stun_player(player::Player& player, float multiplier, float damage) {
+	if (hit.within_bounds(player.hurtbox) && hit.active()) {
+		damage > 0.f ? player.hurt_and_stun(multiplier) : player.stun(multiplier);
 		return true;
 	}
 	return false;

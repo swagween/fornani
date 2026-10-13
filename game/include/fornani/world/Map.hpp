@@ -122,6 +122,7 @@ class Map {
 	void spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active = 128, int cooldown = 128, float size = 1.f);
 	void spawn_laser(automa::ServiceProvider& svc, sf::Vector2f position, CardinalDirection direction, arms::LaserSpecifications specs);
 	void spawn_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0, float scale = 1.f);
+	void spawn_frame_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0, float scale = 1.f);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white, int channel = 0);
 	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0, bool stun = false);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false, bool effect = true);
@@ -200,6 +201,7 @@ class Map {
 	[[nodiscard]] auto get_random_home_point() const -> sf::Vector2f;
 	[[nodiscard]] auto get_actual_tile_color(int index) const -> sf::Color;
 	[[nodiscard]] auto get_tile_color(int cycle, int index) const -> sf::Color;
+	[[nodiscard]] auto get_effect_channel() const -> int;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -232,6 +234,7 @@ class Map {
 	std::vector<entity::Bed> beds{};
 	// std::vector<entity::Animator> animators{};
 	std::vector<entity::Effect> effects{};
+	std::vector<entity::Effect> frame_effects{};
 	std::array<std::vector<std::unique_ptr<vfx::Scenery>>, 6> scenery_layers{};
 	std::vector<item::Loot> active_loot{};
 	std::vector<Laser> lasers{};

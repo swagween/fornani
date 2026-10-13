@@ -207,7 +207,7 @@ void VendorDialog::update(automa::ServiceProvider& svc, world::Map& map, player:
 						p_orb_indicator.add(exchange);
 						p_balance += exchange;
 						auto gfi = vendor.value()->guaranteed_finite_items;
-						if (is_buying() && std::find(gfi.begin(), gfi.end(), item_lbl) == gfi.end()) {
+						if (is_buying()) {
 							source_inventory.remove_item(item_lbl, 1);
 							NANI_LOG_DEBUG(m_logger, "Removed {} from {} inventory", item_lbl, is_buying() ? "vendor" : "player");
 						}

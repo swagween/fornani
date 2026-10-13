@@ -25,6 +25,7 @@ constexpr auto default_detector_height = 18.f;
 
 enum class General : std::uint8_t { complex, pushable, soft, no_move };
 enum class Animation : std::uint8_t { just_landed, sliding };
+
 enum class State : std::uint8_t {
 	just_collided,
 	is_any_jump_collision,
@@ -41,6 +42,7 @@ enum class State : std::uint8_t {
 	on_flat_surface,
 	tickwise_ramp_collision
 };
+
 enum class ExternalState : std::uint8_t {
 	grounded,
 	collider_collision,
@@ -55,8 +57,10 @@ enum class ExternalState : std::uint8_t {
 	tile_debug_flag,
 	ceiling_ramp_hit,
 	roll_collision,
-	slide_grounded
+	slide_grounded,
+	head_collision
 };
+
 enum class PermaFlags : std::uint8_t { world_grounded, downhill };
 
 enum class Collision : std::uint8_t { any_collision, has_left_collision, has_right_collision, has_top_collision, has_bottom_collision, ramp_collision };
@@ -145,6 +149,7 @@ class Collider : public ICollider {
 		return side == 0 ? jumpbox.get_position() + jumpbox.get_dimensions() * 0.5f : side == -1 ? jumpbox.get_position() + sf::Vector2f{0.f, 4.f} : jumpbox.get_position() + jumpbox.get_dimensions() - sf::Vector2f{0.f, 4.f};
 	}
 	[[nodiscard]] auto platform_collision() const -> bool { return flags.external_state.test(ExternalState::collider_collision); }
+	[[nodiscard]] auto has_head_collision() const -> bool { return flags.external_state.test(ExternalState::head_collision); }
 	[[nodiscard]] auto left() const -> float { return bounding_box.left(); }
 	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }
 	[[nodiscard]] auto top() const -> float { return bounding_box.top(); }
