@@ -304,46 +304,7 @@ void Console::handle_inputs(input::InputSystem& controller) {
 			// set target suite if response code demands it
 			if (auto response_codes = get_response_codes(m_response->get_selection())) {
 				for (auto const& cde : response_codes.value()) {
-					if (cde.is_response()) { m_writer->set_suite(cde.value); }
-					if (cde.is_start_battle()) { m_services->events.start_battle_event.dispatch(); }
-					if (cde.is(MessageCodeType::acquire_postcard)) { m_services->events.acquire_postcard_event.dispatch(*m_services, cde.value); }
-					if (cde.is_pop_conversation()) {
-						m_services->events.npc_pop_conversation_event.dispatch();
-						auto label = m_services->data.get_npc_label_from_id(cde.value);
-						if (label && cde.extras) {
-							m_services->quest_table.progress_quest("npc_dialogue", {label.value().data(), cde.extras->at(0)}, 1, -1, cde.value);
-							NANI_LOG_DEBUG(m_logger, "Progressed NPC dialogue for NPC {} in room {}.", label.value().data(), cde.extras->at(0));
-						}
-					}
-					if (cde.is_action()) { handle_actions(cde.value); }
-					if (cde.is_quest()) {
-						if (cde.extras) {
-							if (cde.extras->size() > 1) { m_services->quest_table.progress_quest(m_services->quest_registry.get_quest_metadata(cde.value).get_tag(), cde.extras->at(0), cde.extras->at(1)); }
-						}
-					}
-					if (cde.is(MessageCodeType::set_quest_progression)) {
-						if (cde.extras) {
-							if (cde.extras->size() > 0) { m_services->events.set_quest_progression_event.dispatch(cde.value, cde.extras->at(0)); }
-						}
-					}
-					if (cde.is_piggyback()) { m_services->events.npc_piggyback_event.dispatch(*m_services, cde.value); }
-					if (cde.is(MessageCodeType::purchase)) { m_services->events.purchase_event.dispatch(cde.value); }
-					if (cde.is(MessageCodeType::give_bonus_health)) { m_services->events.give_bonus_health_event.dispatch(cde.value); }
-					if (cde.is_open_vendor()) { m_services->events.open_vendor_event.dispatch(*m_services, cde.value); }
-					if (cde.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, cde.value); }
-					if (cde.is(MessageCodeType::open_air_travel) && m_process_code_after) { m_services->events.open_air_travel_event.dispatch(*m_services, cde.value); }
-					if (cde.is(MessageCodeType::launch_cutscene)) { m_services->events.launch_cutscene_event.dispatch(*m_services, cde.value); }
-					if (cde.is(MessageCodeType::set_cutscene_progression)) { m_services->events.set_cutscene_progression_event.dispatch(cde.value); }
-					if (cde.is_item()) {
-						m_services->events.acquire_item_from_console_event.dispatch(*m_services, cde.value);
-						if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
-						m_flags.set(ConsoleFlags::close_after_process);
-					}
-					if (cde.is_destructible()) { m_services->data.switch_destructible_state(cde.value); }
-					if (cde.is_remove_item()) {
-						m_services->events.remove_item_by_id_event.dispatch(*m_services, cde.value);
-						NANI_LOG_DEBUG(m_logger, "Removed item from console {}", cde.value);
-					}
+					process_code(cde);
 					if (cde.is_exit()) {
 						end();
 						return;
@@ -357,7 +318,6 @@ void Console::handle_inputs(input::InputSystem& controller) {
 
 	// create response dialog
 	if (next && m_writer->is_responding() && !responded) {
-
 		if (auto codes = get_message_codes()) {
 			for (auto& code : codes.value()) {
 				if (code.is_response()) {
@@ -378,30 +338,14 @@ void Console::handle_inputs(input::InputSystem& controller) {
 	if ((next && m_writer->is_ready()) || responded) {
 
 		// process message codes that should trigger at the end of a message
-
 		if (auto codes = get_message_codes()) {
 			for (auto& code : codes.value()) {
 				if (code.is_redirect() && !responded) {
 					m_writer->set_suite(code.value);
 					if (code.extras) { m_writer->set_index(code.extras.value()[0]); }
 				}
-				if (code.is_start_battle()) { m_services->events.start_battle_event.dispatch(); }
-				if (code.is_reveal_item() && m_process_codes) { m_services->events.reveal_item_by_id_event.dispatch(code.value); }
-				if (code.is_item() && m_process_code_after) { m_services->events.acquire_item_from_console_event.dispatch(*m_services, code.value); }
-				if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
-				if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }
-				if (code.is_open_vendor() && m_process_code_after) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
-				if (code.is(MessageCodeType::acquire_postcard)) { m_services->events.acquire_postcard_event.dispatch(*m_services, code.value); }
-				if (code.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, code.value); }
-				if (code.is(MessageCodeType::open_air_travel) && m_process_code_after) { m_services->events.open_air_travel_event.dispatch(*m_services, code.value); }
-				if (code.is(MessageCodeType::set_cutscene_progression)) { m_services->events.set_cutscene_progression_event.dispatch(code.value); }
+				if (m_process_code_after) { process_code(code); }
 				if (code.is_emotion() && m_process_code_after && m_npc_portrait && responded) { m_npc_portrait->set_emotion(code.value); }
-				if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }
-				if (code.is(MessageCodeType::launch_cutscene)) { m_services->events.launch_cutscene_event.dispatch(*m_services, code.value); }
-				if (code.is_destructible() && m_process_code_after) {
-					auto inverse = code.extras ? code.extras->at(0) : 0;
-					m_services->data.switch_destructible_state(code.value, static_cast<bool>(inverse));
-				}
 				NANI_LOG_DEBUG(m_logger, "Requested next with code {}", code.value);
 			}
 		}
@@ -427,6 +371,60 @@ void Console::handle_inputs(input::InputSystem& controller) {
 			end();
 			m_process_code_before = false;
 		}
+	}
+}
+
+bool Console::process_code(MessageCode const& code) {
+	if (code.is_weapon() && m_process_code_after) { m_services->events.acquire_weapon_from_console_event.dispatch(*m_services, code.value); }
+	if (code.is_remove_weapon() && m_process_code_after) { m_services->events.remove_weapon_by_id_event.dispatch(*m_services, code.value); }
+	if (code.is_destroy_inspectable()) { m_services->data.destroy_inspectable(code.value); }
+	if (code.is_reveal_item() && m_process_codes) { m_services->events.reveal_item_by_id_event.dispatch(code.value); }
+	if (code.is_response()) { m_writer->set_suite(code.value); }
+	if (code.is_start_battle()) { m_services->events.start_battle_event.dispatch(); }
+	if (code.is(MessageCodeType::acquire_postcard)) { m_services->events.acquire_postcard_event.dispatch(*m_services, code.value); }
+	if (code.is_pop_conversation()) {
+		m_services->events.npc_pop_conversation_event.dispatch();
+		auto label = m_services->data.get_npc_label_from_id(code.value);
+		if (label && code.extras) {
+			m_services->quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value);
+			NANI_LOG_DEBUG(m_logger, "Progressed NPC dialogue for NPC {} in room {}.", label.value().data(), code.extras->at(0));
+		}
+	}
+	if (code.is_action()) { handle_actions(code.value); }
+	if (code.is_quest()) {
+		if (code.extras) {
+			if (code.extras->size() > 1) { m_services->quest_table.progress_quest(m_services->quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0), code.extras->at(1)); }
+		}
+	}
+	if (code.is(MessageCodeType::set_quest_progression)) {
+		if (code.extras) {
+			if (code.extras->size() > 0) { m_services->events.set_quest_progression_event.dispatch(code.value, code.extras->at(0)); }
+		}
+	}
+	if (code.is_piggyback()) { m_services->events.npc_piggyback_event.dispatch(*m_services, code.value); }
+	if (code.is(MessageCodeType::purchase)) { m_services->events.purchase_event.dispatch(code.value); }
+	if (code.is(MessageCodeType::give_bonus_health)) { m_services->events.give_bonus_health_event.dispatch(code.value); }
+	if (code.is_open_vendor()) { m_services->events.open_vendor_event.dispatch(*m_services, code.value); }
+	if (code.is(MessageCodeType::open_builder) && m_process_code_after) { m_services->events.open_builder_event.dispatch(*m_services, code.value); }
+	if (code.is(MessageCodeType::open_air_travel) && m_process_code_after) { m_services->events.open_air_travel_event.dispatch(*m_services, code.value); }
+	if (code.is(MessageCodeType::launch_cutscene)) { m_services->events.launch_cutscene_event.dispatch(*m_services, code.value); }
+	if (code.is(MessageCodeType::set_cutscene_progression)) { m_services->events.set_cutscene_progression_event.dispatch(code.value); }
+	if (code.is(MessageCodeType::restore_health)) { m_services->events.restore_health_event.dispatch(); }
+	if (code.is(MessageCodeType::set_time_of_day)) { m_services->events.set_time_of_day_event.dispatch(code.value); }
+	if (code.is(MessageCodeType::fade_to_black)) { m_services->events.fade_to_black_event.dispatch(); }
+	if (code.is(MessageCodeType::fade_from_black)) { m_services->events.fade_from_black_event.dispatch(); }
+	if (code.is_item()) {
+		m_services->events.acquire_item_from_console_event.dispatch(*m_services, code.value);
+		if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
+		m_flags.set(ConsoleFlags::close_after_process);
+	}
+	if (code.is_destructible() && m_process_code_after) {
+		auto inverse = code.extras ? code.extras->at(0) : 0;
+		m_services->data.switch_destructible_state(code.value, static_cast<bool>(inverse));
+	}
+	if (code.is_remove_item()) {
+		m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
+		NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
 	}
 }
 

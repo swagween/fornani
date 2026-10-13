@@ -23,5 +23,9 @@ struct GiveBonusHealthEvent : Event<int> {};
 struct SetQuestProgressionEvent : Event<int, int> {};
 struct LoadRoomEvent : Event<automa::ServiceProvider&, int> {};
 struct TravelToRoomEvent : Event<int> {};
+struct RestoreHealthEvent : Event<> {};
+struct SetTimeOfDayEvent : Event<int> {};
+struct FadeToBlackEvent : Event<> {};
+struct FadeFromBlackEvent : Event<> {};
 
 } // namespace fornani

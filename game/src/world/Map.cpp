@@ -856,6 +856,25 @@ void Map::clear_weather() {
 	background = std::make_unique<graphics::Background>(*m_services, bg_type, real_dimensions);
 }
 
+void Map::determine_weather() {
+	m_weather.reset();
+	m_weather_specs.reset();
+	auto const& metadata = m_services->data.get_map_json_from_id(room_id);
+	if (!metadata) { return; }
+	auto const& meta = metadata.value().get()["meta"];
+	auto& svc = *m_services;
+	if (meta["weather"]) {
+		m_weather_specs.emplace(vfx::WeatherSpecifications{meta["weather"]});
+		if (svc.world_clock.happens(WorldClockInterval::day, m_weather_specs->chance)) {
+			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->params);
+			svc.ambience_player.load(svc.finder, m_weather_specs->ambience);
+			svc.ambience_player.play();
+		}
+	}
+	auto bg_type = m_weather ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();
+	background = std::make_unique<graphics::Background>(svc, bg_type, real_dimensions);
+}
+
 void Map::spawn_laser(automa::ServiceProvider& svc, Turret& parent, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size) {
 	lasers.push_back(Laser(svc, *this, parent, position, type, attributes, direction, active, cooldown, size));
 }

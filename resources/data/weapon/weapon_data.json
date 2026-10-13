@@ -917,5 +917,73 @@
         }
       }
     }
+  },
+  "toxigat": {
+    "metadata": {
+      "id": 19,
+      "label": "Toxigat",
+      "description": "A tactical toxic spray gun."
+    },
+    "visual": {
+      "texture_lookup": 20,
+      "dimensions": [30, 8],
+      "offsets": {
+        "global": [8.5, 5.5],
+        "barrel": [38.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "toxigat_spray"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "toxigat"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": true,
+        "gun": true,
+        "ammo": 6,
+        "reload": 380,
+        "cooldown_time": 20,
+        "recoil": 0.15
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [19.0, 19.0],
+        "radius": 6.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 9,
+          "lifespan": 1400,
+          "lifespan_variance": 60,
+          "speed": 24.0,
+          "variance": 6.0,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "sticky": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.99,
+          "gravity": 0.4,
+          "elasticity": 0.99,
+          "spin": 0.005,
+          "spin_dampen": 0.997
+        },
+        "visual": {
+          "effect_type": 4
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 5,
+          "framerate": 32,
+          "angles": 2
+        }
+      }
+    }
   }
 }

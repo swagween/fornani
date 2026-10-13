@@ -325,6 +325,24 @@
     "color": "periwinkle"
   },
 
+  "doublejump": {
+    "load": 40,
+    "rate": 100.0,
+    "expulsion": 220.0,
+    "expulsion_variance": 100.0,
+    "cone": 6.28,
+    "friction": 0.9,
+    "elasticity": 0.8,
+    "gravity": 0.0,
+    "lifespan": 60,
+    "lifespan_variance": 20,
+    "dimensions": [3, 3],
+    "animated": false,
+    "colliding": true,
+    "fader": true,
+    "color": "periwinkle"
+  },
+
   "twinkle": {
     "load": 1,
     "rate": 100.0,
@@ -794,6 +812,78 @@
     }
   },
 
+  "small_carnage": {
+    "load": 20,
+    "rate": 200.0,
+    "expulsion": 80.0,
+    "expulsion_variance": 50.0,
+    "cone": 6.28,
+    "elasticity": 0.8,
+    "lifespan": 400,
+    "lifespan_variance": 200,
+    "dimensions": [4, 4],
+    "colliding": true,
+    "sticky": true,
+    "fader": true,
+    "color": "fucshia",
+    "physics": {
+      "gravity": 18.5,
+      "friction": [0.98, 0.98],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
+  "carnage": {
+    "load": 20,
+    "rate": 200.0,
+    "expulsion": 80.0,
+    "expulsion_variance": 50.0,
+    "cone": 6.28,
+    "elasticity": 0.8,
+    "lifespan": 600,
+    "lifespan_variance": 300,
+    "dimensions": [4, 4],
+    "colliding": true,
+    "sticky": true,
+    "fader": true,
+    "color": "fucshia",
+    "physics": {
+      "gravity": 10.5,
+      "friction": [0.95, 0.99],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
+  "large_carnage": {
+    "load": 20,
+    "rate": 200.0,
+    "expulsion": 80.0,
+    "expulsion_variance": 50.0,
+    "cone": 6.28,
+    "elasticity": 0.8,
+    "lifespan": 800,
+    "lifespan_variance": 400,
+    "dimensions": [6, 6],
+    "colliding": true,
+    "fader": true,
+    "sticky": true,
+    "color": "fucshia",
+    "physics": {
+      "gravity": 18.5,
+      "friction": [0.98, 0.99],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
   "player_blood": {
     "load": 20,
     "rate": 60.0,
@@ -861,6 +951,54 @@
     "color": "green",
     "physics": {
       "gravity": 2.5,
+      "friction": [0.99, 0.99],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
+  "toxigat": {
+    "load": 4,
+    "rate": 30.0,
+    "expulsion": 80.0,
+    "expulsion_variance": 20.0,
+    "cone": 0.8,
+    "friction": 0.99,
+    "elasticity": 0.6,
+    "lifespan": 300,
+    "lifespan_variance": 100,
+    "dimensions": [5, 5],
+    "colliding": true,
+    "fader": true,
+    "color": "green",
+    "physics": {
+      "gravity": 4.5,
+      "friction": [0.99, 0.99],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
+  "toxigat_spray": {
+    "load": 6,
+    "rate": 30.0,
+    "expulsion": 40.0,
+    "expulsion_variance": 20.0,
+    "cone": 1.5,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "lifespan": 200,
+    "lifespan_variance": 60,
+    "dimensions": [3, 3],
+    "colliding": true,
+    "fader": true,
+    "color": "yellow",
+    "physics": {
+      "gravity": -1.5,
       "friction": [0.99, 0.99],
       "water_gravity_multiplier": -10.0,
       "water_friction": [0.99, 0.99],

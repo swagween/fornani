@@ -318,8 +318,8 @@
   "sarah_bane": {
     "id": 43,
     "dimensions": [24, 24],
-    "sprite_dimensions": [28, 28],
-    "sprite_offset": [0, -13],
+    "sprite_dimensions": [24, 24],
+    "sprite_offset": [0, -11],
     "animation": [
       {
         "label": "idle",
@@ -328,6 +328,18 @@
       {
         "label": "shift",
         "parameters": [1, 6, 40, 0, false]
+      }
+    ]
+  },
+  "granny_bane": {
+    "id": 49,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [24, 24],
+    "sprite_offset": [0, -11],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 80, -1, false]
       }
     ]
   },

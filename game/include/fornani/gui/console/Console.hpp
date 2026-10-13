@@ -98,6 +98,7 @@ class Console {
 	void load_and_launch(OutputType type = OutputType::gradual);
 	void load_single_message(std::string_view message);
 	void handle_inputs(input::InputSystem& controller);
+	bool process_code(MessageCode const& code); // returns true if exited
 	void debug();
 
 	std::unique_ptr<TextWriter> m_writer;

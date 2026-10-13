@@ -44,6 +44,8 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 	Enemy::update(svc, map, player);
 	if (health.is_dead()) { return; }
 
+	if (!map.within_bounds(get_collider().get_center())) { kill(); }
+
 	face_player(player);
 	flags.state.set(StateFlags::vulnerable);
 
@@ -55,8 +57,10 @@ void Spitefly::update(automa::ServiceProvider& svc, world::Map& map, player::Pla
 		auto force = is_albino() ? 0.00011f : 0.0001f;
 		if (is_albino()) {
 			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
-		} else {
+		} else if (m_variant == SpiteflyVariant::albino_bomb) {
 			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center(), force);
+		} else {
+			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + directions.movement.get_vector() * 80.f, force);
 		}
 		if (is_bomb()) {
 			if (m_bomb) {

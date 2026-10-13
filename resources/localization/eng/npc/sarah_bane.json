@@ -1,0 +1,51 @@
+{
+  "1": {
+    "responses": [
+      [
+        {
+          "codes": [[1, 1]],
+          "message": "Yeah... You live here?"
+        }
+      ]
+    ],
+    "suite": [
+      [
+        {
+          "message": "Hi."
+        },
+        {
+          "codes": [[32]],
+          "message": "Fade to black..."
+        },
+        {
+          "message": "Blah blah blah."
+        },
+        {
+          "codes": [[33]],
+          "message": "Fade from black..."
+        }
+      ],
+      [
+        {
+          "codes": [[1, 0]],
+          "message": "You're cute. Are you new around here?"
+        }
+      ],
+      [
+        {
+          "message": "Born and raised. I live in the blue district. But don't expect a house tour anytime soon. My grandmother keeps our place locked up like a safe. Not sure why."
+        }
+      ]
+    ]
+  },
+  "2": {
+    "responses": [],
+    "suite": [
+      [
+        {
+          "message": "Yours is the first face I have seen in a long while."
+        }
+      ]
+    ]
+  }
+}

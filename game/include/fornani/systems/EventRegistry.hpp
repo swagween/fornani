@@ -30,6 +30,10 @@ struct EventRegistry {
 	TransitionEvent transition_event{};
 	LoadRoomEvent load_room_event{};
 	TravelToRoomEvent travel_to_room_event{};
+	RestoreHealthEvent restore_health_event{};
+	SetTimeOfDayEvent set_time_of_day_event{};
+	FadeToBlackEvent fade_to_black_event{};
+	FadeFromBlackEvent fade_from_black_event{};
 
 	AcquireItemFromConsoleEvent acquire_item_from_console_event{};
 	AcquireItemEvent acquire_item_event{};

@@ -46,6 +46,9 @@ class Dojo final : public GameplayState {
 	void handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label);
 	void handle_transition();
 	void set_quest_progression(int quest, int value);
+	void set_time_of_day(int const to);
+	void fade_to_black();
+	void fade_from_black();
 
 	bool show_colliders{false};
 

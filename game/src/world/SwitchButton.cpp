@@ -55,7 +55,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	if (type == SwitchType::movable) {
 		if (player.get_collider().predictive_horizontal.overlaps(collider.bounding_box)) { collider.physics.velocity.x = player.get_collider().physics.acceleration.x * 0.5f; }
 		collider.update(svc);
-		collider.handle_collider_collision(player.get_collider().bounding_box);
+		collider.handle_collider_collision(player.get_collider());
 	}
 
 	if (m_flags.test(SwitchButtonState::triggered)) {
@@ -76,7 +76,7 @@ void SwitchButton::update(automa::ServiceProvider& svc, Map& map, player::Player
 	}
 
 	// assume unpressed, then check everything for a press
-	for (auto& breakable : map.breakables) { collider.handle_collider_collision(breakable->get_bounding_box()); }
+	for (auto& breakable : map.breakables) { collider.handle_shape_collision(breakable->get_bounding_box()); }
 	auto was_pressed = false;
 	for (auto& platform : map.platforms) {
 		if (platform->get_collider().bounding_box.overlaps(sensor)) { was_pressed = true; }

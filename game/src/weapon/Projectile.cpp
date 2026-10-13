@@ -87,6 +87,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	physical.collider.physics = components::PhysicsComponent({1.0f, 1.0f}, 1.0f);
 	physical.collider.physics.elasticity = in_data["attributes"]["elasticity"].as<float>();
 	physical.collider.physics.gravity = metadata.specifications.gravity;
+	physical.collider.set_attribute(shape::ColliderAttributes::sticky, metadata.attributes.test(ProjectileAttributes::sticky));
 	if (metadata.specifications.dampen_factor != 0.f) {
 		auto var = random::random_range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
 		physical.collider.physics.set_global_friction(metadata.specifications.dampen_factor + var);

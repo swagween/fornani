@@ -1296,5 +1296,17 @@
     "naive_description": "The key to Sarah Bane's house.",
     "unique": true,
     "is_key": true
+  },
+  {
+    "tag": "can_of_beans",
+    "category": 3,
+    "lookup": [12, 3],
+    "origin": [1, 2],
+    "actual_title": "Can of Beans",
+    "naive_description": "When equipped, these beans triple the damage dealt by dash-kicking.",
+    "unique": true,
+    "equippable": true,
+    "sellable": true,
+    "value": 3400
   }
 ]

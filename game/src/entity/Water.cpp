@@ -86,7 +86,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	}
 	if (m_bounding_box.contains_point(player.hurtbox.get_center())) {
 		if (m_type == WaterType::toxic) {
-			if (!player.has_item_equipped("purifier")) { player.add_toxicity(0.004f); }
+			if (!player.has_item_equipped("purifier")) { player.add_toxicity(0.007f); }
 		}
 		if (!has_flag_set(WaterFlags::splashed)) {
 			svc.soundboard.flags.world.set(audio::World::splash);

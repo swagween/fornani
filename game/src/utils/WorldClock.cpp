@@ -76,6 +76,14 @@ void WorldClock::set_rng(WorldClockInterval interval, float to) {
 	}
 }
 
+void WorldClock::recalculate_rng(WorldClockInterval interval) {
+	switch (interval) {
+	case WorldClockInterval::week: rng.weekly = random::random_range_float(0.f, 1.f); [[fallthrough]];
+	case WorldClockInterval::day: rng.daily = random::random_range_float(0.f, 1.f); [[fallthrough]];
+	case WorldClockInterval::hour: rng.hourly = random::random_range_float(0.f, 1.f); break;
+	}
+}
+
 std::string WorldClock::get_hours_string() {
 	std::string ret{};
 	std::string twelve_hour = increments.hours.get() % 12 == 0 ? "12" : std::to_string(increments.hours.get() % 12);

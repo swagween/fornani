@@ -44,6 +44,7 @@ using EntityHandle = std::uint64_t;
 
 enum class EnemyChannel : std::uint8_t { standard, hurt_1, hurt_2, invincible, extra_1, extra_2 };
 enum class EnemySize : std::uint8_t { tiny, small, medium, large, giant };
+
 enum class GeneralFlags : std::uint8_t {
 	mobile,
 	gravity,
@@ -71,6 +72,7 @@ enum class GeneralFlags : std::uint8_t {
 	tick_slowdown,
 	no_death_flare
 };
+
 enum class StateFlags : std::uint8_t {
 	alive,
 	alert,
@@ -89,8 +91,10 @@ enum class StateFlags : std::uint8_t {
 	despawn,
 	pre_battle_invincibility,
 	special_event,
-	blocked_projectile
+	blocked_projectile,
+	killed
 };
+
 enum class Triggers : std::uint8_t { hostile, alert };
 enum class Variant : std::uint8_t { beast, soldier, elemental, worker, guardian };
 
@@ -200,7 +204,7 @@ class Enemy : public Mobile {
 	void hurt(automa::ServiceProvider& svc, float amount = 1.f);
 	void shake() { energy = hit_energy; }
 	void stop_shaking() { flags.state.reset(StateFlags::shaking); }
-	void kill() { health.kill(); }
+	void kill();
 
 	Health health;
 	graphics::Indicator health_indicator;

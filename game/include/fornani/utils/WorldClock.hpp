@@ -30,6 +30,7 @@ class WorldClock {
 	void toggle_military_time();
 	void set_military(bool const to_military);
 	void set_rng(WorldClockInterval interval, float to);
+	void recalculate_rng(WorldClockInterval interval);
 
 	[[nodiscard]] auto is_military() const -> bool { return m_mode == ClockMode::military; }
 	[[nodiscard]] auto get_normalized_time() const -> float { return static_cast<float>(get_hours() * 60 + get_minutes()) / 1440.f; }

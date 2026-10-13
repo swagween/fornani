@@ -14,6 +14,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "bar.json",
+      "region": "ashtown",
+      "room_id": 1318
+    },
+    {
+      "folder": "ashtown",
       "label": "blue_district.json",
       "region": "ashtown",
       "room_id": 1350
@@ -56,6 +62,12 @@
     },
     {
       "folder": "ashtown",
+      "label": "jeweler.json",
+      "region": "ashtown",
+      "room_id": 1316
+    },
+    {
+      "folder": "ashtown",
       "label": "mineshaft.json",
       "region": "ashtown",
       "room_id": 1401
@@ -95,6 +107,12 @@
       "label": "trade_shop.json",
       "region": "ashtown",
       "room_id": 1305
+    },
+    {
+      "folder": "ashtown",
+      "label": "warehouse.json",
+      "region": "ashtown",
+      "room_id": 1301
     },
     {
       "folder": "config",
@@ -461,6 +479,12 @@
       "label": "pit.json",
       "region": "kariba",
       "room_id": 516
+    },
+    {
+      "folder": "kariba",
+      "label": "rookery.json",
+      "region": "kariba",
+      "room_id": 520
     },
     {
       "folder": "kariba",

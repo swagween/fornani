@@ -18,6 +18,7 @@ DashKick::DashKick(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 	svc.soundboard.play_sound("nani_dash_kick");
 	original_gravity = collider.physics.gravity;
 	svc.ticker.freeze_frame(0.05f);
+	svc.camera_controller.shake(2, 0.1f, 100, 20);
 }
 
 void DashKick::update(shape::Collider& collider, PlayerController& controller) {

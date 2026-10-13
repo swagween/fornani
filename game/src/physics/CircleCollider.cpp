@@ -71,13 +71,29 @@ void CircleCollider::handle_collision(shape::Shape const& shape, bool soft) {
 		physics.position += cmtv;
 		auto const normal = cmtv.normalized();
 		auto const velocity_normal = physics.velocity.dot(normal);
-		if (velocity_normal < 0.f) { physics.velocity -= (1.f + physics.elasticity) * velocity_normal * normal; }
-		if (cmtv.lengthSquared() > constants::small_value) { m_flags.set(CircleColliderFlags::collided); }
+		if (velocity_normal < 0.f) {
+			physics.velocity -= (1.f + physics.elasticity) * velocity_normal * normal;
+			if (has_attribute(ColliderAttributes::sticky)) {
+				physics.zero();
+				set_flag(ColliderFlags::gravity, false);
+			}
+		}
+		if (cmtv.lengthSquared() > constants::small_value) {
+			m_flags.set(CircleColliderFlags::collided);
+			if (has_attribute(ColliderAttributes::sticky)) {
+				physics.zero();
+				set_flag(ColliderFlags::gravity, false);
+			}
+		}
 	} else {
 		physics.position.x += circle_right_of ? abs(mtv.x) * leeway + nudge : abs(mtv.x) * -leeway - nudge;
 		physics.position.y += circle_below ? abs(mtv.y) * leeway + nudge : abs(mtv.y) * -leeway - nudge;
 		if (!(soft && !circle_above)) { vertical ? physics.collide({0, 1}) : physics.collide({1, 0}); }
 		m_flags.set(CircleColliderFlags::collided);
+		if (has_attribute(ColliderAttributes::sticky)) {
+			physics.zero();
+			set_flag(ColliderFlags::gravity, false);
+		}
 	}
 	sensor.set_position(physics.position);
 }

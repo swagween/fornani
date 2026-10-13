@@ -90,7 +90,6 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -433,7 +432,7 @@
         0,
         112,
         114,
-        135,
+        134,
         112,
         113,
         114,

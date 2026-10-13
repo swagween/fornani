@@ -47,6 +47,9 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	svc.events.transition_event.attach_to(p_slot, &Dojo::handle_transition, this);
 	svc.events.set_quest_progression_event.attach_to(p_slot, &Dojo::set_quest_progression, this);
 	svc.events.load_room_event.attach_to(p_slot, &Dojo::reload, this);
+	svc.events.set_time_of_day_event.attach_to(p_slot, &Dojo::set_time_of_day, this);
+	svc.events.fade_to_black_event.attach_to(p_slot, &Dojo::fade_to_black, this);
+	svc.events.fade_from_black_event.attach_to(p_slot, &Dojo::fade_from_black, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
@@ -533,5 +536,21 @@ void Dojo::set_quest_progression(int quest, int value) {
 	}
 	NANI_LOG_DEBUG(m_logger, "Set quest {}'s progression to {}", tag, value);
 }
+
+void Dojo::set_time_of_day(int const to) {
+	auto const tod = static_cast<TimeOfDay>(to);
+	switch (tod) {
+	case TimeOfDay::dawn: p_services->world_clock.set_time(6, 1); break;
+	case TimeOfDay::day: p_services->world_clock.set_time(7, 1); break;
+	case TimeOfDay::dusk: p_services->world_clock.set_time(18, 1); break;
+	case TimeOfDay::night: p_services->world_clock.set_time(19, 1); break;
+	}
+	p_services->world_clock.recalculate_rng(WorldClockInterval::day);
+	m_map->determine_weather();
+}
+
+void Dojo::fade_to_black() { p_context.transition.start(); }
+
+void Dojo::fade_from_black() { p_context.transition.end(); }
 
 } // namespace fornani::automa

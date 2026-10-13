@@ -343,6 +343,7 @@ fsm::StateFunction PlayerAnimation::update_rise() {
 	if (change_state(AnimState::melee_front_kick, get_params("melee_front_kick"))) { return PA_BIND(update_melee_front_kick); }
 	if (change_state(AnimState::backflip, get_params("backflip"))) { return PA_BIND(update_backflip); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"), true)) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
@@ -420,6 +421,7 @@ fsm::StateFunction PlayerAnimation::update_fall() {
 	if (change_state(AnimState::inspect, get_params("inspect"))) { return PA_BIND(update_inspect); }
 	if (change_state(AnimState::land, get_params("land"))) { return PA_BIND(update_land); }
 	if (change_state(AnimState::wallslide, get_params("wallslide"))) { return PA_BIND(update_wallslide); }
+	if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 	if (change_state(AnimState::push, get_params("push"))) { return PA_BIND(update_push); }
 	if (change_state(AnimState::between_push, get_params("between_push"))) { return PA_BIND(update_between_push); }
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
@@ -754,6 +756,7 @@ fsm::StateFunction PlayerAnimation::update_walljump() {
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (m_player->p_animatable.animation.complete()) {
+		if (change_state(AnimState::walljump, get_params("walljump"), true)) { return PA_BIND(update_walljump); }
 		m_player->p_animatable.animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);
 	}

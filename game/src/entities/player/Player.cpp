@@ -196,6 +196,12 @@ void Player::update(world::Map& map) {
 	// item use logic
 	handle_item_logic();
 
+	// ability logic
+	if (controller.is_wallsliding()) {
+		m_ability_usage.dash.start();
+		m_ability_usage.doublejump.start();
+	}
+
 	// toxicity
 	add_toxicity(-0.001f);
 	if (counters.toxicity.get() >= 1.f) {
@@ -205,13 +211,25 @@ void Player::update(world::Map& map) {
 	}
 	if (counters.toxicity.get() < 0.f) { counters.toxicity.reset(); }
 	if (map.is_toxic() && !m_animation_machine.is_state(AnimState::sleep)) {
-		if (!has_item_equipped("gas_mask")) { add_toxicity(0.005f); }
+		if (!has_item_equipped("gas_mask")) {
+			add_toxicity(0.005f);
+		} else {
+			set_flag(PlayerFlags::poisoned, false);
+		}
 	}
 	auto color = colors::mythic_green;
 	if (counters.toxicity.running()) {
 		auto cvec = std::vector{colors::transparent, colors::mythic_green};
 		color = gradient_color(cvec, counters.toxicity.get());
 		flat_shade(color);
+	}
+
+	// laser logic
+	if (consume_flag(PlayerFlags::laser_collision)) {
+		clear_impulses();
+		controller.flush_ability();
+		m_services->soundboard.play_sound("stun");
+		get_collider().physics.zero_x();
 	}
 
 	// stun logic
@@ -229,11 +247,11 @@ void Player::update(world::Map& map) {
 	cooldowns.stun.update();
 
 	// intangibility
+	set_flag(PlayerFlags::intangible, false);
 	if (controller.is_dashing() && has_item_equipped("carises_soul")) { set_flag(PlayerFlags::intangible); }
 	if (is_intangible()) {
 		if (m_services->ticker.every_x_ticks(20)) { map.spawn_emitter(*m_services, "intangibility", get_collider().get_position(), Direction{UND::up}, get_collider().dimensions); }
 	}
-	if (!health.invincible()) { set_flag(PlayerFlags::intangible, false); }
 
 	// drinking
 	if (is_in_animation(AnimState::drink)) {
@@ -473,7 +491,6 @@ void Player::simple_update() {
 	}
 	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
 	update_camera();
-	if (!health.invincible()) { set_flag(PlayerFlags::intangible, false); }
 }
 
 void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
@@ -539,13 +556,16 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 			sf::RectangleShape camera_target{};
 			camera_target.setFillColor(colors::pioneer_red);
 			camera_target.setSize({4.f, 4.f});
-			camera_target.setOrigin({2.f, 2.f});
+			camera_target.setOrigin({20.f, 20.f});
 			camera_target.setPosition(m_camera.target_point + get_collider().get_center() - cam);
 			win.draw(camera_target);
-			camera_target.setFillColor(colors::green);
+			camera_target.setOutlineColor(colors::mythic_green);
+			camera_target.setOutlineThickness(-6.f);
+			camera_target.setFillColor(colors::transparent);
 			camera_target.setPosition(svc.window->f_center_screen());
 			win.draw(camera_target);
 			camera_target.setFillColor(colors::blue);
+			camera_target.setSize({40.f, 40.f});
 			camera_target.setPosition(m_ear.physics.position - cam);
 			win.draw(camera_target);
 			get_collider().render(win, cam);
@@ -898,6 +918,7 @@ void Player::update_camera() {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
 	}
+	m_camera.target_point += (get_collider().physics.actual_velocity()).componentWiseMul({40.f, 20.0f});
 	auto focus = has_collider() ? get_camera_focus_point() : m_services->camera_controller.get_position();
 
 	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) {
@@ -1025,7 +1046,8 @@ void Player::hurt(float amount, bool force) {
 			// m_map.value()->spawn_effect(*m_services, "hurt_spark", hurtbox.get_center());
 		}
 		m_services->soundboard.play_sound("impact");
-		m_services->camera_controller.shake(2, 0.05f, 200, 50);
+		auto const energy = amount > 1.f ? 0.15f : 0.05f;
+		m_services->camera_controller.shake(2, energy, 200, 50);
 	}
 }
 
@@ -1096,6 +1118,8 @@ void Player::sync_antennae() {
 }
 
 void Player::apply_impulse(sf::Vector2f impulse) { accumulated_momentum.push_back(impulse); }
+
+void Player::clear_impulses() { accumulated_momentum.clear(); }
 
 void Player::bhop(float const multiplier) {
 	auto const sum = std::ranges::fold_left(accumulated_momentum, sf::Vector2f{}, std::plus{});
@@ -1422,7 +1446,7 @@ auto Player::abilities_disabled() const -> bool {
 auto Player::can_dash_kick() const -> bool {
 	if (abilities_disabled()) { return false; }
 	if (!catalog.inventory.has_item("forest_token")) { return false; }
-	if (!has_flag_set(PlayerFlags::dash_kick)) { return false; }
+	if (has_flag_set(PlayerFlags::dash_kick)) { return false; }
 	return true;
 }
 

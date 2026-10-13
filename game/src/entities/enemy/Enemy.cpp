@@ -184,6 +184,9 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		if (get_secondary_collider().collision_depths) { get_secondary_collider().collision_depths.value().reset(); }
 	}
 
+	// enemy is killed from some source besides a player projectile
+	if (flags.state.consume(StateFlags::killed)) { kill(svc, map); }
+
 	if (just_died()) {
 		svc.data.kill_enemy(map.room_id, metadata.stable_id, attributes.respawn_distance, permadeath(), flags.general.test(GeneralFlags::semipermanent));
 		if (!(flags.general.test(GeneralFlags::boss) && svc.data.is_enemy_registered(label))) { svc.data.register_enemy(label); }
@@ -444,12 +447,14 @@ void Enemy::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projecti
 void Enemy::kill(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f direction) {
 	if (!health.is_dead()) { health.kill(); }
 	if (!just_died()) { return; }
-	auto const freeze = 0.2f + static_cast<float>(attributes.size) * 0.1f;
+	auto const freeze = 0.05f + static_cast<float>(attributes.size) * 0.05f;
 	svc.ticker.freeze_frame(freeze);
 	for (auto i = 0; i < 3; ++i) {
 		auto random_vector = random::random_vector_float(-0.5f, 0.5f);
 		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), direction * 0.7f + random_vector, visual.effect_type));
 	}
+	auto tag = attributes.size == EnemySize::tiny ? "small_carnage" : attributes.size == EnemySize::giant ? "large_carnage" : "carnage";
+	map.spawn_emitter(svc, tag, get_collider().get_center(), Direction{});
 	if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center(), get_collider().physics.actual_velocity() * 0.5f); }
 }
 
@@ -466,7 +471,10 @@ void Enemy::hurt(float amount) {
 	flags.state.set(StateFlags::hurt);
 	health.inflict(amount);
 	health_indicator.add(-amount);
-	if (health.is_dead()) { m_death_position = get_collider().get_center(); }
+	if (health.is_dead()) {
+		m_death_position = get_collider().get_center();
+		flags.state.set(StateFlags::killed);
+	}
 }
 
 void Enemy::hurt(automa::ServiceProvider& svc, float amount) {
@@ -474,6 +482,11 @@ void Enemy::hurt(automa::ServiceProvider& svc, float amount) {
 	if (is_invincible()) { return; }
 	svc.soundboard.play_sound("enemy_impact", get_collider().get_center());
 	hurt(amount);
+}
+
+void Enemy::kill() {
+	health.kill();
+	flags.state.set(StateFlags::killed);
 }
 
 void Enemy::on_crush(world::Map& map) {

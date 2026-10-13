@@ -106,7 +106,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 	}
 
-	if (size == 1 && get_collider().get_center().y < player.get_collider().get_center().y) { get_collider().handle_collider_collision(player.hurtbox); } // big ones should crush the player
+	if (size == 1 && get_collider().get_center().y < player.get_collider().get_center().y) { get_collider().handle_collider_collision(player.get_collider()); } // big ones should crush the player
 	if (player.get_collider().jumpbox.overlaps(get_collider().bounding_box) && get_collider().grounded() && get_collider().physics.is_moving_horizontally(constants::tiny_value)) {
 		player.get_collider().physics.forced_momentum = get_collider().physics.forced_momentum;
 	}
@@ -134,14 +134,14 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 		}
 		if (pushable->get_collider().jumpbox.overlaps(collision_box)) { block = true; }
 		if (get_collider().jumpbox.overlaps(pushable->collision_box)) { block = true; }
-		if (block) { pushable->get_collider().handle_collider_collision(collision_box); }
+		if (block) { pushable->get_collider().handle_shape_collision(collision_box); }
 	}
 	if (!any_jumpbox_coll) { set_flag(PushableFlags::landed, false); }
 
 	auto touching_plat = false;
 	for (auto& platform : map.platforms) {
 		if (get_collider().wallslider.overlaps(platform->get_collider().bounding_box)) { touching_plat = true; }
-		if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_collider_collision(platform->get_collider().bounding_box); }
+		if (platform->get_collider().bounding_box.overlaps(get_collider().jumpbox)) { get_collider().handle_shape_collision(platform->get_collider().bounding_box); }
 		if (get_collider().jumpbox.overlaps(platform->get_collider().bounding_box) && !get_collider().perma_grounded() && platform->is_sticky() && !touching_plat) {
 			get_collider().physics.forced_momentum = platform->get_velocity();
 			if (player.get_collider().jumpbox.overlaps(collision_box) && !player.get_collider().perma_grounded() && !(player.get_collider().has_left_wallslide_collision() || player.get_collider().has_right_wallslide_collision())) {

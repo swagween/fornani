@@ -857,7 +857,7 @@
       "gravity": 0.5
     },
     "visual": {
-      "effect_type": 2,
+      "effect_type": 4,
       "effect_size": 1
     },
     "audio": {

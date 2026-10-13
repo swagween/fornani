@@ -12,9 +12,9 @@
     "dimensions": [18, 18]
   },
   "doublejump": {
-    "frame_count": 5,
+    "frame_count": 6,
     "framerate": 16,
-    "dimensions": [24, 24]
+    "dimensions": [40, 9]
   },
   "dash": {
     "frame_count": 4,

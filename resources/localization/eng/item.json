@@ -231,6 +231,37 @@
         ]
       ],
       "responses": []
+    },
+    "ancient_periapt": {
+      "suite": [
+        [
+          {
+            "message": "This golden charm allows you to dash in any direction."
+          }
+        ]
+      ],
+      "responses": []
+    },
+    "forest_token": {
+      "suite": [
+        [
+          {
+            "message": "This purified brinium token allows you to kick certain enemies while dashing."
+          }
+        ]
+      ],
+      "responses": []
+    },
+    "sky_pendant": {
+      "suite": [
+        [
+          {
+            "codes": [[10, 86, 4]],
+            "message": "This raw pixium pendant allows you to jump a second time in the air by pressing # ."
+          }
+        ]
+      ],
+      "responses": []
     }
   }
 }

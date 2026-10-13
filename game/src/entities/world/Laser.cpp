@@ -62,7 +62,7 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	}
 
 	if (!m_attributes.test(LaserAttributes::no_collision)) {
-		if (!player.is_intangible() && m_team != arms::Team::nani && is_active()) { player.get_collider().handle_collider_collision(m_hitbox, true, {}, 0.1f); }
+		if (!player.is_intangible() && m_team != arms::Team::nani && is_active()) { player.get_collider().handle_shape_collision(m_hitbox, true, 0.1f); }
 	}
 
 	// calculate laser end and spawn an effect there
@@ -79,7 +79,10 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	m_direction.as_hv() == HV::horizontal ? m_drawbox.setOrigin({0.f, (m_breadth - constants::f_cell_size) * m_size * 0.5f}) : m_drawbox.setOrigin({(m_breadth - constants::f_cell_size) * m_size * 0.5f, 0.f});
 	m_breadth = is_active() ? constants::f_cell_size * m_size + 4.f * m_pulse.get() : util::round_to_nearest(constants::f_cell_size * m_size * m_cooldown.get_quadratic_normalized(), 4.f);
 	is_active() ? m_drawbox.setFillColor(colors::ui_white) : m_cooldown.get_normalized() > 0.6f ? m_drawbox.setFillColor(colors::goldenrod) : m_drawbox.setFillColor(colors::dark_goldenrod);
-	if (player.hurtbox.overlaps(m_hitbox) && is_active() && m_team != arms::Team::nani) { player.hurt(); }
+	if (player.hurtbox.overlaps(m_hitbox) && is_active() && m_team != arms::Team::nani && !player.is_intangible()) {
+		if (!player.invincible()) { player.set_flag(player::PlayerFlags::laser_collision); }
+		player.hurt();
+	}
 }
 
 void Laser::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

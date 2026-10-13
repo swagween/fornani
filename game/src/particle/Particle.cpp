@@ -84,6 +84,7 @@ Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 
 	if (!in_data["colliding"].as_bool()) { m_collider->get_circle()->set_attribute(shape::ColliderAttributes::no_collision); }
 	if (in_data["physics"]) { m_collider->get_circle()->load_properties(in_data["physics"]); }
+	if (in_data["sticky"].as_bool()) { m_collider->get_circle()->set_attribute(shape::ColliderAttributes::sticky); }
 
 	m_collider->get_circle()->physics.elasticity = in_data["elasticity"].as<float>() + random::random_range_float(-ev, ev);
 	m_collider->get_circle()->physics.set_global_friction(in_data["friction"].as<float>());
