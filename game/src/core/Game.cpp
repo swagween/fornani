@@ -779,16 +779,17 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 							}
 							if (ImGui::BeginTabItem("Weapon")) {
 								if (ImGui::Button("Give Pulsar")) { services.events.acquire_weapon_event.dispatch(services, "pulsar"); }
-								ImGui::Text("Current Weapon:");
-								ImGui::Separator();
+								ImGui::SeparatorText("Current Weapon:");
 								if (player->hotbar) {
 									auto& gun = player->equipped_weapon();
 									ImGui::Text("%s", gun.get_label().data());
 									ImGui::Text("Ammo Capacity: %i", gun.ammo.get_capacity());
 									ImGui::Text("Ammo Count: %i", gun.ammo.get_count());
+									ImGui::Text("Is Instanced? %s", gun.is_instanced() ? "yes" : "no");
+									ImGui::Text("Live Instances: %i", gun.get_live_instances());
+									ImGui::Text("Max Instances: %i", gun.get_max_instances());
 								}
-								ImGui::Separator();
-								ImGui::Text("Loadout:");
+								ImGui::SeparatorText("Loadout:");
 								if (player->arsenal) {
 									for (auto& gun : player->arsenal.value().get_loadout()) { ImGui::Text("%s", gun.get()->get_label().data()); }
 								}

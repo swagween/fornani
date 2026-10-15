@@ -724,6 +724,15 @@
       "player_collision": false,
       "foreground": true,
       "rare_drops": true
+    },
+    "treasure": {
+      "chance": 1.0,
+      "guns": [
+        {
+          "tag": "knife",
+          "chance": 1.0
+        }
+      ]
     }
   },
   "summoner": {
@@ -1724,11 +1733,11 @@
     },
     "physical": {
       "dimensions": [40, 40],
-      "sprite_dimensions": [64, 64],
-      "offset": [0, -23],
+      "sprite_dimensions": [40, 40],
+      "offset": [0, -17],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [300.0, 1200.0],
+      "alert_range": [500.0, 1200.0],
       "hostile_range": [40.0, 1600.0],
       "friction": 0.99,
       "gravity": 7.0
@@ -1742,7 +1751,7 @@
       },
       "effects_overlay": {
         "dimensions": [64, 64],
-        "offset": [0, 0]
+        "offset": [0, 3]
       }
     },
     "audio": {
@@ -1750,7 +1759,7 @@
       "death_sounds": ["nimbus_death"]
     },
     "attributes": {
-      "base_hp": 600,
+      "base_hp": 1800,
       "base_damage": 1.0,
       "speed": 16.0,
       "loot_multiplier": 50.0,
@@ -1758,7 +1767,8 @@
       "respawn_distance": 1,
       "permadeath": true,
       "size": 1,
-      "team": 1
+      "team": 1,
+      "damage_tolerance": 40
     },
     "general": {
       "mobile": true,

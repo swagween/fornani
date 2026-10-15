@@ -58,6 +58,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	attributes.team = static_cast<arms::Team>(in_attributes["team"].as<int>());
 	if (in_attributes["permadeath"].as_bool()) { flags.general.set(GeneralFlags::permadeath); };
 	if (in_attributes["size"]) { attributes.size = static_cast<EnemySize>(in_attributes["size"].as<int>()); }
+	if (in_attributes["damage_tolerance"]) { attributes.damage_tolerance = in_attributes["damage_tolerance"].as<float>(); }
 
 	visual.effect_size = in_visual["effect_size"].as<int>();
 	visual.effect_type = in_visual["effect_type"].as<int>();
@@ -171,13 +172,15 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	}
 	if (has_secondary_collider()) { get_secondary_collider().stats.GRAV = get_collider().stats.GRAV; }
 
-	intangibility.running() ? flags.state.set(StateFlags::intangible) : flags.state.reset(StateFlags::intangible);
+	if (intangibility.running()) { flags.state.set(StateFlags::intangible); }
 
 	impulse.update();
 	sound.hurt_sound_cooldown.update();
 	intangibility.update();
 	m_weakness.update();
 	m_freeze.update();
+	if (p_damage_over_time.get() > 0.f) { p_damage_over_time.update(-0.01f); }
+	if (p_damage_over_time.get() > attributes.damage_tolerance) { respond_to_damage(); }
 
 	if (get_collider().collision_depths) { get_collider().collision_depths.value().reset(); }
 	if (has_secondary_collider()) {
@@ -279,10 +282,10 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (has_secondary_collider()) {
 		if (player.get_collider().wallslider.overlaps(get_secondary_collider().bounding_box)) { dash_kick_overlap = true; }
 	}
-	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !is_invincible() && !flags.general.test(GeneralFlags::kick_immune)) {
+	if (dash_kick_overlap && player.controller.is_dashing() && !player.controller.is(player::AbilityType::dash_kick) && !is_invincible() && !is_intangible() && !flags.general.test(GeneralFlags::kick_immune)) {
 		if (!player.has_flag_set(player::PlayerFlags::dash_kick) && !player.controller.is_dash_kick_cooling_down()) {
 			if (player.can_dash_kick()) {
-				hurt(4.f);
+				hurt(player.get_kick_damage());
 				if (!get_collider().has_attribute(shape::ColliderAttributes::sturdy)) {
 					get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.y = -2.f : get_collider().physics.acceleration.y = -280.f;
 					get_collider().has_flag_set(shape::ColliderFlags::simple) ? get_collider().physics.acceleration.x = -0.2f * player.get_actual_direction().as_float()
@@ -290,6 +293,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 				}
 				m_weakness.start();
 				player.set_flag(player::PlayerFlags::dash_kick);
+				flags.state.set(StateFlags::dash_kicked);
 			}
 		}
 	}
@@ -469,6 +473,7 @@ void Enemy::hurt(float amount) {
 	if (health.is_dead()) { return; }
 	if (is_invincible()) { return; }
 	flags.state.set(StateFlags::hurt);
+	p_damage_over_time.update(amount);
 	health.inflict(amount);
 	health_indicator.add(-amount);
 	if (health.is_dead()) {
@@ -525,6 +530,21 @@ bool Enemy::seek_home(world::Map& map) {
 }
 
 void Enemy::center_at_position() { set_position(get_collider().get_position() - get_collider().get_local_center()); }
+
+void Enemy::respond_to_damage() {
+	p_damage_over_time.reset();
+	flags.state.set(StateFlags::damaged);
+}
+
+void Enemy::set_disappeared(bool const to) {
+	if (to) {
+		flags.state.set(StateFlags::invisible);
+		flags.state.set(StateFlags::intangible);
+	} else {
+		flags.state.reset(StateFlags::invisible);
+		flags.state.reset(StateFlags::intangible);
+	}
+}
 
 void Enemy::set_position_from_scaled(sf::Vector2f pos) {
 	auto new_pos = pos;

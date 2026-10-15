@@ -202,6 +202,7 @@ class Map {
 	[[nodiscard]] auto get_actual_tile_color(int index) const -> sf::Color;
 	[[nodiscard]] auto get_tile_color(int cycle, int index) const -> sf::Color;
 	[[nodiscard]] auto get_effect_channel() const -> int;
+	[[nodiscard]] auto get_biome_properties() const -> dj::Json const&;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 

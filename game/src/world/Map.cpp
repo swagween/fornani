@@ -631,7 +631,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& emitter : active_emitters) { debug::is_greyblock() ? emitter->render(svc, win, cam) : emitter->submit(renderer); }
 	renderer.flush();
 	for (auto& plat : platforms) { has_property(MapProperties::lighting) ? plat->render(svc, m_entity_texture, cam) : plat->render(svc, win, cam); }
-	for (auto& breakable : breakables) { breakable->render(svc, win, cam); }
+	for (auto& breakable : breakables) { has_property(MapProperties::lighting) ? breakable->render(svc, m_entity_texture, cam) : breakable->render(svc, win, cam); }
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
 	for (auto& mine : mines) { mine->submit(renderer); }
 	for (auto& brittle : brittle_blocks) { brittle->render(svc, win, cam); }
@@ -791,7 +791,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 						n->render_props(win, cam, DrawOrder::back);
 						if (n->is_background()) { n->render(win, cam); }
 					}
-					for (auto t : get_entities<Train>()) { t->render(win, cam, 1.f); }
+					for (auto t : get_entities<Train>()) { m_attributes.properties.test(MapProperties::day_night_shift) ? t->render(win, m_camera_effects.shifter, cam) : t->render(win, cam, 1.f); }
 					for (auto i : get_entities<Interactable>()) { i->render(win, cam, 1.f); }
 				}
 			}
@@ -1459,6 +1459,8 @@ auto Map::get_tile_color(int tod, int index) const -> sf::Color {
 }
 
 auto Map::get_effect_channel() const -> int { return m_services->data.biomes["properties"][get_biome_string()]["effect_channel"].as<int>(); }
+
+auto Map::get_biome_properties() const -> dj::Json const& { return m_services->data.biomes["properties"][get_biome_string()]; }
 
 auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && !is_interior()) || has_property(MapProperties::toxic); }
 

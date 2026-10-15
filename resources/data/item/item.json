@@ -1300,13 +1300,37 @@
   {
     "tag": "can_of_beans",
     "category": 3,
-    "lookup": [12, 3],
+    "lookup": [13, 3],
     "origin": [1, 2],
     "actual_title": "Can of Beans",
-    "naive_description": "When equipped, these beans triple the damage dealt by dash-kicking.",
+    "naive_description": "When equipped, these beans will make blocks easier to push.",
     "unique": true,
     "equippable": true,
     "sellable": true,
+    "value": 1400
+  },
+  {
+    "tag": "shoe_spikes",
+    "category": 3,
+    "lookup": [13, 4],
+    "origin": [1, 2],
+    "actual_title": "Shoe Spikes",
+    "naive_description": "When equipped, these beans triple the damage dealt by dash-kicking.",
+    "unique": true,
+    "equippable": true,
+    "sellable": false,
     "value": 3400
+  },
+  {
+    "tag": "pixie_dust",
+    "category": 3,
+    "lookup": [14, 3],
+    "origin": [1, 2],
+    "actual_title": "Pixie Dust",
+    "naive_description": "When equipped, this enchanted substance allows you to dash while on the ground.",
+    "unique": true,
+    "equippable": true,
+    "sellable": false,
+    "value": 4400
   }
 ]

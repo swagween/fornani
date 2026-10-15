@@ -14,7 +14,7 @@ namespace fornani::arms {
 
 enum class WeaponFlags : std::uint8_t { firing, charging, released, overdrive };
 enum class WeaponState : std::uint8_t { unlocked, equipped, reloading };
-enum class WeaponAttributes : std::uint8_t { automatic, no_reload, charge, gun };
+enum class WeaponAttributes : std::uint8_t { automatic, no_reload, charge, gun, instanced };
 enum class InventoryState : std::uint8_t { reserve, hotbar };
 enum class UIFlags : std::uint8_t { selected };
 
@@ -25,6 +25,7 @@ struct WeaponSpecifications {
 	float recoil{};
 	float charge_multiplier{1.f};
 	float speed_multiplier{1.f};
+	int instances{-1};
 };
 
 struct LaserSpecifications {
@@ -88,6 +89,8 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void set_team(Team team);
 	void set_firing_direction(CardinalDirection to_direction);
 	void reset();
+	void toss();
+	void receive();
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
 	void set_reserved() { inventory_state = InventoryState::reserve; }
@@ -101,17 +104,21 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	[[nodiscard]] auto shot() const -> bool { return cooldowns.cooldown.just_started(); }
 	[[nodiscard]] auto automatic() const -> bool { return attributes.test(WeaponAttributes::automatic); }
 	[[nodiscard]] auto is_chargeable() const -> bool { return attributes.test(WeaponAttributes::charge); }
+	[[nodiscard]] auto is_instanced() const -> bool { return attributes.test(WeaponAttributes::instanced); }
+	[[nodiscard]] auto is_exhausted() const -> bool { return live_instances.get_count() >= specifications.instances && is_instanced(); }
 	[[nodiscard]] auto is_gun() const -> bool { return attributes.test(WeaponAttributes::gun); }
 	[[nodiscard]] auto get_id() const -> int { return metadata.id; }
 	[[nodiscard]] auto get_sound_id() const -> int { return static_cast<int>(m_audio.shoot); }
 	[[nodiscard]] auto get_active_projectiles() const -> int { return active_projectiles.get_count(); }
+	[[nodiscard]] auto get_live_instances() const -> int { return live_instances.get_count(); }
+	[[nodiscard]] auto get_max_instances() const -> int { return specifications.instances; }
 	[[nodiscard]] auto get_inventory_state() const -> int { return static_cast<int>(inventory_state); }
 	[[nodiscard]] auto get_ui_position() const -> sf::Vector2f { return visual.ui.getPosition(); }
 	[[nodiscard]] auto get_description() const -> std::string_view { return metadata.description; }
 	[[nodiscard]] auto multishot() const -> bool { return specifications.multishot != 0; }
 	[[nodiscard]] auto get_barrel_point() const -> sf::Vector2f { return offsets.gameplay.barrel; }
 	[[nodiscard]] auto get_cooldown() const -> int { return cooldowns.cooldown.get(); }
-	[[nodiscard]] auto get_firing_direction() -> CardinalDirection { return firing_direction; }
+	[[nodiscard]] auto get_firing_direction() const -> CardinalDirection { return firing_direction; }
 	[[nodiscard]] auto get_global_offset() const -> sf::Vector2f { return offsets.render.global; };
 	[[nodiscard]] auto get_recoil() const -> float { return specifications.recoil; }
 	[[nodiscard]] auto get_multishot() const -> int { return specifications.multishot; }
@@ -168,6 +175,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	} m_audio{};
 
 	util::Counter active_projectiles{};
+	util::Counter live_instances{};
 	InventoryState inventory_state{};
 
 	struct {

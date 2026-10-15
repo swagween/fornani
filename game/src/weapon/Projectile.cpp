@@ -50,13 +50,13 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["transcendent"].as_bool()) { metadata.attributes.set(ProjectileAttributes::transcendent); }
 	if (in_data["attributes"]["constrained"].as_bool()) { metadata.attributes.set(ProjectileAttributes::constrained); }
 	if (in_data["attributes"]["omnidirectional"].as_bool()) { metadata.attributes.set(ProjectileAttributes::omnidirectional); }
-	if (in_data["attributes"]["boomerang"].as_bool()) { metadata.attributes.set(ProjectileAttributes::boomerang); }
 	if (in_data["attributes"]["explode_on_impact"].as_bool()) { metadata.attributes.set(ProjectileAttributes::explode_on_impact); }
 	if (in_data["attributes"]["wander"].as_bool()) { metadata.attributes.set(ProjectileAttributes::wander); }
 	if (in_data["attributes"]["reflect"].as_bool()) { metadata.attributes.set(ProjectileAttributes::reflect); }
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
 	if (in_data["attributes"]["hitstun"].as_bool()) { metadata.attributes.set(ProjectileAttributes::hitstun); }
+	if (auto const& i = in_data["boomerang"]) { m_boomerang.emplace(Boomerang{i["friction"].as<float>(), i["force"].as<float>()}); }
 	if (in_weapon["gameplay"]["attributes"]["automatic"].as_bool()) { metadata.attributes.set(ProjectileAttributes::automatic); }
 
 	if (in_data["explosion"]) {
@@ -112,8 +112,8 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	if (variables.state.test(ProjectileState::destruction_initiated) && !metadata.attributes.test(ProjectileAttributes::constrained)) { destroy(true); }
 
 	if (boomerang()) {
-		physical.collider.physics.set_global_friction(0.993f);
-		physical.steering.target(physical.collider.physics, player.get_collider().get_center(), 0.0003f);
+		physical.collider.physics.set_global_friction(m_boomerang->friction);
+		physical.steering.target(physical.collider.physics, player.get_collider().get_center(), m_boomerang->force);
 		physical.collider.physics.simple_update();
 		variables.damage_multiplier = is_heading_toward(physical.collider.physics.position, physical.collider.physics.velocity, player.get_collider().get_center()) ? 2.f : 1.f;
 	} else if (wander()) {
@@ -214,6 +214,7 @@ void Projectile::on_player_hit(automa::ServiceProvider& svc, world::Map& map, pl
 		if (physical.collider.collides_with(player.get_collider().bounding_box) && cooldown.is_complete()) {
 			destroy(false);
 			svc.soundboard.flags.weapon.set(audio::Weapon::tomahawk_catch);
+			m_weapon->receive();
 			return;
 		}
 	}
@@ -284,6 +285,7 @@ void Projectile::render(automa::ServiceProvider& svc, player::Player& player, sf
 void Projectile::destroy(bool completely, bool whiffed) {
 	if (!whiffed) { variables.state.set(ProjectileState::contact); }
 	variables.state.set(ProjectileState::destroyed);
+	m_weapon->receive();
 }
 
 void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target, float speed_multiplier, float damage_multiplier) {

@@ -42,10 +42,14 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	specifications.cooldown_time = in_data["gameplay"]["attributes"]["cooldown_time"].as<int>();
 	specifications.reload_time = in_data["gameplay"]["attributes"]["reload"].as<int>();
 	specifications.recoil = in_data["gameplay"]["attributes"]["recoil"].as<float>();
-	if (static_cast<bool>(in_data["gameplay"]["attributes"]["automatic"].as_bool())) { attributes.set(WeaponAttributes::automatic); }
-	if (static_cast<bool>(in_data["gameplay"]["attributes"]["no_reload"].as_bool())) { attributes.set(WeaponAttributes::no_reload); }
-	if (static_cast<bool>(in_data["gameplay"]["attributes"]["gun"].as_bool())) { attributes.set(WeaponAttributes::gun); }
-	if (static_cast<bool>(in_data["gameplay"]["attributes"]["charge"].as_bool())) {
+	if (in_data["gameplay"]["attributes"]["automatic"].as_bool()) { attributes.set(WeaponAttributes::automatic); }
+	if (in_data["gameplay"]["attributes"]["no_reload"].as_bool()) { attributes.set(WeaponAttributes::no_reload); }
+	if (in_data["gameplay"]["attributes"]["gun"].as_bool()) { attributes.set(WeaponAttributes::gun); }
+	if (auto const instances = in_data["gameplay"]["attributes"]["instances"].as<int>() > 0) {
+		attributes.set(WeaponAttributes::instanced);
+		specifications.instances = instances;
+	}
+	if (in_data["gameplay"]["attributes"]["charge"].as_bool()) {
 		attributes.set(WeaponAttributes::charge);
 		attributes.set(WeaponAttributes::no_reload);
 		specifications.charge_multiplier = in_data["gameplay"]["attributes"]["charge_multiplier"].as<float>();
@@ -122,7 +126,7 @@ void Weapon::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	} else {
 		set_channel(cooldowns.shoot_effect.is_complete() ? 0 : cooldowns.shoot_effect.halfway() ? 2 : 1);
 	}
-	win.draw(*this);
+	if (!is_exhausted()) { win.draw(*this); }
 	if (!debug::is_production()) {
 		sf::RectangleShape box{};
 		box.setSize({2.f, 2.f});
@@ -153,7 +157,7 @@ void Weapon::lock() { flags.state.reset(WeaponState::unlocked); }
 
 void Weapon::shoot() {
 	start_cooldown();
-
+	toss();
 	active_projectiles.update();
 	ammo.use();
 	physical.physics.apply_force(firing_direction.as_vector() * -1.f);
@@ -170,6 +174,7 @@ void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f target) {
+	if (live_instances.get_count() >= specifications.instances && is_instanced()) { return; }
 	shoot();
 	map.spawn_projectile_at(svc, *this, get_barrel_point(), target, m_modifiers.speed_multiplier, m_modifiers.damage_multiplier);
 }
@@ -243,6 +248,13 @@ void Weapon::start_cooldown() {
 	}
 }
 
-void Weapon::reset() { active_projectiles.start(); }
+void Weapon::reset() {
+	active_projectiles.start();
+	live_instances.start();
+}
+
+void Weapon::toss() { live_instances.update(); }
+
+void Weapon::receive() { live_instances.update(-1); }
 
 } // namespace fornani::arms

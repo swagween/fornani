@@ -84,6 +84,20 @@
         ],
         "tag": "pioneer_medal",
         "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 29732,
+        "modifier": 3,
+        "position": [
+          6,
+          15
+        ],
+        "tag": "knife",
+        "type": 0
       }
     ],
     "enemies": [
@@ -94,8 +108,8 @@
         ],
         "id": 34,
         "position": [
-          26,
-          21
+          27,
+          20
         ],
         "start_direction": [
           0,
@@ -137,7 +151,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": null,
+    "development_status": 0,
     "dimensions": [
       48,
       32
@@ -158,7 +172,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -167,8 +180,7 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [

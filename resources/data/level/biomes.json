@@ -64,7 +64,8 @@
       "haze_shadow": [0, 51, 91],
       "max_light": 4.0,
       "spike_variations": 3,
-      "effect_channel": 1
+      "effect_channel": 1,
+      "breakable_shatter": "breakable_guts"
     },
     "toxic": {
       "ambience": { "interior": "industrial", "exterior": "none" },

@@ -31,7 +31,7 @@ class Weapon;
 enum class ProjectileType : std::uint8_t { bullet, missile, melee, laser };
 enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, boomerang, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic, impact };
+enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic, impact };
 struct ProjectileSpecifications {
 	float base_damage{};
 	float power{};
@@ -64,6 +64,11 @@ struct ExplosionAttributes {
 struct ImpactResult {
 	std::optional<std::string> block_type{};
 	std::optional<int> enemy_spawn{};
+};
+
+struct Boomerang {
+	float friction{};
+	float force{};
 };
 
 struct ImpactAttributes {
@@ -127,7 +132,7 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto constrained() const -> bool { return metadata.attributes.test(ProjectileAttributes::constrained); }
 	[[nodiscard]] auto sprite_flip() const -> bool { return metadata.attributes.test(ProjectileAttributes::sprite_flip); }
 	[[nodiscard]] auto persistent() const -> bool { return metadata.attributes.test(ProjectileAttributes::persistent); }
-	[[nodiscard]] auto boomerang() const -> bool { return metadata.attributes.test(ProjectileAttributes::boomerang); }
+	[[nodiscard]] auto boomerang() const -> bool { return m_boomerang.has_value(); }
 	[[nodiscard]] auto reflect() const -> bool { return metadata.attributes.test(ProjectileAttributes::reflect); }
 	[[nodiscard]] auto sticky() const -> bool { return metadata.attributes.test(ProjectileAttributes::sticky); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
@@ -179,6 +184,8 @@ class Projectile : public Animatable {
 		util::BitFlags<ProjectileState> state{};
 		util::Counter hits{};
 	} variables{};
+
+	std::optional<Boomerang> m_boomerang{};
 
 	std::uint8_t m_chunk_id{};
 

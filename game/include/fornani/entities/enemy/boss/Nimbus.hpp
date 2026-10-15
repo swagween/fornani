@@ -33,10 +33,15 @@ enum class NimbusState : std::uint8_t {
 	double_aerial_slash,
 	frenzy_prepare,
 	frenzy_quick_prepare,
+	frenzy_dodge_prepare,
 	frenzy_dash,
-	frenzy_cuts
+	frenzy_cuts,
+	stagger,
+	teleport,
+	begin_laugh,
+	laugh
 };
-enum class NimbusFlags : std::uint8_t { frenzy_contact, frenzy_over };
+enum class NimbusFlags : std::uint8_t { frenzy_contact, short_jump, successful_hit, victory, staggered, just_teleported };
 
 class Nimbus final : public Boss, public StateMachine<NimbusState> {
   public:
@@ -65,8 +70,13 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	fsm::StateFunction update_double_aerial_slash();
 	fsm::StateFunction update_frenzy_prepare();
 	fsm::StateFunction update_frenzy_quick_prepare();
+	fsm::StateFunction update_frenzy_dodge_prepare();
 	fsm::StateFunction update_frenzy_dash();
 	fsm::StateFunction update_frenzy_cuts();
+	fsm::StateFunction update_stagger();
+	fsm::StateFunction update_teleport();
+	fsm::StateFunction update_begin_laugh();
+	fsm::StateFunction update_laugh();
 
   private:
 	void debug();
@@ -77,12 +87,25 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 		util::Cooldown post_slash{600};
 		util::Cooldown parry{800};
 		util::Cooldown post_jump{1800};
+		util::Cooldown teleport{200};
+		util::Cooldown spellcast{200};
 	} m_cooldowns{};
 
 	struct {
 		std::array<entity::Attack, 3> slash{};
 		entity::Attack frenzy{};
+		shape::CircleCollider frenzy_collider{40.f};
 	} m_attacks{};
+
+	struct {
+		shape::Shape bounding_box{{48.f, 512.f}};
+		util::Counter counter{};
+		util::Cooldown active{190};
+		sf::Vector2f target{};
+		components::SteeringComponent steering{};
+	} m_lightning{};
+
+	std::vector<float> m_stagger_points;
 
 	util::Counter m_triple_jump{};
 
@@ -95,6 +118,7 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	entity::WeaponPackage m_slash_wave;
 	components::SteeringBehavior m_steering{};
 	sf::Vector2f m_steer_target{};
+	sf::Vector2f m_player_position{};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

@@ -4,6 +4,8 @@
 #include <fornani/components/SteeringComponent.hpp>
 #include <fornani/core/Fwd.hpp>
 #include <fornani/entity/Entity.hpp>
+#include <fornani/graphics/DayNightShifter.hpp>
+#include <fornani/graphics/LayerTexture.hpp>
 #include <fornani/particle/Chain.hpp>
 #include <fornani/story/Quest.hpp>
 #include <fornani/utils/Cooldown.hpp>
@@ -29,6 +31,7 @@ class Train : public Entity, public Flaggable<TrainFlags> {
 	void expose() override;
 	void update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) override;
 	void render(sf::RenderWindow& win, sf::Vector2f cam, float size) override;
+	void render(sf::RenderWindow& win, graphics::DayNightShifter& shifter, sf::Vector2f cam);
 
 	void init(automa::ServiceProvider& svc);
 
@@ -46,6 +49,11 @@ class Train : public Entity, public Flaggable<TrainFlags> {
 	util::Cooldown m_prepare_leave;
 	util::Cooldown m_play_horn;
 	int m_horn_selection{};
+
+	std::array<std::optional<Animatable>, 3> m_sprites{};
+	std::array<std::optional<Animatable>, 3> m_wheel_sprites{};
+
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace fornani

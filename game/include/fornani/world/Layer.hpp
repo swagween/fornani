@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <djson/json.hpp>
 
+#include <fornani/graphics/LayerTexture.hpp>
 #include <fornani/utils/Circuit.hpp>
 #include "fornani/io/Logger.hpp"
 #include "fornani/world/Grid.hpp"
@@ -30,11 +31,6 @@ enum class LayerFlags : std::uint8_t { ignore_lighting, animated };
 
 struct AnimatedLayerTexture {
 	std::array<sf::RenderTexture, 6> frames{};
-};
-struct LayerTexture {
-	sf::RenderTexture day{};
-	sf::RenderTexture twilight{};
-	sf::RenderTexture night{};
 };
 
 class Layer {

@@ -30,6 +30,7 @@ class Breakable : public Animatable {
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj);
 	void on_smash(automa::ServiceProvider& svc, Map& map, float power = 1.f);
 	void destroy() { m_health.kill(); }

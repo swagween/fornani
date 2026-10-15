@@ -266,6 +266,8 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto can_be_stunned() const -> bool;
 	[[nodiscard]] auto on_water_surface() const -> bool;
 	[[nodiscard]] auto get_roll_multiplier() const -> float;
+	[[nodiscard]] auto get_kick_damage() const -> float;
+	[[nodiscard]] auto get_arm_strength() const -> float;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
@@ -273,6 +275,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void force_camera_center() { m_camera.camera.force_center(get_camera_focus_point()); }
 
 	void set_position(sf::Vector2f new_pos, bool centered = false);
+	void lerp_to_position(sf::Vector2f new_pos, float dt, float speed = 1.f);
 	void set_position_on_grid(sf::Vector2i grid_pos);
 	void set_draw_position(sf::Vector2f const to);
 	void freeze_position();

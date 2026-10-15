@@ -247,6 +247,13 @@
     "x_reflection": true,
     "y_reflection": true
   },
+  "lightning": {
+    "frame_count": 7,
+    "framerate": 16,
+    "dimensions": [64, 360],
+    "x_reflection": true,
+    "y_reflection": true
+  },
   "stun": {
     "frame_count": 5,
     "framerate": 16,

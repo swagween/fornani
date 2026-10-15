@@ -4,13 +4,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              13,
-              17,
-              104
-            ]
-          ],
+          "codes": [[13, 17, 104]],
           "message": "What in the heck are my eyes seein' right now...?"
         },
         {
@@ -32,33 +26,17 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Who are you?"
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Tell me about Skycorps."
         },
         {
           "codes": [
-            [
-              1,
-              3
-            ],
-            [
-              17,
-              25
-            ]
+            [1, 3],
+            [17, 25]
           ],
           "contingencies": [
             {
@@ -74,12 +52,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "So... Any updates on that soda?"
         }
       ],
@@ -88,12 +61,7 @@
           "message": "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
         }
       ],
@@ -105,33 +73,16 @@
           "message": "But lemme tell ya, I sure do miss my hamster."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "Anyhow, they force me to sit in this cargo hold all day to make sure no one steals anything. Say, now that I mention it, don't go tamperin', ya got that?"
         }
       ],
       [
         {
           "codes": [
-            [
-              3,
-              14,
-              1,
-              225
-            ],
-            [
-              17,
-              25
-            ],
-            [
-              13,
-              17,
-              104
-            ]
+            [3, 14, 1, 225],
+            [17, 25],
+            [13, 17, 104]
           ],
           "message": "No kiddin'!"
         },
@@ -139,12 +90,7 @@
           "message": "Well, you just brightened up my day."
         },
         {
-          "codes": [
-            [
-              2,
-              16
-            ]
-          ],
+          "codes": [[2, 105]],
           "message": "Err... Here. I ought to give you somethin' for your troubles."
         }
       ]
@@ -154,30 +100,15 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "Who are you?"
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "Tell me about Skycorps."
         },
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "What am I supposed to do with this old playing card?"
         }
       ]
@@ -185,17 +116,8 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
-          "messages": [
-            "Not many folk like you these days.",
-            "Thanks again for the soda.",
-            "Them other Karibas could learn a thing or two from you."
-          ]
+          "codes": [[1, 0]],
+          "messages": ["Not many folk like you these days.", "Thanks again for the soda.", "Them other Karibas could learn a thing or two from you."]
         }
       ],
       [
@@ -203,12 +125,7 @@
           "message": "Name's Carl. I'm guardin' the cargo here, and my shift doesn't end for another six months."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "I'm a simple man. I have a job to do, and I'm gon' do it until it's done. Even if it kills me."
         }
       ],
@@ -220,12 +137,7 @@
           "message": "But lemme tell ya, I sure do miss my hamster."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "Anyhow, they force me to sit in this cargo hold all day to make sure no one steals anything. Say, now that I mention it, don't go tamperin', ya got that?"
         }
       ],
@@ -234,12 +146,7 @@
           "message": "Not too sure, really. But it's all I had lyin' around."
         },
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "Say, there's a casino in Forgetville I used to go to. Maybe someone there would fancy a vintage playing card like that one, grease stains and all."
         }
       ]

@@ -13,6 +13,62 @@
           0
         ],
         "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 59608,
+        "modifier": 0,
+        "position": [
+          7,
+          22
+        ],
+        "tag": "pixie_dust",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 59608,
+        "modifier": 0,
+        "position": [
+          6,
+          22
+        ],
+        "tag": "can_of_beans",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 59608,
+        "modifier": 0,
+        "position": [
+          2,
+          2
+        ],
+        "tag": "shoe_spikes",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 72188,
+        "modifier": 21,
+        "position": [
+          15,
+          9
+        ],
+        "tag": "ectoblaster",
+        "type": 0
       }
     ],
     "destructibles": [

@@ -798,6 +798,24 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "nimbus_swipe_1",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "nimbus_swipe_2",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "nimbus_swipe_3",
+    "bus": "gameplay",
+    "volume": 0.5,
+    "pitch_offset": 0.2
+  },
+  {
     "label": "hit_toxigat",
     "bus": "gameplay",
     "volume": 0.9,

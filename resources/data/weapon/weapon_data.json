@@ -53,7 +53,6 @@
           "transcendent": false,
           "persistent": false,
           "constrained": false,
-          "boomerang": false,
           "wander": false,
           "reflect": false,
           "range_variance": 0.0,
@@ -379,7 +378,7 @@
         "radius": 11.0,
         "audio": { "hit": 2 },
         "attributes": {
-          "base_damage": 14,
+          "base_damage": 12,
           "lifespan": 140,
           "lifespan_variance": 0,
           "speed": 35.0,
@@ -545,7 +544,8 @@
           "num_sprites": 1,
           "num_frames": 4,
           "framerate": 14
-        }
+        },
+        "boomerang": { "friction": 0.993, "force": 0.0003 }
       }
     }
   },
@@ -961,6 +961,7 @@
           "lifespan": 1400,
           "lifespan_variance": 60,
           "speed": 24.0,
+          "power": 3,
           "variance": 6.0,
           "stun_multiplier": 0.0,
           "knockback": 0.0,
@@ -983,6 +984,139 @@
           "framerate": 32,
           "angles": 2
         }
+      }
+    }
+  },
+  "ectoblaster": {
+    "metadata": {
+      "id": 21,
+      "label": "Ectoblaster",
+      "description": "A beastly pistol imbued with the Mother Worm's energy."
+    },
+    "visual": {
+      "texture_lookup": 22,
+      "dimensions": [15, 8],
+      "offsets": {
+        "global": [0.5, 5.5],
+        "barrel": [18.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "ectospray"
+      },
+      "secondary_spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "ectoblast"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "gun": true,
+        "ammo": 2,
+        "reload": 260,
+        "cooldown_time": 80,
+        "recoil": 0.5
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 10.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 16,
+          "lifespan": 60,
+          "lifespan_variance": 0,
+          "speed": 54.0,
+          "power": 4,
+          "variance": 0.0,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 1.0,
+          "gravity": 0.0,
+          "elasticity": 0.99,
+          "spin": 0.0,
+          "spin_dampen": 0.997
+        },
+        "visual": {
+          "effect_type": 1
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 3,
+          "framerate": 32
+        }
+      }
+    }
+  },
+  "knife": {
+    "metadata": {
+      "id": 26,
+      "label": "Knife",
+      "description": "A ceremonial weapon of the ancient Pixiotes.",
+      "widget_lookup": 3
+    },
+    "visual": {
+      "texture_lookup": 26,
+      "dimensions": [16, 8],
+      "offsets": {
+        "global": [-0.5, 5.5],
+        "barrel": [13.0, 1.5],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [4.0, 4.0],
+        "type": "twinkle",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "no_reload": true,
+        "ammo": 1,
+        "instances": 1,
+        "reload": 32,
+        "cooldown_time": 18,
+        "recoil": 0.0
+      }
+    },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [18.0, 18.0],
+        "radius": 8.0,
+        "attributes": {
+          "base_damage": 16,
+          "lifespan": 600,
+          "lifespan_variance": 0,
+          "speed": 3.9,
+          "power": 5,
+          "variance": 0.0,
+          "stun_time": 0.0,
+          "knockback": 0.0,
+          "transcendent": false,
+          "omnidirectional": false,
+          "reflect": true,
+          "boomerang": true,
+          "hitstun": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 1.0,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 8
+        },
+        "boomerang": { "friction": 0.994, "force": 0.0008 }
       }
     }
   }

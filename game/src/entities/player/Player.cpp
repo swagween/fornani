@@ -327,7 +327,7 @@ void Player::update(world::Map& map) {
 	update_camera();
 
 	invincible() ? get_collider().draw_hurtbox.setFillColor(colors::red) : get_collider().draw_hurtbox.setFillColor(colors::blue);
-	if (has_death_type(PlayerDeathType::crushed)) { get_collider().physics.gravity = 0.f; }
+	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::annihilated)) { get_collider().physics.gravity = 0.f; }
 
 	// hurtbox and other collision utilities
 	auto low_profile = is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) || is_in_animation(AnimState::roll) || is_in_animation(AnimState::slide) || is_in_animation(AnimState::turn_slide);
@@ -517,7 +517,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		m_sprite_overlay.set_channel(value);
 	}
 
-	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::fallen)) { return; }
+	if (has_death_type(PlayerDeathType::crushed) || has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::fallen) || has_death_type(PlayerDeathType::annihilated)) { return; }
 	if (has_death_type(PlayerDeathType::drowned)) { p_animatable.set_color(colors::blue); }
 	if (piggybacker && !has_flag_set(PlayerFlags::in_reward_sequence)) { piggybacker->render(svc, win, cam); }
 
@@ -863,6 +863,10 @@ auto Player::on_water_surface() const -> bool { return (get_collider().has_flag_
 
 auto Player::get_roll_multiplier() const -> float { return has_item_equipped("athletic_band") ? 15.f : 13.f; }
 
+auto Player::get_kick_damage() const -> float { return has_item_equipped("shoe_spikes") ? 12.f : 4.f; }
+
+auto Player::get_arm_strength() const -> float { return has_item_equipped("can_of_beans") ? 2.f : 1.f; }
+
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? get_collider().dimensions.x * 0.5f : 0.f;
@@ -880,6 +884,14 @@ void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	m_ear.physics.position = new_pos;
 	m_lighting.physics.position = get_collider().get_center() + sf::Vector2f{controller.direction.as_float() * light_offset_v, 0.f};
 	if (arsenal && hotbar) { equipped_weapon().force_position(m_weapon_socket); }
+}
+
+void Player::lerp_to_position(sf::Vector2f new_pos, float dt, float speed) {
+	if (!has_collider()) { return; }
+	auto const current_pos = get_collider().get_center();
+	auto const t = 1.f - std::exp(-speed * dt);
+	auto const lerped_pos = current_pos + (new_pos - current_pos) * t;
+	set_position(lerped_pos, true);
 }
 
 void Player::set_position_on_grid(sf::Vector2i grid_pos) { set_position(sf::Vector2f{grid_pos} * constants::f_cell_size + sf::Vector2f{0.f, constants::f_cell_vec.y - get_collider().dimensions.y}); }
@@ -1466,8 +1478,8 @@ auto Player::can_dash_kick() const -> bool {
 
 bool Player::can_dash() const {
 	if (abilities_disabled()) { return false; }
-	if (grounded()) { return false; }
 	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
+	if (grounded() && (!has_item_equipped("pixie_dust") || controller.is_dashing())) { return false; }
 	if (m_ability_usage.dash.get_count() > 0) {
 		if (catalog.inventory.has_item("imbier_totem") && m_ability_usage.dash.get_count() < 2) { return true; }
 		return false;

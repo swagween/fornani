@@ -54,6 +54,14 @@ void Breakable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::
 	}
 }
 
+void Breakable::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
+	if (is_destroyed()) { return; }
+	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
+	Animatable::set_position(render_position + random_offset);
+	tex.draw(*this);
+	++debug::draw_calls;
+}
+
 void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile& proj) {
 	if (proj.transcendent()) { return; }
 	if (is_destroyed()) { return; }
@@ -62,7 +70,7 @@ void Breakable::on_hit(automa::ServiceProvider& svc, Map& map, arms::Projectile&
 			on_smash(svc, map, proj.get_power());
 			proj.on_explode(svc, map);
 		}
-		proj.destroy(false);
+		if (proj.get_power() < 4) { proj.destroy(false); }
 		map.spawn_effect(svc, "hit_flash", proj.get_position());
 	}
 }
@@ -78,7 +86,11 @@ void Breakable::on_smash(automa::ServiceProvider& svc, world::Map& map, float po
 	if (is_destroyed()) {
 		map.spawn_effect(svc, "small_explosion", get_collider().get_center());
 		map.spawn_emitter(svc, "breakable", get_collider().get_position(), Direction{}, {32.f, 32.f});
-		svc.soundboard.flags.world.set(audio::World::breakable_shatter);
+		if (auto const& p = map.get_biome_properties()["breakable_shatter"]) {
+			svc.soundboard.play_sound(p.as_string(), get_collider().get_center());
+		} else {
+			svc.soundboard.play_sound("breakable_shatter", get_collider().get_center());
+		}
 	}
 }
 

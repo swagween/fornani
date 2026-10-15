@@ -40,6 +40,7 @@ void Animatable::set_frame(int to) {
 }
 
 void Animatable::tick() {
+	if (p_anim_flags.consume(AnimatableFlags::paused)) { return; }
 	animation.update();
 	set_rect();
 }
@@ -47,6 +48,8 @@ void Animatable::tick() {
 void Animatable::check_for_switch() {
 	if (animation.is_complete()) { set_animation(m_root_animation); }
 }
+
+void Animatable::pause() { p_anim_flags.set(AnimatableFlags::paused); }
 
 void Animatable::random_start() {
 	if (animation.params.duration > 1) { animation.frame.set(random::random_range(0, animation.params.duration - 1)); }

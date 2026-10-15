@@ -11,6 +11,7 @@ nani_add_headers(
         Drawable.hpp
         HelpText.hpp
         Indicator.hpp
+        LayerTexture.hpp
         LoadingScreen.hpp
         MapTexture.hpp
         MenuTheme.hpp

@@ -3,11 +3,14 @@
 
 #include <fornani/entities/animation/Animation.hpp>
 #include <fornani/graphics/Drawable.hpp>
-#include <fornani/io/Logger.hpp>
+#include <fornani/utils/BitFlags.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/utils/TransparentStringHash.hpp>
 
 namespace fornani {
+
+enum class AnimatableFlags : std::uint8_t { paused };
+
 class Animatable : public Drawable {
   public:
 	Animatable(automa::ServiceProvider& svc, std::string_view label, sf::Vector2i dimensions = constants::i_cell_vec);
@@ -24,6 +27,7 @@ class Animatable : public Drawable {
 	void set_dimensions(sf::Vector2i const to) { m_dimensions = to; }
 	void tick();
 	void check_for_switch();
+	void pause();
 
 	/// <summary>
 	/// @brief starts the animation at a random frame.
@@ -49,6 +53,7 @@ class Animatable : public Drawable {
 
   protected:
 	std::unordered_map<std::string, anim::Parameters, TransparentHash, TransparentEqual> p_animations{};
+	util::BitFlags<AnimatableFlags> p_anim_flags{};
 
   private:
 	void set_rect();

@@ -92,7 +92,9 @@ enum class StateFlags : std::uint8_t {
 	pre_battle_invincibility,
 	special_event,
 	blocked_projectile,
-	killed
+	killed,
+	damaged,
+	dash_kicked
 };
 
 enum class Triggers : std::uint8_t { hostile, alert };
@@ -111,6 +113,7 @@ struct Attributes {
 	float treasure_chance{};
 	float gem_multiplier = 1.f;
 	arms::Team team{arms::Team::skycorps};
+	float damage_tolerance{32.f};
 };
 
 struct Treasure {
@@ -158,11 +161,14 @@ class Enemy : public Mobile {
 	void set_handle(EntityHandle to) { metadata.handle = to; }
 	void center_at_position();
 	void set_special_event(bool to = true) { to ? flags.state.set(StateFlags::special_event) : flags.state.reset(StateFlags::special_event); }
+	void respond_to_damage();
+	void set_disappeared(bool const to);
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
 	[[nodiscard]] auto is_hurt() const -> bool { return hurt_effect.running(); }
 	[[nodiscard]] auto is_invincible() const -> bool { return !flags.state.test(StateFlags::vulnerable) || flags.state.test(StateFlags::pre_battle_invincibility); }
+	[[nodiscard]] auto is_intangible() const -> bool { return flags.state.test(StateFlags::intangible); }
 	[[nodiscard]] auto despawn_requested() const -> bool { return flags.state.test(StateFlags::despawn); }
 	[[nodiscard]] auto hostility_triggered() const -> bool { return flags.triggers.test(Triggers::hostile); }
 	[[nodiscard]] auto alertness_triggered() const -> bool { return flags.triggers.test(Triggers::alert); }
@@ -185,6 +191,9 @@ class Enemy : public Mobile {
 	[[nodiscard]] auto is_foreground() const -> bool { return flags.general.test(GeneralFlags::foreground); }
 	[[nodiscard]] auto is_transcendent() const -> bool { return flags.general.test(GeneralFlags::transcendent); }
 	[[nodiscard]] auto permadeath() const -> bool { return flags.general.test(GeneralFlags::permadeath); }
+	[[nodiscard]] auto was_damaged() -> bool { return flags.state.consume(StateFlags::damaged); }
+	[[nodiscard]] auto was_dash_kicked() -> bool { return flags.state.consume(StateFlags::dash_kicked); }
+	[[nodiscard]] auto get_damage_threshold() const -> float { return attributes.damage_tolerance > 0.f ? p_damage_over_time.get() / attributes.damage_tolerance : 0.f; }
 
 	shape::Shape const& get_alert_range() const { return physical.alert_range; }
 
@@ -232,6 +241,7 @@ class Enemy : public Mobile {
 	EnemyChannel m_custom_channel{};
 	std::optional<Animatable> m_effects_overlay{};
 	EnemySounds p_sounds{};
+	util::FloatCounter p_damage_over_time{};
 
 	std::optional<std::vector<Treasure>> m_treasure{};
 

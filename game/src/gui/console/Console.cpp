@@ -426,6 +426,7 @@ bool Console::process_code(MessageCode const& code) {
 		m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
 		NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
 	}
+	return false;
 }
 
 void Console::debug() {
