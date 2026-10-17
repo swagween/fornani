@@ -1,5 +1,31 @@
 {
   "entities": {
+    "box_colliders": [
+      {
+        "dimensions": [
+          1,
+          16
+        ],
+        "id": 0,
+        "position": [
+          132,
+          -16
+        ],
+        "wallslide": false
+      },
+      {
+        "dimensions": [
+          1,
+          16
+        ],
+        "id": 0,
+        "position": [
+          24,
+          -16
+        ],
+        "wallslide": false
+      }
+    ],
     "chests": [
       {
         "dimensions": [
@@ -393,7 +419,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 4,
       "timer": false,
       "toxic": false
     },
@@ -37336,15 +37361,6 @@
         17,
         17,
         18,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
         0,
         0,
         0,
@@ -37423,26 +37439,35 @@
         0,
         0,
         0,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         16,
         17,
         18,

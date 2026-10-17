@@ -8,7 +8,7 @@
 
 namespace fornani::enemy {
 
-enum class BossFlags : std::uint8_t { start_battle, battle_mode, second_phase, post_death, end_battle, defeated_player };
+enum class BossFlags : std::uint8_t { start_battle, battle_mode, second_phase, post_death, end_battle, defeated_player, ignore_oob };
 
 class Boss : public Enemy, public Flaggable<BossFlags> {
   public:
@@ -20,12 +20,15 @@ class Boss : public Enemy, public Flaggable<BossFlags> {
 
 	[[nodiscard]] auto battle_mode() const -> bool { return has_flag_set(BossFlags::battle_mode); }
 	[[nodiscard]] auto quarter_health() const -> bool { return health.get_quantity() < health.get_capacity() * 0.25f; }
+	[[nodiscard]] auto is_staggered() -> bool;
 
   protected:
 	std::shared_ptr<Slot const> slot{std::make_shared<Slot const>()};
 	automa::ServiceProvider* p_services;
 	world::Map* p_map;
 	gui::BossHealth p_health_bar;
+
+	std::vector<float> p_stagger_points;
 
   private:
 	util::Counter m_oob_counter{};

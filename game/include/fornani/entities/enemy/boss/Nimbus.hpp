@@ -107,8 +107,6 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 		components::SteeringComponent steering{};
 	} m_lightning{};
 
-	std::vector<float> m_stagger_points;
-
 	util::Counter m_triple_jump{};
 	util::Counter m_quick_teleports{};
 

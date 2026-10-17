@@ -259,6 +259,12 @@
     "dimensions": [158, 36],
     "x_reflection": true
   },
+  "strong_slam": {
+    "frame_count": 4,
+    "framerate": 36,
+    "dimensions": [110, 20],
+    "x_reflection": true
+  },
   "guts_splat": {
     "frame_count": 5,
     "framerate": 18,

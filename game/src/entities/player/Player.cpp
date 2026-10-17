@@ -979,12 +979,6 @@ void Player::update_weapon(world::Map& map) {
 			equipped_weapon().shoot(*m_services, map);
 		}
 		if (!equipped_weapon().automatic() && !equipped_weapon().is_chargeable()) { controller.set_shot(false); }
-		if (!equipped_weapon().is_chargeable() && equipped_weapon().is_gun()) {
-			auto cdir = equipped_weapon().get_firing_direction();
-			cdir.rotate(equipped_weapon().get_firing_direction().left() ? RotationType::clockwise : RotationType::counterclockwise);
-			auto casing_dir = Direction{cdir};
-			map.spawn_emitter(*m_services, "bullet_casing", m_weapon_socket, casing_dir, {2.f, 2.f});
-		}
 	}
 	controller.set_arsenal(hotbar.has_value());
 	// update all weapons in loadout to avoid unusual behavior upon weapon switching

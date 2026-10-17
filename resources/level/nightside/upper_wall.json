@@ -1,5 +1,19 @@
 {
   "entities": {
+    "box_colliders": [
+      {
+        "dimensions": [
+          2,
+          16
+        ],
+        "id": 0,
+        "position": [
+          29,
+          -16
+        ],
+        "wallslide": false
+      }
+    ],
     "cutscene_triggers": [
       {
         "attributes": {
@@ -789,7 +803,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -33603,35 +33616,35 @@
         0
       ],
       [
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
-        1,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
         2,
         2,
         2,

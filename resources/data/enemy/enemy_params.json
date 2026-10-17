@@ -244,19 +244,23 @@
       "boss": true
     },
     "physical": {
-      "dimensions": [64, 64],
-      "sprite_dimensions": [60, 60],
-      "offset": [0, -27],
+      "dimensions": [92, 92],
+      "sprite_dimensions": [118, 74],
+      "offset": [0, -21],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [300.0, 300.0],
-      "hostile_range": [600.0, 80.0],
+      "alert_range": [100.0, 300.0],
+      "hostile_range": [220.0, 300.0],
       "friction": 0.98,
       "gravity": 8.5
     },
     "visual": {
       "effect_type": 0,
-      "effect_size": 1
+      "effect_size": 1,
+      "effects_overlay": {
+        "dimensions": [118, 74],
+        "offset": [0, 0]
+      }
     },
     "audio": {
       "hurt_sounds": ["minigus_hurt_1", "minigus_hurt_2", "minigus_hurt_3"]

@@ -11,26 +11,12 @@ namespace fornani::enemy {
 
 Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& context)
 	: Boss(svc, map, "minigus"), gun(svc, "minigun"), soda(svc, "soda_gun"), m_services(&svc), m_map(&map), sparkler(svc, Enemy::get_collider().get_vicinity_rect().size, colors::ui_white, "minigus"), m_context{&context},
-	  m_mode{MinigusMode::neutral}, m_minigun{svc}, attacks{.left_shockwave{{50, 600, 3, {-0.6f, 0.f}}}, .right_shockwave{{50, 600, 3, {0.6f, 0.f}}}} {
-
-	p_animatable.set_animations({{"idle", {0, 6, 48, -1}},
-								 {"shoot", {10, 1, 38, -1}},
-								 {"jumpsquat", {18, 1, 58, 0}},
-								 {"hurt", {21, 4, 24, 2}},
-								 {"jump", {14, 1, 22, -1}},
-								 {"jump_shoot", {32, 1, 42, -1}},
-								 {"reload", {7, 7, 18, 0}},
-								 {"turn", {18, 2, 32, 0}},
-								 {"run", {14, 4, 32, 3}},
-								 {"punch", {28, 4, 32, 0}},
-								 {"uppercut", {35, 4, 32, 0}},
-								 {"struggle", {35, 1, 24, -1}},
-								 {"build_invincibility", {33, 2, 22, 4}},
-								 {"laugh", {25, 3, 24, 4}},
-								 {"snap", {39, 3, 42, 0}},
-								 {"rush", {66, 4, 22, -1}},
-								 {"drink", {42, 16, 20, 0}},
-								 {"throw_can", {58, 8, 22, 0}}});
+	  m_mode{MinigusMode::neutral}, m_minigun{svc} {
+	auto const fr = 32;
+	p_animatable.set_animations({{"idle", {0, 4, fr * 2, -1}},		{"turn", {4, 3, fr, 0}},	 {"run", {7, 4, fr, 3}},		 {"shoot", {11, 2, fr, 3}}, {"jump_shoot", {13, 2, fr, 3}}, {"jumpsquat", {15, 2, fr, 0}},
+								 {"airborne", {17, 2, fr * 2, -1}}, {"land", {19, 2, fr, 0}},	 {"grab_soda", {21, 10, fr, 0}}, {"drink", {31, 2, fr, 3}}, {"throw_can", {33, 6, fr, 0}},	{"stagger", {39, 1, fr, 0}},
+								 {"struggle", {40, 2, fr * 3, 3}},	{"recover", {42, 1, fr, 0}}, {"laugh", {43, 2, fr, 3}},		 {"punch", {45, 8, fr, 0}}, {"snap", {53, 3, fr, 0}},		{"reload", {56, 6, fr * 3, 0}},
+								 {"wind_up", {62, 3, fr, 0}},		{"charge", {65, 4, fr, 2}},	 {"exit", {15, 4, fr, 0}}});
 
 	p_animatable.animation.set_params(Enemy::get_params("idle"));
 	gun.clip_cooldown_time = 360;
@@ -38,7 +24,7 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	soda.get().set_team(arms::Team::skycorps);
 	gun.cycle.set_order(3);
 	Enemy::get_collider().physics.maximum_velocity = {8.f, 18.f};
-	Enemy::get_collider().physics.set_constant_friction({0.97f, 0.989f});
+	Enemy::get_collider().physics.set_constant_friction({0.99f, 0.989f});
 	cooldowns.vulnerability.start();
 	cooldowns.exit.start();
 	afterlife = 2000;
@@ -57,11 +43,6 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	attacks.punch.hit.bounds.setRadius(32);
 	attacks.punch.origin = {-10.f, -26.f};
 
-	attacks.uppercut.sensor.bounds.setRadius(68);
-	attacks.uppercut.sensor.drawable.setFillColor(colors::blue);
-	attacks.uppercut.hit.bounds.setRadius(38);
-	attacks.uppercut.origin = {-8.f, 36.f};
-
 	attacks.rush.sensor.bounds.setRadius(60);
 	attacks.rush.hit.bounds.setRadius(60);
 	attacks.rush.origin = {40.f, 10.f};
@@ -76,12 +57,21 @@ Minigus::Minigus(automa::ServiceProvider& svc, world::Map& map, SceneContext& co
 	auto const to_pos = sf::Vector2f{get_collider().get_position().x, 0.f};
 	set_position(to_pos);
 	m_minigun.set_position(to_pos);
+	flags.state.set(StateFlags::no_shake);
+	set_flag(BossFlags::ignore_oob);
+
+	p_stagger_points = {0.25f, 0.5f, 0.75f};
 }
 
 void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (init) {
 		m_minigun.set_physics_position(Enemy::get_collider().get_center());
 		init = false;
+	}
+	if (health.is_dead()) {
+		post_death.start(afterlife);
+		flags.state.set(StateFlags::special_death_mode);
+		request(MinigusState::stagger);
 	}
 	sparkler.update(svc);
 	sparkler.set_position(Enemy::get_collider().get_vicinity_rect().position);
@@ -98,26 +88,8 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		flags.general.set(GeneralFlags::no_loot);
 	}
 
-	if (Enemy::directions.actual.lnr == LNR::left) {
-		attacks.punch.set_position(Enemy::get_collider().physics.position);
-		attacks.uppercut.set_position(Enemy::get_collider().physics.position);
-		attacks.rush.set_position(Enemy::get_collider().physics.position);
-		attacks.punch.origin.x = -10.f;
-		attacks.uppercut.origin.x = -8.f;
-		attacks.rush.origin.x = 40.f;
-		attacks.rush.hit_offset.x = -20.f;
-	} else {
-		sf::Vector2f dir_offset{Enemy::get_collider().bounding_box.get_dimensions().x, 0.f};
-		attacks.punch.set_position(Enemy::get_collider().physics.position + dir_offset);
-		attacks.uppercut.set_position(Enemy::get_collider().physics.position + dir_offset);
-		attacks.rush.set_position(Enemy::get_collider().physics.position + dir_offset);
-		attacks.punch.origin.x = 10.f;
-		attacks.uppercut.origin.x = 8.f;
-		attacks.rush.origin.x = -40.f;
-		attacks.rush.hit_offset.x = 20.f;
-	}
-
 	gun.update(svc, map, *this);
+	soda.get().set_firing_direction(directions.actual);
 	soda.update(svc, map, *this);
 	cooldowns.firing.update();
 	cooldowns.post_charge.update();
@@ -125,148 +97,103 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 	cooldowns.hurt.update();
 	cooldowns.hurt_sound.update();
 	cooldowns.player_punch.update();
-	if (status.test(MinigusFlags::exit_scene)) { cooldowns.exit.update(); }
-	if (battle_mode()) { cooldowns.vulnerability.update(); }
-
-	if (svc.ticker.every_x_ticks(32)) { hurt_color.update(); }
-
-	attacks.punch.update();
-	attacks.uppercut.update();
-	attacks.rush.update();
-	attacks.left_shockwave.origin = Enemy::get_collider().physics.position + sf::Vector2f{0.f, Enemy::get_collider().bounding_box.get_dimensions().y};
-	attacks.right_shockwave.origin = Enemy::get_collider().physics.position + Enemy::get_collider().bounding_box.get_dimensions();
-	attacks.left_shockwave.update(svc, map);
-	attacks.right_shockwave.update(svc, map);
 
 	if (battle_mode()) {
-		attacks.punch.handle_player(player);
-		attacks.uppercut.handle_player(player);
-
-		attacks.punch.hit.deactivate();
-		attacks.uppercut.hit.deactivate();
-		attacks.rush.hit.deactivate();
-
-		attacks.left_shockwave.hurt_player(player);
-		attacks.right_shockwave.hurt_player(player);
-
-		if (p_animatable.animation.get_frame() == 30 && !cooldowns.player_punch.running()) {
-			attacks.punch.hit.activate();
-			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if (attacks.punch.hurt_player(player, 1.f, {sign * 0.2f, -0.4f})) {
-				attacks.punch.sensor.deactivate();
-				cooldowns.player_punch.start();
-			}
-		}
-		if (p_animatable.animation.get_frame() == 37 && !cooldowns.player_punch.running()) {
-			attacks.uppercut.hit.activate();
-			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if (attacks.uppercut.hurt_player(player, 1.f, {sign * 0.2f, -0.2f})) {
-				attacks.uppercut.sensor.deactivate();
-				cooldowns.player_punch.start();
-			}
-		}
-		if (is(MinigusState::rush) && !cooldowns.player_punch.running()) {
-			auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-			if ((sign == -1.f && Enemy::player_behind(player)) || (sign == 1.f && !Enemy::player_behind(player))) {
-				attacks.rush.hit.activate();
-				if (attacks.rush.hurt_player(player, 1.f, {sign * 0.4f, -0.3f})) {
-					attacks.rush.sensor.deactivate();
-					cooldowns.player_punch.start();
-				}
-			}
-		}
+		cooldowns.vulnerability.update();
+		is_state(MinigusState::charge) ? attacks.rush.hit.deactivate() : attacks.rush.hit.activate();
+		attacks.rush.hurt_player(player, 1.f);
 	}
+
+	attacks.punch.update();
+	attacks.rush.update();
+	for (auto& s : attacks.shockwaves) {
+		s.origin = get_collider().get_bottom();
+		s.update(svc, map);
+	}
+
+	if (battle_mode()) { attacks.punch.handle_player(player); }
 	for (auto& breakable : map.breakables) {
 		if (Enemy::get_collider().jumpbox.overlaps(breakable->get_bounding_box())) { breakable->on_smash(svc, map, 4); }
-		if (is(MinigusState::rush) && attacks.rush.hit.within_bounds(breakable->get_bounding_box())) {
+		if (is(MinigusState::charge) && attacks.rush.hit.within_bounds(breakable->get_bounding_box())) {
 			if (svc.ticker.every_x_ticks(18)) { breakable->on_smash(svc, map, 1); }
 		}
 	}
-
+	auto const center = get_collider().get_center();
 	m_minigun.update(Enemy::get_collider().get_center());
-	m_minigun.offset = Enemy::directions.actual.left() ? sf::Vector2f{-32.f, 0.f} : sf::Vector2f{32.f, 0.f};
-	auto gun_base = Enemy::get_collider().physics.position + Enemy::get_collider().dimensions * 0.5f;
-	auto gun_point = Enemy::directions.actual.lnr == LNR::left ? gun_base - sf::Vector2f{m_minigun.get_f_dimensions().x * 2.f, -6.f} : gun_base + sf::Vector2f{m_minigun.get_f_dimensions().x * 2.f, 6.f};
-	gun.get().set_barrel_point(gun_point);
-	gun_point.y -= 64;
-	soda.get().set_barrel_point(gun_point);
+	m_minigun.offset = sf::Vector2f{directions.actual.as_float() * 32.f, 0.f};
 
-	Enemy::directions.desired.lnr = Enemy::player_behind(player) ? LNR::left : LNR::right;
+	auto const soda_point = get_secondary_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 12.f, 0.f};
+	soda.get().set_barrel_point(soda_point);
+	auto const gun_point = center + sf::Vector2f{directions.actual.as_float() * 40.f, 12.f + 8.f * m_barrel_cycle.get_normalized()};
+	gun.get().set_barrel_point(gun_point);
+
+	if (is_alert()) {
+		auto const hp = map.get_closest_home_point(center);
+		auto const dir = center.x > hp.x ? SimpleDirection{LR::left} : SimpleDirection{LR::right};
+		directions.desired = dir;
+	} else {
+		face_player(player);
+	}
 	Boss::update(svc, map, player);
 
-	if (secondary_collider) {
-		get_secondary_collider().set_position(Enemy::get_collider().physics.position +
-											  sf::Vector2f{Enemy::directions.actual.lnr == LNR::left ? 0 : Enemy::get_collider().dimensions.x - get_secondary_collider().dimensions.x, -get_secondary_collider().dimensions.y});
-		// if (battle_mode() && player_collision()) { player.get_collider().handle_collider_collision(get_secondary_collider()); }
-	}
-	distant_range.set_position(Enemy::get_collider().bounding_box.get_position() - (distant_range.get_dimensions() * 0.5f) + (Enemy::get_collider().dimensions * 0.5f));
-	player.get_collider().bounding_box.overlaps(distant_range) ? status.set(MinigusFlags::distant_range_activated) : status.reset(MinigusFlags::distant_range_activated);
+	if (secondary_collider) { get_secondary_collider().set_position(center - get_secondary_collider().get_local_center() - sf::Vector2f{0.f, 70.f}); }
 
 	// state management
+	if (svc.ticker.every_second()) { random::coin_flip() ? request(MinigusState::run) : request(MinigusState::reload); }
+	if (is_alert()) {
+		request(MinigusState::run);
+	} else if (is_hostile()) {
+		request(MinigusState::jumpsquat);
+	}
 
-	if (status.test(MinigusFlags::distant_range_activated) && !is_alert() && !is_hostile()) { request(MinigusState::run); }
-	if (attacks.uppercut.sensor.active() && cooldowns.post_punch.is_complete()) { request(MinigusState::uppercut); }
-	if (attacks.punch.sensor.active() && cooldowns.post_punch.is_complete()) { request(MinigusState::punch); }
+	// old stuff
+	auto const manual = true;
+	if (!manual) {
+		if (attacks.punch.sensor.active() && cooldowns.post_punch.is_complete()) { request(MinigusState::punch); }
 
-	if (flags.state.test(StateFlags::hurt)) {
-		cooldowns.hurt.start();
-		if (!hurt_effect.running()) { hurt_effect.start(128); }
-		if (!cooldowns.hurt_sound.running()) {
-			if (random::percent_chance(40)) {
-				m_services->soundboard.play_sound("minigus_hurt_1", Enemy::get_collider().get_center());
-			} else if (random::percent_chance(40)) {
-				m_services->soundboard.play_sound("minigus_hurt_2", Enemy::get_collider().get_center());
-			} else {
-				m_services->soundboard.play_sound("minigus_hurt_3", Enemy::get_collider().get_center());
-			}
-			cooldowns.hurt_sound.start();
+		if (m_minigun.flags.test(MinigunFlags::exhausted) && cooldowns.firing.is_complete()) {
+			if (random::percent_chance(12)) { request(MinigusState::reload); }
 		}
-		flags.state.reset(StateFlags::hurt);
-	}
 
-	if (just_died()) {}
-
-	if (m_minigun.flags.test(MinigunFlags::exhausted) && cooldowns.firing.is_complete()) {
-		if (random::percent_chance(12)) { request(MinigusState::reload); }
-	}
-
-	if (gun.clip_cooldown.is_complete() && !m_minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && is_hostile()) {
-		if (random::percent_chance(fire_chance)) {
-			if (random::percent_chance(50)) {
-				request(MinigusState::jump_shoot);
-			} else {
-				request(MinigusState::shoot);
+		if (gun.clip_cooldown.is_complete() && !m_minigun.flags.test(MinigunFlags::exhausted) && !cooldowns.post_charge.running() && is_hostile()) {
+			if (random::percent_chance(fire_chance)) {
+				if (random::percent_chance(50)) {
+					request(MinigusState::jump_shoot);
+				} else {
+					request(MinigusState::shoot);
+				}
 			}
 		}
-	}
 
-	if (player.get_collider().bounding_box.overlaps(Enemy::get_collider().get_vicinity_rect())) {
-		if (random::percent_chance(30)) {
-			request(MinigusState::run);
-		} else {
-			request(MinigusState::jumpsquat);
+		if (player.get_collider().bounding_box.overlaps(Enemy::get_collider().get_vicinity_rect())) {
+			if (random::percent_chance(30)) {
+				request(MinigusState::run);
+			} else {
+				request(MinigusState::jumpsquat);
+			}
 		}
-	}
 
-	if (is_alert() && Enemy::get_collider().grounded()) {
-		if (cooldowns.post_punch.is_complete()) {
-			request(MinigusState::run);
-			if (attacks.uppercut.sensor.active()) { request(MinigusState::uppercut); }
-			if (attacks.punch.sensor.active()) { request(MinigusState::punch); }
-		} else {
-			request(MinigusState::jumpsquat);
+		if (is_alert() && Enemy::get_collider().grounded()) {
+			if (cooldowns.post_punch.is_complete()) {
+				request(MinigusState::run);
+				if (attacks.punch.sensor.active()) { request(MinigusState::punch); }
+			} else {
+				request(MinigusState::jumpsquat);
+			}
 		}
-	}
 
-	if (Enemy::health_indicator.get_amount() < -80 && flags.state.test(StateFlags::vulnerable)) { request(MinigusState::drink); }
-	if (cooldowns.vulnerability.is_complete() && flags.state.test(StateFlags::vulnerable)) { request(MinigusState::drink); }
+		if (Enemy::health_indicator.get_amount() < -80 && flags.state.test(StateFlags::vulnerable)) { request(MinigusState::drink); }
+		if (cooldowns.vulnerability.is_complete() && flags.state.test(StateFlags::vulnerable)) { request(MinigusState::drink); }
+	}
 
 	if (Enemy::directions.actual.lnr != Enemy::directions.desired.lnr) { request(MinigusState::turn); }
 	movement_direction.lnr = Enemy::get_collider().physics.velocity.x > 0.f ? LNR::right : LNR::left;
 
 	if (!battle_mode()) { request(MinigusState::idle); }
+	if (!get_collider().grounded()) { request(MinigusState::airborne); }
 
-	if (!status.test(MinigusFlags::second_phase) && half_health()) { request(MinigusState::struggle); }
+	if (!has_flag_set(BossFlags::second_phase) && half_health()) { set_flag(BossFlags::second_phase); }
+	if (is_staggered()) { request(MinigusState::stagger); }
 
 	if (half_health() && secondary_collider) {
 		auto pos = get_secondary_collider().physics.position + random::random_vector_float(10.f, 40.f);
@@ -284,11 +211,10 @@ void Minigus::update(automa::ServiceProvider& svc, world::Map& map, player::Play
 		cooldowns.vulnerability.start();
 	}
 
-	if (health.is_dead() && !status.test(MinigusFlags::over_and_out) && !status.test(MinigusFlags::goodbye)) { request(MinigusState::struggle); }
-	if (status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
+	/*if (status.test(MinigusFlags::goodbye)) { status.set(MinigusFlags::over_and_out); }
 	if (status.test(MinigusFlags::over_and_out) && console_complete && is(MinigusState::exit)) {
 		m_map->active_loot.push_back(item::Loot(svc, map, player, Enemy::get_collider().bounding_box.get_position(), {get_attributes().drop_range, get_attributes().loot_multiplier, 0, false, 0, 16}));
-	}
+	}*/
 
 	Minigus::state_function = Minigus::state_function();
 }
@@ -302,555 +228,358 @@ void Minigus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 	sparkler.render(win, cam);
 
 	if (debug::is_production()) {
-		win.draw(m_minigun);
+		// win.draw(m_minigun);
 		sprite_history.drag(win, cam);
 	} else {
-		if (is(MinigusState::punch)) { attacks.punch.render(win, cam); }
-		if (is(MinigusState::uppercut)) { attacks.uppercut.render(win, cam); }
-		attacks.rush.render(win, cam);
-		attacks.left_shockwave.render(win, cam);
-		attacks.right_shockwave.render(win, cam);
 		// distant_range.render(win, cam);
 	}
+	if (is(MinigusState::punch)) { attacks.punch.render(win, cam); }
+	attacks.rush.render(win, cam);
 }
 
-void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) { Boss::gui_render(svc, win, cam); }
+void Minigus::gui_render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {
+	Boss::gui_render(svc, win, cam);
+	debug();
+}
 
 fsm::StateFunction Minigus::update_idle() {
-	set_state(MinigusState::idle);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "idle"); }
-	if (!is_battle_mode()) {
+	p_state.actual = MinigusState::idle;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) {}
+	if (change_state(MinigusState::turn, get_params("turn"))) { return MINIGUS_BIND(update_turn); }
+	if (change_state(MinigusState::run, get_params("run"))) { return MINIGUS_BIND(update_run); }
+	if (change_state(MinigusState::snap, get_params("snap"))) { return MINIGUS_BIND(update_snap); }
+	if (change_state(MinigusState::reload, get_params("reload"))) { return MINIGUS_BIND(update_reload); }
+	if (change_state(MinigusState::jumpsquat, get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
+	if (change_state(MinigusState::grab_soda, get_params("grab_soda"))) { return MINIGUS_BIND(update_grab_soda); }
+	if (change_state(MinigusState::punch, get_params("punch"))) { return MINIGUS_BIND(update_punch); }
+	if (change_state(MinigusState::wind_up, get_params("wind_up"))) { return MINIGUS_BIND(update_wind_up); }
+	if (change_state(MinigusState::laugh, get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
+	if (p_animatable.animation.complete()) {
 		request(MinigusState::idle);
-		if (flags.state.consume(StateFlags::special_event)) {
-			flags.state.reset(StateFlags::invisible);
-			request(MinigusState::jump);
-			if (change_state(MinigusState::jump, Enemy::get_params("jump"))) { return MINIGUS_BIND(update_jump); }
-		}
+		if (change_state(MinigusState::idle, get_params("idle"))) { return MINIGUS_BIND(update_idle); }
 	}
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (change_state(MinigusState::laugh, Enemy::get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
-	if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-	if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-	if (change_state(MinigusState::reload, Enemy::get_params("reload"))) { return MINIGUS_BIND(update_reload); }
-	if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-	if (change_state(MinigusState::jump_shoot, Enemy::get_params("jump_shoot"))) { return MINIGUS_BIND(update_jump_shoot); }
-	if (change_state(MinigusState::punch, Enemy::get_params("punch"))) { return MINIGUS_BIND(update_punch); }
-	if (change_state(MinigusState::uppercut, Enemy::get_params("uppercut"))) { return MINIGUS_BIND(update_uppercut); }
-	if (change_state(MinigusState::snap, Enemy::get_params("snap"))) { return MINIGUS_BIND(update_snap); }
-	if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-	if (change_state(MinigusState::drink, Enemy::get_params("drink"))) { return MINIGUS_BIND(update_drink); }
-	if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
 	return MINIGUS_BIND(update_idle);
 }
 
-fsm::StateFunction Minigus::update_shoot() {
-	set_state(MinigusState::shoot);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "shoot"); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.just_started()) {
-		m_services->soundboard.flags.minigus.set(audio::Minigus::doge);
-		m_minigun.set_parameters(m_minigun.charging);
-		m_minigun.flags.set(MinigunFlags::charging);
-		m_services->soundboard.flags.minigus.set(audio::Minigus::charge);
-	}
-	if (!gun.get().cooling_down() && !m_minigun.flags.test(MinigunFlags::charging)) {
-		gun.cycle.update();
-		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2f{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2f{0.f, 20.f} : sf::Vector2f{0.f, 15.f});
-		gun.shoot(*m_services, *m_map);
-		m_map->shake_camera();
-	}
-	if (m_minigun.flags.test(MinigunFlags::charging)) {
-		if (m_minigun.animation.complete()) {
-			m_minigun.flags.reset(MinigunFlags::charging);
-			m_minigun.set_parameters(m_minigun.firing);
-			cooldowns.post_charge.start();
-		}
-	}
-	if (!m_minigun.flags.test(MinigunFlags::charging)) {
-		if (m_minigun.animation.complete()) {
-			m_minigun.flags.set(MinigunFlags::exhausted);
-			m_minigun.set_parameters(m_minigun.deactivated);
-			counters.snap.cancel();
-			cooldowns.firing.start();
-
-			if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
-			if (invincible()) {
-				request(MinigusState::rush);
-				if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-			}
-			if (random::percent_chance(50)) {
-				request(MinigusState::run);
-				if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-			} else {
-				request(MinigusState::laugh);
-				if (change_state(MinigusState::laugh, Enemy::get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
-			}
-		}
-	}
-	return MINIGUS_BIND(update_shoot);
-}
-
-fsm::StateFunction Minigus::update_jumpsquat() {
-	set_state(MinigusState::jumpsquat);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "jumpsquat"); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.complete()) {
-		request(MinigusState::jump);
-		if (change_state(MinigusState::jump, Enemy::get_params("jump"))) { return MINIGUS_BIND(update_jump); }
-	}
-	return MINIGUS_BIND(update_jumpsquat);
-}
-
-fsm::StateFunction Minigus::update_hurt() {
-	set_state(MinigusState::hurt);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "hurt"); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (change_state(MinigusState::reload, Enemy::get_params("reload"))) { return MINIGUS_BIND(update_reload); }
-	if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-	if (p_animatable.animation.complete()) {
-		flags.state.reset(StateFlags::hurt);
-		if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-		if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-	}
-	return MINIGUS_BIND(update_hurt);
-}
-
-fsm::StateFunction Minigus::update_jump() {
-	set_state(MinigusState::jump);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "jump"); }
-	if (p_animatable.animation.just_started() && battle_mode()) { m_services->soundboard.flags.minigus.set(audio::Minigus::woob); }
-	cooldowns.jump.update();
-	if (p_animatable.animation.just_started()) { cooldowns.jump.start(); }
-	auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-	if (status.test(MinigusFlags::over_and_out)) { sign = 0; }
-	if (cooldowns.jump.running()) { Enemy::get_collider().physics.apply_force({sign * 36.f, -8.f}); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (cooldowns.jump.is_complete() && status.test(MinigusFlags::over_and_out)) {
-		flags.general.reset(GeneralFlags::map_collision);
-		Enemy::get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
-	}
-	if (Enemy::get_collider().grounded() && cooldowns.jump.is_complete()) {
-		m_services->soundboard.flags.minigus.set(audio::Minigus::crash);
-		m_services->soundboard.flags.minigus.set(audio::Minigus::land);
-		m_services->camera_controller.shake(10, 0.3f, 200, 20);
-		if (battle_mode()) {
-			attacks.left_shockwave.start();
-			attacks.right_shockwave.start();
-		}
-		if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
-		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-	}
-	return MINIGUS_BIND(update_jump);
-}
-
-fsm::StateFunction Minigus::update_jump_shoot() {
-	set_state(MinigusState::jump_shoot);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "jump_shoot"); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::getit); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (cooldowns.pre_jump.get() != -1) { cooldowns.pre_jump.update(); }
-	cooldowns.jump.update();
-	auto sign = Enemy::directions.actual.lnr == LNR::left ? 1.f : -2.f;
-	if (cooldowns.jump.running()) { Enemy::get_collider().physics.apply_force({sign * 4.f, -8.f}); }
-	if (p_animatable.animation.just_started()) {
-		cooldowns.pre_jump.start();
-		m_minigun.set_parameters(m_minigun.charging);
-		m_minigun.flags.set(MinigunFlags::charging);
-		m_services->soundboard.flags.minigus.set(audio::Minigus::charge);
-	}
-	if (cooldowns.pre_jump.is_complete() && !cooldowns.jump.running()) {
-		cooldowns.pre_jump.nullify();
-		cooldowns.jump.start();
-	}
-	if (!gun.get().cooling_down() && !m_minigun.flags.test(MinigunFlags::charging)) {
-		gun.cycle.update();
-		gun.barrel_offset = gun.cycle.get_alternator() % 2 == 0 ? sf::Vector2f{0.f, 10.f} : (gun.cycle.get_alternator() % 2 == 1 ? sf::Vector2f{0.f, 20.f} : sf::Vector2f{0.f, 15.f});
-		gun.shoot(*m_services, *m_map);
-		m_map->shake_camera();
-	}
-	if (m_minigun.animation.complete() && m_minigun.flags.test(MinigunFlags::charging)) {
-		m_minigun.flags.reset(MinigunFlags::charging);
-		m_minigun.set_parameters(m_minigun.firing);
-		cooldowns.post_charge.start();
-	}
-	if (m_minigun.animation.complete() && !m_minigun.flags.test(MinigunFlags::charging)) {
-		m_minigun.flags.set(MinigunFlags::exhausted);
-		m_minigun.set_parameters(m_minigun.deactivated);
-		counters.snap.cancel();
-		Enemy::set_channel(EnemyChannel::standard);
-		cooldowns.firing.start();
-
-		if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
-
-		if (invincible()) {
-			request(MinigusState::rush);
-			if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-		}
-
-		if (random::percent_chance(50)) {
-			request(MinigusState::idle);
-			if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-		} else {
-			request(MinigusState::laugh);
-			if (change_state(MinigusState::laugh, Enemy::get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
-		}
-	}
-	request(MinigusState::jump_shoot);
-	return MINIGUS_BIND(update_jump_shoot);
-}
-
-fsm::StateFunction Minigus::update_reload() {
-	set_state(MinigusState::reload);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "reload"); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.complete()) {
-		m_minigun.flags.reset(MinigunFlags::exhausted);
-		m_minigun.set_parameters(m_minigun.neutral);
-		m_services->soundboard.flags.minigus.set(audio::Minigus::deepspeak);
-		if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
-
-		if (invincible()) {
-			if (random::percent_chance(50)) {
-				request(MinigusState::shoot);
-				if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-			}
-			request(MinigusState::jump_shoot);
-			if (change_state(MinigusState::jump_shoot, Enemy::get_params("jump_shoot"))) { return MINIGUS_BIND(update_jump_shoot); }
-
-		} else {
-			if (random::percent_chance(40)) {
-				request(MinigusState::laugh);
-				if (change_state(MinigusState::laugh, Enemy::get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
-			}
-			request(MinigusState::run);
-			if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-		}
-	}
-	return MINIGUS_BIND(update_reload);
-}
-
 fsm::StateFunction Minigus::update_turn() {
-	set_state(MinigusState::turn);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "turn"); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	Enemy::directions.desired.lock();
+	p_state.actual = MinigusState::turn;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) {}
 	if (p_animatable.animation.complete()) {
-		Enemy::request_flip();
-		if (invincible()) {
-			counters.invincible_turn.update();
-			if (m_minigun.flags.test(MinigunFlags::exhausted)) {
-				request(MinigusState::reload);
-				if (change_state(MinigusState::reload, Enemy::get_params("reload"))) { return MINIGUS_BIND(update_reload); }
-			}
-			if (counters.invincible_turn.get_count() > 3) {
-				counters.invincible_turn.start();
-				request(MinigusState::rush);
-				if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-			}
-			if (random::percent_chance(50)) {
-				request(MinigusState::shoot);
-				if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-			}
-			request(MinigusState::jump_shoot);
-			if (change_state(MinigusState::jump_shoot, Enemy::get_params("jump_shoot"))) { return MINIGUS_BIND(update_jump_shoot); }
+		request_flip();
+		if (is_alert()) {
+			request(MinigusState::run);
+			if (change_state(MinigusState::run, get_params("run"))) { return MINIGUS_BIND(update_run); }
 		}
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-		if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-		if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-		if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-		if (change_state(MinigusState::reload, Enemy::get_params("reload"))) { return MINIGUS_BIND(update_reload); }
-		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+		is_hostile() ? request(MinigusState::punch) : request(MinigusState::reload);
+		if (change_state(MinigusState::reload, get_params("reload"))) { return MINIGUS_BIND(update_reload); }
+		if (change_state(MinigusState::punch, get_params("punch"))) { return MINIGUS_BIND(update_punch); }
 	}
-	if (change_state(MinigusState::hurt, Enemy::get_params("hurt"))) { return MINIGUS_BIND(update_hurt); }
 	return MINIGUS_BIND(update_turn);
 }
 
 fsm::StateFunction Minigus::update_run() {
-	set_state(MinigusState::run);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "run"); }
-	Enemy::get_collider().physics.apply_force({Enemy::attributes.speed * Enemy::directions.actual.as_float(), 0.f});
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-	if (change_state(MinigusState::punch, Enemy::get_params("punch"))) { return MINIGUS_BIND(update_punch); }
-	if (change_state(MinigusState::uppercut, Enemy::get_params("uppercut"))) { return MINIGUS_BIND(update_uppercut); }
-	if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
+	p_state.actual = MinigusState::run;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) {}
+	auto const frame = p_animatable.animation.get_frame_count();
+	if ((frame == 1 || frame == 3) && p_animatable.animation.keyframe_started()) {
+		p_services->soundboard.play_sound("tank_step", get_collider().get_center());
+		p_services->camera_controller.shake(2, 0.02f, 100, 20);
+	}
+	get_collider().physics.acceleration.x = attributes.speed * directions.actual.as_float();
 	if (p_animatable.animation.complete()) {
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-		if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-		if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-		if (change_state(MinigusState::snap, Enemy::get_params("snap"))) { return MINIGUS_BIND(update_snap); }
-		if (change_state(MinigusState::hurt, Enemy::get_params("hurt"))) { return MINIGUS_BIND(update_hurt); }
-		if (change_state(MinigusState::reload, Enemy::get_params("reload"))) { return MINIGUS_BIND(update_reload); }
-		if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-		if (change_state(MinigusState::punch, Enemy::get_params("punch"))) { return MINIGUS_BIND(update_punch); }
-		if (change_state(MinigusState::uppercut, Enemy::get_params("uppercut"))) { return MINIGUS_BIND(update_uppercut); }
-		if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
+		if (change_state(MinigusState::turn, get_params("turn"))) { return MINIGUS_BIND(update_turn); }
 		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+		if (change_state(MinigusState::idle, get_params("idle"))) { return MINIGUS_BIND(update_idle); }
 	}
 	return MINIGUS_BIND(update_run);
 }
 
-fsm::StateFunction Minigus::update_punch() {
-	set_state(MinigusState::punch);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "punch"); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::mother); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.get_frame() == 30 && !status.test(MinigusFlags::punched)) {
-		m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", attacks.punch.hit.bounds.getPosition()));
-		status.set(MinigusFlags::punched);
-	}
+fsm::StateFunction Minigus::update_shoot() {
+	p_state.actual = MinigusState::shoot;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	shoot();
+	if (p_animatable.animation.just_started()) {}
 	if (p_animatable.animation.complete()) {
-		status.reset(MinigusFlags::punched);
-		cooldowns.post_punch.start();
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-		if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-		if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-		if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-		if (change_state(MinigusState::snap, Enemy::get_params("snap"))) { return MINIGUS_BIND(update_snap); }
-		if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-		if (change_state(MinigusState::hurt, Enemy::get_params("hurt"))) { return MINIGUS_BIND(update_hurt); }
+		if (has_flag_set(BossFlags::second_phase)) {
+			m_flags.set(MinigusFlags::jump_shoot);
+			request(MinigusState::reload);
+			if (change_state(MinigusState::reload, get_params("reload"))) { return MINIGUS_BIND(update_reload); }
+		}
+		if (change_state(MinigusState::turn, get_params("turn"))) { return MINIGUS_BIND(update_turn); }
 		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+		if (change_state(MinigusState::idle, get_params("idle"))) { return MINIGUS_BIND(update_idle); }
 	}
-	return MINIGUS_BIND(update_punch);
+	return MINIGUS_BIND(update_shoot);
 }
 
-fsm::StateFunction Minigus::update_uppercut() {
-	set_state(MinigusState::uppercut);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "uppercut"); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::momma); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.get_frame() == 37 && !status.test(MinigusFlags::punched)) {
-		m_map->effects.push_back(entity::Effect(*m_services, "medium_flash", attacks.uppercut.hit.bounds.getPosition()));
-		status.set(MinigusFlags::punched);
-	}
+fsm::StateFunction Minigus::update_jump_shoot() {
+	p_state.actual = MinigusState::jump_shoot;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	shoot();
+	if (p_animatable.animation.just_started()) { m_flags.reset(MinigusFlags::jump_shoot); }
 	if (p_animatable.animation.complete()) {
-		status.reset(MinigusFlags::punched);
-		cooldowns.post_punch.start();
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-		if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-		if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-		if (change_state(MinigusState::rush, Enemy::get_params("rush"))) { return MINIGUS_BIND(update_rush); }
-		if (change_state(MinigusState::snap, Enemy::get_params("snap"))) { return MINIGUS_BIND(update_snap); }
-		if (change_state(MinigusState::run, Enemy::get_params("run"))) { return MINIGUS_BIND(update_run); }
-		if (change_state(MinigusState::hurt, Enemy::get_params("hurt"))) { return MINIGUS_BIND(update_hurt); }
-		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+		request(MinigusState::airborne);
+		if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
 	}
-	return MINIGUS_BIND(update_uppercut);
+	return MINIGUS_BIND(update_jump_shoot);
 }
 
-fsm::StateFunction Minigus::update_build_invincibility() {
-	set_state(MinigusState::build_invincibility);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "build_invincibility"); }
+fsm::StateFunction Minigus::update_jumpsquat() {
+	p_state.actual = MinigusState::jumpsquat;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (p_animatable.animation.complete()) {
+		if (m_flags.test(MinigusFlags::jump_shoot)) {
+			get_collider().physics.velocity.x = directions.actual.as_float() * -12.f;
+			get_collider().physics.velocity.y = -20.f;
+			p_services->soundboard.play_sound("minigus_woob", get_collider().get_center());
+			request(MinigusState::jump_shoot);
+			if (change_state(MinigusState::airborne, get_params("jump_shoot"))) { return MINIGUS_BIND(update_jump_shoot); }
+		}
+		get_collider().physics.velocity.x = directions.actual.as_float() * 8.f;
+		get_collider().physics.velocity.y = -20.f;
+		p_services->soundboard.play_sound("minigus_woob", get_collider().get_center());
+		request(MinigusState::airborne);
+		if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	}
+	return MINIGUS_BIND(update_jumpsquat);
+}
+
+fsm::StateFunction Minigus::update_airborne() {
+	p_state.actual = MinigusState::airborne;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (p_animatable.animation.just_started()) {}
+	if (get_collider().grounded()) {
+		request(MinigusState::land);
+		if (change_state(MinigusState::land, get_params("land"))) { return MINIGUS_BIND(update_land); }
+	}
+	return MINIGUS_BIND(update_airborne);
+}
+
+fsm::StateFunction Minigus::update_land() {
+	p_state.actual = MinigusState::land;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
 	if (p_animatable.animation.just_started()) {
-		m_services->soundboard.flags.minigus.set(audio::Minigus::grunt);
-		m_services->soundboard.flags.minigus.set(audio::Minigus::build);
-		sparkler.set_rate(6.f);
+		p_services->camera_controller.shake(10, 0.4f, 200, 20);
+		p_services->soundboard.play_sound("vibration", get_collider().get_center());
+		p_services->soundboard.play_sound("heavy_land", get_collider().get_center());
+		auto const shockwave_speed = 0.8f;
+		attacks.shockwaves.push_back(entity::Shockwave{{30, 600, 0, {shockwave_speed * directions.actual.as_float(), 0.f}}});
+		attacks.shockwaves.back().origin = Enemy::get_collider().get_bottom();
+		attacks.shockwaves.back().start();
+		attacks.shockwaves.push_back(entity::Shockwave{{30, 600, 0, {-shockwave_speed * directions.actual.as_float(), 0.f}}});
+		attacks.shockwaves.back().origin = Enemy::get_collider().get_bottom();
+		attacks.shockwaves.back().start();
+		m_map->spawn_effect(*p_services, "strong_slam", get_collider().get_center() + sf::Vector2f{0.f, 20.f});
 	}
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) {
-		sparkler.set_rate(0.f);
-		return MINIGUS_BIND(update_struggle);
-	}
-	cooldowns.hurt.cancel();
 	if (p_animatable.animation.complete()) {
-		flags.state.reset(StateFlags::vulnerable);
-		counters.snap.start();
-		m_services->soundboard.flags.minigus.set(audio::Minigus::invincible);
-		p_animatable.set_channel(static_cast<int>(EnemyChannel::invincible));
-		sparkler.set_rate(0.f);
-		request(MinigusState::laugh);
-		if (change_state(MinigusState::laugh, Enemy::get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
-	}
-	return MINIGUS_BIND(update_build_invincibility);
-}
-
-fsm::StateFunction Minigus::update_laugh() {
-	set_state(MinigusState::laugh);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "laugh"); }
-	if (p_animatable.animation.just_started()) {
-		if (random::percent_chance(50)) {
-			m_services->soundboard.flags.minigus.set(audio::Minigus::laugh_1);
-		} else {
-			m_services->soundboard.flags.minigus.set(audio::Minigus::laugh_2);
-		}
-	}
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.complete()) {
-		if (invincible()) {
-			if (half_health() && counters.snap.get_count() < 2) {
-				request(MinigusState::snap);
-				if (change_state(MinigusState::snap, Enemy::get_params("snap"))) { return MINIGUS_BIND(update_snap); }
-			}
-			if (change_state(MinigusState::turn, Enemy::get_params("turn"))) { return MINIGUS_BIND(update_turn); }
-			if (random::percent_chance(50)) {
-				request(MinigusState::shoot);
-				if (change_state(MinigusState::shoot, Enemy::get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
-			} else {
-				request(MinigusState::jump_shoot);
-				if (change_state(MinigusState::jump_shoot, Enemy::get_params("jump_shoot"))) { return MINIGUS_BIND(update_jump_shoot); }
-			}
-		}
-		if (change_state(MinigusState::punch, Enemy::get_params("punch"))) { return MINIGUS_BIND(update_punch); }
-		if (change_state(MinigusState::uppercut, Enemy::get_params("uppercut"))) { return MINIGUS_BIND(update_uppercut); }
 		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+		if (change_state(MinigusState::idle, get_params("idle"))) { return MINIGUS_BIND(update_idle); }
 	}
-	return MINIGUS_BIND(update_laugh);
+	return MINIGUS_BIND(update_land);
 }
 
-fsm::StateFunction Minigus::update_snap() {
-	set_state(MinigusState::snap);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "snap"); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::snap); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
+fsm::StateFunction Minigus::update_grab_soda() {
+	p_state.actual = MinigusState::grab_soda;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_deepspeak", get_collider().get_center()); }
+	if (p_animatable.frame_action(6)) { p_services->soundboard.play_sound("minigus_soda", get_collider().get_center()); }
 	if (p_animatable.animation.complete()) {
-		for (int i{0}; i < 2; ++i) {
-			auto randx = random::random_range_float(-80.f, 80.f);
-			auto randy = random::random_range_float(-160.f, 0.f);
-			sf::Vector2f rand_vec{randx, randy};
-			sf::Vector2f spawn = Enemy::get_collider().get_center() + rand_vec;
-			m_map->spawn_enemy(5, spawn);
-		}
-		counters.snap.update();
-		request(MinigusState::laugh);
-		if (change_state(MinigusState::laugh, Enemy::get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
+		request(MinigusState::drink);
+		if (change_state(MinigusState::drink, get_params("drink"))) { return MINIGUS_BIND(update_drink); }
 	}
-	return MINIGUS_BIND(update_snap);
-}
-
-fsm::StateFunction Minigus::update_rush() {
-	set_state(MinigusState::rush);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "rush"); }
-	cooldowns.rush.update();
-	cooldowns.jump.update();
-	flags.general.reset(GeneralFlags::player_collision);
-	if (p_animatable.animation.just_started()) { cooldowns.rush.start(); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	auto sign = Enemy::directions.actual.lnr == LNR::left ? -1.f : 1.f;
-	Enemy::get_collider().physics.apply_force({sign * Enemy::attributes.speed * rush_speed, 0.f});
-	if (cooldowns.rush.get() == 300 && half_health()) { cooldowns.jump.start(); }
-	if (cooldowns.jump.running()) { Enemy::get_collider().physics.apply_force({0.f, -8.f}); }
-	if (cooldowns.rush.is_complete()) {
-		flags.general.set(GeneralFlags::player_collision);
-		if (!flags.state.test(StateFlags::vulnerable)) { cooldowns.vulnerability.start(); }
-		flags.state.set(StateFlags::vulnerable);
-		request(MinigusState::idle);
-		if (change_state(MinigusState::idle, Enemy::get_params("idle"))) { return MINIGUS_BIND(update_idle); }
-	}
-	return MINIGUS_BIND(update_rush);
-}
-
-fsm::StateFunction Minigus::update_struggle() {
-	set_state(MinigusState::struggle);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "struggle"); }
-
-	m_minigun.set_parameters(m_minigun.neutral);
-	m_minigun.state = MinigunState::neutral;
-	// always do
-	if (secondary_collider) {
-		sf::Vector2f pos = get_secondary_collider().physics.position + random::random_vector_float(0.f, 50.f);
-		if (m_services->ticker.every_x_ticks(80)) { m_map->effects.push_back(entity::Effect(*m_services, "puff", pos, {}, 3)); }
-	}
-	Enemy::shake();
-
-	// at half health
-	if (half_health() && !status.test(MinigusFlags::second_phase)) {
-		if (p_animatable.animation.just_started()) {
-			cooldowns.struggle.start();
-			m_services->soundboard.flags.minigus.set(audio::Minigus::quick_breath);
-		}
-		cooldowns.struggle.update();
-		if (cooldowns.struggle.is_complete()) {
-			status.set(MinigusFlags::second_phase);
-			stop_shaking();
-			request(MinigusState::drink);
-			if (change_state(MinigusState::drink, Enemy::get_params("drink"))) { return MINIGUS_BIND(update_drink); }
-		}
-	}
-
-	// after health is empty
-	if (health.is_dead()) {
-		if (p_animatable.animation.just_started()) {
-			m_services->quest_table.progress_quest("defeat_minigus", 1, 117);
-			m_services->events.launch_cutscene_event.dispatch(*m_services, 117);
-			m_services->soundboard.flags.minigus.set(audio::Minigus::crash);
-			m_services->soundboard.flags.minigus.set(audio::Minigus::quick_breath);
-			m_services->soundboard.flags.minigus.set(audio::Minigus::long_moan);
-		}
-		if (!p_animatable.animation.just_started() && !m_context->console.has_value() && !status.test(MinigusFlags::exit_scene)) {
-			NANI_LOG_DEBUG(m_logger, "Exit cooldown started");
-			status.set(MinigusFlags::exit_scene);
-			cooldowns.exit.start();
-		}
-		post_death.start(afterlife);
-		flags.state.set(StateFlags::special_death_mode);
-
-		if (cooldowns.exit.is_complete() && status.test(MinigusFlags::exit_scene) && flags.state.test(StateFlags::special_event)) {
-			NANI_LOG_DEBUG(m_logger, "Goodbye started");
-			status.reset(MinigusFlags::exit_scene);
-			status.set(MinigusFlags::goodbye);
-			stop_shaking();
-			request(MinigusState::exit);
-			p_animatable.animation.set_params(Enemy::get_params("idle"));
-			return MINIGUS_BIND(update_exit);
-		}
-	}
-
-	request(MinigusState::struggle);
-	return MINIGUS_BIND(update_struggle);
-}
-
-fsm::StateFunction Minigus::update_exit() {
-	set_state(MinigusState::exit);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "exit"); }
-	if (status.test(MinigusFlags::over_and_out) && console_complete) {
-		request(MinigusState::jumpsquat);
-		m_services->music_player.load(m_services->finder, "dusken");
-		m_services->music_player.play_looped();
-		if (change_state(MinigusState::jumpsquat, Enemy::get_params("jumpsquat"))) { return MINIGUS_BIND(update_jumpsquat); }
-	}
-	return MINIGUS_BIND(update_exit);
+	return MINIGUS_BIND(update_grab_soda);
 }
 
 fsm::StateFunction Minigus::update_drink() {
-	set_state(MinigusState::drink);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "drink"); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::mother); }
-	if (p_animatable.animation.get_frame() == 48 && !status.test(MinigusFlags::soda_pop)) {
-		m_services->soundboard.flags.minigus.set(audio::Minigus::soda);
-		status.set(MinigusFlags::soda_pop);
-	}
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
+	p_state.actual = MinigusState::drink;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) {}
 	if (p_animatable.animation.complete()) {
-		m_services->soundboard.flags.minigus.set(audio::Minigus::poh);
-		status.reset(MinigusFlags::soda_pop);
+		p_services->soundboard.play_sound("minigus_invincible", get_collider().get_center());
+		flags.state.reset(StateFlags::vulnerable);
 		request(MinigusState::throw_can);
-		if (change_state(MinigusState::throw_can, Enemy::get_params("throw_can"))) { return MINIGUS_BIND(update_throw_can); }
+		if (change_state(MinigusState::throw_can, get_params("throw_can"))) { return MINIGUS_BIND(update_throw_can); }
 	}
 	return MINIGUS_BIND(update_drink);
 }
 
 fsm::StateFunction Minigus::update_throw_can() {
-	set_state(MinigusState::throw_can);
-	if (p_animatable.animation.just_started() && anim_debug) { NANI_LOG_DEBUG(m_logger, "throw can"); }
-	if (p_animatable.animation.just_started()) { m_services->soundboard.flags.minigus.set(audio::Minigus::pizza); }
-	if (change_state(MinigusState::struggle, Enemy::get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
-	if (p_animatable.animation.get_frame() == 62 && !status.test(MinigusFlags::threw_can)) {
-		soda.shoot(*m_services, *m_map);
-		status.set(MinigusFlags::threw_can);
-	}
+	p_state.actual = MinigusState::throw_can;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_poh", get_collider().get_center()); }
+	if (p_animatable.frame_action(3)) { soda.shoot(*p_services, *p_map); }
 	if (p_animatable.animation.complete()) {
-		status.reset(MinigusFlags::threw_can);
-		request(MinigusState::build_invincibility);
-		if (change_state(MinigusState::build_invincibility, Enemy::get_params("build_invincibility"))) { return MINIGUS_BIND(update_build_invincibility); }
+		request(MinigusState::wind_up);
+		if (change_state(MinigusState::wind_up, get_params("wind_up"))) { return MINIGUS_BIND(update_wind_up); }
 	}
 	return MINIGUS_BIND(update_throw_can);
+}
+
+fsm::StateFunction Minigus::update_stagger() {
+	p_state.actual = MinigusState::stagger;
+	if (p_animatable.animation.just_started()) {
+		p_services->soundboard.play_sound("minigus_quick_breath", get_collider().get_center());
+		m_services->ticker.freeze_frame(0.8f);
+		p_map->spawn_frame_effect(*m_services, "impact_frame", get_collider().get_center());
+		p_map->spawn_frame_effect(*m_services, "hurt_spark", get_secondary_collider().get_center());
+	}
+	shake();
+	if (p_animatable.animation.complete()) {
+		request(MinigusState::struggle);
+		if (change_state(MinigusState::struggle, get_params("struggle"))) { return MINIGUS_BIND(update_struggle); }
+	}
+	return MINIGUS_BIND(update_stagger);
+}
+
+fsm::StateFunction Minigus::update_struggle() {
+	p_state.actual = MinigusState::struggle;
+	if (p_animatable.animation.just_started()) {}
+	if (p_animatable.animation.complete()) {
+		request(MinigusState::recover);
+		if (change_state(MinigusState::recover, get_params("recover"))) { return MINIGUS_BIND(update_recover); }
+	}
+	return MINIGUS_BIND(update_struggle);
+}
+
+fsm::StateFunction Minigus::update_recover() {
+	p_state.actual = MinigusState::recover;
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_dontlookatme", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
+		request(MinigusState::grab_soda);
+		if (change_state(MinigusState::grab_soda, get_params("grab_soda"))) { return MINIGUS_BIND(update_grab_soda); }
+	}
+	return MINIGUS_BIND(update_recover);
+}
+
+fsm::StateFunction Minigus::update_laugh() {
+	p_state.actual = MinigusState::laugh;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_laugh_1", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
+		if (change_state(MinigusState::turn, get_params("turn"))) { return MINIGUS_BIND(update_turn); }
+		request(MinigusState::idle);
+		if (change_state(MinigusState::idle, get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+	}
+	return MINIGUS_BIND(update_laugh);
+}
+
+fsm::StateFunction Minigus::update_punch() {
+	p_state.actual = MinigusState::punch;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (change_state(MinigusState::turn, get_params("turn"))) { return MINIGUS_BIND(update_turn); }
+	if (p_animatable.animation.just_started()) {}
+	if (p_animatable.animation.complete()) {
+		if (change_state(MinigusState::turn, get_params("turn"))) { return MINIGUS_BIND(update_turn); }
+		request(MinigusState::idle);
+		if (change_state(MinigusState::idle, get_params("idle"))) { return MINIGUS_BIND(update_idle); }
+	}
+	return MINIGUS_BIND(update_punch);
+}
+
+fsm::StateFunction Minigus::update_snap() {
+	p_state.actual = MinigusState::snap;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_snap", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
+		request(MinigusState::laugh);
+		if (change_state(MinigusState::laugh, get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
+	}
+	return MINIGUS_BIND(update_snap);
+}
+
+fsm::StateFunction Minigus::update_reload() {
+	p_state.actual = MinigusState::reload;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_pizza", get_collider().get_center()); }
+	if (p_animatable.animation.get_frame_count() < 3) { shake(); }
+	if (p_animatable.animation.complete()) {
+		if (change_state(MinigusState::jump_shoot, get_params("jump_shoot"))) { return MINIGUS_BIND(update_jump_shoot); }
+		request(MinigusState::shoot);
+		if (change_state(MinigusState::shoot, get_params("shoot"))) { return MINIGUS_BIND(update_shoot); }
+	}
+	return MINIGUS_BIND(update_reload);
+}
+
+fsm::StateFunction Minigus::update_wind_up() {
+	p_state.actual = MinigusState::wind_up;
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("minigus_itsagreatday", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
+		request(MinigusState::charge);
+		if (change_state(MinigusState::charge, get_params("charge"))) { return MINIGUS_BIND(update_charge); }
+	}
+	return MINIGUS_BIND(update_wind_up);
+}
+
+fsm::StateFunction Minigus::update_charge() {
+	p_state.actual = MinigusState::charge;
+	get_collider().physics.velocity.x = directions.actual.as_float() * 20.f;
+	if (p_animatable.animation.just_started()) {}
+	if (change_state(MinigusState::stagger, get_params("stagger"))) { return MINIGUS_BIND(update_stagger); }
+	if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	if (p_animatable.animation.just_started()) {}
+	if (p_animatable.animation.complete()) {
+		flags.state.set(StateFlags::vulnerable);
+		request(MinigusState::laugh);
+		if (change_state(MinigusState::laugh, get_params("laugh"))) { return MINIGUS_BIND(update_laugh); }
+	}
+	return MINIGUS_BIND(update_charge);
+}
+
+fsm::StateFunction Minigus::update_exit() {
+	p_state.actual = MinigusState::exit;
+	if (p_animatable.animation.just_started()) {}
+	if (p_animatable.animation.complete()) {
+		request(MinigusState::airborne);
+		if (change_state(MinigusState::airborne, get_params("airborne"))) { return MINIGUS_BIND(update_airborne); }
+	}
+	return MINIGUS_BIND(update_exit);
+}
+
+void Minigus::debug() {
+	static auto sz = ImVec2{180.f, 350.f};
+	ImGui::SetNextWindowSize(sz);
+	if (ImGui::Begin("Minigus Debug")) {
+		ImGui::SeparatorText("Info");
+		ImGui::SeparatorText("Controls");
+		if (ImGui::Button("idle")) { request(MinigusState::idle); }
+		if (ImGui::Button("run")) { request(MinigusState::run); }
+		if (ImGui::Button("shoot")) { request(MinigusState::shoot); }
+		if (ImGui::Button("jump_shoot")) { request(MinigusState::jump_shoot); }
+		if (ImGui::Button("jumpsquat")) { request(MinigusState::jumpsquat); }
+		if (ImGui::Button("grab_soda")) { request(MinigusState::grab_soda); }
+		if (ImGui::Button("stagger")) { request(MinigusState::stagger); }
+		if (ImGui::Button("struggle")) { request(MinigusState::struggle); }
+		if (ImGui::Button("recover")) { request(MinigusState::recover); }
+		if (ImGui::Button("laugh")) { request(MinigusState::laugh); }
+		if (ImGui::Button("snap")) { request(MinigusState::snap); }
+		if (ImGui::Button("reload")) { request(MinigusState::reload); }
+		if (ImGui::Button("wind_up")) { request(MinigusState::wind_up); }
+		ImGui::End();
+	}
+}
+
+void Minigus::shoot() {
+	if (p_services->ticker.every_x_ticks(10)) {
+		gun.shoot(*p_services, *p_map);
+		m_barrel_cycle.update();
+	}
 }
 
 bool Minigus::change_state(MinigusState next, anim::Parameters params) {

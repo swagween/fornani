@@ -254,6 +254,12 @@
     },
     {
       "folder": "firstwind",
+      "label": "roof.json",
+      "region": "firstwind",
+      "room_id": 160
+    },
+    {
+      "folder": "firstwind",
       "label": "server_room.json",
       "region": "firstwind",
       "room_id": 119
@@ -1403,18 +1409,6 @@
       "label": "ventral_vessel.json",
       "region": "worm",
       "room_id": 1107
-    },
-    {
-      "label": "roof.json",
-      "minimap": true,
-      "region": "firstwind",
-      "room_id": 160
-    },
-    {
-      "folder": "firstwind",
-      "label": "roof.json",
-      "region": "firstwind",
-      "room_id": 160
     }
   ]
 }

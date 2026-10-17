@@ -9,7 +9,7 @@
 
 namespace fornani::enemy {
 
-Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "nimbus"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc}, m_stagger_points{0.25f, 0.5f, 0.75f} {
+Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "nimbus"), m_slash_wave(svc, "slash_wave"), m_map{&map}, m_services{&svc} {
 	auto fr = 5;
 	p_animatable.set_animations({{"idle", {93, 4, fr * 8, -1}},
 								 {"jump", {1, 7, fr * 5, 0, true}},
@@ -45,6 +45,7 @@ Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "
 	flags.general.set(GeneralFlags::has_invincible_channel);
 	flags.state.set(StateFlags::vulnerable);
 	start_battle();
+	p_stagger_points = {0.25f, 0.5f, 0.75f};
 }
 
 void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
@@ -213,14 +214,7 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		m_flags.set(NimbusFlags::victory);
 	}
 
-	if (!m_stagger_points.empty()) {
-		auto const& p = m_stagger_points.back();
-		if (health.get_normalized() < p) {
-			request(NimbusState::stagger);
-			m_flags.set(NimbusFlags::staggered);
-		}
-	}
-	if (m_flags.consume(NimbusFlags::staggered)) { m_stagger_points.pop_back(); }
+	if (is_staggered()) { request(NimbusState::stagger); }
 
 	state_function = state_function();
 }

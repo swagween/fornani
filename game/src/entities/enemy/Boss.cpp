@@ -19,7 +19,7 @@ void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (health.is_dead() && !has_flag_set(BossFlags::end_battle)) { end_battle(); }
 
 	// make sure boss stays in bounds;
-	if (!map.within_bounds(get_collider().get_center()) && map.home_points.size() > 0) { m_oob_counter.update(); }
+	if (!map.within_bounds(get_collider().get_center()) && map.home_points.size() > 0 && !has_flag_set(BossFlags::ignore_oob)) { m_oob_counter.update(); }
 	if (m_oob_counter.get_count() > 400) {
 		m_oob_counter.cancel();
 		Enemy::set_position(map.get_closest_home_point(get_collider().get_center()));
@@ -52,6 +52,16 @@ void Boss::end_battle() {
 	p_services->soundboard.play_sound("boss_death");
 	p_services->ticker.freeze_frame(1.2f, 0.6f);
 	p_services->camera_controller.shake(4, 0.1f, 2000, 95);
+}
+
+bool Boss::is_staggered() {
+	if (p_stagger_points.empty()) { return false; }
+
+	auto const& p = p_stagger_points.back();
+	if (health.get_normalized() >= p) { return false; }
+
+	p_stagger_points.pop_back();
+	return true;
 }
 
 } // namespace fornani::enemy

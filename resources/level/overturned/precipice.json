@@ -46,6 +46,20 @@
         "tag": "totaled_championj5"
       }
     ],
+    "box_colliders": [
+      {
+        "dimensions": [
+          2,
+          16
+        ],
+        "id": 0,
+        "position": [
+          35,
+          -16
+        ],
+        "wallslide": false
+      }
+    ],
     "cutscene_triggers": [
       {
         "attributes": {

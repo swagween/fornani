@@ -14,8 +14,8 @@
 namespace fornani::enemy {
 
 enum class MinigusMode : std::uint8_t { neutral, battle_one, battle_two, last_words, exit };
-enum class MinigusState : std::uint8_t { idle, turn, run, shoot, jump_shoot, hurt, jump, jumpsquat, reload, punch, uppercut, build_invincibility, laugh, snap, rush, struggle, exit, drink, throw_can };
-enum class MinigusFlags : std::uint8_t { recently_hurt, distant_range_activated, theme_song, exit_scene, over_and_out, goodbye, threw_can, punched, soda_pop, second_phase };
+enum class MinigusState : std::uint8_t { idle, turn, run, shoot, jump_shoot, jumpsquat, airborne, land, grab_soda, drink, throw_can, stagger, struggle, recover, laugh, punch, reload, snap, wind_up, charge, exit };
+enum class MinigusFlags : std::uint8_t { jump_shoot };
 enum class MinigunState : std::uint8_t { deactivated, neutral, charging, firing };
 enum class MinigunFlags : std::uint8_t { exhausted, charging };
 
@@ -52,34 +52,43 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 
 	fsm::StateFunction state_function = std::bind(&Minigus::update_idle, this);
 	fsm::StateFunction update_idle();
-	fsm::StateFunction update_shoot();
-	fsm::StateFunction update_jumpsquat();
-	fsm::StateFunction update_hurt();
-	fsm::StateFunction update_jump();
-	fsm::StateFunction update_jump_shoot();
-	fsm::StateFunction update_reload();
 	fsm::StateFunction update_turn();
 	fsm::StateFunction update_run();
-	fsm::StateFunction update_punch();
-	fsm::StateFunction update_uppercut();
-	fsm::StateFunction update_build_invincibility();
-	fsm::StateFunction update_laugh();
-	fsm::StateFunction update_snap();
-	fsm::StateFunction update_rush();
-	fsm::StateFunction update_struggle();
-	fsm::StateFunction update_exit();
+	fsm::StateFunction update_shoot();
+	fsm::StateFunction update_jump_shoot();
+	fsm::StateFunction update_jumpsquat();
+	fsm::StateFunction update_airborne();
+	fsm::StateFunction update_land();
+	fsm::StateFunction update_grab_soda();
 	fsm::StateFunction update_drink();
 	fsm::StateFunction update_throw_can();
+	fsm::StateFunction update_stagger();
+	fsm::StateFunction update_struggle();
+	fsm::StateFunction update_recover();
+	fsm::StateFunction update_laugh();
+	fsm::StateFunction update_punch();
+	fsm::StateFunction update_snap();
+	fsm::StateFunction update_reload();
+	fsm::StateFunction update_wind_up();
+	fsm::StateFunction update_charge();
+	fsm::StateFunction update_exit();
 
   private:
 	[[nodiscard]] auto is(MinigusState const test) const -> bool { return StateMachine<MinigusState>::is_state(test); }
 	[[nodiscard]] auto is_battle_mode() const -> bool { return (m_mode == MinigusMode::battle_one || m_mode == MinigusMode::battle_two) && console_complete; }
 
+	void shoot();
+
+	bool change_state(MinigusState next, anim::Parameters params);
+
+	void debug();
+
+  private:
 	bool anim_debug{};
 	bool console_complete{};
 	bool init{true};
 	MinigusMode m_mode{};
-	util::BitFlags<MinigusFlags> status{};
+	util::BitFlags<MinigusFlags> m_flags{};
 	graphics::SpriteHistory sprite_history{8};
 
 	Direction sprite_direction{};
@@ -91,10 +100,8 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 
 	struct {
 		entity::Attack punch{};
-		entity::Attack uppercut{};
 		entity::Attack rush{};
-		entity::Shockwave left_shockwave;
-		entity::Shockwave right_shockwave;
+		std::vector<entity::Shockwave> shockwaves;
 	} attacks{};
 
 	float fire_chance{2.f};
@@ -129,12 +136,10 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 		util::Counter invincible_turn{};
 	} counters{};
 
-	util::Cycle hurt_color{2};
+	util::Cycle m_barrel_cycle{6};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
-
-	bool change_state(MinigusState next, anim::Parameters params);
 
 	SceneContext* m_context;
 

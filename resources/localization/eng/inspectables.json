@@ -909,6 +909,70 @@
       }
     ]
   },
+  "bryn_stuff385022344036358": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "You find an anthropology textbook and an expired pilot's license."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "bryns_shelf385022343970822": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  2,
+                  0,
+                  1101
+                ]
+              ],
+              "message": "Yes"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "No"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "You find a small diary sealed with a padlock. Would you like to take it?"
+            }
+          ],
+          [
+            {
+              "message": "That's probably the polite thing to do..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "captains_log1385022345871378": {
     "series": [
       {
@@ -1023,6 +1087,21 @@
           [
             {
               "message": "Looks like an old aircraft. Based on its condition, it won't be flying anytime soon..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "console385022343643148": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "It's displaying a running timer..."
             }
           ]
         ]
@@ -1510,6 +1589,417 @@
           [
             {
               "message": "The inscription reads, \"Miaag, King of the Kariba.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "lab_auth385022344101900": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "6"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  5
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  5
+                ]
+              ],
+              "message": "8"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  2
+                ]
+              ],
+              "message": "6"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "8"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "6"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  3
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "8"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "3"
+            },
+            {
+              "codes": [
+                [
+                  9,
+                  1101
+                ]
+              ],
+              "message": "4"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "5"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "6"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "8"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "6"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "7"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "8"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "0"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "1"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "2"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "3"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "4"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  9
+                ]
+              ],
+              "message": "5"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "Please enter the first digit of the authorization key:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "Second digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  2
+                ]
+              ],
+              "message": "Third digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  3
+                ]
+              ],
+              "message": "Fourth digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  4
+                ]
+              ],
+              "message": "Fifth digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  5
+                ]
+              ],
+              "message": "Second digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  6
+                ]
+              ],
+              "message": "Third digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  7
+                ]
+              ],
+              "message": "Fourth digit:"
+            }
+          ],
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  8
+                ]
+              ],
+              "message": "Fifth digit:"
+            }
+          ],
+          [
+            {
+              "message": "Access denied."
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "lab_username385022344036364": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  9,
+                  1102
+                ]
+              ],
+              "message": "bfoster"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "Please enter username:"
             }
           ]
         ]
@@ -2124,6 +2614,36 @@
           [
             {
               "message": "Shadowrock Wilds >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "willett_ruins385022343708684": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "There is a drawing of what seems to be an entrance to an ancient ruin. Beside it is written: \"Lost Kariba burial ground. Much to learn here.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "willett_studies385022344953862": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "You find a notebook with dozens of pages of complex diagrams and half-formed thoughts. Some of the pages are ripped out."
             }
           ]
         ]
