@@ -1,6 +1,7 @@
 
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/entity/NPC.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/story/cutscene/HaunchIntro.hpp>

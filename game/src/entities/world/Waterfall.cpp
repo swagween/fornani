@@ -1,11 +1,13 @@
 
 #include <fornani/entities/world/Waterfall.hpp>
+#include <fornani/entity/Water.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani::world {
 
-Waterfall::Waterfall(automa::ServiceProvider& svc, Map& map, sf::Vector2u position) : Animatable(svc, "waterfall", {16, 16}), IWorldPositionable(position), m_bounding_box{get_world_dimensions()}, m_detector{get_world_dimensions()} {
+Waterfall::Waterfall(automa::ServiceProvider& svc, Map& map, sf::Vector2u position)
+	: Animatable(svc, "waterfall", {16, 16}), IWorldPositionable(sf::Vector2i{position}), m_bounding_box{get_world_dimensions()}, m_detector{get_world_dimensions()} {
 	push_animation("main", {0, 8, 32, -1});
 	set_animation("main");
 	m_bounding_box.set_position(get_world_position());

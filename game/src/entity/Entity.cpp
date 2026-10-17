@@ -9,7 +9,7 @@
 namespace fornani {
 
 Entity::Entity(automa::ServiceProvider& svc, dj::Json const& in, std::string_view label, sf::Vector2i dim)
-	: p_animatable(svc, label, dim), m_label{label}, IWorldPositionable({in["position"][0].as<std::uint32_t>(), in["position"][1].as<std::uint32_t>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
+	: p_animatable(svc, label, dim), m_label{label}, IWorldPositionable(sf::Vector2i{in["position"][0].as<int>(), in["position"][1].as<int>()}, {in["dimensions"][0].as<std::uint32_t>(), in["dimensions"][1].as<std::uint32_t>()}) {
 	unserialize(in);
 	m_editor = svc.is_editor();
 	if (p_contingencies) {
@@ -47,7 +47,7 @@ void Entity::expose() {
 	ImGui::Separator();
 	ImGui::InputInt("Width", &w);
 	ImGui::InputInt("Height", &h);
-	set_grid_dimensions(sf::Vector2i{w, h});
+	set_grid_dimensions(sf::Vector2u{static_cast<std::uint32_t>(w), static_cast<std::uint32_t>(h)});
 	ImGui::Text("Quest Contingencies");
 	static char tag_buffer[256] = "";
 	static int requirement{};
@@ -80,12 +80,16 @@ void Entity::expose() {
 	}
 }
 
-void Entity::set_position(sf::Vector2u to_position) { set_grid_position(to_position); }
+void Entity::set_position(sf::Vector2i const to_position) { set_grid_position(to_position); }
 
-auto Entity::contains_point(sf::Vector2u test) const -> bool {
-	for (auto i{0u}; i < get_grid_dimensions().x; ++i) {
-		for (auto j{0u}; j < get_grid_dimensions().y; ++j) {
-			if (get_grid_position() + sf::Vector2u{i, j} == test) { return true; }
+void Entity::set_position(sf::Vector2u const to_position) { set_grid_position(to_position); }
+
+auto Entity::contains_point(sf::Vector2u test) const -> bool { return contains_point(sf::Vector2i{test}); }
+
+auto Entity::contains_point(sf::Vector2i test) const -> bool {
+	for (auto i{0}; i < get_grid_dimensions().x; ++i) {
+		for (auto j{0}; j < get_grid_dimensions().y; ++j) {
+			if (get_grid_position() + sf::Vector2i{i, j} == test) { return true; }
 		}
 	}
 	return false;

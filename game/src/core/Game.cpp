@@ -5,7 +5,6 @@
 #include <ctime>
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
-#include "fornani/automa/states/SettingsMenu.hpp"
 #include "fornani/automa/states/Trial.hpp"
 #include "fornani/graphics/Colors.hpp"
 #include "fornani/gui/ActionContextBar.hpp"

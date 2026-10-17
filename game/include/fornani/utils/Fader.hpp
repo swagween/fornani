@@ -3,8 +3,6 @@
 #include <SFML/Graphics.hpp>
 #include <fornani/utils/Cooldown.hpp>
 #include <fornani/utils/Counter.hpp>
-#include <array>
-#include <unordered_map>
 
 namespace fornani::automa {
 struct ServiceProvider;

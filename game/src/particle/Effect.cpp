@@ -10,9 +10,11 @@ namespace fornani::entity {
 Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vector2f pos, sf::Vector2f vel, int channel, float scale)
 	: Animatable(svc, "effect_" + label, {svc.data.effect[label]["dimensions"][0].as<int>(), svc.data.effect[label]["dimensions"][1].as<int>()}) {
 	set_channel(channel);
-	if (random::percent_chance(50)) {
-		if (svc.data.effect[label]["x_reflection"].as_bool()) { m_transform.set(SpriteTransform::horizontal); }
+	if (random::coin_flip()) {
 		if (svc.data.effect[label]["y_reflection"].as_bool()) { m_transform.set(SpriteTransform::vertical); }
+	}
+	if (random::coin_flip()) {
+		if (svc.data.effect[label]["x_reflection"].as_bool()) { m_transform.set(SpriteTransform::horizontal); }
 	}
 	if (scale != 1.f) {
 		if (scale == -1.f) { m_transform.set(SpriteTransform::horizontal); }

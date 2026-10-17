@@ -2334,9 +2334,10 @@
       "gravity": true,
       "map_collision": true,
       "player_collision": true,
-      "secobndary_collider": true,
+      "secondary_collider": false,
       "crusher": true,
       "sturdy": true,
+      "uncrushable": true,
       "foreground": true,
       "rare_drops": true
     },
@@ -2397,6 +2398,111 @@
       "player_collision": false,
       "foreground": true,
       "hurt_on_contact": true,
+      "rare_drops": true
+    }
+  },
+  "sludgelord": {
+    "metadata": {
+      "name": "Sludgelord",
+      "id": 47,
+      "variant": "beast",
+      "boss": true
+    },
+    "physical": {
+      "dimensions": [80, 80],
+      "sprite_dimensions": [64, 64],
+      "offset": [0, 0],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [800.0, 800.0],
+      "hostile_range": [500.0, 500.0],
+      "friction": 0.99,
+      "gravity": 32.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hurt_sounds": ["beast_hurt"],
+      "death_sounds": ["downward"]
+    },
+    "attributes": {
+      "size": 4,
+      "base_hp": 800,
+      "base_damage": 1.0,
+      "speed": 2.5,
+      "loot_multiplier": 6.0,
+      "drop_range": [45, 50],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": true,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": true,
+      "secondary_collider": false,
+      "hurt_on_contact": true,
+      "crusher": true,
+      "uncrushable": true,
+      "sturdy": true,
+      "foreground": true,
+      "rare_drops": true
+    }
+  },
+  "hoarder": {
+    "metadata": {
+      "name": "Hoarder",
+      "id": 48,
+      "variant": "beast",
+      "boss": true
+    },
+    "physical": {
+      "dimensions": [100, 130],
+      "sprite_dimensions": [168, 168],
+      "offset": [0, -60],
+      "num_colliders": 1,
+      "num_hurtboxes": 1,
+      "alert_range": [800.0, 800.0],
+      "hostile_range": [500.0, 500.0],
+      "friction": 0.99,
+      "gravity": 32.0
+    },
+    "visual": {
+      "effect_type": 0,
+      "effect_size": 1
+    },
+    "audio": {
+      "hurt_sounds": ["beast_hurt"],
+      "death_sounds": ["downward"]
+    },
+    "attributes": {
+      "size": 4,
+      "base_hp": 800,
+      "base_damage": 1.0,
+      "speed": 2.5,
+      "loot_multiplier": 6.0,
+      "drop_range": [45, 50],
+      "rare_drop_id": 0,
+      "respawn_distance": 4,
+      "permadeath": true,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": true,
+      "map_collision": true,
+      "player_collision": false,
+      "secondary_collider": false,
+      "hurt_on_contact": false,
+      "crusher": false,
+      "uncrushable": true,
+      "background": true,
+      "sturdy": true,
+      "foreground": false,
       "rare_drops": true
     }
   }

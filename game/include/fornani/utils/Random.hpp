@@ -2,8 +2,10 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
+#include <algorithm>
 #include <cassert>
 #include <random>
+#include <ranges>
 #include <vector>
 
 namespace fornani::random {
@@ -32,21 +34,35 @@ sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi);
 // Generates a random vector from a point within `radius` distance, skewed toward the center
 sf::Vector2f random_weighted_offset(float radius, float bias = 2.0f);
 
-// Grabs a random element from a vector
+// Grabs a random element from a vector, excluding specified elements.
 template <typename T>
-T& random_element(std::vector<T>& v) {
+T& random_element(std::vector<T>& v, std::vector<T> const& exclusions = {}) {
 	assert(!v.empty() && "random_element: empty vector");
 
-	std::uniform_int_distribution<std::size_t> dist(0, v.size() - 1);
-	return v[dist(engine())];
+	std::vector<std::size_t> candidates;
+	for (std::size_t i = 0; i < v.size(); ++i) {
+		if (std::ranges::find(exclusions, v[i]) == exclusions.end()) { candidates.push_back(i); }
+	}
+
+	assert(!candidates.empty() && "random_element: no eligible elements");
+
+	std::uniform_int_distribution<std::size_t> dist(0, candidates.size() - 1);
+	return v[candidates[dist(engine())]];
 }
 
 template <typename T>
-T const& random_element(std::vector<T> const& v) {
+T const& random_element(std::vector<T> const& v, std::vector<T> const& exclusions = {}) {
 	assert(!v.empty() && "random_element: empty vector");
 
-	std::uniform_int_distribution<std::size_t> dist(0, v.size() - 1);
-	return v[dist(engine())];
+	std::vector<std::size_t> candidates;
+	for (std::size_t i = 0; i < v.size(); ++i) {
+		if (std::ranges::find(exclusions, v[i]) == exclusions.end()) { candidates.push_back(i); }
+	}
+
+	assert(!candidates.empty() && "random_element: no eligible elements");
+
+	std::uniform_int_distribution<std::size_t> dist(0, candidates.size() - 1);
+	return v[candidates[dist(engine())]];
 }
 
 // Returns 0 or 1 based on a coin flip using an unsigned logic

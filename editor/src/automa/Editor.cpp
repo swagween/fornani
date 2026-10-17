@@ -2,7 +2,7 @@
 #include "editor/automa/Editor.hpp"
 #include <editor/automa/EditorContext.hpp>
 #include <editor/util/Constants.hpp>
-#include <fornani/events/SystemEvent.hpp>
+#include <fornani/entity/SavePoint.hpp>
 #include <algorithm>
 #include <cstring>
 #include "editor/gui/Console.hpp"
@@ -636,6 +636,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			if (ImGui::MenuItem("Train", NULL, &entity_popup)) { popup_label = "Train"; }
 			if (ImGui::MenuItem("Teleporter", NULL, &entity_popup)) { popup_label = "Teleporter"; }
 			if (ImGui::MenuItem("Cutscene Trigger", NULL, &entity_popup)) { popup_label = "Cutscene Trigger"; }
+			if (ImGui::MenuItem("Box Collider", NULL, &entity_popup)) { popup_label = "Box Collider"; }
 			if (ImGui::MenuItem("Save Point")) {
 				current_tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 				current_tool->current_entity = std::make_unique<fornani::SavePoint>(*p_services, map.room_id);

@@ -3,10 +3,12 @@
 #include <fornani/entities/enemy/boss/GrandMastiff.hpp>
 #include <fornani/entities/enemy/boss/Haunch.hpp>
 #include <fornani/entities/enemy/boss/Henchman.hpp>
+#include <fornani/entities/enemy/boss/Hoarder.hpp>
 #include <fornani/entities/enemy/boss/Lynx.hpp>
 #include <fornani/entities/enemy/boss/Miaag.hpp>
 #include <fornani/entities/enemy/boss/Minigus.hpp>
 #include <fornani/entities/enemy/boss/Nimbus.hpp>
+#include <fornani/entities/enemy/boss/Sludgelord.hpp>
 #include <fornani/entities/enemy/catalog/Antibody.hpp>
 #include <fornani/entities/enemy/catalog/Archer.hpp>
 #include <fornani/entities/enemy/catalog/Beamsprout.hpp>
@@ -96,6 +98,8 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(44, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Demolisher>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(45, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Henchman>(svc, map); });
 	EnemyRegistry::register_factory(46, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Fiend>(svc, map, p.variant); });
+	EnemyRegistry::register_factory(47, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Sludgelord>(svc, map); });
+	EnemyRegistry::register_factory(48, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Hoarder>(svc, map); });
 }
 
 void EnemyCatalog::update() {

@@ -7,7 +7,7 @@
 namespace fornani {
 
 HazardTile::HazardTile(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2u position, sf::Vector2i lookup, sf::Vector2i dimensions, sf::Vector2i table_dimensions, CardinalDirection direction)
-	: IWorldPositionable{position, {4, 4}}, Drawable{svc, "hazard_" + std::string{tag}}, m_lookup{lookup}, m_direction{direction} {
+	: IWorldPositionable{sf::Vector2i{position}, {4U, 4U}}, Drawable{svc, "hazard_" + std::string{tag}}, m_lookup{lookup}, m_direction{direction} {
 	set_texture_rect(sf::IntRect{lookup.componentWiseMul(dimensions), dimensions});
 	center();
 	set_rotation(direction.as_angle());

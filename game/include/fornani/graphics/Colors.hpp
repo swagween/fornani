@@ -20,6 +20,7 @@ constexpr sf::Color red{255, 7, 100};
 constexpr sf::Color blue{110, 98, 173};
 constexpr sf::Color navy_blue{25, 35, 65};
 constexpr sf::Color dark_fucshia{148, 40, 84};
+constexpr sf::Color dark_blood{145, 0, 57};
 constexpr sf::Color orange{226, 93, 11};
 constexpr sf::Color dark_grey{70, 67, 97};
 constexpr sf::Color black{14, 6, 11};

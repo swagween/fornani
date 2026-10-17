@@ -125,14 +125,15 @@
       "source": 0,
       "type": 0
     },
+    "development_status": null,
     "dimensions": [
       64,
       32
     ],
     "interior": true,
     "metagrid": [
-      19,
-      63
+      21,
+      67
     ],
     "minimap": true,
     "music": "brown",

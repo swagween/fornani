@@ -2,8 +2,10 @@ nani_add_sources(
   GrandMastiff.cpp
   Haunch.cpp
   Henchman.cpp
+  Hoarder.cpp
   Lynx.cpp
   Miaag.cpp
         Minigus.cpp
         Nimbus.cpp
+        Sludgelord.cpp
 )

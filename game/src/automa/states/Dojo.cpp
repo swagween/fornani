@@ -2,15 +2,12 @@
 #include <fornani/automa/states/Dojo.hpp>
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
-#include <fornani/events/GameplayEvent.hpp>
-#include <fornani/events/InventoryEvent.hpp>
 #include <fornani/graphics/rewards/AbilityRewardSequence.hpp>
 #include <fornani/graphics/rewards/HealthRewardSequence.hpp>
 #include <fornani/gui/dialogs/AirTravelDialog.hpp>
 #include <fornani/gui/dialogs/BuilderDialog.hpp>
 #include <fornani/gui/dialogs/VendorDialog.hpp>
 #include <fornani/service/ServiceProvider.hpp>
-#include <fornani/utils/Random.hpp>
 
 namespace fornani::automa {
 
@@ -280,6 +277,18 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto shadow = Color{svc.data.biomes["properties"][m_map->get_biome_string()]["haze_shadow"]};
 		p_haze_shader->finalize(svc.ticker.total_seconds_passed.count(), svc.window->get().getSize(), highlight, shadow, {cam.x, -cam.y});
 		p_haze_shader->submit(win, blanket, cam);
+	}
+	if (p_filter_shader && debug::is_production()) {
+		auto highlight = colors::fucshia;
+		auto const& he = player->get_hurt_effect();
+		auto const pos = player->get_window_position();
+		auto const pixel_position = win.mapCoordsToPixel(pos);
+		p_filter_shader->finalize(svc.ticker.total_seconds_passed.count(), win.getSize(), sf::Vector2f{pixel_position}, he.color, he.timer.get_cubic_normalized() * he.damage / 6.f);
+		p_filter_shader->submit(win);
+
+		NANI_LOG_INFO(m_logger, "  position before mapping: ({}, {})", pos.x, pos.y);
+		NANI_LOG_INFO(m_logger, "  position after mapping: ({}, {})", pixel_position.x, pixel_position.y);
+		NANI_LOG_INFO(m_logger, "  window size: {} x {}", win.getSize().x, win.getSize().y);
 	}
 
 	GameplayState::render(svc, win);

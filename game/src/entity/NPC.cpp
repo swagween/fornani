@@ -3,6 +3,7 @@
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/entity/NPC.hpp>
+#include <fornani/entity/Portal.hpp>
 #include <fornani/events/ConsoleEvent.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>

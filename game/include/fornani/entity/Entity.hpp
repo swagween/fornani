@@ -30,7 +30,8 @@ class Entity : public IWorldPositionable, Polymorphic {
 	virtual void render(sf::RenderWindow& win, sf::Vector2f cam, float size);
 	virtual void submit(Renderer& renderer);
 	void set_handle(EntityHandle to) { m_handle = to; }
-	void set_position(sf::Vector2u to_position);
+	void set_position(sf::Vector2i const to_position);
+	void set_position(sf::Vector2u const to_position);
 	void set_stable_id(int room_id) { p_stable_id = StableID::from(room_id, get_grid_position().x, get_grid_position().y); }
 	void spawn() { p_flags.reset(EntityFlags::spawn_denied); }
 	bool repeatable{};
@@ -50,7 +51,8 @@ class Entity : public IWorldPositionable, Polymorphic {
 	[[nodiscard]] auto get_id() const -> int { return m_id; }
 	[[nodiscard]] auto get_stable_id() const -> StableID::underlying_type { return p_stable_id.get(); }
 	[[nodiscard]] auto get_label() const -> std::string { return m_label; }
-	[[nodiscard]] auto contains_point(sf::Vector2u test) const -> bool;
+	[[nodiscard]] auto contains_point(sf::Vector2i const test) const -> bool;
+	[[nodiscard]] auto contains_point(sf::Vector2u const test) const -> bool;
 	[[nodiscard]] auto spawn_denied() const -> bool { return p_flags.test(EntityFlags::spawn_denied); };
 
   protected:

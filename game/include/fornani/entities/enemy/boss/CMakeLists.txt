@@ -2,8 +2,10 @@ nani_add_headers(
         GrandMastiff.hpp
         Haunch.hpp
   Henchman.hpp
+  Hoarder.hpp
   Lynx.hpp
   Miaag.hpp
         Minigus.hpp
         Nimbus.hpp
+        Sludgelord.hpp
 )

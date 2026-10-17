@@ -429,7 +429,10 @@ void Collider::handle_collider_collision(Collider const& collider, bool momentum
 		correct_corner(mtvs.combined);
 	}
 
-	if (wallslider.overlaps(other)) { wallslider.vertices.at(0).x > other.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision); }
+	if (wallslider.overlaps(other)) {
+		wallslider.vertices.at(0).x > other.vertices.at(0).x ? flags.state.set(State::left_wallslide_collision) : flags.state.set(State::right_wallslide_collision);
+		if (collider.has_attribute(ColliderAttributes::no_wallslide)) { flags.state.set(State::no_wallslide); }
+	}
 	if (walljumper) {
 		if (walljumper->left.overlaps(other)) { set_flag(ColliderFlags::left_walljump); }
 		if (walljumper->right.overlaps(other)) { set_flag(ColliderFlags::right_walljump); }

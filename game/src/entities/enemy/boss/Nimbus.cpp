@@ -28,13 +28,14 @@ Nimbus::Nimbus(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "
 								 {"levitate", {77, 4, fr * 4, 4}},
 								 {"spellcast", {81, 3, fr * 5, 9}},
 								 {"double_aerial_slash", {84, 9, fr * 4, 0}},
+								 {"aerial_slash", {87, 6, fr * 2, 0}},
 								 {"frenzy_prepare", {97, 5, fr * 5, 0}},
 								 {"frenzy_dodge_prepare", {97, 5, fr * 5, 0}},
 								 {"frenzy_quick_prepare", {99, 3, fr * 4, 0}},
 								 {"frenzy_dash", {102, 4, fr * 3, 0}},
 								 {"frenzy_cuts", {106, 19, fr * 2, 0}},
 								 {"stagger", {125, 4, fr * 12, 2}},
-								 {"teleport", {129, 8, fr * 3, 0}},
+								 {"teleport", {129, 8, fr * 2, 0}},
 								 {"begin_laugh", {137, 2, fr * 3, 0}},
 								 {"laugh", {139, 3, fr * 5, 3}}});
 	p_animatable.animation.set_params(get_params("idle"));
@@ -50,6 +51,7 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	Boss::update(svc, map, player);
 	if (consume_flag(BossFlags::start_battle)) {
 		svc.music_player.load(svc.finder, "tumult");
+		svc.data.switch_destructible_state(60001, true);
 		svc.music_player.play_looped();
 	}
 
@@ -67,12 +69,15 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 	m_slash_wave.get().set_barrel_point(bp);
 
 	if (m_cooldowns.teleport.running()) { p_animatable.pause(); }
+	if (m_cooldowns.teleport.get() == 40) {
+		map.spawn_frame_effect(svc, "bright_flare", m_previous_home_point, {}, 1);
+		set_position(m_previous_home_point);
+		svc.soundboard.play_sound("rising_shing", m_previous_home_point);
+	}
 	if (m_cooldowns.teleport.is_almost_complete()) {
-		auto const to_pos = map.get_random_home_point();
 		set_disappeared(false);
-		set_position(to_pos);
-		map.spawn_effect(svc, "flare", to_pos);
 		m_flags.set(NimbusFlags::just_teleported);
+		svc.soundboard.play_sound("impact", m_previous_home_point);
 	}
 	m_player_position = player.get_collider().get_center(); // second phase starts
 	if (half_health() && !Boss::has_flag_set(BossFlags::second_phase)) {
@@ -125,8 +130,17 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 			if (!active) { m_attacks.frenzy.disable(); }
 			if (p_animatable.animation.keyframe_started()) {
 				if (active) {
-					if (m_attacks.frenzy.hurt_player(player, 1.f, {}, true)) { m_flags.set(NimbusFlags::successful_hit); }
 					auto const pos = frenzy_position;
+					if (!player.is_dead()) {
+						auto const imf = frame == 10 ? "impact_frame_1" : "impact_frame";
+						map.spawn_frame_effect(svc, imf, pos);
+					}
+					if (m_attacks.frenzy.hurt_player(player, 1.f, {}, true)) { m_flags.set(NimbusFlags::successful_hit); }
+					if (player.is_dead() && !m_flags.test(NimbusFlags::killed_player)) {
+						svc.ticker.freeze_frame(2.0f);
+						m_flags.set(NimbusFlags::killed_player);
+						svc.camera_controller.shake();
+					}
 					svc.soundboard.play_sound("nimbus_clang", pos);
 					random::coin_flip() ? svc.soundboard.play_sound("juicy_impact", pos) : svc.soundboard.play_sound("clean_impact", pos);
 					map.spawn_frame_effect(svc, "triangle_flash", pos, {}, 1);
@@ -157,6 +171,11 @@ void Nimbus::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 				slash.enable();
 				if (frame != 3 && frame != 4) { slash.disable(); }
 				damage = 2.f;
+			}
+			if (is_state(NimbusState::aerial_slash)) {
+				slash.enable();
+				if (frame != 2 && frame != 3) { slash.disable(); }
+				damage = 1.f;
 			}
 			if (slash.hurt_player(player, damage, {directions.desired.as_float() * 0.4f, -0.2f})) { m_flags.set(NimbusFlags::successful_hit); }
 			slash.cancel_projectiles(svc, map, get_team());
@@ -216,6 +235,9 @@ void Nimbus::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		m_attacks.frenzy_collider.render(win, cam);
 		m_lightning.bounding_box.render(win, cam, m_lightning.active.running() ? sf::Color{255, 255, 120, 160} : sf::Color{255, 120, 120, 40});
 	}
+	for (auto& slash : m_attacks.slash) {
+		if (slash.hit.active()) { slash.render(win, cam); }
+	}
 	// debug();
 }
 
@@ -244,7 +266,7 @@ fsm::StateFunction Nimbus::update_jump() {
 	p_state.actual = NimbusState::jump;
 	if (change_state(NimbusState::stagger, Enemy::get_params("stagger"))) { return NIMBUS_BIND(update_stagger); }
 	if (p_animatable.animation.just_started()) { m_triple_jump.update(); }
-	auto const force = m_flags.test(NimbusFlags::short_jump) ? -4.f : -15.f;
+	auto const force = m_flags.test(NimbusFlags::short_jump) ? -7.f : -15.f;
 	auto const x_force = m_flags.test(NimbusFlags::short_jump) ? -directions.actual.as_float() * 0.2f : directions.actual.as_float();
 	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{x_force * 5.f, force}; }
 	if (p_animatable.animation.get_frame_count() >= 1) { get_collider().physics.apply_force({x_force, 0.f}); }
@@ -377,7 +399,7 @@ fsm::StateFunction Nimbus::update_downward_cut() {
 	}
 	for (auto [i, slash] : std::views::enumerate(m_attacks.slash)) {
 		slash.set_position(Enemy::get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 28.f, 10.f});
-		i == 1 ? slash.set_constant_radius(32.f) : slash.set_constant_radius(18.f);
+		i == 1 ? slash.set_constant_radius(36.f) : slash.set_constant_radius(18.f);
 	}
 	if (p_animatable.animation.get_frame_count() < 2) { get_collider().physics.zero(); }
 	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { get_collider().physics.velocity = sf::Vector2f{directions.actual.as_float() * 28.f, 18.f}; }
@@ -505,10 +527,27 @@ fsm::StateFunction Nimbus::update_double_aerial_slash() {
 	get_collider().set_flag(shape::ColliderFlags::gravity);
 	if (p_animatable.animation.get_frame_count() < 2) { get_collider().physics.zero(); }
 	if (p_animatable.animation.is_complete()) {
-		request(NimbusState::land);
-		if (change_state(NimbusState::land, Enemy::get_params("land"))) { return NIMBUS_BIND(update_land); }
+		m_quick_teleports.update();
+		request(NimbusState::teleport);
+		if (change_state(NimbusState::teleport, Enemy::get_params("teleport"))) { return NIMBUS_BIND(update_teleport); }
 	}
 	return NIMBUS_BIND(update_double_aerial_slash);
+}
+
+fsm::StateFunction Nimbus::update_aerial_slash() {
+	p_state.actual = NimbusState::aerial_slash;
+	if (change_state(NimbusState::stagger, Enemy::get_params("stagger"))) { return NIMBUS_BIND(update_stagger); }
+	for (auto [i, slash] : std::views::enumerate(m_attacks.slash)) {
+		slash.set_position(Enemy::get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * (30.f * static_cast<float>(i) - 20.f), 14.f * static_cast<float>(i) - 30.f});
+		i == 1 ? slash.set_constant_radius(30.f) : slash.set_constant_radius(24.f);
+	}
+	get_collider().physics.zero();
+	if (p_animatable.animation.is_complete()) {
+		m_quick_teleports.update();
+		request(NimbusState::teleport);
+		if (change_state(NimbusState::teleport, Enemy::get_params("teleport"))) { return NIMBUS_BIND(update_teleport); }
+	}
+	return NIMBUS_BIND(update_aerial_slash);
 }
 
 fsm::StateFunction Nimbus::update_frenzy_prepare() {
@@ -618,6 +657,11 @@ fsm::StateFunction Nimbus::update_teleport() {
 	if (change_state(NimbusState::stagger, Enemy::get_params("stagger"))) { return NIMBUS_BIND(update_stagger); }
 	// if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("nimbus_teleport", get_collider().get_center()); }
 	if (p_animatable.animation.get_frame_count() > 2) { flags.state.set(StateFlags::intangible); }
+	if (p_animatable.frame_action(3)) {
+		auto const tp_pos = p_map->get_random_home_point({m_previous_home_point});
+		m_previous_home_point = tp_pos;
+		p_map->spawn_frame_effect(*p_services, "spark", tp_pos);
+	}
 	flags.state.set(StateFlags::no_shake);
 	if (p_animatable.animation.is_complete()) {
 		set_disappeared(true);
@@ -628,6 +672,11 @@ fsm::StateFunction Nimbus::update_teleport() {
 			if (change_state(NimbusState::begin_levitate, Enemy::get_params("begin_levitate"))) { return NIMBUS_BIND(update_begin_levitate); }
 		}
 		m_flags.set(NimbusFlags::short_jump);
+		if (m_quick_teleports.get_count() < 3) {
+			request(NimbusState::aerial_slash);
+			if (change_state(NimbusState::aerial_slash, Enemy::get_params("aerial_slash"))) { return NIMBUS_BIND(update_aerial_slash); }
+		}
+		m_quick_teleports.start();
 		request(NimbusState::jump);
 		if (change_state(NimbusState::jump, Enemy::get_params("jump"))) { return NIMBUS_BIND(update_jump); }
 	}
@@ -639,6 +688,7 @@ fsm::StateFunction Nimbus::update_begin_laugh() {
 	if (change_state(NimbusState::stagger, Enemy::get_params("stagger"))) { return NIMBUS_BIND(update_stagger); }
 	// if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("nimbus_laugh", get_collider().get_center()); }
 	if (p_animatable.animation.is_complete()) {
+		flags.state.set(StateFlags::vulnerable);
 		m_flags.reset(NimbusFlags::successful_hit);
 		flags.state.set(StateFlags::no_shake);
 		request(NimbusState::laugh);
@@ -675,6 +725,7 @@ void Nimbus::debug() {
 		ImGui::Text("Parry: ");
 		ImGui::ProgressBar(m_cooldowns.parry.get_normalized());
 		ImGui::Text("Jump Counter: %i", m_triple_jump.get_count());
+		ImGui::Text("Quick teleports: %i", m_quick_teleports.get_count());
 		ImGui::SeparatorText("Controls");
 		if (ImGui::Button("jump")) { request(NimbusState::jump); }
 		if (ImGui::Button("land")) { request(NimbusState::land); }

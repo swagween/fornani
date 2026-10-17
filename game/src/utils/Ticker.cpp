@@ -74,7 +74,7 @@ auto Ticker::global_tick_rate() const -> float { return ft.count() * tick_multip
 void Ticker::manage_slowdowns(Sec real_dt) {
 	dt_scalar = global_scalar;
 
-	if (freezeframe.running()) { dt_scalar = std::max(0.01f, freezeframe.cubic_inverse_normalized()); }
+	if (freezeframe.running()) { dt_scalar = std::max(0.001f, freezeframe.cubic_inverse_normalized()); }
 	if (slowdown.running()) { dt_scalar = std::clamp(1.f - slowdown_target * util::slowdown(slowdown.normalized()), 0.f, global_scalar); }
 
 	freezeframe.update(real_dt.count() * slowdown_rate);

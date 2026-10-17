@@ -1,7 +1,28 @@
 
 #include "editor/automa/PopupHandler.hpp"
 #include <imgui.h>
-#include <fornani/entity/EntitySet.hpp>
+#include <fornani/entity/AmbientProp.hpp>
+#include <fornani/entity/Animator.hpp>
+#include <fornani/entity/Bed.hpp>
+#include <fornani/entity/BoxCollider.hpp>
+#include <fornani/entity/Chest.hpp>
+#include <fornani/entity/CutsceneTrigger.hpp>
+#include <fornani/entity/Destructible.hpp>
+#include <fornani/entity/Enemy.hpp>
+#include <fornani/entity/Inspectable.hpp>
+#include <fornani/entity/Interactable.hpp>
+#include <fornani/entity/Light.hpp>
+#include <fornani/entity/NPC.hpp>
+#include <fornani/entity/Platform.hpp>
+#include <fornani/entity/Portal.hpp>
+#include <fornani/entity/SwitchBlock.hpp>
+#include <fornani/entity/SwitchButton.hpp>
+#include <fornani/entity/Teleporter.hpp>
+#include <fornani/entity/TimerBlock.hpp>
+#include <fornani/entity/Train.hpp>
+#include <fornani/entity/Turret.hpp>
+#include <fornani/entity/Vine.hpp>
+#include <fornani/entity/Water.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/utils/Random.hpp>
@@ -678,6 +699,29 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			// switch to entity tool, and store the specified portal for placement
 			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
 			tool->current_entity = std::make_unique<fornani::CutsceneTrigger>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, id, attributes);
+			ImGui::CloseCurrentPopup();
+		}
+		close_popup();
+	}
+	if (ImGui::BeginPopupModal("Box Collider Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+
+		static int width{1};
+		static int height{1};
+		static bool wallslide{};
+
+		ImGui::Checkbox("Wallslide?", &wallslide);
+
+		ImGui::InputInt("Width", &width);
+		ImGui::Separator();
+
+		ImGui::InputInt("Height", &height);
+		ImGui::Separator();
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
+			tool->current_entity = std::make_unique<fornani::BoxCollider>(svc, sf::Vector2u{static_cast<std::uint32_t>(width), static_cast<std::uint32_t>(height)}, wallslide);
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

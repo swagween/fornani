@@ -5,7 +5,6 @@
 #include <fornani/entities/enemy/EnemyRegistry.hpp>
 #include <fornani/world/Map.hpp>
 #include <algorithm>
-#include <numbers>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/utils/Random.hpp"
@@ -173,6 +172,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (has_secondary_collider()) { get_secondary_collider().stats.GRAV = get_collider().stats.GRAV; }
 
 	if (intangibility.running()) { flags.state.set(StateFlags::intangible); }
+	if (intangibility.is_almost_complete()) { flags.state.reset(StateFlags::intangible); }
 
 	impulse.update();
 	sound.hurt_sound_cooldown.update();
@@ -459,7 +459,10 @@ void Enemy::kill(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dir
 	}
 	auto tag = attributes.size == EnemySize::tiny ? "small_carnage" : attributes.size == EnemySize::giant ? "large_carnage" : "carnage";
 	map.spawn_emitter(svc, tag, get_collider().get_center(), Direction{});
-	if (!flags.general.test(GeneralFlags::no_death_flare)) { map.spawn_effect(svc, "dark_flare", get_collider().get_center(), get_collider().physics.actual_velocity() * 0.5f); }
+	if (!flags.general.test(GeneralFlags::no_death_flare)) {
+		auto const vel = flags.state.test(StateFlags::dash_kicked) ? sf::Vector2f{} : get_collider().physics.actual_velocity() * 0.5f;
+		map.spawn_effect(svc, "dark_flare", get_collider().get_center(), vel);
+	}
 }
 
 void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {

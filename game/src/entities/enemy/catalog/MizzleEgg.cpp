@@ -1,6 +1,7 @@
 
 #include <fornani/entities/enemy/catalog/MizzleEgg.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/entity/Vine.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>
 #include <fornani/world/Map.hpp>

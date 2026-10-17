@@ -31,6 +31,7 @@ enum class NimbusState : std::uint8_t {
 	levitate,
 	spellcast,
 	double_aerial_slash,
+	aerial_slash,
 	frenzy_prepare,
 	frenzy_quick_prepare,
 	frenzy_dodge_prepare,
@@ -41,7 +42,7 @@ enum class NimbusState : std::uint8_t {
 	begin_laugh,
 	laugh
 };
-enum class NimbusFlags : std::uint8_t { frenzy_contact, short_jump, successful_hit, victory, staggered, just_teleported };
+enum class NimbusFlags : std::uint8_t { frenzy_contact, short_jump, successful_hit, victory, staggered, just_teleported, killed_player };
 
 class Nimbus final : public Boss, public StateMachine<NimbusState> {
   public:
@@ -68,6 +69,7 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	fsm::StateFunction update_levitate();
 	fsm::StateFunction update_spellcast();
 	fsm::StateFunction update_double_aerial_slash();
+	fsm::StateFunction update_aerial_slash();
 	fsm::StateFunction update_frenzy_prepare();
 	fsm::StateFunction update_frenzy_quick_prepare();
 	fsm::StateFunction update_frenzy_dodge_prepare();
@@ -87,7 +89,7 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 		util::Cooldown post_slash{600};
 		util::Cooldown parry{800};
 		util::Cooldown post_jump{1800};
-		util::Cooldown teleport{200};
+		util::Cooldown teleport{60};
 		util::Cooldown spellcast{200};
 	} m_cooldowns{};
 
@@ -108,6 +110,7 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	std::vector<float> m_stagger_points;
 
 	util::Counter m_triple_jump{};
+	util::Counter m_quick_teleports{};
 
 	util::BitFlags<NimbusFlags> m_flags{};
 
@@ -119,6 +122,7 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	components::SteeringBehavior m_steering{};
 	sf::Vector2f m_steer_target{};
 	sf::Vector2f m_player_position{};
+	sf::Vector2f m_previous_home_point{};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

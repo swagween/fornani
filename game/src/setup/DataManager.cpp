@@ -1,15 +1,12 @@
 
 #include "fornani/setup/DataManager.hpp"
-#include <fornani/core/Common.hpp>
 #include <fornani/core/ItemConstants.hpp>
-#include <fornani/graphics/MenuTheme.hpp>
+#include <fornani/entity/NPC.hpp>
 #include <fornani/io/Codec.hpp>
-#include <fornani/io/FileSerializer.hpp>
 #include <fornani/io/Loader.hpp>
 #include <fstream>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
-#include "fornani/systems/InputSystem.hpp"
 
 namespace fornani::data {
 

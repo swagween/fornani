@@ -61,12 +61,13 @@ EditorApplication::EditorApplication(char** argv) : m_finder{argv}, m_services(a
 
 	m_state = std::make_unique<Editor>(m_services, editor_context);
 	m_current_state = EditorStateType::editor;
+	ImGuiIO& io = ImGui::GetIO();
+	io.AddMousePosEvent(-FLT_MAX, -FLT_MAX);
 }
 
 void EditorApplication::run(char** argv) {
 	while (window.get().isOpen()) {
 		while (std::optional const event = window.get().pollEvent()) {
-			ImGui::SFML::ProcessEvent(window.get(), *event);
 			if (event->is<sf::Event::Closed>()) {
 				shutdown();
 				return;
@@ -75,6 +76,7 @@ void EditorApplication::run(char** argv) {
 				if (key_pressed->scancode == sf::Keyboard::Scancode::F12) { continue; }
 			}
 			m_state->handle_events(*event, window.get());
+			ImGui::SFML::ProcessEvent(window.get(), *event);
 		}
 		auto to_state = m_state->run(argv);
 		if (to_state != m_current_state) {

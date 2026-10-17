@@ -13,7 +13,6 @@
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/entities/enemy/EnemyRegistry.hpp>
 #include <fornani/entities/player/Player.hpp>
-#include <fornani/entities/player/PlayerController.hpp>
 #include <fornani/entities/world/Bed.hpp>
 #include <fornani/entities/world/Chest.hpp>
 #include <fornani/entities/world/Explosion.hpp>
@@ -21,12 +20,17 @@
 #include <fornani/entities/world/Laser.hpp>
 #include <fornani/entities/world/Waterfall.hpp>
 #include <fornani/entity/AmbientProp.hpp>
+#include <fornani/entity/Animator.hpp>
 #include <fornani/entity/CutsceneTrigger.hpp>
+#include <fornani/entity/Destructible.hpp>
 #include <fornani/entity/Entity.hpp>
 #include <fornani/entity/EntitySet.hpp>
+#include <fornani/entity/Inspectable.hpp>
+#include <fornani/entity/Interactable.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/entity/Portal.hpp>
 #include <fornani/entity/SavePoint.hpp>
+#include <fornani/entity/Teleporter.hpp>
 #include <fornani/entity/Train.hpp>
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
@@ -1426,7 +1430,7 @@ auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f
 	return ret;
 }
 
-auto Map::get_random_home_point() const -> sf::Vector2f { return random::random_element(home_points); }
+auto Map::get_random_home_point(std::vector<sf::Vector2f> exclusions) const -> sf::Vector2f { return random::random_element(home_points, exclusions); }
 
 auto Map::get_actual_tile_color(int index) const -> sf::Color {
 	auto const cycle = m_services->world_clock.as_trio();

@@ -2,6 +2,7 @@ nani_add_sources(
   AmbientProp.cpp
   Animator.cpp
   Bed.cpp
+  BoxCollider.cpp
   Chest.cpp
   CutsceneTrigger.cpp
   Entity.cpp

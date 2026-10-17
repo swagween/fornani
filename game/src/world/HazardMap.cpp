@@ -62,7 +62,7 @@ void HazardMap::add_tile(automa::ServiceProvider& svc, std::string_view tag, sf:
 }
 
 void HazardMap::remove_tile(sf::Vector2u position) {
-	std::erase_if(m_tiles, [position](auto const& t) { return t.get_grid_position() == position; });
+	std::erase_if(m_tiles, [position](auto const& t) { return t.get_grid_position() == sf::Vector2i{position}; });
 	refresh_texture();
 }
 

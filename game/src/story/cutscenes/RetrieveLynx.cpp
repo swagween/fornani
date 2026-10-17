@@ -1,6 +1,7 @@
 
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/entity/NPC.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/story/cutscene/RetrieveLynx.hpp>
@@ -168,7 +169,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	m_gus_steering.thrust_seek(target, {0.08f, .318f, .991f, 260.f});
 	if (!m_flags.test(RetrieveLynxFlags::arrived)) { gus->set_position(m_gus_steering.physics.position); }
 	if (gus->has_vehicle()) {
-		if (gus->get_vehicle().is_close_to_point(target, 32.f) && cooldowns.beginning.halfway() && !m_flags.test(RetrieveLynxFlags::arrived	)) {
+		if (gus->get_vehicle().is_close_to_point(target, 32.f) && cooldowns.beginning.halfway() && !m_flags.test(RetrieveLynxFlags::arrived)) {
 			gus->set_flag(NPCFlags::airborne, false);
 			gus->set_flag(NPCFlags::in_vehicle, false);
 			gus->get_collider().set_attribute(shape::ColliderAttributes::no_map_collision, false);

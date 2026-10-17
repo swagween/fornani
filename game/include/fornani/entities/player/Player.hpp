@@ -106,6 +106,12 @@ struct CornerSensor {
 	components::CircleSensor right;
 };
 
+struct HurtEffect {
+	util::Cooldown timer;
+	sf::Color color;
+	float damage;
+};
+
 enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated };
 enum class PlayerFlags : std::uint8_t {
 	killed,
@@ -268,6 +274,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_roll_multiplier() const -> float;
 	[[nodiscard]] auto get_kick_damage() const -> float;
 	[[nodiscard]] auto get_arm_strength() const -> float;
+	[[nodiscard]] auto get_hurt_effect() const -> HurtEffect const& { return m_hurt_effect; }
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 
@@ -452,6 +459,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	util::Cooldown m_death_cooldown;
 
 	FlatShader m_flat_shader;
+	HurtEffect m_hurt_effect;
 
 	std::vector<sf::Vector2f> accumulated_momentum{};
 

@@ -40,7 +40,8 @@ enum class State : std::uint8_t {
 	left_wallslide_collision,
 	right_wallslide_collision,
 	on_flat_surface,
-	tickwise_ramp_collision
+	tickwise_ramp_collision,
+	no_wallslide
 };
 
 enum class ExternalState : std::uint8_t {
@@ -157,6 +158,7 @@ class Collider : public ICollider {
 	[[nodiscard]] auto downhill() const -> bool { return flags.perma_state.test(PermaFlags::downhill); }
 	[[nodiscard]] auto hit_ceiling_ramp() const -> bool { return flags.external_state.test(ExternalState::ceiling_ramp_hit); }
 	[[nodiscard]] auto get_direction() const -> Direction { return m_direction; }
+	[[nodiscard]] auto can_wallslide() const -> bool { return !flags.state.test(State::no_wallslide); }
 
 	Shape bounding_box{};
 	Shape predictive_vertical{};

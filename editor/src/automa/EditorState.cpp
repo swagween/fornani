@@ -19,9 +19,11 @@ EditorStateType EditorState::run(char** argv) {
 void EditorState::handle_events(std::optional<sf::Event> event, sf::RenderWindow& win) {
 	ImGuiIO& io = ImGui::GetIO();
 
-	sf::Vector2i mouse_pixel{static_cast<int>(io.MousePos.x), static_cast<int>(io.MousePos.y)};
-	sf::Vector2f world_pos = win.mapPixelToCoords(mouse_pixel, p_view);
+	auto const mouse_pixel = sf::Mouse::getPosition(win);
+	auto const imgui_mouse = sf::Vector2i{int(io.MousePos.x), int(io.MousePos.y)};
+	sf::Vector2f world_pos = win.mapPixelToCoords(imgui_mouse, p_view);
 	p_current_mouse_position = world_pos;
+	// io.AddMousePosEvent(p_current_mouse_position.x, p_current_mouse_position.y);
 
 	// Mouse input
 	if (!io.WantCaptureMouseUnlessPopupClose) {

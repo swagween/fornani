@@ -1472,5 +1472,135 @@
         }
       }
     }
+  },
+  "green_ray": {
+    "metadata": {
+      "id": 16,
+      "label": "Green Ray"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [8, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "green_beam",
+        "color": "white"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 3,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 0.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 8.0,
+        "audio": { "hit": 2 },
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 400,
+          "lifespan_variance": 0,
+          "speed": 20.0,
+          "variance": 0.0,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "omnidirectional": false,
+          "transcendent": true,
+          "range_variance": 0.0,
+          "acceleration_factor": 4.0,
+          "dampen_factor": 1.0,
+          "gravity": 0.0,
+          "elasticity": 0.98
+        },
+        "visual": {
+          "effect_type": 1
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 2,
+          "framerate": 12
+        }
+      }
+    }
+  },
+  "trash": {
+    "metadata": {
+      "id": 17,
+      "label": "Trash"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [0, 0],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "twinkle"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 2.0
+      }
+    },
+    "audio": { "shoot": 5 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [16.0, 16.0],
+        "radius": 6.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 2600,
+          "lifespan_variance": 0,
+          "speed": 28.0,
+          "variance": 1.5,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "reflect": true,
+          "omnidirectional": true,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.995,
+          "dampen_variance": 0.002,
+          "gravity": 5.1,
+          "elasticity": 0.99
+        },
+        "visual": {
+          "effect_type": 2
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        },
+        "impact": {
+          "effect": "small_explosion",
+          "emitter": "mud",
+          "channel": 3,
+          "result": {
+            "block": "brittle"
+          }
+        }
+      }
+    }
   }
 }

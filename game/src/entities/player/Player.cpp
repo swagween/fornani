@@ -22,7 +22,7 @@ constexpr auto default_sprite_offset_v = sf::Vector2f{10.f, -3.f};
 Player::Player(automa::ServiceProvider& svc)
 	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
 	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{default_sprite_offset_v}, m_sprite_overlay{svc, "nani", {26, 26}},
-	  m_flat_shader{svc.finder}, m_corner_sensor{.left{6.f}, .right{6.f}} {
+	  m_flat_shader{svc.finder}, m_corner_sensor{.left{6.f}, .right{6.f}}, m_hurt_effect{.timer{40}, .color{colors::fucshia}} {
 
 	p_animatable.center();
 	m_sprite_overlay.center();
@@ -473,7 +473,10 @@ void Player::update(world::Map& map) {
 	if (m_headgear) { m_headgear->update(p_animatable.get_frame()); }
 }
 
-void Player::frame_update() { m_camera.camera.frame_update(); }
+void Player::frame_update() {
+	m_camera.camera.frame_update();
+	if (m_services->ticker.every_x_frames(4)) { m_hurt_effect.timer.update(); }
+}
 
 void Player::simple_update() {
 	handle_turning();
@@ -1042,9 +1045,12 @@ void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
+		m_hurt_effect.timer.start();
+		m_hurt_effect.color = has_flag_set(PlayerFlags::poisoned) ? colors::mythic_green : colors::dark_blood;
 		m_hurt_cooldown.start();
 		health.inflict(amount, force);
 		health_indicator.add(-amount);
+		m_hurt_effect.damage = std::min(-health_indicator.get_amount(), 4.f);
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
@@ -1530,6 +1536,7 @@ bool Player::can_jump() const {
 bool Player::can_wallslide() const {
 	if (abilities_disabled()) { return false; }
 	if (get_collider().grounded()) { return false; }
+	if (!get_collider().can_wallslide()) { return false; }
 	if (get_collider().physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;
@@ -1538,6 +1545,7 @@ bool Player::can_wallslide() const {
 bool Player::can_wallcling() const {
 	if (abilities_disabled()) { return false; }
 	if (get_collider().grounded()) { return false; }
+	if (!get_collider().can_wallslide()) { return false; }
 	if (get_collider().physics.apparent_velocity().y < wallslide_threshold_v) { return false; }
 	if (!catalog.inventory.has_item("pirag_charm")) { return false; }
 	return true;
@@ -1545,6 +1553,7 @@ bool Player::can_wallcling() const {
 
 bool Player::can_walljump() const {
 	if (abilities_disabled()) { return false; }
+	if (!get_collider().can_wallslide()) { return false; }
 	if (is_swimming()) { return false; }
 	if (!catalog.inventory.has_item("kariba_talisman")) { return false; }
 	return true;

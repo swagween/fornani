@@ -804,6 +804,21 @@
       }
     ]
   },
+  "below385022345347096": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "You peer cautiously over the ledge. Below rages a sea of clouds over an endless abyss."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "briar_ruins385022346330140": {
     "series": [
       {
@@ -1570,6 +1585,68 @@
           [
             {
               "message": "To Lower Glades >"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "mastiff385022345019419": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  17,
+                  42
+                ],
+                [
+                  21,
+                  401
+                ],
+                [
+                  27,
+                  13,
+                  2
+                ]
+              ],
+              "message": "Yes."
+            },
+            {
+              "codes": [
+                [
+                  8,
+                  0
+                ]
+              ],
+              "message": "Maybe later."
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "message": "There's a pedestal with a carving for some kind of object to fit into it."
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "contingencies": [
+                {
+                  "requirement": 1,
+                  "strict": true,
+                  "tag": "grand_mastiff_mystery"
+                }
+              ],
+              "message": "Would you like to place the Mastiff Totem?"
             }
           ]
         ]

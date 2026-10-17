@@ -64,8 +64,8 @@
       "haze_shadow": [0, 51, 91],
       "max_light": 4.0,
       "spike_variations": 3,
-      "effect_channel": 1,
-      "breakable_shatter": "breakable_guts"
+      "effect_channel": 6,
+      "breakables": { "shatter_sound": "breakable_guts", "emitter": "guts", "effect": "guts_splat" }
     },
     "toxic": {
       "ambience": { "interior": "industrial", "exterior": "none" },
@@ -74,7 +74,7 @@
       "haze_highlight": [210, 241, 68],
       "haze_shadow": [29, 204, 129],
       "max_light": 3.0,
-      "effect_channel": 1
+      "effect_channel": 6
     },
     "nightside": {
       "platform_sound": "industrial",
@@ -88,6 +88,13 @@
       "spike_variations": 3,
       "sky_limit": 10,
       "max_light": 3.0
+    },
+    "hoarder": {
+      "black": [12, 15, 28],
+      "spike_variations": 3,
+      "sky_limit": 10,
+      "max_light": 3.0,
+      "brittle_block_channel": 1
     },
     "shadow": {
       "ambience": { "interior": "none", "exterior": "none" },

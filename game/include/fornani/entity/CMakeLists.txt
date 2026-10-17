@@ -2,6 +2,7 @@ nani_add_headers(
   AmbientProp.hpp
   Animator.hpp
   Bed.hpp
+  BoxCollider.hpp
   Chest.hpp
   CutsceneTrigger.hpp
   Destructible.hpp

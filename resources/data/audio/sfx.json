@@ -798,6 +798,12 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "breakable_guts",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.15
+  },
+  {
     "label": "nimbus_swipe_1",
     "bus": "gameplay",
     "volume": 0.5,

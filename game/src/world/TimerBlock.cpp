@@ -9,7 +9,7 @@
 namespace fornani::world {
 
 TimerBlock::TimerBlock(automa::ServiceProvider& svc, sf::Vector2<std::uint32_t> pos, TimerBlockType type, int id)
-	: Drawable(svc, "timer_blocks"), IWorldPositionable(pos, constants::u32_cell_vec), m_bounds(constants::f_cell_vec), m_type{type}, m_id{id} {
+	: Drawable(svc, "timer_blocks"), IWorldPositionable(sf::Vector2i{pos}, constants::u32_cell_vec), m_bounds(constants::f_cell_vec), m_type{type}, m_id{id} {
 	m_bounds.set_position(get_world_position());
 }
 

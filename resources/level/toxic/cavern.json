@@ -432,6 +432,42 @@
           4
         ],
         "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 100306,
+        "position": [
+          95,
+          11
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 100306,
+        "position": [
+          94,
+          11
+        ],
+        "type": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 100306,
+        "position": [
+          96,
+          11
+        ],
+        "type": 1
       }
     ],
     "switch_buttons": [
@@ -494,6 +530,18 @@
           11
         ],
         "type": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 100306,
+        "position": [
+          102,
+          6
+        ],
+        "type": 1
       }
     ],
     "water": [
@@ -551,7 +599,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -560,8 +607,7 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
@@ -43412,10 +43458,10 @@
         2,
         0,
         0,
-        2,
-        2,
-        2,
-        496,
+        0,
+        0,
+        0,
+        0,
         0,
         0,
         0,
@@ -43729,7 +43775,7 @@
         2,
         2,
         2,
-        0,
+        480,
         0,
         0,
         2,
@@ -44052,7 +44098,7 @@
         0,
         0,
         0,
-        0,
+        481,
         2,
         2,
         2,
@@ -53654,10 +53700,10 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
-        0,
+        327,
+        315,
+        328,
+        330,
         0,
         0,
         0,
@@ -63896,9 +63942,9 @@
         0,
         0,
         0,
-        0,
-        0,
-        0,
+        391,
+        395,
+        409,
         0,
         0,
         0,

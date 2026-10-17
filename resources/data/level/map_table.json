@@ -307,6 +307,18 @@
       "room_id": 607
     },
     {
+      "folder": "greatwing",
+      "label": "kitchen.json",
+      "region": "greatwing",
+      "room_id": 602
+    },
+    {
+      "folder": "greatwing",
+      "label": "staircase.json",
+      "region": "greatwing",
+      "room_id": 603
+    },
+    {
       "folder": "grove",
       "label": "passage.json",
       "region": "grove",
@@ -317,6 +329,12 @@
       "label": "den.json",
       "region": "hoarder",
       "room_id": 1410
+    },
+    {
+      "folder": "hoarder",
+      "label": "lair.json",
+      "region": "hoarder",
+      "room_id": 1411
     },
     {
       "folder": "junkyard",
@@ -1226,6 +1244,12 @@
     },
     {
       "folder": "toxic",
+      "label": "pool.json",
+      "region": "toxic",
+      "room_id": 1014
+    },
+    {
+      "folder": "toxic",
       "label": "research_center.json",
       "region": "toxic",
       "room_id": 1002
@@ -1379,6 +1403,18 @@
       "label": "ventral_vessel.json",
       "region": "worm",
       "room_id": 1107
+    },
+    {
+      "label": "roof.json",
+      "minimap": true,
+      "region": "firstwind",
+      "room_id": 160
+    },
+    {
+      "folder": "firstwind",
+      "label": "roof.json",
+      "region": "firstwind",
+      "room_id": 160
     }
   ]
 }

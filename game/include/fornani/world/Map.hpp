@@ -198,7 +198,7 @@ class Map {
 	[[nodiscard]] auto get_ambience_balance() const -> float;
 	[[nodiscard]] auto get_music_balance() const -> float;
 	[[nodiscard]] auto get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f;
-	[[nodiscard]] auto get_random_home_point() const -> sf::Vector2f;
+	[[nodiscard]] auto get_random_home_point(std::vector<sf::Vector2f> exclusions = {}) const -> sf::Vector2f;
 	[[nodiscard]] auto get_actual_tile_color(int index) const -> sf::Color;
 	[[nodiscard]] auto get_tile_color(int cycle, int index) const -> sf::Color;
 	[[nodiscard]] auto get_effect_channel() const -> int;

@@ -1,4 +1,5 @@
 #include "fornani/entities/enemy/catalog/Beamstalk.hpp"
+#include <fornani/entity/Vine.hpp>
 #include "fornani/entities/player/Player.hpp"
 #include "fornani/service/ServiceProvider.hpp"
 #include "fornani/world/Map.hpp"

@@ -1,5 +1,6 @@
 
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/entity/NPC.hpp>
 #include <fornani/gui/MiniMap.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/world/Map.hpp>

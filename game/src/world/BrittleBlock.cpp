@@ -17,6 +17,7 @@ BrittleBlock::BrittleBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f 
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	set_origin({1.f, 1.f});
+	set_channel(map.get_biome_properties()["brittle_block_channel"].as<int>());
 }
 
 void BrittleBlock::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {

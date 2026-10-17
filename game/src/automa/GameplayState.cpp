@@ -17,6 +17,7 @@ GameplayState::GameplayState(ServiceProvider& svc, player::Player& player, int r
 	p_world_shader = LightShader(svc.finder);
 	p_entity_shader = LightShader(svc.finder);
 	p_gui_shader = LightShader(svc.finder);
+	p_filter_shader = FilterShader(svc.finder, svc.window->get().getSize());
 }
 
 void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {

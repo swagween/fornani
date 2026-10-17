@@ -240,7 +240,7 @@ fsm::StateFunction GrandMastiff::update_run() {
 	get_collider().physics.acceleration.x = directions.actual.as_float() * speed;
 	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) {
 		p_services->soundboard.play_sound("thud", get_collider().get_center());
-		p_services->camera_controller.shake(10, 0.2f, 200, 20);
+		p_services->camera_controller.shake(3, 0.2f, 200, 20);
 	}
 	if (change_state(GrandMastiffState::growl, get_params("growl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_growl); }
 	if (change_state(GrandMastiffState::begin_howl, get_params("begin_howl")) && get_collider().grounded()) { return GRAND_MASTIFF_BIND(update_begin_howl); }

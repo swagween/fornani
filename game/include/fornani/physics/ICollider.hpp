@@ -48,7 +48,7 @@ enum class ColliderFlags : std::uint8_t {
 	on_ramp
 };
 enum class ColliderType : std::uint8_t { rectangle, circle };
-enum class ColliderAttributes : std::uint8_t { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution, sticky };
+enum class ColliderAttributes : std::uint8_t { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution, sticky, no_wallslide };
 enum class ColliderTrait : std::uint8_t { circle, player, enemy, npc, secondary, block, particle, platform, pushable, chest, prop, breakable };
 
 class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {

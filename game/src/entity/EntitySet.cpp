@@ -1,9 +1,30 @@
 
+#include <fornani/entity/AmbientProp.hpp>
+#include <fornani/entity/Animator.hpp>
+#include <fornani/entity/Bed.hpp>
+#include <fornani/entity/BoxCollider.hpp>
+#include <fornani/entity/Chest.hpp>
+#include <fornani/entity/CutsceneTrigger.hpp>
+#include <fornani/entity/Destructible.hpp>
+#include <fornani/entity/Enemy.hpp>
 #include <fornani/entity/EntitySet.hpp>
+#include <fornani/entity/Inspectable.hpp>
+#include <fornani/entity/Interactable.hpp>
+#include <fornani/entity/Light.hpp>
+#include <fornani/entity/NPC.hpp>
+#include <fornani/entity/Platform.hpp>
+#include <fornani/entity/Portal.hpp>
+#include <fornani/entity/SavePoint.hpp>
+#include <fornani/entity/SwitchBlock.hpp>
+#include <fornani/entity/SwitchButton.hpp>
+#include <fornani/entity/Teleporter.hpp>
+#include <fornani/entity/TimerBlock.hpp>
+#include <fornani/entity/Train.hpp>
+#include <fornani/entity/Turret.hpp>
+#include <fornani/entity/Vine.hpp>
+#include <fornani/entity/Water.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/world/Map.hpp>
-
-#include <cassert>
 
 namespace fornani {
 
@@ -33,6 +54,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 	create_map.emplace("inspectables", &create_entity<Inspectable>);
 	create_map.emplace("interactables", &create_entity<Interactable>);
 	create_map.emplace("ambient_props", &create_entity<AmbientProp>);
+	create_map.emplace("box_colliders", &create_entity<BoxCollider>);
 	create_map.emplace("switch_blocks", &create_entity<SwitchBlock>);
 	create_map.emplace("switch_buttons", &create_entity<SwitchButton>);
 	create_map.emplace("cutscene_triggers", &create_entity<CutsceneTrigger>);
@@ -105,7 +127,9 @@ bool EntitySet::save(fornani::ResourceFinder& finder, dj::Json& metadata, std::s
 
 void EntitySet::clear() { variables = {}; }
 
-bool EntitySet::has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_only) const {
+bool EntitySet::has_entity_at(sf::Vector2u pos, bool highlighted_only) const { return has_entity_at(sf::Vector2i{pos}, highlighted_only); }
+
+bool EntitySet::has_entity_at(sf::Vector2i pos, bool highlighted_only) const {
 	for (auto& s : variables.entities) {
 		if (s->contains_point(pos)) { return highlighted_only ? s->highlighted : true; }
 	}
@@ -114,9 +138,9 @@ bool EntitySet::has_entity_at(sf::Vector2<std::uint32_t> pos, bool highlighted_o
 
 bool EntitySet::overlaps(Entity& other) const {
 	if (other.stackable) { return false; }
-	for (auto i{0u}; i < other.get_grid_dimensions().x; ++i) {
-		for (auto j{0u}; j < other.get_grid_dimensions().y; ++j) {
-			if (has_entity_at(other.get_grid_position() + sf::Vector2u{i, j})) { return true; }
+	for (auto i{0}; i < other.get_grid_dimensions().x; ++i) {
+		for (auto j{0}; j < other.get_grid_dimensions().y; ++j) {
+			if (has_entity_at(other.get_grid_position() + sf::Vector2i{i, j})) { return true; }
 		}
 	}
 	return false;
