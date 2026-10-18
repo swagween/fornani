@@ -13,25 +13,15 @@
 
 namespace fornani::enemy {
 
-enum class MinigusMode : std::uint8_t { neutral, battle_one, battle_two, last_words, exit };
 enum class MinigusState : std::uint8_t { idle, turn, run, shoot, jump_shoot, jumpsquat, airborne, land, grab_soda, drink, throw_can, stagger, struggle, recover, laugh, punch, reload, snap, wind_up, charge, exit };
-enum class MinigusFlags : std::uint8_t { jump_shoot };
-enum class MinigunState : std::uint8_t { deactivated, neutral, charging, firing };
-enum class MinigunFlags : std::uint8_t { exhausted, charging };
+enum class MinigusFlags : std::uint8_t { aerial_shoot, victory, player_is_punchable, defeated, dropped_loot, show_minigun };
 
 class Minigun : public Animatable {
   public:
-	Minigun(automa::ServiceProvider& svc) : Animatable(svc, "minigus_minigun", {39, 15}) {}
+	Minigun(automa::ServiceProvider& svc) : Animatable(svc, "minigus_minigun", {57, 22}) {}
 	void update(sf::Vector2f const target);
 	void render(sf::Vector2f const cam);
 	void set_physics_position(sf::Vector2f const to) { m_physics.position = to; }
-	MinigunState state{};
-	sf::Vector2f offset{};
-	anim::Parameters neutral{21, 4, 28, -1};
-	anim::Parameters deactivated{11, 2, 48, -1};
-	anim::Parameters charging{0, 11, 38, 0};
-	anim::Parameters firing{13, 8, 10, 1};
-	util::BitFlags<MinigunFlags> flags{};
 
   private:
 	components::PhysicsComponent m_physics{};
@@ -75,7 +65,6 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 
   private:
 	[[nodiscard]] auto is(MinigusState const test) const -> bool { return StateMachine<MinigusState>::is_state(test); }
-	[[nodiscard]] auto is_battle_mode() const -> bool { return (m_mode == MinigusMode::battle_one || m_mode == MinigusMode::battle_two) && console_complete; }
 
 	void shoot();
 
@@ -87,7 +76,6 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 	bool anim_debug{};
 	bool console_complete{};
 	bool init{true};
-	MinigusMode m_mode{};
 	util::BitFlags<MinigusFlags> m_flags{};
 	graphics::SpriteHistory sprite_history{8};
 
@@ -95,6 +83,7 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 	Direction movement_direction{};
 
 	shape::Shape distant_range{};
+	shape::Shape jump_range;
 
 	Minigun m_minigun;
 
@@ -115,21 +104,12 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 	entity::Caution caution{};
 
 	struct {
-		util::Cooldown jump{20};
-		util::Cooldown rush{400};
-		util::Cooldown firing{1000};
-		util::Cooldown post_charge{600};
-		util::Cooldown post_punch{400};
-		util::Cooldown hurt{320};
-		util::Cooldown hurt_sound{32};
-		util::Cooldown player_punch{80};
-		util::Cooldown pre_jump{380};
-		util::Cooldown vulnerability{2000};
-		util::Cooldown exit{500};
-		util::Cooldown struggle{400};
+		util::Cooldown post_shot{1600};
+		util::Cooldown aerial_shoot{60};
 	} cooldowns{};
 
 	vfx::Sparkler sparkler;
+	Animatable m_tattoo;
 
 	struct {
 		util::Counter snap{};
@@ -137,6 +117,8 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 	} counters{};
 
 	util::Cycle m_barrel_cycle{6};
+
+	sf::Vector2f m_gun_offset{};
 
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;

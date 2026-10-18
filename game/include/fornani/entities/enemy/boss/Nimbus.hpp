@@ -84,6 +84,8 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	void debug();
 	[[nodiscard]] auto is_airborne() const -> bool { return is_state(NimbusState::begin_levitate) || is_state(NimbusState::levitate); }
 
+	bool change_state(NimbusState next, anim::Parameters params);
+
   private:
 	struct {
 		util::Cooldown post_slash{600};
@@ -111,8 +113,6 @@ class Nimbus final : public Boss, public StateMachine<NimbusState> {
 	util::Counter m_quick_teleports{};
 
 	util::BitFlags<NimbusFlags> m_flags{};
-
-	bool change_state(NimbusState next, anim::Parameters params);
 
 	entity::Caution m_caution{};
 

@@ -166,12 +166,19 @@
 
   "minigus": {
     "rate": 0.0,
-    "volatility": 0.01,
-    "wobble": 0.1,
-    "frequency": 0.1,
-    "speed": 0.1,
-    "lifespan": 320,
-    "lifespan_variance": 100
+    "volatility": 0.5,
+    "wobble": 0.02,
+    "frequency": 0.005,
+    "speed": 0.2,
+    "lifespan": 260,
+    "lifespan_variance": 195,
+    "animation": {
+      "label": "drop",
+      "variants": 6,
+      "num_frames": 6,
+      "framerate": 24,
+      "dimensions": [7, 7]
+    }
   },
 
   "grand_mastiff": {

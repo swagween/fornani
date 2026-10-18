@@ -30,6 +30,7 @@ class RegisteredCollider {
 	void set_tag(std::string_view tag) { m_tag = tag; }
 
 	[[nodiscard]] auto get_tag() const -> std::optional<std::string> { return m_tag; }
+	[[nodiscard]] auto has_collider() const -> bool { return m_collider.has_value() || m_circle_collider.has_value(); }
 
   private:
 	world::Map* m_map{};

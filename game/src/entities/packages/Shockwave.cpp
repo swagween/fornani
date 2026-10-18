@@ -23,7 +23,8 @@ void Shockwave::update(automa::ServiceProvider& svc, world::Map& map) {
 	position += m_parameters.speed;
 	if (svc.ticker.every_x_ticks(m_parameters.frequency)) {
 		map.effects.push_back(entity::Effect(svc, "small_explosion", position, {0.f, -0.1f}, m_parameters.style));
-		if (auto surface_y = map.get_middleground_surface_y(position.x, position.y, constants::f_cell_size * 1.5f, constants::f_cell_size * 1.5f)) {
+		auto const range = m_parameters.contour ? 1.5f : 1.0f;
+		if (auto surface_y = map.get_middleground_surface_y(position.x, position.y, constants::f_cell_size * range, constants::f_cell_size * range)) {
 			position.y = *surface_y - hit.bounds.getRadius() * 0.2f;
 		} else {
 			lifetime.cancel();

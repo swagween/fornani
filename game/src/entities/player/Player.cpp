@@ -851,6 +851,8 @@ auto Player::has_weapon(std::string_view tag) const -> bool {
 	return arsenal->has(tag);
 }
 
+auto Player::get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().has_collider() ? collider.value().get().get_reference().get_center() + m_camera.target_point : sf::Vector2f{}; }
+
 auto Player::get_item_count(std::string_view tag) -> int {
 	if (auto item = catalog.inventory.find_item_stack(tag)) { return item->quantity; }
 	return 0;
@@ -936,8 +938,13 @@ void Player::update_camera() {
 		force_multiplier = 1.f;
 		m_camera.target_point = sf::Vector2f{camx, 0.f};
 	}
-	m_camera.target_point += (get_collider().physics.actual_velocity()).componentWiseMul({40.f, 20.0f});
-	auto focus = has_collider() ? get_camera_focus_point() : m_services->camera_controller.get_position();
+	auto focus = sf::Vector2f{};
+	if (has_collider() && m_map.has_value()) {
+		focus = get_camera_focus_point();
+		m_camera.target_point += (get_collider().physics.actual_velocity()).componentWiseMul({40.f, 20.0f});
+	} else {
+		focus = m_services->camera_controller.get_position();
+	}
 
 	if (m_services->camera_controller.is_owned_by(graphics::CameraOwner::player)) {
 		if (auto const anchor = m_services->camera_controller.get_anchor_position()) {

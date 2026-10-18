@@ -250,7 +250,7 @@
       "num_colliders": 1,
       "num_hurtboxes": 1,
       "alert_range": [100.0, 300.0],
-      "hostile_range": [220.0, 300.0],
+      "hostile_range": [280.0, 300.0],
       "friction": 0.98,
       "gravity": 8.5
     },
@@ -266,9 +266,9 @@
       "hurt_sounds": ["minigus_hurt_1", "minigus_hurt_2", "minigus_hurt_3"]
     },
     "attributes": {
-      "base_hp": 800,
+      "base_hp": 1200,
       "base_damage": 1.0,
-      "speed": 1.5,
+      "speed": 5.5,
       "loot_multiplier": 25.0,
       "drop_range": [25, 30],
       "respawn_distance": 0,

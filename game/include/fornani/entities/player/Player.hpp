@@ -250,7 +250,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto has_weapon(std::string_view tag) const -> bool;
 	[[nodiscard]] auto invincible() const -> bool { return health.invincible(); }
 	[[nodiscard]] auto has_map() const -> bool { return catalog.inventory.has_item(16); }
-	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value(); }
+	[[nodiscard]] auto has_collider() const -> bool { return collider.has_value() ? collider.value().get().has_collider() : false; }
 	[[nodiscard]] auto moving_left() const -> bool { return directions.movement.lnr == LNR::left; }
 	[[nodiscard]] auto switched_weapon() -> bool { return hotbar->switched() || consume_flag(PlayerFlags::refresh_weapons); }
 	[[nodiscard]] auto firing_weapon() -> bool { return controller.shot(); }
@@ -259,7 +259,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_actual_camera_position() const -> sf::Vector2f { return m_camera.camera.get_actual_position(); }
 	[[nodiscard]] auto get_camera_center() const -> sf::Vector2f { return m_camera.camera.get_center(); }
 	[[nodiscard]] auto get_lantern_position() const -> sf::Vector2f { return m_lighting.physics.position; }
-	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f { return collider.value().get().get_reference().get_center() + m_camera.target_point; }
+	[[nodiscard]] auto get_camera_focus_point() const -> sf::Vector2f;
 	[[nodiscard]] auto get_facing_scale() const -> sf::Vector2f { return controller.facing_left() ? sf::Vector2f{-1.f, 1.f} : sf::Vector2f{1.f, 1.f}; }
 	[[nodiscard]] auto is_in_animation(AnimState check) const -> bool { return m_animation_machine.get_state() == check; }
 	[[nodiscard]] auto get_desired_direction() const -> SimpleDirection { return SimpleDirection{directions.desired}; }

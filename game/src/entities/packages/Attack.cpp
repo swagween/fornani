@@ -20,9 +20,10 @@ void Attack::handle_player(player::Player& player) { sensor.within_bounds(player
 
 bool Attack::hurt_player(player::Player& player, float damage, sf::Vector2f knockback, bool force) {
 	if (hit.within_bounds(player.hurtbox) && hit.active()) {
-		if (!player.invincible() && !player.health.is_dead()) { player.apply_impulse(knockback); }
+		auto const first_time = !player.invincible();
+		if (first_time && !player.health.is_dead()) { player.apply_impulse(knockback); }
 		player.hurt(damage, force);
-		return true;
+		return first_time;
 	}
 	return false;
 }

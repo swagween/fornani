@@ -22,6 +22,7 @@ struct ShockwaveParameters {
 	int lifetime{};
 	int style{};
 	sf::Vector2f speed{};
+	bool contour{true};
 };
 
 namespace fornani::entity {
