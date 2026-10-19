@@ -161,5 +161,32 @@
         }
       ]
     ]
+  },
+  "escape_pod": {
+    "output": 2,
+    "hide_portrait": true,
+    "suite": [
+      [
+        {
+          "messages": ["It appears to be an escape pod of some kind."]
+        },
+        {
+          "message": "Do you want to get in?",
+          "codes": [[1, 0]]
+        }
+      ]
+    ],
+    "responses": [
+      [
+        {
+          "message": "Yes",
+          "codes": [[23, 1]]
+        },
+        {
+          "message": "No",
+          "codes": [[23, 30]]
+        }
+      ]
+    ]
   }
 }

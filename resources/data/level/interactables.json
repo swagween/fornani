@@ -2,11 +2,24 @@
   "signal_tower": {
     "dimensions": [22, 43],
     "offset": [0, 7],
+    "centered": true,
     "animation": [{ "label": "basic", "params": { "lookup": 0, "duration": 6, "framerate": 80, "num_loops": -1 } }]
   },
   "signal_beacon": {
     "dimensions": [22, 43],
     "offset": [0, 7],
+    "centered": true,
     "animation": [{ "label": "basic", "params": { "lookup": 0, "duration": 6, "framerate": 60, "num_loops": -1 } }]
+  },
+  "escape_pod": {
+    "dimensions": [34, 50],
+    "offset": [-18, -18],
+    "centered": false,
+    "custom_animation": true,
+    "animation": [
+      { "label": "open", "params": { "lookup": 1, "duration": 2, "framerate": 60, "num_loops": 0, "repeat_last_frame": true } },
+      { "label": "close", "params": { "lookup": 2, "duration": 2, "framerate": 60, "num_loops": 0, "repeat_last_frame": true } },
+      { "label": "closed", "params": { "lookup": 0, "duration": 1, "framerate": 60, "num_loops": -1 } }
+    ]
   }
 }

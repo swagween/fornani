@@ -13,7 +13,7 @@
 namespace fornani::world {
 
 Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style, int size)
-	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 0.f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
+	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 0.5f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
 	  speed{size == 1 ? 1.5f : 1.3f}, m_blink{120}, m_intro{64} {
 	get_collider().physics.position = position;
 	get_collider().vert_threshold = 0.01f;
@@ -167,6 +167,8 @@ void Pushable::post_update(automa::ServiceProvider& svc, Map& map, player::Playe
 		}
 		get_collider().set_flag(shape::ColliderFlags::landed, false);
 	}
+
+	player.get_collider().handle_shape_collision(collision_box);
 
 	if (!get_collider().has_jump_collision()) { get_collider().physics.forced_momentum = {}; }
 	if (get_collider().has_left_wallslide_collision() || get_collider().has_right_wallslide_collision() || get_collider().flags.external_state.test(shape::ExternalState::vert_world_collision) || get_collider().world_grounded()) {

@@ -11,6 +11,7 @@ nani_add_sources(
   EncounterLynx.cpp
   EncounterMastiff.cpp
   FamilyReunion.cpp
+  FirstwindEscapePod.cpp
   HaunchIntro.cpp
   HaunchEscape.cpp
         LadyNimbusIntro.cpp

@@ -303,6 +303,7 @@ void Player::update(world::Map& map) {
 	// check for fall
 	if (map.off_the_bottom(get_collider().physics.position)) {
 		m_death_type = map.is_interior() ? PlayerDeathType::abyss : PlayerDeathType::fallen;
+		set_flag(PlayerFlags::no_hurt_effects);
 		hurt(64.f);
 		freeze_position();
 	}
@@ -505,6 +506,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-4.f, 4.f); }
 	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
 	m_sprite_position += m_shake_offset;
+	if (p_animatable.get_frame() == 181) { m_sprite_position.y += 10.f; }
+	if (p_animatable.get_frame() == 182) { m_sprite_position.y += 4.f; }
 	p_animatable.set_position(m_sprite_position - cam);
 	m_sprite_overlay.set_position(m_sprite_position - cam);
 	sprite_offset = default_sprite_offset_v;
@@ -1046,41 +1049,46 @@ void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (is_intangible()) { return; }
 	if (!health.invincible() || force) {
-		m_hurt_effect.timer.start();
-		m_hurt_effect.color = has_flag_set(PlayerFlags::poisoned) ? colors::mythic_green : colors::dark_blood;
+		auto const effects = !has_flag_set(PlayerFlags::no_hurt_effects);
 		m_hurt_cooldown.start();
 		health.inflict(amount, force);
 		health_indicator.add(-amount);
-		m_hurt_effect.damage = std::min(-health_indicator.get_amount(), 4.f);
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
-		auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp"
-				   : cooldowns.stun.started()															  ? "nani_stun"
-				   : consume_flag(PlayerFlags::poisoned)												  ? "nani_stun"
-				   : amount > 1.f																		  ? "nani_double_hurt"
-																										  : "nani_hurt";
-		m_services->soundboard.play_sound(tag);
+
+		if (effects) {
+			m_hurt_effect.timer.start();
+			m_hurt_effect.color = has_flag_set(PlayerFlags::poisoned) ? colors::mythic_green : colors::pioneer_black;
+			m_hurt_effect.damage = std::min(-health_indicator.get_amount(), 4.f);
+			auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp"
+					   : cooldowns.stun.started()															  ? "nani_stun"
+					   : consume_flag(PlayerFlags::poisoned)												  ? "nani_gulp"
+					   : amount > 1.f																		  ? "nani_double_hurt"
+																											  : "nani_hurt";
+			m_services->soundboard.play_sound(tag);
+			m_services->soundboard.play_sound("impact");
+			if (health.is_dead() && !is_dead()) {
+				m_death_type = PlayerDeathType::normal;
+				m_sprite_shake.cancel();
+			}
+			if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
+			if (amount > 1.f) {
+				if (!health.is_dead()) { m_sprite_shake.start(); }
+				m_services->ticker.freeze_frame(3.5f, 4.f);
+			} else {
+				m_services->ticker.freeze_frame(2.5f, 4.f);
+			}
+			if (m_map) {
+				m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
+				m_map.value()->spawn_frame_effect(*m_services, "hurt_spark", hurtbox.get_center());
+			}
+			auto const energy = amount > 1.f ? 0.15f : 0.05f;
+			m_services->camera_controller.shake(2, energy, 200, 50);
+		}
+		if (m_map) { m_map.value()->sound_impact(); }
 		hurt_cooldown.start(2);
-		if (health.is_dead() && !is_dead()) {
-			m_death_type = PlayerDeathType::normal;
-			m_sprite_shake.cancel();
-		}
-		if (is_stunned() && cooldowns.stun.get_normalized() < 0.9f) { cooldowns.stun.start(4); }
-		if (amount > 1.f) {
-			if (!health.is_dead()) { m_sprite_shake.start(); }
-			m_services->ticker.freeze_frame(3.5f, 4.f);
-		} else {
-			m_services->ticker.freeze_frame(2.5f, 4.f);
-		}
-		if (m_map) {
-			m_map.value()->sound_impact();
-			m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
-			m_map.value()->spawn_frame_effect(*m_services, "hurt_spark", hurtbox.get_center());
-		}
-		m_services->soundboard.play_sound("impact");
-		auto const energy = amount > 1.f ? 0.15f : 0.05f;
-		m_services->camera_controller.shake(2, energy, 200, 50);
+		set_flag(PlayerFlags::no_hurt_effects, false);
 	}
 }
 

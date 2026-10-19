@@ -35,6 +35,7 @@
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
 #include <fornani/entity/Water.hpp>
+#include <fornani/entity/special/ExpanderBlock.hpp>
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/Colors.hpp>
 #include <fornani/graphics/Renderer.hpp>
@@ -680,6 +681,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	// for (auto& destructible : destructibles) { destructible->render(svc, win, cam); }
 	for (auto d : get_entities<Destructible>()) { d->is_unlit() ? d->render(win, cam, 1.f) : d->render(m_entity_texture, cam); }
+	for (auto d : get_entities<ExpanderBlock>()) { d->is_unlit() ? d->render(win, cam, 1.f) : d->render(m_entity_texture, cam); }
 
 	if (m_entities) {
 		for (auto v : get_entities<Vine>()) {
@@ -994,6 +996,7 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 		for (auto& breakable : breakables) { breakable->on_hit(svc, *this, proj); }
 		for (auto& pushable : pushables) { pushable->on_hit(svc, *this, proj); }
 		for (auto destructible : get_entities<Destructible>()) { destructible->on_hit(svc, *this, proj); }
+		for (auto eb : get_entities<ExpanderBlock>()) { eb->on_hit(svc, *this, proj); }
 		for (auto& block : switch_blocks) { block->on_hit(svc, *this, proj); }
 		for (auto& enemy : enemy_catalog.enemies) { enemy->on_hit(svc, *this, proj, *player); }
 		for (auto& incinerite : incinerite_blocks) { incinerite->on_hit(svc, *this, proj); }

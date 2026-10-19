@@ -23,6 +23,7 @@
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
 #include <fornani/entity/Water.hpp>
+#include <fornani/entity/special/SpecialBlockFactory.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/utils/Random.hpp>
@@ -67,6 +68,33 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 			tool->current_entity = std::make_unique<fornani::AmbientProp>(svc, channel, tag, depth);
 			ImGui::CloseCurrentPopup();
 		}
+		close_popup();
+	}
+	if (ImGui::BeginPopupModal("Special Block Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
+		m_is_open = true;
+		static char lbl[512] = "expander";
+		static int width{1};
+		static int height{1};
+		static int id{};
+
+		ImGui::Separator();
+		ImGui::InputText("Label", lbl, IM_ARRAYSIZE(lbl));
+		ImGui::InputInt("ID", &id);
+		ImGui::InputInt("Width", &width);
+		ImGui::InputInt("Height", &height);
+
+		width = std::max(1, width);
+		height = std::max(1, height);
+
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+			auto const dimensions = sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+
+			tool = std::make_unique<EntityEditor>(EntityMode::placer);
+			tool->current_entity = fornani::SpecialBlockFactory::create(svc, dimensions, id, lbl);
+			ImGui::CloseCurrentPopup();
+		}
+
 		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Interactable Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {

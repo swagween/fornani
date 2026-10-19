@@ -11,6 +11,7 @@
 #include <fornani/story/cutscene/EncounterMastiff.hpp>
 #include <fornani/story/cutscene/EncounterMinigus.hpp>
 #include <fornani/story/cutscene/FamilyReunion.hpp>
+#include <fornani/story/cutscene/FirstwindEscapePod.hpp>
 #include <fornani/story/cutscene/HaunchEscape.hpp>
 #include <fornani/story/cutscene/HaunchIntro.hpp>
 #include <fornani/story/cutscene/LadyNimbusIntro.hpp>
@@ -48,6 +49,7 @@ void CutsceneCatalog::push_cutscene(automa::ServiceProvider& svc, world::Map& ma
 	case 2: cutscenes.push_back(std::make_unique<SwitchBlockPan>(svc, special_id)); break;
 	case 101: cutscenes.push_back(std::make_unique<BitCell>(svc)); break;
 	case 117: cutscenes.push_back(std::make_unique<EncounterMinigus>(svc)); break;
+	case 118: cutscenes.push_back(std::make_unique<FirstwindEscapePod>(svc, map)); break;
 	case 227: cutscenes.push_back(std::make_unique<EncounterLynx>(svc)); break;
 	case 401: cutscenes.push_back(std::make_unique<EncounterMastiff>(svc)); break;
 	case 601: cutscenes.push_back(std::make_unique<LadyNimbusIntro>(svc)); break;

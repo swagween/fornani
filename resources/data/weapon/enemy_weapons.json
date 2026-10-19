@@ -171,7 +171,7 @@
           "acceleration_factor": 0.0,
           "dampen_factor": 0.0,
           "gravity": 8.0,
-          "spin": 0.01,
+          "spin": 0.04,
           "spin_dampen": 0.999,
           "reflect": true,
           "elasticity": 0.98

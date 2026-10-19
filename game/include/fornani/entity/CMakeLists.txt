@@ -16,6 +16,7 @@ nani_add_headers(
         Portal.hpp
         SavePoint.hpp
         Enemy.hpp
+        SpecialBlock.hpp
         SwitchBlock.hpp
         SwitchButton.hpp
         Teleporter.hpp
@@ -25,3 +26,5 @@ nani_add_headers(
         Vine.hpp
         Water.hpp
 )
+
+add_subdirectory(special)

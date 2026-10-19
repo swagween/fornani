@@ -147,7 +147,8 @@ enum class PlayerFlags : std::uint8_t {
 	flat_shaded,
 	poisoned,
 	refresh_weapons,
-	laser_collision
+	laser_collision,
+	no_hurt_effects
 };
 enum class Triggers : std::uint8_t { hurt };
 

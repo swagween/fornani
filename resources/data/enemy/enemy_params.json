@@ -249,7 +249,7 @@
       "offset": [0, -21],
       "num_colliders": 1,
       "num_hurtboxes": 1,
-      "alert_range": [100.0, 300.0],
+      "alert_range": [88.0, 300.0],
       "hostile_range": [280.0, 300.0],
       "friction": 0.98,
       "gravity": 8.5

@@ -20,8 +20,11 @@ nani_add_sources(
         SwitchButton.cpp
         Teleporter.cpp
         TimerBlock.cpp
+        SpecialBlock.cpp
         Train.cpp
         Turret.cpp
         Vine.cpp
         Water.cpp
 )
+
+add_subdirectory(special)

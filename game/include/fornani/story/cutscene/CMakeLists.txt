@@ -10,6 +10,7 @@ nani_add_headers(
   EncounterMinigus.hpp
   EncounterLynx.hpp
   EncounterMastiff.hpp
+  FirstwindEscapePod.hpp
         LadyNimbusIntro.hpp
         Landing.hpp
         LothAtWorm.hpp

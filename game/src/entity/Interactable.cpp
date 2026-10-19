@@ -12,7 +12,7 @@ Interactable::Interactable(automa::ServiceProvider& svc, dj::Json const& in) : E
 	p_animatable.set_texture(svc.assets.get_texture("interactable_" + m_tag));
 	p_animatable.set_dimensions(sf::Vector2i{in_data["dimensions"][0].as<int>(), in_data["dimensions"][1].as<int>()});
 	p_animatable.tick();
-	p_animatable.center();
+	if (in_data["center"].as_bool()) { p_animatable.center(); }
 }
 
 Interactable::Interactable(automa::ServiceProvider& svc, std::string_view tag, int channel) : Entity(svc, "interactables", 0), m_tag{tag}, m_channel{channel} {}
@@ -37,10 +37,13 @@ void Interactable::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 60, 120, 180}) : drawbox.setFillColor(sf::Color{60, 60, 120, 80});
 	Entity::render(win, cam, size);
 	if (spawn_denied()) { return; }
+	if (is_hidden()) { return; }
 	if (m_editor) { return; }
 	p_animatable.set_position(get_global_center() - cam + m_offset);
 	win.draw(p_animatable);
 	if (debug::is_debug()) {}
 }
+
+void Interactable::set_animation(std::string_view to) { p_animatable.set_animation(to); }
 
 } // namespace fornani

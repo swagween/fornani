@@ -615,6 +615,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		}
 		bool flag{};
 		if (ImGui::BeginMenu("Insert")) {
+			if (ImGui::MenuItem("Special Block", NULL, &entity_popup)) { popup_label = "Special Block"; }
 			if (ImGui::MenuItem("Ambient Prop", NULL, &entity_popup)) { popup_label = "Ambient Prop"; }
 			if (ImGui::MenuItem("Interactable", NULL, &entity_popup)) { popup_label = "Interactable"; }
 			if (ImGui::MenuItem("Portal", NULL, &entity_popup)) { popup_label = "Portal"; }
@@ -1003,7 +1004,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::Image(tileset);
 			if (current_tool->type == ToolType::entity_editor) {
 				if (current_tool->current_entity) {
-					ImGui::Text("Current Entity: %s", current_tool->current_entity.value()->get_label().c_str());
+					if (current_tool->current_entity.value()) { ImGui::Text("Current Entity: %s", current_tool->current_entity.value()->get_label().c_str()); }
 				} else {
 					ImGui::Text("Current Entity: <None>");
 				}

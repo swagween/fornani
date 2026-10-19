@@ -18,6 +18,10 @@ void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	p_health_bar.update(health.get_normalized());
 	if (health.is_dead() && !has_flag_set(BossFlags::end_battle)) { end_battle(); }
 
+	auto const left = player.get_collider().get_center().x < get_collider().get_center().x && directions.actual.left();
+	auto const right = player.get_collider().get_center().x > get_collider().get_center().x && directions.actual.right();
+	set_flag(BossFlags::facing_player, left || right);
+
 	// make sure boss stays in bounds;
 	if (!map.within_bounds(get_collider().get_center()) && map.home_points.size() > 0 && !has_flag_set(BossFlags::ignore_oob)) { m_oob_counter.update(); }
 	if (m_oob_counter.get_count() > 400) {
@@ -29,8 +33,10 @@ void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player&
 	if (player.is_dead() && !has_flag_set(BossFlags::defeated_player) && battle_mode()) {
 		svc.data.increment_boss_victory(label);
 		auto const num = svc.data.get_number_of_boss_victories(label);
-		// auto const ending = num == 1 ? "st" : num == 2 ? "nd" : num == 3 ? "rd" : "th";
-		// svc.notifications.push_notification(svc, "Defeated by " + label + " for the " + std::to_string(num) + ending + " time.");
+		if (!debug::is_production()) {
+			auto const ending = num == 1 ? "st" : num == 2 ? "nd" : num == 3 ? "rd" : "th";
+			svc.notifications.push_notification(svc, "Defeated by " + label + " for the " + std::to_string(num) + ending + " time.");
+		}
 		set_flag(BossFlags::defeated_player);
 	}
 }
@@ -63,5 +69,7 @@ bool Boss::is_staggered() {
 	p_stagger_points.pop_back();
 	return true;
 }
+
+auto Boss::is_facing_player() -> bool { return has_flag_set(BossFlags::facing_player); }
 
 } // namespace fornani::enemy

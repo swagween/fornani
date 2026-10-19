@@ -15,6 +15,7 @@
 #include <fornani/entity/Platform.hpp>
 #include <fornani/entity/Portal.hpp>
 #include <fornani/entity/SavePoint.hpp>
+#include <fornani/entity/SpecialBlock.hpp>
 #include <fornani/entity/SwitchBlock.hpp>
 #include <fornani/entity/SwitchButton.hpp>
 #include <fornani/entity/Teleporter.hpp>
@@ -23,10 +24,16 @@
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
 #include <fornani/entity/Water.hpp>
+#include <fornani/entity/special/ExpanderBlock.hpp>
+#include <fornani/entity/special/SpecialBlockFactory.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
 #include <fornani/world/Map.hpp>
 
 namespace fornani {
+
+inline auto create_special_block(automa::ServiceProvider& svc, dj::Json const& in) -> std::unique_ptr<Entity> { return SpecialBlockFactory::create(svc, in); }
+
+inline auto create_registered_special_block(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in) -> std::unique_ptr<Entity> { return SpecialBlockFactory::create(svc, map, in); }
 
 EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name, bool delegated) {
 
@@ -36,6 +43,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 
 	if (!delegated) { create_map.emplace("npcs", &create_entity<NPC>); }
 	if (!delegated) { create_map.emplace("destructibles", &create_entity<Destructible>); }
+	if (!delegated) { create_map.emplace("special_blocks", &create_special_block); }
 
 	create_map.emplace("beds", &create_entity<Bed>);
 	create_map.emplace("vines", &create_entity<Vine>);
@@ -67,6 +75,7 @@ EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, fornani::ResourceFin
 EntitySet::EntitySet(fornani::automa::ServiceProvider& svc, world::Map& map, fornani::ResourceFinder& finder, dj::Json& metadata, std::string const& room_name) : EntitySet(svc, finder, metadata, room_name, true) {
 	registered_map.emplace("npcs", &create_registered_entity<NPC>);
 	registered_map.emplace("destructibles", &create_registered_entity<Destructible>);
+	registered_map.emplace("special_blocks", &create_registered_special_block);
 	load_and_register(svc, map, finder, metadata, room_name);
 	for (auto& ent : variables.entities) { ent->set_stable_id(map.room_id); }
 }

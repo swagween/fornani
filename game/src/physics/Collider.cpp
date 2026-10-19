@@ -387,11 +387,11 @@ void Collider::handle_collider_collision(Collider const& collider, bool momentum
 	if (collision_depths && crusher) { collision_depths.value().calculate(*this, other); }
 	if (headbox.overlaps(other) && is_complex()) {
 		if (headbox.vertices[2].y + 4.f > other.vertices[2].y) {
-			physics.velocity.y = collider.has_trait(ColliderTrait::platform) ? 10.f : 0.f;
 			auto const overlap = sf::Vector2f{0.f, (other.vertices[2].y - headbox.vertices[0].y)};
 			if (collider.has_trait(ColliderTrait::platform)) {
+				physics.velocity.y = 10.f;
 				physics.ricochet_vertically();
-			} else {
+			} else if (physics.actual_velocity().y < 0.f) {
 				correct_y(overlap);
 			}
 			if (grounded()) {

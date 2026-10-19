@@ -13,8 +13,33 @@
 
 namespace fornani::enemy {
 
-enum class MinigusState : std::uint8_t { idle, turn, run, shoot, jump_shoot, jumpsquat, airborne, land, grab_soda, drink, throw_can, stagger, struggle, recover, laugh, punch, reload, snap, wind_up, charge, exit };
-enum class MinigusFlags : std::uint8_t { aerial_shoot, victory, player_is_punchable, defeated, dropped_loot, show_minigun };
+enum class MinigusState : std::uint8_t {
+	idle,
+	turn,
+	run,
+	shoot,
+	jump_shoot,
+	jumpsquat,
+	airborne,
+	land,
+	grab_soda,
+	drink,
+	throw_can,
+	stagger,
+	struggle,
+	recover,
+	laugh,
+	punch,
+	reload,
+	snap,
+	wind_up,
+	charge,
+	long_charge,
+	charge_turn,
+	bump,
+	exit
+};
+enum class MinigusFlags : std::uint8_t { aerial_shoot, player_is_punchable, defeated, dropped_loot, show_minigun, short_hop };
 
 class Minigun : public Animatable {
   public:
@@ -61,10 +86,14 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 	fsm::StateFunction update_reload();
 	fsm::StateFunction update_wind_up();
 	fsm::StateFunction update_charge();
+	fsm::StateFunction update_long_charge();
+	fsm::StateFunction update_charge_turn();
 	fsm::StateFunction update_exit();
+	fsm::StateFunction update_bump();
 
   private:
 	[[nodiscard]] auto is(MinigusState const test) const -> bool { return StateMachine<MinigusState>::is_state(test); }
+	[[nodiscard]] auto has_side_collision() const -> bool;
 
 	void shoot();
 
@@ -106,6 +135,7 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 	struct {
 		util::Cooldown post_shot{1600};
 		util::Cooldown aerial_shoot{60};
+		util::Cooldown long_charge{1300};
 	} cooldowns{};
 
 	vfx::Sparkler sparkler;
