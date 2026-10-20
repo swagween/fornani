@@ -124,7 +124,7 @@ fsm::StateFunction Crow::update_fly() {
 	p_state.actual = CrowState::fly;
 	set_direction(m_flee_direction);
 	if (p_animatable.animation.just_started()) {
-		m_random_x = random::random_range_float(0.2f, 0.3f);
+		m_random_x = random::range_float(0.2f, 0.3f);
 		random::percent_chance(50) ? m_services->soundboard.flags.crow.set(audio::Crow::fly) : m_services->soundboard.flags.crow.set(audio::Crow::flap);
 	}
 	get_collider().physics.apply_force({0.f, -m_home_force});

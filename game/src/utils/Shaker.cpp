@@ -8,7 +8,7 @@ Shaker::Shaker(ShakeParameters params) : m_params{params}, m_phase{params.freque
 
 void Shaker::tick(sf::Vector2f& point) {
 	if (m_phase.is_almost_complete()) {
-		m_offset = random::random_vector_float(-m_energy, m_energy);
+		m_offset = random::vector_float(-m_energy, m_energy);
 		m_phase.start();
 		m_energy *= m_lifetime.get_normalized();
 	}
@@ -20,7 +20,7 @@ void Shaker::tick(sf::Vector2f& point) {
 
 void Shaker::tick_static(sf::Vector2f& point) {
 	if (m_phase.is_almost_complete()) {
-		m_offset = random::random_vector_float(-m_energy, m_energy);
+		m_offset = random::vector_float(-m_energy, m_energy);
 		point = m_point + m_offset;
 		m_phase.start();
 		m_energy *= m_lifetime.get_normalized();
@@ -34,5 +34,7 @@ void Shaker::shake() {
 	m_phase.start();
 	m_lifetime.start();
 }
+
+void Shaker::sustain() { m_lifetime.start(); }
 
 } // namespace fornani

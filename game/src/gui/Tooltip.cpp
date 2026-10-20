@@ -9,7 +9,7 @@ Tooltip::Tooltip(automa::ServiceProvider& svc, std::string_view style, std::stri
 	m_text.setFillColor(colors::pioneer_red);
 	m_text.setCharacterSize(8);
 	m_text.setString(svc.data.tooltips[tag]["message"].as_string());
-	m_nineslice.set_position(anchor + random::random_vector_float(-32.f, 32.f));
+	m_nineslice.set_position(anchor + random::vector_float(-32.f, 32.f));
 	m_start.start();
 }
 

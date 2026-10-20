@@ -24,7 +24,7 @@ Chain::Chain(automa::ServiceProvider& svc, SpringParameters params, sf::Vector2f
 				link.cousin = &links.at(ctr - 1);
 				if (link.cousin) { link.set_anchor(link.cousin.value()->get_bob()); }
 			}
-			link.set_bob(link.get_anchor() + sf::Vector2f{random::random_range_float(-constants::small_value, constants::small_value), sign * spacing});
+			link.set_bob(link.get_anchor() + sf::Vector2f{random::range_float(-constants::small_value, constants::small_value), sign * spacing});
 			++ctr;
 		}
 	} else {
@@ -307,9 +307,9 @@ void Chain::simulate(automa::ServiceProvider& svc, int amount) {
 void Chain::break_all() {
 	flags.set(ChainFlags::broken);
 	for (auto& link : links) {
-		sf::Vector2f dir = flags.test(ChainFlags::linked) ? (link.get_bob() - *m_centroid).normalized() : random::random_vector_float(-0.5f, 0.5f);
+		sf::Vector2f dir = flags.test(ChainFlags::linked) ? (link.get_bob() - *m_centroid).normalized() : random::vector_float(-0.5f, 0.5f);
 		link.variables.bob_physics.velocity += dir * 20.f;
-		link.fade(random::random_range(80, 200));
+		link.fade(random::range(80, 200));
 	}
 }
 

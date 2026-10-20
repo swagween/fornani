@@ -31,7 +31,7 @@ Sound::Sound(capo::IEngine& engine, capo::Buffer const& buffer, std::string_view
 	if (!source) { NANI_LOG_ERROR(m_logger, "Failed to create sound source"); }
 	if (!source->bind_to(&buffer)) { NANI_LOG_ERROR(m_logger, "Failed to bind source"); };
 	m_sound = std::move(source);
-	m_sound->set_pitch(1.f + random::random_range_float(-properties.pitch_offset, properties.pitch_offset));
+	m_sound->set_pitch(1.f + random::range_float(-properties.pitch_offset, properties.pitch_offset));
 	if (properties.fade_in > 0) { m_fade_in = util::Cooldown{properties.fade_in}; }
 	if (properties.fade_out > 0) {}
 }

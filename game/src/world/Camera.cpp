@@ -34,8 +34,8 @@ void Camera::frame_update() {
 			m_shake.timer.cancel();
 			diff = 0.f;
 		}
-		auto randx = random::random_range_float(-diff, diff);
-		auto randy = random::random_range_float(-diff, diff);
+		auto randx = random::range_float(-diff, diff);
+		auto randy = random::range_float(-diff, diff);
 		m_final_position = m_physics.position + sf::Vector2f{randx, randy};
 	}
 }

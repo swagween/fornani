@@ -10,7 +10,7 @@ namespace fornani::entity {
 
 Mine::Mine(automa::ServiceProvider& svc, world::Map& map, MineType type, int index) : Animatable(svc, "mine", {40, 40}), m_collider(map, 20.f), m_type{type} {
 	m_index = static_cast<std::size_t>(index);
-	set_frame(random::random_range(0, 1));
+	set_frame(random::range(0, 1));
 	// get_collider().set_attribute(shape::ColliderAttributes::custom_resolution);
 	get_collider().set_exclusion_target(shape::ColliderTrait::player);
 	get_collider().set_exclusion_target(shape::ColliderTrait::npc);

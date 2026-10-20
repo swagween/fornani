@@ -108,7 +108,7 @@
         "radius": 4.0,
         "attributes": {
           "base_damage": 1,
-          "power": 2,
+          "power": 1,
           "lifespan": 880,
           "speed": 26.0,
           "variance": 1.3
@@ -160,7 +160,7 @@
         "radius": 4.0,
         "attributes": {
           "base_damage": 1,
-          "power": 3,
+          "power": 4,
           "lifespan": 860,
           "lifespan_variance": 0,
           "speed": 24.5,

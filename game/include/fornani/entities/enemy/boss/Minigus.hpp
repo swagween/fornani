@@ -94,6 +94,7 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
   private:
 	[[nodiscard]] auto is(MinigusState const test) const -> bool { return StateMachine<MinigusState>::is_state(test); }
 	[[nodiscard]] auto has_side_collision() const -> bool;
+	[[nodiscard]] auto sidestep() const -> bool { return cooldowns.above.get_normalized() < 0.1f; }
 
 	void shoot();
 
@@ -136,6 +137,7 @@ class Minigus : public Boss, public StateMachine<MinigusState> {
 		util::Cooldown post_shot{1600};
 		util::Cooldown aerial_shoot{60};
 		util::Cooldown long_charge{1300};
+		util::Cooldown above{1000};
 	} cooldowns{};
 
 	vfx::Sparkler sparkler;

@@ -69,8 +69,8 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	if (svc.ticker.every_x_ticks(18)) {
 		m_pulse.modulate(1);
 		for (auto i = 0; i < 3; ++i) {
-			auto randh = random::random_range_float(-6.f, 6.f);
-			auto randw = random::random_range_float(-20.f * m_size, 20.f * m_size);
+			auto randh = random::range_float(-6.f, 6.f);
+			auto randw = random::range_float(-20.f * m_size, 20.f * m_size);
 			auto rand_offset = m_direction.left() || m_direction.right() ? sf::Vector2f{randh, randw} : sf::Vector2f{randw, randh};
 			map.spawn_effect(svc, "laser_hit", calculate_end_point() + rand_offset);
 		}

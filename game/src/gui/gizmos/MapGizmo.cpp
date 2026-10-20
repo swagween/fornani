@@ -9,9 +9,9 @@
 
 namespace fornani::gui {
 
-MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player)
+MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool comprehensive)
 	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("minimap_icons")},
-	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture("map_shadow"), {45, 45}, {1, 1}),
+	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture(comprehensive ? "map_shadow" : "map_square_shadow"), {45, 45}, {1, 1}),
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::linear},
 	  m_constituents{.gizmo{.top_left{.lookup{{0, 0}, {67, 55}}},
@@ -27,6 +27,12 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 		  sf::Vector2f{80.f, -20.f},
 	  },
 	  m_services{&svc}, m_legend{svc} {
+	if (comprehensive) {
+		m_flags.general.set(MapGizmoFlags::comprehensive);
+	} else {
+		m_map_border.emplace(util::NineSlice(svc, svc.assets.get_texture("limited_map_border"), {49, 49}, {2, 2}));
+		m_minimap->set_flag(MiniMapFlags::limited);
+	}
 	m_dashboard_port = DashboardPort::minimap;
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 	m_physics.position = sf::Vector2f{0.f, svc.window->f_screen_dimensions().y};
@@ -62,8 +68,10 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	}
 
 	if (!is_closed()) {
-		if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
-		if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
+		if (is_comprehensive()) {
+			if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::chain); }
+			if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
+		}
 		if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }
 		if (m_path.get_section() == 1 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hard_slot); }
 	}
@@ -150,6 +158,10 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_screen.set_dimensions(m_path.get_dimensions());
 	m_map_shadow.set_position(m_path.get_position() + get_placement());
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
+	if (m_map_border) {
+		m_map_border->set_position(m_path.get_position() + get_placement());
+		m_map_border->set_dimensions(m_path.get_dimensions());
+	}
 
 	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
 	if (m_menu) { m_menu->update(svc, svc.window->f_center_screen()); }
@@ -165,17 +177,22 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	m_icon_sprite.setScale(constants::f_scale_vec);
 	m_map_screen.render(win, cam);
 	m_map_shadow.render(win, cam);
-	for (auto& chain : m_chains) { chain->render(svc, win, cam, false); }
-	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
+	if (m_map_border) { m_map_border->render(win, cam); }
+	if (is_comprehensive()) {
+		for (auto& chain : m_chains) { chain->render(svc, win, cam, false); }
+		for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
+	}
 	if (m_info) { m_info->render(svc, win, player, shader, palette, cam, foreground); }
-	m_constituents.gizmo.top_left.position = m_path.get_position();
-	m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f}, shader, palette);
-	m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};
-	m_constituents.gizmo.top_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 54.f}, shader, palette);
-	m_constituents.gizmo.bottom_left.position = m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y};
-	m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position, sf::Vector2f{53.f, 1.f}, shader, palette);
-	m_constituents.gizmo.bottom_right.position = m_path.get_position() + m_path.get_dimensions();
-	m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
+	if (is_comprehensive()) {
+		m_constituents.gizmo.top_left.position = m_path.get_position();
+		m_constituents.gizmo.top_left.render(win, m_sprite, render_position, sf::Vector2f{66.f, 54.f}, shader, palette);
+		m_constituents.gizmo.top_right.position = m_path.get_position() + sf::Vector2f{m_path.get_dimensions().x, 0.f};
+		m_constituents.gizmo.top_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 54.f}, shader, palette);
+		m_constituents.gizmo.bottom_left.position = m_path.get_position() + sf::Vector2f{0.f, m_path.get_dimensions().y};
+		m_constituents.gizmo.bottom_left.render(win, m_sprite, render_position, sf::Vector2f{53.f, 1.f}, shader, palette);
+		m_constituents.gizmo.bottom_right.position = m_path.get_position() + m_path.get_dimensions();
+		m_constituents.gizmo.bottom_right.render(win, m_sprite, render_position, sf::Vector2f{1.f, 1.f}, shader, palette);
+	}
 
 	if (m_minimap->get_mode() == MiniMapMode::full) {
 		// draw legend
@@ -339,7 +356,7 @@ void MapGizmo::close_menu() {
 }
 
 MapPlugin::MapPlugin(ResourceFinder& finder, std::string_view p, sf::IntRect lookup, audio::Pioneer sound)
-	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 48, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{random::random_range(0, 128)}, m_sound(sound) {
+	: m_path(finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, p, 48, util::InterpolationType::linear), constituent{.lookup{lookup}, .position{}}, m_delay{random::range(0, 128)}, m_sound(sound) {
 	m_path.set_section("start");
 	m_delay.start();
 }

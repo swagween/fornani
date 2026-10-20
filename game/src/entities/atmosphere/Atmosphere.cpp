@@ -14,8 +14,8 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, std::strin
 	auto span = map.real_dimensions;
 	auto const chunks = (span.x / (constants::f_cell_size * 16.f)) * (span.y / (constants::f_cell_size * 16.f));
 	for (auto i{0}; i < density * chunks; ++i) {
-		auto const startx = random::random_range_float(0.f, span.x);
-		auto const starty = random::random_range_float(0.f, span.y);
+		auto const startx = random::range_float(0.f, span.x);
+		auto const starty = random::range_float(0.f, span.y);
 		fireflies.push_back(std::make_unique<Firefly>(svc, sf::Vector2f{startx, starty}));
 	}
 	for (auto const& target : map.target_points) {
@@ -23,7 +23,7 @@ Atmosphere::Atmosphere(automa::ServiceProvider& svc, world::Map& map, std::strin
 			density = 24;
 			for (auto i{0}; i < density; ++i) {
 				auto vicinity = sf::Vector2f{128.f, 128.f};
-				dragonflies.push_back(std::make_unique<Dragonfly>(svc, map, random::random_vector_float(target - vicinity, target + vicinity)));
+				dragonflies.push_back(std::make_unique<Dragonfly>(svc, map, random::vector_float(target - vicinity, target + vicinity)));
 			}
 		}
 	}

@@ -21,7 +21,7 @@ void WidgetBar::update(automa::ServiceProvider& svc, Health& health, bool shake)
 		i >= health.get_native_capacity() ? widget.set_type(WidgetType::secondary) : widget.set_type(WidgetType::basic);
 		widget.set_offset(m_position);
 		if (shake) {
-			auto const randv = random::random_vector_float(-16.f, 16.f);
+			auto const randv = random::vector_float(-16.f, 16.f);
 			widget.set_physics_offset(randv);
 			widget.shake();
 		}

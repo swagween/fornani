@@ -45,7 +45,7 @@ void BrittleBlock::update(automa::ServiceProvider& svc, Map& map, player::Player
 	if (player.get_collider().jumpbox.overlaps(m_collider.get()->bounding_box)) { hit(); }
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = random::vector_float(-energy, energy); }
 	handle_collision(player.get_collider());
 	set_frame(2 - static_cast<int>(health.get_normalized() * 2.f));
 }

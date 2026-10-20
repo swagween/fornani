@@ -331,10 +331,10 @@ fsm::StateFunction GrandMastiff::update_howl() {
 	}
 	auto fire_rate = 40;
 	if (m_howl_count.get_count() % fire_rate == 0) {
-		auto xoffset = random::random_range_float(-480.f, 680.f) * directions.actual.as_float();
-		auto yoffset = random::random_range_float(-260.f, -220.f);
+		auto xoffset = random::range_float(-480.f, 680.f) * directions.actual.as_float();
+		auto yoffset = random::range_float(-260.f, -220.f);
 		auto offset = sf::Vector2f{xoffset, yoffset};
-		auto randx = random::random_range_float(-1.f, 1.f);
+		auto randx = random::range_float(-1.f, 1.f);
 		m_demon_star.get().set_barrel_point(get_collider().get_center() + offset);
 		m_demon_star.shoot(*p_services, *p_map, sf::Vector2f{randx, 4.f});
 	}

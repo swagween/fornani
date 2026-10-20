@@ -71,7 +71,7 @@ void GameplayState::render(ServiceProvider& svc, sf::RenderWindow& win) {
 
 	p_renderer.end();
 
-	for (auto const& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render_on_top(win, {}); }
+	for (auto const& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render_on_top(win, player->get_camera_position()); }
 
 	p_context.console || svc.state_flags.test(automa::StateFlags::cutscene) ? svc.state_flags.set(automa::StateFlags::hide_hud) : svc.state_flags.reset(automa::StateFlags::hide_hud);
 

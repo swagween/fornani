@@ -19,7 +19,7 @@ Eyebot::Eyebot(automa::ServiceProvider& svc, world::Map& map) : Enemy(svc, map, 
 void Eyebot::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {
 	if (just_died()) {
 		for (int i{0}; i < 3; ++i) {
-			sf::Vector2f const spawn = get_collider().get_center() + random::random_vector_float(-6.f, 6.f);
+			sf::Vector2f const spawn = get_collider().get_center() + random::vector_float(-6.f, 6.f);
 			map.spawn_enemy(5, spawn, true);
 		}
 	}

@@ -46,11 +46,11 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 
 	for (auto i{0}; i < 4; ++i) {
 		m_nighthawks.push_back(Nighthawk{svc});
-		auto randx = random::random_range_float(600.f, 2000.f);
-		auto randy = random::random_range_float(0.f, 400.f);
+		auto randx = random::range_float(600.f, 2000.f);
+		auto randy = random::range_float(0.f, 400.f);
 		m_nighthawks.back().steering.physics.position = {randx, randy};
-		auto c = random::random_range(0, 2);
-		auto f = random::random_range(0, 2);
+		auto c = random::range(0, 2);
+		auto f = random::range(0, 2);
 		m_nighthawks.back().set_channel(0);
 		m_nighthawks.back().set_frame(f);
 		m_nighthawks.back().z = (3.f - static_cast<float>(c)) * 0.00002f;

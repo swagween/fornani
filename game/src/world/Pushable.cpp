@@ -26,7 +26,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	mass = static_cast<float>(size);
 	get_collider().sync_components();
 	auto lock = get_collider().snap_to_grid(static_cast<float>(size));
-	get_collider().physics.position = lock + sf::Vector2f{0.f, -1.f};
+	get_collider().physics.position = lock + sf::Vector2f{0.f, -4.f};
 	start_box = get_collider().bounding_box;
 	set_texture_rect(sf::IntRect{{style * 2 * constants::i_cell_resolution, (size - 1) * constants::i_cell_resolution}, constants::i_resolution_vec * size});
 	get_collider().flags.general.reset(shape::General::complex);
@@ -59,7 +59,7 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	collision_box.set_position(get_collider().physics.position - sf::Vector2f{0.f, 1.f});
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(20)) { random_offset = random::vector_float(-energy, energy); }
 	weakened.update();
 	if (weakened.is_complete()) { hit_count.start(); }
 

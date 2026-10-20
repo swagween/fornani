@@ -364,8 +364,8 @@ fsm::StateFunction Lynx::update_levitate() {
 		p_animatable.set_num_loops(5);
 		if (m_cooldowns.start_levitate.is_complete() && !m_cooldowns.spawn_explosion.running()) { m_cooldowns.spawn_explosion.start(); }
 		if (m_cooldowns.spawn_explosion.is_almost_complete() && !m_cooldowns.start_levitate.running()) {
-			auto randx = random::random_range_float(-400.f, 400.f);
-			auto randy = random::random_range_float(-200.f, 80.f);
+			auto randx = random::range_float(-400.f, 400.f);
+			auto randy = random::range_float(-200.f, 80.f);
 			auto const pt = m_explosions.empty() ? m_player_center : m_explosion_target + sf::Vector2f{randx, randy};
 			m_explosions.push_back(LynxExplosion{{*m_services, "delayed_explosion", {114, 112}}, pt});
 			auto& e = m_explosions.back();

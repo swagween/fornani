@@ -210,7 +210,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			}
 			map.spawn_counter.update(-1);
 			get_collider().set_flag(shape::ColliderFlags::intangible);
-			if (!p_sounds.death.empty()) { svc.soundboard.play_sound(random::random_element(p_sounds.death), at); }
+			if (!p_sounds.death.empty()) { svc.soundboard.play_sound(random::element(p_sounds.death), at); }
 		}
 	}
 	flags.triggers = {};
@@ -230,7 +230,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 		auto const at = get_collider().get_center();
 		if (sound.hurt_sound_cooldown.is_complete()) {
 			svc.soundboard.play_sound("hit", at);
-			p_sounds.hurt.empty() ? svc.soundboard.play_sound("standard_hit", at) : svc.soundboard.play_sound(random::random_element(p_sounds.hurt), at);
+			p_sounds.hurt.empty() ? svc.soundboard.play_sound("standard_hit", at) : svc.soundboard.play_sound(random::element(p_sounds.hurt), at);
 			sound.hurt_sound_cooldown.start();
 		}
 		flags.state.reset(StateFlags::hurt);
@@ -254,7 +254,7 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	// shake
 	energy = std::clamp(energy - dampen, 0.f, std::numeric_limits<float>::max());
 	if (energy < 0.2f) { energy = 0.f; }
-	if (svc.ticker.every_x_ticks(14)) { m_random_offset = random::random_vector_float(-energy, energy); }
+	if (svc.ticker.every_x_ticks(14)) { m_random_offset = random::vector_float(-energy, energy); }
 	if (hitstun.running() && flags.general.test(GeneralFlags::tick_slowdown)) {
 		hitstun.update();
 		if (svc.ticker.every_x_ticks(2)) { get_collider().physics.zero(); }
@@ -356,8 +356,8 @@ void Enemy::submit(FlatShader& shader, sf::RenderWindow& win) {
 	if (died() && !flags.general.test(GeneralFlags::post_death_render)) { return; }
 	if (flags.state.test(StateFlags::invisible)) { return; }
 	if (hurt_flash_effect.get_normalized() > 0.6f) {
-		shader.finalize(colors::ui_white);
-		shader.submit(win, p_animatable.get_sprite());
+		shader.finalize(colors::goldenrod);
+		shader.submit(win, p_animatable.get_sprite(), LightBlendMode::screen);
 	} else if (hurt_flash_effect.get_normalized() > 0.2f) {
 		shader.finalize(colors::black);
 		shader.submit(win, p_animatable.get_sprite());
@@ -454,7 +454,7 @@ void Enemy::kill(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dir
 	auto const freeze = 0.05f + static_cast<float>(attributes.size) * 0.05f;
 	svc.ticker.freeze_frame(freeze);
 	for (auto i = 0; i < 3; ++i) {
-		auto random_vector = random::random_vector_float(-0.5f, 0.5f);
+		auto random_vector = random::vector_float(-0.5f, 0.5f);
 		map.effects.push_back(entity::Effect(svc, "large_explosion", get_collider().get_center(), direction * 0.7f + random_vector, visual.effect_type));
 	}
 	auto tag = attributes.size == EnemySize::tiny ? "small_carnage" : attributes.size == EnemySize::giant ? "large_carnage" : "carnage";
@@ -469,7 +469,7 @@ void Enemy::spawn_treasure(automa::ServiceProvider& svc, world::Map& map) {
 	if (!m_treasure) { return; }
 	if (m_treasure->empty()) { return; }
 	Treasure const& chosen = random::weighted_choice(*m_treasure, [](Treasure const& t) { return t.drop_chance; });
-	map.spawn_chest(svc, chosen, get_collider().get_center(), random::random_vector_float({-1.f, 1.f}, {-12.f, -20.f}));
+	map.spawn_chest(svc, chosen, get_collider().get_center(), random::vector_float({-1.f, 1.f}, {-12.f, -20.f}));
 }
 
 void Enemy::hurt(float amount) {

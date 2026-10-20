@@ -240,7 +240,7 @@
   },
   "meta": {
     "ambience": "industrial",
-    "background": "night",
+    "background": "black",
     "biome": "firstwind",
     "camera_effects": {
       "shake": {
@@ -268,7 +268,7 @@
       1
     ],
     "minimap": true,
-    "music": "",
+    "music": "dusken",
     "player_start": [
       0,
       0

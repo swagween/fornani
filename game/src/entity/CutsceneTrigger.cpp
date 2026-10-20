@@ -26,16 +26,27 @@ std::unique_ptr<Entity> CutsceneTrigger::clone() const { return std::make_unique
 void CutsceneTrigger::serialize(dj::Json& out) {
 	Entity::serialize(out);
 	if (m_attributes.test(CutsceneTriggerAttributes::callbox)) { out["attributes"]["callbox"] = true; }
+	if (m_attributes.test(CutsceneTriggerAttributes::persistent)) { out["attributes"]["persistent"] = true; }
 }
 
 void CutsceneTrigger::unserialize(dj::Json const& in) {
 	Entity::unserialize(in);
 	if (in["attributes"]["callbox"].as_bool()) { m_attributes.set(CutsceneTriggerAttributes::callbox); }
+	if (in["attributes"]["persistent"].as_bool()) { m_attributes.set(CutsceneTriggerAttributes::persistent); }
 	if (get_id() == arena_id_v) { m_attributes.set(CutsceneTriggerAttributes::arena); }
 	if (get_id() == air_travel_id_v) { m_attributes.set(CutsceneTriggerAttributes::persistent); }
 }
 
-void CutsceneTrigger::expose() { Entity::expose(); }
+void CutsceneTrigger::expose() {
+	Entity::expose();
+	static bool c{};
+	static bool p{};
+	ImGui::Checkbox("Callbox?", &c);
+	ImGui::Checkbox("Persistent?", &p);
+	c ? m_attributes.set(CutsceneTriggerAttributes::callbox) : m_attributes.reset(CutsceneTriggerAttributes::callbox);
+
+	p ? m_attributes.set(CutsceneTriggerAttributes::persistent) : m_attributes.reset(CutsceneTriggerAttributes::persistent);
+}
 
 void CutsceneTrigger::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
@@ -58,7 +69,7 @@ void CutsceneTrigger::update([[maybe_unused]] automa::ServiceProvider& svc, [[ma
 		if (m_attributes.test(CutsceneTriggerAttributes::callbox)) {
 			if (player.controller.inspecting()) { m_flags.set(CutsceneTriggerFlags::activated); }
 			if (!m_flags.test(CutsceneTriggerFlags::hovered)) {
-				if (!m_hover_trigger.running()) { map.spawn_effect(svc, "question_mark", get_global_center() + sf::Vector2f{0.f, -32.f}); }
+				if (!m_hover_trigger.running() && !player.has_flag_set(player::PlayerFlags::cutscene)) { map.spawn_effect(svc, "question_mark", get_global_center() + sf::Vector2f{0.f, -32.f}); }
 				m_flags.set(CutsceneTriggerFlags::hovered);
 				m_hover_trigger.start();
 			}

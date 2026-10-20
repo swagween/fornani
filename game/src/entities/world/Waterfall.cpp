@@ -23,9 +23,9 @@ void Waterfall::update(automa::ServiceProvider& svc, Map& map, player::Player& p
 		if (m_detector.overlaps(water->get_bounding_box())) {
 			svc.soundboard.repeat_sound("waterfall", m_id.get(), get_world_position());
 			svc.soundboard.repeat_sound("deep_waterfall", m_id.get(), get_world_position());
-			auto pos = m_detector.get_center() + sf::Vector2f{0.f, 16.f} + random::random_vector_float({-16.f, 0.f}, {16.f, 0.f});
+			auto pos = m_detector.get_center() + sf::Vector2f{0.f, 16.f} + random::vector_float({-16.f, 0.f}, {16.f, 0.f});
 			if (svc.ticker.every_x_ticks(18)) {
-				map.spawn_effect(svc, "steam", pos, {random::random_range_float(-0.2f, 0.2f), -0.3f}, water->get_i_type());
+				map.spawn_effect(svc, "steam", pos, {random::range_float(-0.2f, 0.2f), -0.3f}, water->get_i_type());
 				map.spawn_emitter(svc, "steam", pos, Direction{UND::down}, constants::f_resolution_vec, colors::nani_white, water->get_i_type());
 			}
 		}

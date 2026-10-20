@@ -16,11 +16,6 @@ FilterShader::FilterShader(ResourceFinder& finder, sf::Vector2u size) {
 }
 
 void FilterShader::finalize(float time, sf::Vector2u size, sf::Vector2f position, sf::Color highlight, float intensity) {
-	NANI_LOG_INFO(m_logger, "FilterShader::finalize");
-	NANI_LOG_INFO(m_logger, "  resolution: {} x {}", size.x, size.y);
-	NANI_LOG_INFO(m_logger, "  center (SFML pixels): ({}, {})", position.x, position.y);
-	NANI_LOG_INFO(m_logger, "  expected GL center: ({}, {})", position.x, static_cast<float>(size.y) - position.y);
-	NANI_LOG_INFO(m_logger, "  intensity: {}", intensity);
 
 	m_shader.setUniform("uTime", time);
 	m_shader.setUniform("uResolution", sf::Glsl::Vec2(size));
@@ -35,10 +30,6 @@ void FilterShader::finalize(float time, sf::Vector2u size, sf::Vector2f position
 void FilterShader::submit(sf::RenderWindow& win) {
 	auto const window_size = win.getSize();
 	auto const blanket_size = sf::Vector2f{window_size};
-
-	NANI_LOG_INFO(m_logger, "FilterShader::submit");
-	NANI_LOG_INFO(m_logger, "  window size: {} x {}", window_size.x, window_size.y);
-	NANI_LOG_INFO(m_logger, "  blanket size: {} x {}", blanket_size.x, blanket_size.y);
 
 	auto blanket = sf::RectangleShape{blanket_size};
 	win.draw(blanket, &m_shader);

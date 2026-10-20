@@ -212,14 +212,9 @@
     "origin": [0, 0],
     "naive_title": "Radar Device",
     "actual_title": "Radar Device",
-    "naive_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
-    "actual_description": "A map system. It fits perfectly in the top slot of your pocket gizmo.",
-    "unique": true,
-    "build": {
-      "recipe": ["priorite", "pioneer_scrap", "rhenite"],
-      "craft_price": 200,
-      "lookup": 5
-    }
+    "naive_description": "A limited navigation gizmo. It fits perfectly in the top slot of your pocket gizmo.",
+    "actual_description": "A limited navigation gizmo. It fits perfectly in the top slot of your pocket gizmo.",
+    "unique": true
   },
   {
     "tag": "clock",
@@ -1332,5 +1327,21 @@
     "equippable": true,
     "sellable": false,
     "value": 4400
+  },
+  {
+    "tag": "radar_system",
+    "category": 6,
+    "lookup": [7, 3],
+    "origin": [0, 0],
+    "naive_title": "Radar Device",
+    "actual_title": "Radar Device",
+    "naive_description": "A comprehensive map system. It fits perfectly in the top slot of your pocket gizmo.",
+    "actual_description": "A comprehensive map system. It fits perfectly in the top slot of your pocket gizmo.",
+    "unique": true,
+    "build": {
+      "recipe": ["priorite", "pioneer_scrap", "pixium"],
+      "craft_price": 200,
+      "lookup": 5
+    }
   }
 ]

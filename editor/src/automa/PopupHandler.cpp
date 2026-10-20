@@ -23,6 +23,7 @@
 #include <fornani/entity/Turret.hpp>
 #include <fornani/entity/Vine.hpp>
 #include <fornani/entity/Water.hpp>
+#include <fornani/entity/special/ExpanderBlock.hpp>
 #include <fornani/entity/special/SpecialBlockFactory.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
@@ -71,32 +72,62 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		close_popup();
 	}
 	if (ImGui::BeginPopupModal("Special Block Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
-		m_is_open = true;
-		static char lbl[512] = "expander";
+		static int type_index{};
+		static char tag[512] = "expander";
 		static int width{1};
 		static int height{1};
 		static int id{};
 
+		constexpr char const* type_names[] = {"Special Block", "Expander"};
+
 		ImGui::Separator();
-		ImGui::InputText("Label", lbl, IM_ARRAYSIZE(lbl));
+		ImGui::Combo("Block Type", &type_index, type_names, IM_ARRAYSIZE(type_names));
+		ImGui::InputText("Tag", tag, IM_ARRAYSIZE(tag));
 		ImGui::InputInt("ID", &id);
 		ImGui::InputInt("Width", &width);
 		ImGui::InputInt("Height", &height);
 
+		static int time{360};
+		static float threshold{0.5f};
+		static float factor{3.f};
+
 		width = std::max(1, width);
 		height = std::max(1, height);
 
-		if (ImGui::Button("Create")) {
-			m_is_open = false;
-			auto const dimensions = sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+		if (type_index == 1) {
+			ImGui::SeparatorText("Expander Settings");
+			if (type_index == 1) {
+				ImGui::SeparatorText("Expander Settings");
 
-			tool = std::make_unique<EntityEditor>(EntityMode::placer);
-			tool->current_entity = fornani::SpecialBlockFactory::create(svc, dimensions, id, lbl);
-			ImGui::CloseCurrentPopup();
+				ImGui::InputInt("Time", &time);
+				time = std::max(1, time);
+
+				ImGui::SliderFloat("Threshold", &threshold, 0.f, 1.f);
+				ImGui::InputFloat("Expansion Factor", &factor, 0.1f, 0.5f);
+				factor = std::max(1.f, factor);
+			}
 		}
 
+		if (ImGui::Button("Create")) {
+			m_is_open = false;
+
+			auto const dimensions = sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
+
+			auto const specs = fornani::ExpanderBlockSpecifications{.time = time, .threshold = threshold, .factor = factor};
+
+			tool = std::make_unique<EntityEditor>(EntityMode::placer);
+
+			if (type_index == 1) {
+				tool->current_entity = fornani::SpecialBlockFactory::create_expander(svc, dimensions, id, tag, specs);
+			} else {
+				tool->current_entity = fornani::SpecialBlockFactory::create(svc, dimensions, id, tag);
+			}
+
+			ImGui::CloseCurrentPopup();
+		}
 		close_popup();
 	}
+
 	if (ImGui::BeginPopupModal("Interactable Specifications", nullptr, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static bool activate_on_contact{};
@@ -431,7 +462,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	if (ImGui::BeginPopupModal("Chest Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 
-		static int id{fornani::random::random_range(10000, 99999)};
+		static int id{fornani::random::range(10000, 99999)};
 		static int modifier{};
 		static int type{};
 		static std::string item_lbl{"item_label"};
@@ -677,7 +708,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	}
 	if (ImGui::BeginPopupModal("Light Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
-		static int id{fornani::random::random_range(10000, 99999)};
+		static int id{fornani::random::range(10000, 99999)};
 		static char const* types[2] = {"lantern", "candlelight"};
 		static int type{};
 

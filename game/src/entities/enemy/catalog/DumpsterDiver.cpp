@@ -28,7 +28,7 @@ DumpsterDiver::DumpsterDiver(automa::ServiceProvider& svc, world::Map& map, int 
 	for (auto const& tile : map.get_middleground().get()->grid.cells) {
 		if (!tile.exposed || !(tile.is_solid() || tile.is_ground_ramp())) { continue; }
 		if (m_home_points.size() >= 2) {
-			auto first = random::random_range(0, m_home_points.size() - 2);
+			auto first = random::range(0, m_home_points.size() - 2);
 
 			auto center = (m_home_points[first] + m_home_points[first + 1]) * 0.5f;
 			auto radius = (m_home_points[first] - center).length();
@@ -68,7 +68,7 @@ void DumpsterDiver::update(automa::ServiceProvider& svc, world::Map& map, player
 	if (!m_wait_time.running()) {
 		auto target_points = std::vector<sf::Vector2f>{};
 		if (m_home_points.size() >= 2) {
-			auto first = random::random_range(0, m_home_points.size() - 2);
+			auto first = random::range(0, m_home_points.size() - 2);
 			target_points = {m_home_points[first], m_home_points[first + 1]};
 		}
 		auto alpha = which_side == 1 ? m_dive_time.get_normalized() : m_dive_time.get_inverse_normalized();

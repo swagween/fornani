@@ -14,7 +14,7 @@ Minion::Minion(automa::ServiceProvider& svc, world::Map& map, int variant) : Ene
 	p_animatable.animation.set_params(get_params("idle"));
 	flags.state.set(StateFlags::no_shake);
 	flags.general.set(GeneralFlags::hurt_on_contact);
-	auto random_start = random::random_range(0, m_tick.get_native_time());
+	auto random_start = random::range(0, m_tick.get_native_time());
 	m_tick.start(random_start);
 
 	get_collider().physics.set_friction_componentwise({0.96f, 0.99f});

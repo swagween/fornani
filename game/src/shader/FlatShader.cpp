@@ -14,8 +14,9 @@ FlatShader::FlatShader(ResourceFinder& finder) {
 
 void FlatShader::finalize(sf::Color color) { m_shader.setUniform("u_color", sf::Glsl::Vec4(color)); }
 
-void FlatShader::submit(sf::RenderWindow& win, sf::Sprite const& sprite) {
+void FlatShader::submit(sf::RenderWindow& win, sf::Sprite const& sprite, LightBlendMode blend_mode) {
 	m_shader.setUniform("u_texture", sprite.getTexture());
+	m_shader.setUniform("u_blend_mode", static_cast<int>(blend_mode));
 	sf::RenderStates states;
 	states.shader = &m_shader;
 	states.blendMode = sf::BlendAlpha;

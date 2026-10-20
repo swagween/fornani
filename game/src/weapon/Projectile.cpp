@@ -34,7 +34,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	metadata.specifications.speed = in_data["attributes"]["speed"].as<float>();
 	metadata.specifications.speed_variance = in_data["attributes"]["speed_variance"].as<float>();
 	metadata.specifications.max_hits = in_data["attributes"]["max_hits"].as<int>();
-	metadata.specifications.speed += random::random_range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
+	metadata.specifications.speed += random::range_float(-metadata.specifications.speed_variance, metadata.specifications.speed_variance);
 	metadata.specifications.variance = in_data["attributes"]["variance"].as<float>();
 	metadata.specifications.stun_multiplier = in_data["attributes"]["stun_multiplier"].as<float>();
 	metadata.specifications.knockback = in_data["attributes"]["knockback"].as<float>();
@@ -80,7 +80,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 
 	metadata.specifications.lifespan = in_data["attributes"]["lifespan"].as<int>();
 	metadata.specifications.lifespan_variance = in_data["attributes"]["lifespan_variance"].as<int>();
-	auto var = random::random_range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
+	auto var = random::range(-metadata.specifications.lifespan_variance, metadata.specifications.lifespan_variance);
 	lifetime = util::Cooldown{metadata.specifications.lifespan + var};
 	damage_timer = util::Cooldown{in_data["attributes"]["damage_rate"].as<int>()};
 
@@ -89,7 +89,7 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	physical.collider.physics.gravity = metadata.specifications.gravity;
 	physical.collider.set_attribute(shape::ColliderAttributes::sticky, metadata.attributes.test(ProjectileAttributes::sticky));
 	if (metadata.specifications.dampen_factor != 0.f) {
-		auto var = random::random_range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
+		auto var = random::range_float(-metadata.specifications.dampen_variance, metadata.specifications.dampen_variance);
 		physical.collider.physics.set_global_friction(metadata.specifications.dampen_factor + var);
 	}
 
@@ -289,8 +289,8 @@ void Projectile::destroy(bool completely, bool whiffed) {
 }
 
 void Projectile::seed(automa::ServiceProvider& svc, sf::Vector2f target, float speed_multiplier, float damage_multiplier) {
-	float var = random::random_range_float(-metadata.specifications.variance, metadata.specifications.variance);
-	if (visual.num_sprites > 1) { visual.sprite_index = random::random_range(0, visual.num_sprites - 1); }
+	float var = random::range_float(-metadata.specifications.variance, metadata.specifications.variance);
+	if (visual.num_sprites > 1) { visual.sprite_index = random::range(0, visual.num_sprites - 1); }
 	metadata.specifications.speed *= speed_multiplier;
 	variables.damage_multiplier *= damage_multiplier;
 	if (omnidirectional()) {

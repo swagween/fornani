@@ -134,7 +134,7 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_services->events.npc_pop_conversation_event.dispatch();
 				auto label = svc.data.get_npc_label_from_id(code.value);
 				if (label && code.extras) {
-					svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value);
+					// svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value);
 					NANI_LOG_DEBUG(m_logger, "Progressed NPC dialogue for NPC {} in room {}.", label.value().data(), code.extras->at(0));
 				}
 				processed = true;
@@ -418,7 +418,7 @@ bool Console::process_code(MessageCode const& code) {
 		if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
 		m_flags.set(ConsoleFlags::close_after_process);
 	}
-	if (code.is_destructible() && m_process_code_after) {
+	if (code.is_destructible()) {
 		auto inverse = code.extras ? code.extras->at(0) : 0;
 		m_services->data.switch_destructible_state(code.value, static_cast<bool>(inverse));
 	}

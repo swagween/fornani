@@ -1,5 +1,8 @@
+
 #pragma once
+
 #include <SFML/Graphics.hpp>
+#include <fornani/graphics/Animatable.hpp>
 #include <string_view>
 #include "fornani/entities/animation/AnimatedSprite.hpp"
 #include "fornani/physics/Collider.hpp"
@@ -23,10 +26,10 @@ namespace fornani::world {
 
 class SwitchBlock;
 
-enum class SwitchType : std::uint8_t { toggler, permanent, movable, alternator };
+enum class SwitchType : std::uint8_t { toggler, permanent, movable, alternator, END };
 enum class SwitchButtonState : std::uint8_t { unpressed, pressed, triggered };
 
-class SwitchButton {
+class SwitchButton : public Animatable {
   public:
 	SwitchButton(automa::ServiceProvider& svc, sf::Vector2f position, int id, int type, Map& map);
 	void update(automa::ServiceProvider& svc, Map& map, player::Player& player);
@@ -59,7 +62,6 @@ class SwitchButton {
 	SwitchButtonState external{};
 	util::BitFlags<SwitchButtonState> m_flags{};
 	shape::Shape sensor{};
-	anim::AnimatedSprite sprite;
 	sf::RectangleShape sensorbox{};
 };
 

@@ -80,7 +80,7 @@ void Haunch::update(automa::ServiceProvider& svc, world::Map& map, player::Playe
 		shake();
 		if (!player.has_flag_set(player::PlayerFlags::console_open)) { m_cooldowns.post_death.update(); }
 		if (svc.ticker.every_x_ticks(70)) {
-			auto pos = get_collider().get_center() + random::random_vector_float(-40.f, 40.f);
+			auto pos = get_collider().get_center() + random::vector_float(-40.f, 40.f);
 			map.spawn_effect(svc, "puff", pos, {}, 1);
 		}
 		// haunch talks again and decides to hunt down the player
@@ -385,7 +385,7 @@ fsm::StateFunction Haunch::update_whistle() {
 	if (p_animatable.animation.get_frame_count() == 1 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("haunch_whistle", get_collider().get_center()); }
 	if (p_animatable.animation.get_frame_count() == 5 && !m_cooldowns.whistle.running()) {
 		for (auto i = 0; i < 3; ++i) {
-			auto pos = get_collider().get_top() + sf::Vector2f{0.f, -140.f} + random::random_vector_float(-200.f, 200.f);
+			auto pos = get_collider().get_top() + sf::Vector2f{0.f, -140.f} + random::vector_float(-200.f, 200.f);
 			m_map->spawn_enemy(19, pos);
 		}
 		m_cooldowns.whistle.start();

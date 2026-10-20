@@ -531,7 +531,7 @@ void Soundboard::repeat(automa::ServiceProvider& svc, Sound& sound, int frequenc
 }
 
 void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float random_pitch_offset, float vol, float attenuation, sf::Vector2f distance, bool wait_until_over) {
-	auto random_pitch = random_pitch_offset == 0.f ? 0.f : random::random_range_float(-random_pitch_offset, random_pitch_offset);
+	auto random_pitch = random_pitch_offset == 0.f ? 0.f : random::range_float(-random_pitch_offset, random_pitch_offset);
 	sound.set_pitch(1.f + random_pitch);
 	auto scalar = distance.length() / attenuation;
 	sound.set_volume((vol - (scalar > vol ? vol : scalar)));
@@ -541,7 +541,7 @@ void Soundboard::randomize(automa::ServiceProvider& svc, Sound& sound, float ran
 
 void Soundboard::play_step(int tile_value, int style_id, bool land) {
 	if (style_id == 8) {
-		auto pick = random::random_range_float(0.f, 1.f);
+		auto pick = random::range_float(0.f, 1.f);
 		if (land) {
 			if (pick < 0.5f) {
 				play_sound("land_worm_1");

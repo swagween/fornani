@@ -17,52 +17,60 @@ static std::mt19937& engine() {
 	return gen;
 }
 
-int random_range(int lo, int hi);
+int range(int lo, int hi);
 
 // Generates a random integer in the range [lo, hi] using a provided seed
-int random_range(int lo, int hi, std::uint32_t seed);
+int range(int lo, int hi, std::uint32_t seed);
 
 // Generates a random float in the range [lo, hi]
-float random_range_float(float lo, float hi);
+float range_float(float lo, float hi);
 
 // Generates a random 2D vector of floats with both components in the range [lo, hi]
-sf::Vector2f random_vector_float(float lo, float hi);
+sf::Vector2f vector_float(float lo, float hi);
 
 // Generates a random 2D vector of floats with x in [lo.x, hi.x] and y in [lo.y, hi.y]
-sf::Vector2f random_vector_float(sf::Vector2f lo, sf::Vector2f hi);
+sf::Vector2f vector_float(sf::Vector2f lo, sf::Vector2f hi);
 
 // Generates a random vector from a point within `radius` distance, skewed toward the center
-sf::Vector2f random_weighted_offset(float radius, float bias = 2.0f);
+sf::Vector2f weighted_offset(float radius, float bias = 2.0f);
 
 // Grabs a random element from a vector, excluding specified elements.
 template <typename T>
-T& random_element(std::vector<T>& v, std::vector<T> const& exclusions = {}) {
-	assert(!v.empty() && "random_element: empty vector");
+T& element(std::vector<T>& v, std::vector<T> const& exclusions = {}) {
+	assert(!v.empty() && "element: empty vector");
 
 	std::vector<std::size_t> candidates;
 	for (std::size_t i = 0; i < v.size(); ++i) {
 		if (std::ranges::find(exclusions, v[i]) == exclusions.end()) { candidates.push_back(i); }
 	}
 
-	assert(!candidates.empty() && "random_element: no eligible elements");
+	assert(!candidates.empty() && "element: no eligible elements");
 
 	std::uniform_int_distribution<std::size_t> dist(0, candidates.size() - 1);
 	return v[candidates[dist(engine())]];
 }
 
 template <typename T>
-T const& random_element(std::vector<T> const& v, std::vector<T> const& exclusions = {}) {
-	assert(!v.empty() && "random_element: empty vector");
+T const& element(std::vector<T> const& v, std::vector<T> const& exclusions = {}) {
+	assert(!v.empty() && "element: empty vector");
 
 	std::vector<std::size_t> candidates;
 	for (std::size_t i = 0; i < v.size(); ++i) {
 		if (std::ranges::find(exclusions, v[i]) == exclusions.end()) { candidates.push_back(i); }
 	}
 
-	assert(!candidates.empty() && "random_element: no eligible elements");
+	assert(!candidates.empty() && "element: no eligible elements");
 
 	std::uniform_int_distribution<std::size_t> dist(0, candidates.size() - 1);
 	return v[candidates[dist(engine())]];
+}
+
+template <typename T, std::size_t Extent>
+T const& element(std::span<T const, Extent> v) {
+	assert(!v.empty() && "element: empty span");
+
+	std::uniform_int_distribution<std::size_t> dist(0, v.size() - 1);
+	return v[dist(engine())];
 }
 
 // Returns 0 or 1 based on a coin flip using an unsigned logic
@@ -75,7 +83,7 @@ int signed_coin_flip();
 bool coin_flip();
 
 // Generates a random float following a normal distribution with the given mean and standard deviation
-float random_range_normal(float mean, float std_dev);
+float range_normal(float mean, float std_dev);
 
 // Returns true with a probability corresponding to the provided percent chance
 bool percent_chance(float percent);

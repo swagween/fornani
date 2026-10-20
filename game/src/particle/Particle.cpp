@@ -32,8 +32,8 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 		m_base_framerate = framerate;
 	}
 
-	expulsion += random::random_range_float(-expulsion_variance, expulsion_variance);
-	auto angle = random::random_range_float(-angle_range, angle_range);
+	expulsion += random::range_float(-expulsion_variance, expulsion_variance);
+	auto angle = random::range_float(-angle_range, angle_range);
 	auto f_pi = static_cast<float>(std::numbers::pi);
 	if (direction.lnr == LNR::left) { angle += f_pi; }
 	if (direction.und == UND::up) { angle += f_pi * 1.5f; }
@@ -47,7 +47,7 @@ Particle::Particle(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Vector2f 
 
 	auto lifespan_time = in_data["lifespan"].as<int>();
 	auto lifespan_variance = in_data["lifespan_variance"].as<int>();
-	int rand_diff = random::random_range(-lifespan_variance, lifespan_variance);
+	int rand_diff = random::range(-lifespan_variance, lifespan_variance);
 	lifespan.set_and_start(lifespan_time + rand_diff);
 
 	if (m_animatable) {
@@ -75,18 +75,18 @@ Particle::Particle(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f p
 	auto expulsion_variance = in_data["expulsion_variance"].as<float>();
 	auto angle_range = in_data["cone"].as<float>();
 	auto ev = in_data["elasticity_variance"].as<float>();
-	auto angle = random::random_range_float(-angle_range, angle_range);
+	auto angle = random::range_float(-angle_range, angle_range);
 	auto f_pi = static_cast<float>(std::numbers::pi);
 	if (direction.lnr == LNR::left) { angle += f_pi; }
 	if (direction.und == UND::up) { angle += f_pi * 1.5f; }
 	if (direction.und == UND::down) { angle += f_pi * 0.5f; }
-	expulsion += random::random_range_float(-expulsion_variance, expulsion_variance);
+	expulsion += random::range_float(-expulsion_variance, expulsion_variance);
 
 	if (!in_data["colliding"].as_bool()) { m_collider->get_circle()->set_attribute(shape::ColliderAttributes::no_collision); }
 	if (in_data["physics"]) { m_collider->get_circle()->load_properties(in_data["physics"]); }
 	if (in_data["sticky"].as_bool()) { m_collider->get_circle()->set_attribute(shape::ColliderAttributes::sticky); }
 
-	m_collider->get_circle()->physics.elasticity = in_data["elasticity"].as<float>() + random::random_range_float(-ev, ev);
+	m_collider->get_circle()->physics.elasticity = in_data["elasticity"].as<float>() + random::range_float(-ev, ev);
 	m_collider->get_circle()->physics.set_global_friction(in_data["friction"].as<float>());
 	m_collider->get_circle()->physics.gravity = in_data["gravity"].as<float>();
 

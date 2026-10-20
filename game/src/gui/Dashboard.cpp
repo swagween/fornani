@@ -53,7 +53,9 @@ Dashboard::Dashboard(automa::ServiceProvider& svc, world::Map& map, player::Play
 
 	// push gizmos in clockwise order so selection setting will work
 	m_gizmos.push_back(std::make_unique<JournalGizmo>(svc, map, sf::Vector2f{200.f, 60.f}));
-	if (player.catalog.inventory.has_item("radar_device")) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player)); }
+	auto const has_map = player.catalog.inventory.has_item("radar_device") || player.catalog.inventory.has_item("radar_system");
+	auto const comprehensive = player.catalog.inventory.has_item("radar_system");
+	if (has_map) { m_gizmos.push_back(std::make_unique<MapGizmo>(svc, map, player, comprehensive)); }
 	if (player.catalog.inventory.has_item("status_gizmo")) { m_gizmos.push_back(std::make_unique<WardrobeGizmo>(svc, map, wardrobe_placement)); }
 	if (player.catalog.inventory.has_item("clock")) { m_gizmos.push_back(std::make_unique<ClockGizmo>(svc, map, clock_placement)); }
 	m_gizmos.push_back(std::make_unique<InventoryGizmo>(svc, map, player, inventory_placement));

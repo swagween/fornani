@@ -26,7 +26,7 @@ SpawnablePlatform::SpawnablePlatform(automa::ServiceProvider& svc, sf::Vector2f 
 	sprite.set_params("dormant");
 	state = SpawnablePlatformState::dormant;
 	auto ipos = sf::Vector2i{position};
-	m_id = m_id.from(random::random_range(1, 1000), ipos.x, ipos.y);
+	m_id = m_id.from(random::range(1, 1000), ipos.x, ipos.y);
 }
 
 void SpawnablePlatform::update(automa::ServiceProvider& svc, player::Player& player, sf::Vector2f target) {

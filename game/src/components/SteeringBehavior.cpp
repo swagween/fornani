@@ -82,7 +82,7 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 	sf::Vector2f desired_dir = to_target.normalized();
 
 	float jitter = 0.02f;
-	sf::Vector2f random_offset{random::random_range_float(-1.f, 1.f), random::random_range_float(-1.f, 1.f)};
+	sf::Vector2f random_offset{random::range_float(-1.f, 1.f), random::range_float(-1.f, 1.f)};
 	desired_dir = (desired_dir + random_offset * jitter).normalized();
 
 	sf::Vector2f forward = physics.velocity.normalized();
@@ -163,7 +163,7 @@ void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 sf::Vector2f SteeringBehavior::calculate_random_walk(PhysicsComponent& physics, float dampen, float radius) {
 	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
 	wander_radius = radius;
-	wander_displacement += random::random_range_float(-0.08f, 0.08f);
+	wander_displacement += random::range_float(-0.08f, 0.08f);
 	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
 	float const x = radius * ::std::cos(theta);
 	float const y = radius * ::std::sin(theta);

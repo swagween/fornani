@@ -241,8 +241,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 			if (auto id = svc.data.get_enemy_label_from_id(entry["id"].as<int>())) {
 				if (svc.data.enemy[*id]["multispawn"]) {
 					auto& in = svc.data.enemy[*id]["multispawn"];
-					spawn_amount = random::random_range_float(in["quantity"][0].as<int>(), in["quantity"][1].as<int>());
-					spawn_range = random::random_vector_float({-in["spread"][0].as<float>(), -in["spread"][1].as<float>()}, {in["spread"][0].as<float>(), in["spread"][1].as<float>()});
+					spawn_amount = random::range_float(in["quantity"][0].as<int>(), in["quantity"][1].as<int>());
+					spawn_range = random::vector_float({-in["spread"][0].as<float>(), -in["spread"][1].as<float>()}, {in["spread"][0].as<float>(), in["spread"][1].as<float>()});
 				}
 			}
 			auto sid = StableID{};
@@ -422,12 +422,15 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 			auto chance_per_point = 20;
 			for (auto& p : m_surface_points) {
 				if (random::percent_chance(chance_per_point)) {
-					auto pos = p.position + sf::Vector2f{random::random_range_float(-8.f, 8.f), 0.f};
+					auto pos = p.position + sf::Vector2f{random::range_float(-8.f, 8.f), 0.f};
 					spawn_effect(svc, m_weather_specs->effect, pos);
 				}
 			}
 		}
 	}
+
+	// water level
+	m_water_level = std::lerp(m_water_level, m_target_water_level, 0.001f);
 
 	// camera effects
 	if (svc.ticker.every_second() && m_attributes.shake_properties.shaking) {
@@ -436,7 +439,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 			if (m_attributes.shake_cooldown.is_complete()) {
 				svc.camera_controller.shake(m_attributes.shake_properties);
 				auto shake_time = m_attributes.shake_cooldown.get_native_time();
-				auto diff = random::random_range(-shake_time / 2, shake_time / 2);
+				auto diff = random::range(-shake_time / 2, shake_time / 2);
 				m_attributes.shake_cooldown.start(shake_time + diff);
 			}
 		}
@@ -460,7 +463,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& explosion : m_chain_explosions) {
 		if (explosion.delay.is_almost_complete()) {
 			explosion.volatility = 0;
-			spawn_explosion(svc, explosion.tag, explosion.emitter, explosion.team, explosion.position + random::random_vector_float(-80.f, 80.f), explosion.radius, explosion.channel);
+			spawn_explosion(svc, explosion.tag, explosion.emitter, explosion.team, explosion.position + random::vector_float(-80.f, 80.f), explosion.radius, explosion.channel);
 		}
 		explosion.delay.update();
 	}
@@ -930,7 +933,7 @@ void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, st
 	if (volatility > 0) {
 		for (auto i = 0; i < volatility; ++i) {
 			m_chain_explosions.push_back(ExplosionSpecifications{std::string{tag}, std::string{emitter}, team, pos, radius, channel, 1});
-			m_chain_explosions.back().delay.start(i * random::random_range(24, 48));
+			m_chain_explosions.back().delay.start(i * random::range(24, 48));
 		}
 	}
 }
@@ -1433,7 +1436,7 @@ auto Map::get_closest_home_point(sf::Vector2f const check) const -> sf::Vector2f
 	return ret;
 }
 
-auto Map::get_random_home_point(std::vector<sf::Vector2f> exclusions) const -> sf::Vector2f { return random::random_element(home_points, exclusions); }
+auto Map::get_random_home_point(std::vector<sf::Vector2f> exclusions) const -> sf::Vector2f { return random::element(home_points, exclusions); }
 
 auto Map::get_actual_tile_color(int index) const -> sf::Color {
 	auto const cycle = m_services->world_clock.as_trio();

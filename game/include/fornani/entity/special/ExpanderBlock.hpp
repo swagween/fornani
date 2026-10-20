@@ -6,15 +6,14 @@
 
 namespace fornani {
 
+enum class ExpanderBlockAttributes : std::uint8_t { periodic, unlit };
+enum class ExpanderBlockFlags : std::uint8_t { expanded };
+
 class ExpanderBlock : public SpecialBlock {
-
-	enum class ExpanderBlockAttributes : std::uint8_t { periodic, unlit };
-	enum class ExpanderBlockFlags : std::uint8_t { expanded };
-
   public:
 	ExpanderBlock(automa::ServiceProvider& svc, dj::Json const& in);
 	ExpanderBlock(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in);
-	ExpanderBlock(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, std::string_view label, util::BitFlags<SpecialBlockAttributes> attributes = {});
+	ExpanderBlock(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, std::string_view label, ExpanderBlockSpecifications specs = {}, util::BitFlags<SpecialBlockAttributes> attributes = {});
 	[[nodiscard]] auto get_type() const -> std::string_view override { return "expander"; }
 	[[nodiscard]] auto is_unlit() const -> bool { return m_attributes.test(ExpanderBlockAttributes::unlit); }
 
@@ -27,10 +26,9 @@ class ExpanderBlock : public SpecialBlock {
   private:
 	util::BitFlags<ExpanderBlockAttributes> m_attributes{};
 	util::BitFlags<ExpanderBlockFlags> m_flags{};
-	util::Cooldown m_timer{360};
-	float m_threshold{0.5f};
+	util::Cooldown m_timer;
+	ExpanderBlockSpecifications m_specs;
 	float m_scale{1.f};
-	float m_factor{3.f};
 };
 
 } // namespace fornani

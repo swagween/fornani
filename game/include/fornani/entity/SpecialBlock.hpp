@@ -36,4 +36,10 @@ class SpecialBlock : public Entity {
 	util::BitFlags<SpecialBlockAttributes> m_attributes{};
 };
 
+struct ExpanderBlockSpecifications {
+	int time{360};
+	float threshold{0.5f};
+	float factor{3.f};
+};
+
 } // namespace fornani

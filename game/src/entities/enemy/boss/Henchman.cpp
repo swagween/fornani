@@ -254,7 +254,7 @@ fsm::StateFunction Henchman::update_whistle() {
 	if (p_animatable.animation.get_frame_count() == 2 && p_animatable.animation.keyframe_started()) { m_services->soundboard.play_sound("haunch_whistle", get_collider().get_center()); }
 	if (p_animatable.animation.get_frame_count() == 5 && !m_cooldowns.post_whistle.running() && has_flag_set(BossFlags::battle_mode)) {
 		for (auto i = 0; i < 2; ++i) {
-			auto pos = get_collider().get_top() + sf::Vector2f{0.f, -140.f} + random::random_vector_float(-200.f, 200.f);
+			auto pos = get_collider().get_top() + sf::Vector2f{0.f, -140.f} + random::vector_float(-200.f, 200.f);
 			m_map->spawn_enemy(4, pos);
 		}
 		m_cooldowns.post_whistle.start();

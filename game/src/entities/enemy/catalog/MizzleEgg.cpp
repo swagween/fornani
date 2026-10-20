@@ -127,7 +127,7 @@ void MizzleEgg::set_root(world::Map& map) {
 }
 
 void MizzleEgg::spawn_mizzle() {
-	m_map->spawn_enemy(26, get_collider().get_center() + sf::Vector2f{random::random_range_float(-4.f, 4.f), -20.f}, 0, true);
+	m_map->spawn_enemy(26, get_collider().get_center() + sf::Vector2f{random::range_float(-4.f, 4.f), -20.f}, 0, true);
 	m_mizzle_spawn.start();
 	m_map->spawn_effect(*m_services, "demon_breath", get_collider().get_center());
 }

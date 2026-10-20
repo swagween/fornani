@@ -12,7 +12,7 @@
 
 namespace fornani::gui {
 
-enum class MapGizmoFlags : std::uint8_t { pin_menu };
+enum class MapGizmoFlags : std::uint8_t { pin_menu, comprehensive };
 enum class MapGizmoControls : std::uint8_t { pan, menu, zoom_out, zoom_in, END };
 
 class MapPlugin {
@@ -43,10 +43,12 @@ struct MiniMapLegend {
 
 class MapGizmo : public Gizmo {
   public:
-	MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool comprehensive = false);
 	void update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) override;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
+
+	[[nodiscard]] auto is_comprehensive() const -> bool { return m_flags.general.test(MapGizmoFlags::comprehensive); }
 
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
@@ -59,6 +61,7 @@ class MapGizmo : public Gizmo {
 	std::vector<std::unique_ptr<vfx::Chain>> m_chains{};
 	util::NineSlice m_map_screen;
 	util::NineSlice m_map_shadow;
+	std::optional<util::NineSlice> m_map_border{};
 	util::RectPath m_path;
 	util::RectPath m_motherboard_path;
 	std::vector<sf::Vector2f> m_chain_offsets;

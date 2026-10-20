@@ -29,7 +29,7 @@ void Breakable::update(automa::ServiceProvider& svc, Map& map, player::Player& p
 		m_flash_energy = 0.f;
 		random_offset = {};
 	} else {
-		if (svc.ticker.every_x_ticks(20)) { random_offset = random::random_vector_float(-energy, energy); }
+		if (svc.ticker.every_x_ticks(20)) { random_offset = random::vector_float(-energy, energy); }
 	}
 	handle_collision(player.get_collider());
 	set_channel(map.get_style_id());

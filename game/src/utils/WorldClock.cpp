@@ -26,13 +26,13 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 		if (increments.minutes.cycled()) {
 			bool change = is_twilight();
 			increments.hours.modulate(1);
-			rng.hourly = random::random_range_float(0.f, 1.f);
+			rng.hourly = random::range_float(0.f, 1.f);
 			if (is_twilight()) { current_time_of_day.modulate(1); }
 			if (is_daytime() && change) {
 				current_time_of_day.modulate(1);
 				increments.days.modulate(1);
-				rng.daily = random::random_range_float(0.f, 1.f);
-				if (increments.days.cycled()) { rng.weekly = random::random_range_float(0.f, 1.f); }
+				rng.daily = random::range_float(0.f, 1.f);
+				if (increments.days.cycled()) { rng.weekly = random::range_float(0.f, 1.f); }
 			}
 			if (is_nighttime() && change) { current_time_of_day.modulate(1); }
 		}
@@ -78,9 +78,9 @@ void WorldClock::set_rng(WorldClockInterval interval, float to) {
 
 void WorldClock::recalculate_rng(WorldClockInterval interval) {
 	switch (interval) {
-	case WorldClockInterval::week: rng.weekly = random::random_range_float(0.f, 1.f); [[fallthrough]];
-	case WorldClockInterval::day: rng.daily = random::random_range_float(0.f, 1.f); [[fallthrough]];
-	case WorldClockInterval::hour: rng.hourly = random::random_range_float(0.f, 1.f); break;
+	case WorldClockInterval::week: rng.weekly = random::range_float(0.f, 1.f); [[fallthrough]];
+	case WorldClockInterval::day: rng.daily = random::range_float(0.f, 1.f); [[fallthrough]];
+	case WorldClockInterval::hour: rng.hourly = random::range_float(0.f, 1.f); break;
 	}
 }
 

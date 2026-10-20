@@ -20,13 +20,13 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, st
 	box.setFillColor(color);
 	box.setSize({spark_size_v, spark_size_v});
 	auto const variance = in_data["lifespan_variance"].as<int>();
-	auto const rand_diff = random::random_range(-variance, variance);
+	auto const rand_diff = random::range(-variance, variance);
 	lifespan.start(in_data["lifespan"].as<int>() + rand_diff);
 	parameters.volatility = in_data["volatility"].as<float>();
 
 	// seed variables
-	variables.energy = random::random_range_float(1.0f - parameters.volatility, 1.0f + parameters.volatility);
-	variables.offset = random::random_range_float(0.f, static_cast<float>(std::numbers::pi) * 2.f);
+	variables.energy = random::range_float(1.0f - parameters.volatility, 1.0f + parameters.volatility);
+	variables.offset = random::range_float(0.f, static_cast<float>(std::numbers::pi) * 2.f);
 
 	if (in_data["fader"].as_bool()) { fader = util::Fader(svc, lifespan.get(), in_data["color"].as_string()); }
 	if (fader) { fader.value().get_sprite().setScale({spark_size_v, spark_size_v}); }
@@ -35,7 +35,7 @@ Spark::Spark(automa::ServiceProvider& svc, sf::Vector2f pos, sf::Color color, st
 		auto const& in_anim = in_data["animation"];
 		m_sprite = Animatable(svc, "sparkler_" + in_anim["label"].as_string(), {in_anim["dimensions"][0].as<int>(), in_anim["dimensions"][1].as<int>()});
 		m_sprite->set_parameters({0, in_anim["num_frames"].as<int>(), in_anim["framerate"].as<int>(), 0});
-		m_sprite->set_channel(random::random_range(0, in_anim["variants"].as<int>()));
+		m_sprite->set_channel(random::range(0, in_anim["variants"].as<int>()));
 		m_sprite->center();
 	}
 }

@@ -19,6 +19,9 @@ class Shaker {
 	void tick_static(sf::Vector2f& point);
 	void set_point(sf::Vector2f point) { m_point = point; }
 	void shake();
+	void sustain();
+
+	[[nodiscard]] auto get_point() const -> sf::Vector2f { return m_point; }
 
   private:
 	ShakeParameters m_params;

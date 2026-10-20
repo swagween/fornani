@@ -8,12 +8,13 @@
 namespace fornani::world {
 
 SwitchBlock::SwitchBlock(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int button_id, int type)
-	: Animatable(svc, "switch_blocks", constants::i_resolution_vec), m_type(static_cast<SwitchType>(type)), m_button_id(button_id), m_collider{map, {constants::f_cell_vec}} {
+	: Animatable(svc, "switch_blocks", constants::i_resolution_vec_padded), m_type(static_cast<SwitchType>(type)), m_button_id(button_id), m_collider{map, {constants::f_cell_vec}} {
 	get_collider().physics.position = position;
 	m_state = SwitchBlockState::full;
 	m_previous_state = SwitchBlockState::full;
 	if (svc.data.switch_is_activated(button_id)) { m_state = SwitchBlockState::empty; }
-	set_channel(static_cast<int>(m_type));
+	auto const style = map.get_biome_properties()["switches"]["channel"].as<int>();
+	set_channel(type + style * static_cast<int>(SwitchType::END));
 	m_collider.get()->set_attribute(shape::ColliderAttributes::fixed);
 	m_collider.get()->set_trait(shape::ColliderTrait::block);
 }
@@ -38,7 +39,7 @@ void SwitchBlock::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf
 	if (m_state == SwitchBlockState::empty && !background) { return; }
 
 	auto render_position = util::round_to(get_collider().physics.position, constants::f_cell_size);
-	set_position(render_position - cam);
+	set_position(render_position - cam - sf::Vector2f{2.f, 2.f});
 
 	!debug::is_production() ? get_collider().render(win, cam) : win.draw(*this);
 }

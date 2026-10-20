@@ -20,7 +20,7 @@ struct PointLight {
 	PointLight() = default;
 	PointLight(dj::Json const& in, sf::Vector2f pos) : world_position{pos} {
 		unserialize(in);
-		m_physics.velocity = random::random_vector_float(-1.f, 1.f);
+		m_physics.velocity = random::vector_float(-1.f, 1.f);
 		m_physics.position = pos;
 	}
 	void update();

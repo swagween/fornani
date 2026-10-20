@@ -294,7 +294,7 @@ void InventoryGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] pla
 }
 
 void InventoryGizmo::move_horizontal(audio::Soundboard& soundboard) {
-	auto tag = random::random_element(std::vector<std::string>{"key_menu_shift_1", "key_menu_shift_2", "key_menu_shift_3"});
+	auto tag = random::element(std::vector<std::string>{"key_menu_shift_1", "key_menu_shift_2", "key_menu_shift_3"});
 	m_zones.get_zone() == InventoryZoneType::key ? soundboard.play_sound(tag) : soundboard.play_sound("menu_shift");
 	m_horizontal_toggle.start();
 }

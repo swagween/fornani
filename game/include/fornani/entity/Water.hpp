@@ -34,6 +34,7 @@ class Water : public Entity, public Flaggable<WaterFlags> {
 
 	util::FloatCounter m_wave_timer{};
 	sf::Vector2f m_wave_shift{};
+	sf::Vector2f m_level{};
 
 	WaterType m_type{};
 

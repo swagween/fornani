@@ -52,7 +52,7 @@ void BattleArena::update(automa::ServiceProvider& svc, SceneContext& context, wo
 	if (player.is_dead() || (m_flags.test(BattleArenaFlags::final_wave) && map.enemies_cleared() && cooldowns.long_pause.is_complete())) { cooldowns.end.start(); }
 	if (map.enemies_cleared() && !cooldowns.long_pause.running()) { cooldowns.long_pause.start(); }
 	if (cooldowns.long_pause.is_almost_complete()) {
-		for (auto const& e : m_waves.back().ids) { map.spawn_enemy(e.id, map.get_random_home_point() + random::random_vector_float(-4.f, 4.f), e.variant, true); }
+		for (auto const& e : m_waves.back().ids) { map.spawn_enemy(e.id, map.get_random_home_point() + random::vector_float(-4.f, 4.f), e.variant, true); }
 		if (!m_waves.empty()) { m_waves.pop_back(); }
 		if (m_waves.empty()) { m_flags.set(BattleArenaFlags::final_wave); }
 	}

@@ -64,7 +64,7 @@ void Sludgelord::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	std::erase_if(m_shockwaves, [](auto const& s) { return s.lifetime.is_almost_complete(); });
 
 	// puff effect
-	if (svc.ticker.every_x_ticks(50)) { map.spawn_effect(svc, "toxic_puff", get_collider().get_center() + sf::Vector2f{0.f, -60.f} + random::random_vector_float(-30.f, 30.f), {0.f, -0.5f}); }
+	if (svc.ticker.every_x_ticks(50)) { map.spawn_effect(svc, "toxic_puff", get_collider().get_center() + sf::Vector2f{0.f, -60.f} + random::vector_float(-30.f, 30.f), {0.f, -0.5f}); }
 
 	if (is_alert()) {
 		auto side = m_switch_sides.halfway() ? -1.f : 1.f;

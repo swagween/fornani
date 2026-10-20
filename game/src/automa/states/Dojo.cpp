@@ -285,10 +285,6 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		auto const pixel_position = win.mapCoordsToPixel(pos);
 		p_filter_shader->finalize(svc.ticker.total_seconds_passed.count(), win.getSize(), sf::Vector2f{pixel_position}, he.color, he.timer.get_cubic_normalized() * he.damage / 6.f);
 		p_filter_shader->submit(win);
-
-		NANI_LOG_INFO(m_logger, "  position before mapping: ({}, {})", pos.x, pos.y);
-		NANI_LOG_INFO(m_logger, "  position after mapping: ({}, {})", pixel_position.x, pixel_position.y);
-		NANI_LOG_INFO(m_logger, "  window size: {} x {}", win.getSize().x, win.getSize().y);
 	}
 
 	GameplayState::render(svc, win);

@@ -13,7 +13,7 @@ namespace fornani::vfx {
 Dragonfly::Dragonfly(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f start) : sprite(svc.assets.get_texture("dragonfly"), {8, 8}) {
 	physics.set_global_friction(0.97f);
 	physics.position = start;
-	physics.velocity = random::random_vector_float(-1.f, 1.f);
+	physics.velocity = random::vector_float(-1.f, 1.f);
 	sprite.push_params("neutral", {0, 3, 16, -1});
 	sprite.set_params("neutral");
 	sprite.random_start();

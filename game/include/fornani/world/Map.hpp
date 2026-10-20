@@ -132,6 +132,7 @@ class Map {
 	void manage_projectiles(automa::ServiceProvider& svc);
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
+	void set_water_level(float const to) { m_target_water_level = to; }
 
 	void register_collider(std::unique_ptr<shape::ICollider> collider);
 	void unregister_collider(shape::ICollider* collider);
@@ -203,6 +204,7 @@ class Map {
 	[[nodiscard]] auto get_tile_color(int cycle, int index) const -> sf::Color;
 	[[nodiscard]] auto get_effect_channel() const -> int;
 	[[nodiscard]] auto get_biome_properties() const -> dj::Json const&;
+	[[nodiscard]] auto get_water_level() const -> float { return m_water_level; }
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -331,6 +333,9 @@ class Map {
 		util::BitFlags<MapState> map_state{};
 	} flags{};
 	int m_middleground{};
+
+	float m_water_level{};
+	float m_target_water_level{};
 
 	io::Logger m_logger{"Map"};
 	bool m_destroying{false};

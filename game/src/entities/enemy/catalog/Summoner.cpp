@@ -254,8 +254,8 @@ fsm::StateFunction Summoner::update_summon() {
 	if (m_variant == SummonerVariant::mother) {
 		auto fire_rate = 48;
 		if (m_counters.summon.get_count() % fire_rate == 0) {
-			auto xoffset = random::random_range_float(0.f, 280.f) * directions.actual.as_float();
-			auto yoffset = random::random_range_float(-220.f, -190.f);
+			auto xoffset = random::range_float(0.f, 280.f) * directions.actual.as_float();
+			auto yoffset = random::range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
 			m_pulse.get().set_barrel_point(get_collider().get_center() + offset);
 			if (!m_map->overlaps_middleground(m_pulse.get().get_barrel_point())) { m_pulse.shoot(*m_services, *m_map, m_player_position - m_pulse.get().get_barrel_point()); }
@@ -264,8 +264,8 @@ fsm::StateFunction Summoner::update_summon() {
 	if (m_variant == SummonerVariant::mage) {
 		auto fire_rate = 72;
 		if (m_counters.summon.get_count() % fire_rate == 0) {
-			auto xoffset = random::random_range_float(0.f, 280.f) * directions.actual.as_float();
-			auto yoffset = random::random_range_float(-220.f, -190.f);
+			auto xoffset = random::range_float(0.f, 280.f) * directions.actual.as_float();
+			auto yoffset = random::range_float(-220.f, -190.f);
 			auto offset = sf::Vector2f{xoffset, yoffset};
 			m_map->spawn_enemy(17, get_collider().get_center() + offset);
 		}

@@ -26,4 +26,14 @@ auto SpecialBlockFactory::create(automa::ServiceProvider& svc, world::Map& map, 
 	return std::make_unique<SpecialBlock>(svc, map, in);
 }
 
+auto SpecialBlockFactory::create(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, std::string_view type, std::string_view tag) -> std::unique_ptr<SpecialBlock> {
+	if (type == "Expander") { return std::make_unique<ExpanderBlock>(svc, dimensions, id, tag); }
+
+	return std::make_unique<SpecialBlock>(svc, dimensions, id, tag);
+}
+
+auto SpecialBlockFactory::create_expander(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, std::string_view tag, ExpanderBlockSpecifications specs) -> std::unique_ptr<SpecialBlock> {
+	return std::make_unique<ExpanderBlock>(svc, dimensions, id, tag, specs);
+}
+
 } // namespace fornani

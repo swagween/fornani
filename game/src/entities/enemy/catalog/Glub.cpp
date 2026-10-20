@@ -23,7 +23,7 @@ Glub::Glub(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(s
 
 	for (int i = 0; i < 8; ++i) {
 		auto const span = 220.f;
-		auto const pos = sf::Vector2f{random::random_range_float(-span, span), random::random_range_float(-span, -50.f)};
+		auto const pos = sf::Vector2f{random::range_float(-span, span), random::range_float(-span, -50.f)};
 		auto const link_length = 12.f;
 		auto const chain_length = static_cast<int>(std::ceil(pos.length() / link_length));
 		m_mines.push_back(MineChain{std::make_unique<entity::Mine>(svc, map, entity::MineType::floating),
@@ -34,7 +34,7 @@ Glub::Glub(automa::ServiceProvider& svc, world::Map& map, int variant) : Enemy(s
 		me.chain->flags.set(vfx::ChainFlags::linked);
 		me.chain->parameters = vfx::ChainParameters{10.f, 1.1f, 10.f, 1.f, 12.f};
 		me.offset = pos;
-		me.timer = random::random_range_float(0.f, 1.f);
+		me.timer = random::range_float(0.f, 1.f);
 	}
 }
 

@@ -9,7 +9,7 @@ namespace fornani::item {
 
 Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f pos, LootProperties properties) {
 
-	auto const drop_rate = random::random_range(properties.drop_range.x, properties.drop_range.y);
+	auto const drop_rate = random::range(properties.drop_range.x, properties.drop_range.y);
 	position = pos;
 
 	std::string_view key{};
@@ -25,7 +25,7 @@ Loot::Loot(automa::ServiceProvider& svc, world::Map& map, player::Player& player
 		}
 		auto xinit = svc.data.drop[key]["initial_velocity"][0].as<float>();
 		auto yinit = svc.data.drop[key]["initial_velocity"][1].as<float>();
-		auto rand_vec = random::random_vector_float({-xinit, -yinit}, {xinit, 0});
+		auto rand_vec = random::vector_float({-xinit, -yinit}, {xinit, 0});
 		drops.push_back(std::make_unique<Drop>(svc, map, key, properties.probability, properties.delay_time, properties.special_id));
 		drops.back()->set_position(pos);
 		if (player.has_item_equipped("magnet")) { rand_vec *= 0.01f; }

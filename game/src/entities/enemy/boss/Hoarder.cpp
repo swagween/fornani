@@ -20,14 +20,14 @@ Hoarder::Hoarder(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map,
 								 {"bg_rummage", {1, 2, fr, -1}},
 								 {"bg_emerge", {0, 1, fr, 0}},
 								 {"bg_alert", {3, 1, fr * 3, 0}},
-								 {"present", {9, 1, fr * 3, 0}},
+								 {"present", {9, 1, fr * 3, 4}},
 								 {"hop_on_bike", {10, 1, fr, 0}},
 								 {"ride_bike", {11, 2, fr, 3}},
 								 {"tantrum", {13, 2, fr, 3}},
 								 {"die", {21, 2, fr, -1, true}},
 								 {"run", {23, 4, fr, -1}},
 								 {"laugh", {27, 2, fr, 3}},
-								 {"cry", {29, 2, fr, -1}}});
+								 {"cry", {29, 2, fr, 6}}});
 	p_animatable.animation.set_params(get_params("idle"));
 	get_collider().physics.set_friction_componentwise({0.95f, 0.995f});
 	m_slash_wave.get().set_team(arms::Team::beast);
@@ -204,9 +204,13 @@ fsm::StateFunction Hoarder::update_bg_alert() {
 fsm::StateFunction Hoarder::update_present() {
 	p_state.actual = HoarderState::present;
 	if (p_animatable.animation.just_started()) {}
-	if (p_animatable.animation.is_complete()) {
+	if (is_hurt() && !p_animatable.animation.is_first_loop()) {
 		request(HoarderState::hop_on_bike);
 		if (change_state(HoarderState::hop_on_bike, Enemy::get_params("hop_on_bike"))) { return HOARDER_BIND(update_hop_on_bike); }
+	}
+	if (p_animatable.animation.is_complete()) {
+		request(HoarderState::burrow);
+		if (change_state(HoarderState::burrow, Enemy::get_params("burrow"))) { return HOARDER_BIND(update_burrow); }
 	}
 	return HOARDER_BIND(update_present);
 }
@@ -224,6 +228,7 @@ fsm::StateFunction Hoarder::update_hop_on_bike() {
 fsm::StateFunction Hoarder::update_ride_bike() {
 	p_state.actual = HoarderState::ride_bike;
 	if (p_animatable.animation.just_started()) {}
+	get_collider().physics.acceleration.x = directions.actual.as_float();
 	if (p_animatable.animation.is_complete()) {
 		request(HoarderState::get_up);
 		if (change_state(HoarderState::get_up, Enemy::get_params("get_up"))) { return HOARDER_BIND(update_get_up); }
@@ -271,9 +276,10 @@ fsm::StateFunction Hoarder::update_laugh() {
 
 fsm::StateFunction Hoarder::update_cry() {
 	p_state.actual = HoarderState::cry;
-	if (p_animatable.animation.just_started()) {}
+	if (p_animatable.animation.just_started()) { p_map->set_water_level(100.f); }
 	if (change_state(HoarderState::idle, Enemy::get_params("idle"))) { return HOARDER_BIND(update_idle); }
 	if (p_animatable.animation.is_complete()) {
+		p_map->set_water_level(0.f);
 		request(HoarderState::idle);
 		if (change_state(HoarderState::idle, Enemy::get_params("idle"))) { return HOARDER_BIND(update_idle); }
 	}

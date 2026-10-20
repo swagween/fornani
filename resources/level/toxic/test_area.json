@@ -1,5 +1,33 @@
 {
   "entities": {
+    "switch_blocks": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          26,
+          17
+        ],
+        "type": 0
+      }
+    ],
+    "switch_buttons": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          23,
+          19
+        ],
+        "type": 0
+      }
+    ],
     "water": [
       {
         "dimensions": [
@@ -11,7 +39,7 @@
           23,
           21
         ],
-        "toxic": false
+        "type": 0
       }
     ]
   },
@@ -19,11 +47,6 @@
     "ambience": "",
     "background": "slime",
     "biome": "toxic",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -39,11 +62,12 @@
       "source": 0,
       "type": 0
     },
-    "development_status": null,
+    "development_status": 0,
     "dimensions": [
       48,
       32
     ],
+    "interior": false,
     "metagrid": [
       31,
       -18
@@ -59,26 +83,26 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 900,
     "shader": {
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null,
-      null
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false
     ],
     "flags": {
       "obscuring": false,

@@ -92,7 +92,7 @@
       22,
       5
     ],
-    "minimap": true,
+    "minimap": false,
     "music": "none",
     "player_start": [
       0,

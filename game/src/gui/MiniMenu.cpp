@@ -9,7 +9,7 @@ constexpr auto menu_spacing_v = 22.f;
 
 MiniMenu::MiniMenu(automa::ServiceProvider& svc, std::vector<std::string> opt, sf::Vector2f start_position, MenuTheme& theme)
 	: m_nineslice{svc, (theme.label == "mini_white" ? svc.assets.get_texture("cream_minimenu") : svc.assets.get_texture("blue_minimenu")), {13, 13}, {1, 1}}, m_theme{&theme}, m_open{8} {
-	m_nineslice.set_position(start_position + random::random_vector_float({-16.f, -8.f}, {-8.f, 8.f}));
+	m_nineslice.set_position(start_position + random::vector_float({-16.f, -8.f}, {-8.f, 8.f}));
 	options.reserve(opt.size());
 	for (auto [i, option] : std::views::enumerate(opt)) {
 		options.push_back(automa::Option(svc, theme, option));

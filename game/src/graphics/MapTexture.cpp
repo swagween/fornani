@@ -12,7 +12,7 @@ void MapTexture::bake(dj::Json const& in) {
 	auto const& in_meta = in["meta"];
 	auto const& in_tile = in["tile"];
 	m_id = in_meta["room_id"].as<int>();
-	m_biome = in_meta["biome"].as<int>();
+	m_biome = in_meta["biome"].as_string();
 
 	m_global_offset = sf::Vector2i{in_meta["metagrid"][0].as<int>(), in_meta["metagrid"][1].as<int>()} * constants::i_chunk_size * static_cast<int>(m_scale);
 	auto map_dim = sf::Vector2f{in_meta["dimensions"][0].as<float>(), in_meta["dimensions"][1].as<float>()};

@@ -66,7 +66,7 @@ void Attack::set_constant_radius(float to) {
 }
 
 void Attack::render(sf::RenderWindow& win, sf::Vector2f cam) {
-	// sensor.render(win, cam);
+	sensor.render(win, cam);
 	hit.render(win, cam);
 }
 

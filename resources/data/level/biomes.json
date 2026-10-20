@@ -65,7 +65,9 @@
       "max_light": 4.0,
       "spike_variations": 3,
       "effect_channel": 6,
-      "breakables": { "shatter_sound": "breakable_guts", "emitter": "guts", "effect": "guts_splat" }
+      "switches": { "channel": 1, "sound": "worm_switch" },
+      "breakables": { "shatter_sound": "breakable_guts", "emitter": "guts", "effect": "guts_splat" },
+      "expander_blocks": { "sounds": { "expand": ["expander_expand_worm_1", "expander_expand_worm_2"], "contract": ["expander_contract_worm_1", "expander_contract_worm_2"] } }
     },
     "toxic": {
       "ambience": { "interior": "industrial", "exterior": "none" },

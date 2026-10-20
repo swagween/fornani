@@ -110,7 +110,7 @@ void Caster::teleport() {
 	bool done{};
 	int ctr{};
 	while (!done && ctr < 32) {
-		auto attempt = random::random_vector_float(-300.f, 300.f);
+		auto attempt = random::vector_float(-300.f, 300.f);
 		get_collider().physics.position += attempt;
 		get_collider().sync_components();
 		if (m_map->overlaps_middleground(get_collider().bounding_box)) {

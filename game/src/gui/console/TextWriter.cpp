@@ -340,7 +340,7 @@ DialogueSuite::DialogueSuite(dj::Json const& in, sf::Font& font, automa::Service
 
 			auto codes = std::vector<MessageCode>{};
 			auto which = 0;
-			if (msg["messages"].is_array()) { which = target_index == -1 ? random::random_range(0, msg["messages"].as_array().size() - 1) : target_index; }
+			if (msg["messages"].is_array()) { which = target_index == -1 ? random::range(0, msg["messages"].as_array().size() - 1) : target_index; }
 			if (msg["codes"].is_array()) {
 				for (auto const& code : msg["codes"].as_array()) { codes.push_back(MessageCode{code}); }
 			}

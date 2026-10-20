@@ -1183,6 +1183,28 @@
     }
   },
 
+  "black_smoke": {
+    "load": 2,
+    "rate": 4.0,
+    "expulsion": 20.0,
+    "expulsion_variance": 0.2,
+    "cone": 0.08,
+    "friction": 0.98,
+    "elasticity": 0.95,
+    "gravity": -0.27,
+    "lifespan": 240,
+    "lifespan_variance": 0,
+    "dimensions": [16, 16],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 3,
+      "framerate": 80,
+      "loop": 0
+    }
+  },
+
   "exhaust": {
     "load": 2,
     "rate": 2.0,

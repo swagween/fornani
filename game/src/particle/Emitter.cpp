@@ -10,8 +10,8 @@ Emitter::Emitter(automa::ServiceProvider& svc, sf::Vector2f position, sf::Vector
 	: position(position), dimensions(dimensions), type(type), color(color), direction(direction) {
 	init(svc, position, dimensions, type, color, direction);
 
-	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
-	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
+	auto x = random::range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
+	auto y = random::range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
 	sf::Vector2f point{position.x + x, position.y + y};
 	particles.push_back(std::make_unique<Particle>(svc, point, particle_dimensions, type, color, direction, channel));
 }
@@ -21,8 +21,8 @@ Emitter::Emitter(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f pos
 	set_flag(EmitterFlags::map);
 	init(svc, position, dimensions, type, color, direction);
 
-	auto x = random::random_range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
-	auto y = random::random_range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
+	auto x = random::range_float(-dimensions.x * 0.5f, dimensions.x * 0.5f);
+	auto y = random::range_float(-dimensions.y * 0.5f, dimensions.y * 0.5f);
 	sf::Vector2f point{position.x + x, position.y + y};
 	particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction, channel));
 }
@@ -47,8 +47,8 @@ void Emitter::update(automa::ServiceProvider& svc, world::Map& map) {
 	m_load.update();
 	std::erase_if(particles, [](auto const& p) { return p->done(); });
 	if (m_load.running() && (random::percent_chance(variables.rate) || particles.empty())) {
-		auto x = random::random_range_float(0.f, dimensions.x);
-		auto y = random::random_range_float(0.f, dimensions.y);
+		auto x = random::range_float(0.f, dimensions.x);
+		auto y = random::range_float(0.f, dimensions.y);
 		sf::Vector2f point{position.x + x, position.y + y};
 		has_flag_set(EmitterFlags::map) ? particles.push_back(std::make_unique<Particle>(svc, map, point, particle_dimensions, type, color, direction))
 										: particles.push_back(std::make_unique<Particle>(svc, point, particle_dimensions, type, color, direction));

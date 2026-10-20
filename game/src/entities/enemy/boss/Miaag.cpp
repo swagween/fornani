@@ -25,11 +25,11 @@ Miaag::Miaag(automa::ServiceProvider& svc, world::Map& map)
 	flags.general.set(GeneralFlags::custom_channels);
 	flags.general.set(GeneralFlags::post_death_render);
 	Enemy::get_collider().set_flag(shape::ColliderFlags::simple);
-	auto home = random::random_range(0, map.home_points.size() - 1);
+	auto home = random::range(0, map.home_points.size() - 1);
 	m_target_point = map.home_points.at(home);
 	m_spine_sprite.setScale(constants::f_scale_vec);
 	m_spine_sprite.setOrigin({40.5f, 26.f});
-	for (auto const& link : m_spine->links) { m_spine_lookups.push_back(random::random_range(0, 2)); }
+	for (auto const& link : m_spine->links) { m_spine_lookups.push_back(random::range(0, 2)); }
 	m_spine->set_free(true);
 	get_collider().set_exclusion_target(fornani::shape::ColliderTrait::enemy);
 	m_bite.hit.bounds.setRadius(66.f);
@@ -106,11 +106,11 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (battle_mode()) {
 		if (second_phase()) {
 			get_collider().physics.set_friction_componentwise({1.f, 0.99f});
-			auto target = m_flags.test(MiaagFlags::seek_player) ? player.get_center() - get_collider().get_local_center() : m_target_point + random::random_vector_float(-64.f, 64.f);
+			auto target = m_flags.test(MiaagFlags::seek_player) ? player.get_center() - get_collider().get_local_center() : m_target_point + random::vector_float(-64.f, 64.f);
 			auto force = m_flags.test(MiaagFlags::seek_player) ? 0.00005f : 0.017f;
 			m_flags.test(MiaagFlags::seek_player) ? m_steering.seek(Enemy::get_collider().physics, target, force) : m_steering.thrust_seek(Enemy::get_collider().physics, target, {force, .118f, .991f, 260.f});
 		} else {
-			m_steering.seek(Enemy::get_collider().physics, m_target_point + random::random_vector_float(-64.f, 64.f), movement_force);
+			m_steering.seek(Enemy::get_collider().physics, m_target_point + random::vector_float(-64.f, 64.f), movement_force);
 		}
 	}
 
@@ -124,9 +124,9 @@ void Miaag::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 			request(MiaagState::spellcast);
 		}
 		was_requested(MiaagState::chomp) ? svc.soundboard.flags.miaag.set(audio::Miaag::growl) : svc.soundboard.flags.miaag.set(audio::Miaag::roar);
-		auto home = random::random_range(0, map.home_points.size() - 1);
+		auto home = random::range(0, map.home_points.size() - 1);
 		m_target_point = map.home_points.at(home) - get_collider().get_local_center();
-		if (second_phase()) { m_target_point += random::random_vector_float(-40.f, 40.f); }
+		if (second_phase()) { m_target_point += random::vector_float(-40.f, 40.f); }
 	}
 
 	// effects
@@ -209,7 +209,7 @@ fsm::StateFunction Miaag::update_idle() {
 fsm::StateFunction Miaag::update_hurt() {
 	p_state.actual = MiaagState::hurt;
 	if (!m_flags.test(MiaagFlags::gone)) {
-		if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "large_explosion", get_collider().get_center() + random::random_vector_float(-80.f, 80.f), {}, 2)); }
+		if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "large_explosion", get_collider().get_center() + random::vector_float(-80.f, 80.f), {}, 2)); }
 		shake();
 	}
 	if (p_animatable.animation.complete()) {
@@ -256,7 +256,7 @@ fsm::StateFunction Miaag::update_spellcast() {
 			m_cooldowns.fire.start(m_magic_frequency);
 		}
 	}
-	if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "demon_breath", get_collider().get_center() + random::random_vector_float(-40.f, 40.f), {0.f, -0.2f})); }
+	if (m_services->ticker.every_x_ticks(32)) { m_map->effects.push_back(entity::Effect(*m_services, "demon_breath", get_collider().get_center() + random::vector_float(-40.f, 40.f), {0.f, -0.2f})); }
 	if (m_cooldowns.limit.is_almost_complete()) {
 		request(MiaagState::idle);
 		set_channel(EnemyChannel::standard);
@@ -272,7 +272,7 @@ fsm::StateFunction Miaag::update_chomp() {
 	p_animatable.animation.get_frame_count() < 5 ? m_flags.set(MiaagFlags::seek_player) : m_flags.reset(MiaagFlags::seek_player);
 	if (p_animatable.animation.get_frame_count() == 5 && !m_cooldowns.chomped.running()) {
 		m_bite.enable();
-		for (auto i{0}; i < 3; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::random_vector_float(-180.f, 180.f), 2); }
+		for (auto i{0}; i < 3; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::vector_float(-180.f, 180.f), 2); }
 		m_services->soundboard.flags.miaag.set(audio::Miaag::chomp);
 		m_cooldowns.chomped.start();
 	} else {

@@ -65,7 +65,7 @@
     ],
     "builder": {
       "upcharge": 0.0,
-      "docket": ["equip_slot", "outfitter_gizmo", "status_gizmo", "radar_device", "rotary_gizmo", "clock"]
+      "docket": ["equip_slot", "outfitter_gizmo", "status_gizmo", "radar_system", "rotary_gizmo", "clock"]
     }
   },
 

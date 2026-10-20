@@ -40,6 +40,7 @@ class MapTexture {
 	[[nodiscard]] auto get_scale() const -> float { return m_scale; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return get_position() + get_dimensions() * 0.5f; }
 	[[nodiscard]] auto contains(sf::Vector2f point) const -> bool;
+	[[nodiscard]] auto get_biome() const -> std::string_view { return m_biome; }
 
 	sf::Texture& get();
 	sf::Vector2f get_position() const;

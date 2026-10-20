@@ -156,7 +156,7 @@ void Player::register_with_map(world::Map& map) {
 
 	get_collider().add_walljumper({24.f, 20.f});
 
-	m_lighting.physics.velocity = random::random_vector_float(-1.f, 1.f);
+	m_lighting.physics.velocity = random::vector_float(-1.f, 1.f);
 	m_lighting.physics.set_global_friction(0.95f);
 	m_lighting.physics.position = get_collider().get_center();
 	get_collider().clear_chunks();
@@ -503,7 +503,7 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 	if (p_animatable.animation.get_frame() == 182) { sprite_offset += sf::Vector2f{0.f, 4.f}; }
 	m_sprite_position = collider.has_value() ? get_collider().get_position() + sprite_offset : m_sprite_position;
 	m_sprite_position.x += directions.actual.left() ? -1.f : 1.f;
-	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::random_vector_float(-4.f, 4.f); }
+	if (m_sprite_shake.get() % 10 == 0) { m_shake_offset = random::vector_float(-4.f, 4.f); }
 	if (!m_sprite_shake.running()) { m_shake_offset = {}; }
 	m_sprite_position += m_shake_offset;
 	if (p_animatable.get_frame() == 181) { m_sprite_position.y += 10.f; }
@@ -585,7 +585,8 @@ void Player::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vec
 		if (antennae.size() > 1) { antennae[1]->render(svc, win, cam, 1); }
 		auto& drawable = has_flag_set(PlayerFlags::special_render) ? m_sprite_overlay : p_animatable;
 		if (has_flag_set(PlayerFlags::flat_shaded)) {
-			m_flat_shader.submit(win, drawable.get_sprite());
+			auto const mode = counters.toxicity.get() > 0.1f ? LightBlendMode::normal : LightBlendMode::screen;
+			m_flat_shader.submit(win, drawable.get_sprite(), mode);
 		} else {
 			win.draw(drawable);
 		}

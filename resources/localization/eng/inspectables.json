@@ -1108,6 +1108,21 @@
       }
     ]
   },
+  "crashed_pod0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "An escape pod. It's seen better days..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "crouch_tut385022345543694": {
     "series": [
       {
@@ -2290,6 +2305,55 @@
       }
     ]
   },
+  "rat385022344822799": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  2,
+                  35,
+                  104
+                ]
+              ],
+              "message": "Yes"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "No"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "There's a rat. Do you want to take it?"
+            }
+          ],
+          [
+            {
+              "message": "Good choice..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "research385022344691722": {
     "series": [
       {
@@ -2554,6 +2618,29 @@
           [
             {
               "message": "- Woodshine Town Hall -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "username385022343381013": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  3,
+                  1,
+                  1,
+                  110
+                ]
+              ],
+              "message": "Laboratory Username: bfoster"
             }
           ]
         ]

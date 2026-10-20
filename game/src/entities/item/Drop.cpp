@@ -45,8 +45,8 @@ Drop::Drop(automa::ServiceProvider& svc, world::Map& map, std::string_view key, 
 	random_start();
 	random_frame_start();
 
-	auto rand_cooldown_offset = random::random_range(0, 50);
-	auto const rand_shine_offset = random::random_range(0, 600);
+	auto rand_cooldown_offset = random::range(0, 50);
+	auto const rand_shine_offset = random::range(0, 600);
 	if (type == DropType::gem) { rand_cooldown_offset += 2000; }
 	lifespan.start(4500 + rand_cooldown_offset);
 	shine_cooldown.start(shine_cooldown.get_native_time() + rand_shine_offset);
@@ -56,11 +56,11 @@ Drop::Drop(automa::ServiceProvider& svc, world::Map& map, std::string_view key, 
 
 	sparkler.set_dimensions(drop_dimensions);
 
-	m_handle = 12000 + random::random_range(0, 1000);
+	m_handle = 12000 + random::range(0, 1000);
 }
 
 void Drop::seed(float probability) {
-	if (auto const random_sample = random::random_range_float(0.0f, 1.0f); random_sample < probability * constants.priceless) {
+	if (auto const random_sample = random::range_float(0.0f, 1.0f); random_sample < probability * constants.priceless) {
 		rarity = Rarity::priceless;
 	} else if (random_sample < probability * constants.rare) {
 		rarity = Rarity::rare;

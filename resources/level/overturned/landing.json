@@ -1,5 +1,22 @@
 {
   "entities": {
+    "ambient_props": [
+      {
+        "channel": 0,
+        "depth": -0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "foreground": false,
+        "id": 0,
+        "position": [
+          9,
+          58
+        ],
+        "tag": "crashed_pod"
+      }
+    ],
     "chests": [
       {
         "dimensions": [
@@ -34,6 +51,36 @@
         "variant": 0
       }
     ],
+    "inspectables": [
+      {
+        "activate_on_contact": false,
+        "alternates": 0,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "instant": false,
+        "key": "crashed_pod",
+        "position": [
+          9,
+          60
+        ],
+        "series": [
+          {
+            "hide_portrait": true,
+            "output": 0,
+            "suite": [
+              [
+                {
+                  "message": "An escape pod. It's seen better days..."
+                }
+              ]
+            ]
+          }
+        ]
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
@@ -61,8 +108,8 @@
         ],
         "id": 200,
         "position": [
-          11,
-          60
+          25,
+          59
         ]
       }
     ]
@@ -110,7 +157,6 @@
       "environmental_randomness": true,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

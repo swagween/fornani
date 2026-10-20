@@ -136,7 +136,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (round_two()) {
 		if (m_champion) {
 			if (svc.ticker.every_x_ticks(100)) {
-				auto offset = random::random_vector_float({-120.f, 120.f}, {-80.f, -40.f});
+				auto offset = random::vector_float({-120.f, 120.f}, {-80.f, -40.f});
 				m_champion->set_target(sf::Vector2f{800.f, 500.f} + offset);
 			}
 		}
@@ -247,7 +247,7 @@ void HaunchEscape::update(automa::ServiceProvider& svc, SceneContext& context, w
 	case 12:
 		if (!context.console) {
 			if (svc.ticker.every_x_ticks(80)) {
-				auto pos = haunch_enemy->get_global_center() + random::random_weighted_offset(300.f);
+				auto pos = haunch_enemy->get_global_center() + random::weighted_offset(300.f);
 				map.spawn_explosion(svc, "explosion", "explosion", arms::Team::skycorps, pos, 48.f, 1, 4);
 			}
 			if (m_outro.is_almost_complete()) { cooldowns.end.start(); }

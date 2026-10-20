@@ -117,7 +117,7 @@
     {
       "folder": "config",
       "label": "collider_test.json",
-      "region": "greatwing",
+      "region": "worm",
       "room_id": 99880
     },
     {
@@ -1346,9 +1346,27 @@
     },
     {
       "folder": "worm",
+      "label": "duodenum.json",
+      "region": "worm",
+      "room_id": 1117
+    },
+    {
+      "folder": "worm",
       "label": "esophagus.json",
       "region": "worm",
       "room_id": 1115
+    },
+    {
+      "folder": "worm",
+      "label": "gallbladder.json",
+      "region": "worm",
+      "room_id": 1119
+    },
+    {
+      "folder": "worm",
+      "label": "liver.json",
+      "region": "worm",
+      "room_id": 1118
     },
     {
       "folder": "worm",
@@ -1378,7 +1396,7 @@
       "folder": "worm",
       "label": "septum.json",
       "region": "worm",
-      "room_id": 1112
+      "room_id": 1116
     },
     {
       "folder": "worm",

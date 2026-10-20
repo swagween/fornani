@@ -192,6 +192,9 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 		if (!is_discovered && !undiscovered_adjacent) { continue; }
 		if (undiscovered_adjacent) { color = m_colors.undiscovered_center; }
 
+		auto const out_of_range = has_flag_set(MiniMapFlags::limited) && room->get_biome() != "firstwind";
+		if (out_of_range) { continue; }
+
 		room->set_resolution(m_resolution);
 		m_map_sprite.emplace(room->get());
 		m_map_sprite->setTexture(room->get(), true);

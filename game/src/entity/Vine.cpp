@@ -47,10 +47,10 @@ void Vine::init(automa::ServiceProvider& svc, world::Map& map) {
 	batch = true;
 	p_animatable.center();
 	auto index = util::Circuit(variations);
-	auto last_index = random::random_range(0, variations - 1);
+	auto last_index = random::range(0, variations - 1);
 	auto ctr{0};
 	for (auto& link : m_chain.links) {
-		index.set(random::random_range(0, index.get_order()));
+		index.set(random::range(0, index.get_order()));
 		if (index.get() == last_index) { index.modulate(1); }
 		auto const sign = random::percent_chance(50) ? -1 : 1;
 		encodings.push_back({index.get(), sign});
@@ -58,7 +58,7 @@ void Vine::init(automa::ServiceProvider& svc, world::Map& map) {
 		// optionally add treasure container to vine segment
 		if (random::percent_chance(5) && in_vine["treasure"].as_bool()) {
 			auto rarity = item::Rarity::common;
-			if (auto random_sample = random::random_range_float(0.0f, 1.0f); random_sample < constants.priceless) {
+			if (auto random_sample = random::range_float(0.0f, 1.0f); random_sample < constants.priceless) {
 				rarity = item::Rarity::priceless;
 			} else if (random_sample < constants.rare) {
 				rarity = item::Rarity::rare;

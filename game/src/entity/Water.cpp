@@ -14,9 +14,8 @@ Water::Water(automa::ServiceProvider& svc, dj::Json const& in) : Entity(svc, in,
 	repeatable = false;
 	copyable = false;
 
-	auto pos = get_world_position().length() < constants::small_value ? -constants::f_cell_vec : get_world_position();
-	m_bounding_box.set_position(pos);
-
+	auto mpos = get_world_position().length() < constants::small_value ? -constants::f_cell_vec : get_world_position();
+	m_bounding_box.set_position(mpos);
 	auto u_dimensions = sf::Vector2u{p_animatable.get_dimensions()};
 	if (!m_texture.resize(u_dimensions)) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
 	if (!m_surface_texture.resize(sf::Vector2u{u_dimensions.x, 64})) { NANI_LOG_WARN(m_logger, "Failed to resize map texture"); }
@@ -103,15 +102,17 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 		player.exit_water();
 	}
 
+	m_level = sf::Vector2f{0.f, map.get_water_level()};
 	m_wave_timer.update(m_type == WaterType::toxic ? 0.001f : 0.005f);
 	auto phase = m_wave_timer.get();
 	auto wrapped = std::fmod(phase, 2.f * std::numbers::pi);
+	auto const shift_multiplier = 2.f;
 	m_wave_shift.x = m_type == WaterType::toxic ? 0.f : std::cos(wrapped);
 	m_wave_shift.y = std::sin(2.f * wrapped) + 2.f;
 	if (phase >= 2.f * std::numbers::pi) { m_wave_timer.reset(); }
 	auto pos = get_world_position() == sf::Vector2f{0.f, 0.f} ? -constants::f_cell_vec : get_world_position();
 	m_bounding_box.set_position(pos);
-	m_bounding_box.set_position({m_bounding_box.get_position().x + m_wave_shift.x * 3.f, m_bounding_box.get_position().y + m_wave_shift.y * 2.f});
+	m_bounding_box.set_position(sf::Vector2f{m_bounding_box.get_position().x + m_wave_shift.x * 3.f, m_bounding_box.get_position().y + m_wave_shift.y * shift_multiplier} - m_level);
 }
 
 void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {

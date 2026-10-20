@@ -285,7 +285,7 @@ fsm::StateFunction Sentinel::update_summon() {
 	shake();
 	if (p_animatable.animation.just_started()) { m_services->soundboard.play_sound("sentinel_summon", get_collider().get_center()); }
 	if (p_animatable.animation.complete()) {
-		for (int i = 0; i < 3; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::random_vector_float(-180.f, 180.f) + sf::Vector2f{0.f, -260.f}, 2); }
+		for (int i = 0; i < 3; ++i) { m_map->spawn_enemy(18, get_collider().get_center() + random::vector_float(-180.f, 180.f) + sf::Vector2f{0.f, -260.f}, 2); }
 		if (change_state(SentinelState::turn, get_params("turn"))) { return SENTINEL_BIND(update_turn); }
 		request(SentinelState::idle);
 		if (change_state(SentinelState::idle, get_params("idle"))) { return SENTINEL_BIND(update_idle); }

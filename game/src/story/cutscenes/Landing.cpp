@@ -65,7 +65,7 @@ void Landing::update(automa::ServiceProvider& svc, SceneContext& context, world:
 	m_landed.update();
 
 	if (m_champion) {
-		if (svc.ticker.every_x_ticks(8)) { m_jitter = random::random_vector_float(-8.f, 8.f); }
+		if (svc.ticker.every_x_ticks(8)) { m_jitter = random::vector_float(-8.f, 8.f); }
 		auto targetpos = map.get_random_home_point() - m_champion->get_collider().get_local_center() + m_jitter - sf::Vector2f{0.f, 36.f};
 		if (progress > 21) { targetpos = {1000.f, -500.f}; }
 		m_champion->set_target(targetpos);
