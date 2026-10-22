@@ -293,7 +293,8 @@ void BuilderDialog::build_item(automa::ServiceProvider& svc, player::Player& pla
 	svc.soundboard.play_sound("vendor_sale");
 	svc.soundboard.play_sound("pioneer_boot");
 	svc.soundboard.play_sound("pioneer_sync");
-	// svc.soundboard.play_sound("laser1");
+	svc.soundboard.play_sound("juicy_impact");
+	svc.music_player.quick_play(svc.finder, "builder");
 	player.give_drop(item::DropType::orb, p_sale_price);
 	p_orb_indicator.add(p_sale_price);
 	m_player_items.clear();

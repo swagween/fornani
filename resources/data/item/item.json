@@ -1333,13 +1333,13 @@
     "category": 6,
     "lookup": [7, 3],
     "origin": [0, 0],
-    "naive_title": "Radar Device",
-    "actual_title": "Radar Device",
-    "naive_description": "A comprehensive map system. It fits perfectly in the top slot of your pocket gizmo.",
-    "actual_description": "A comprehensive map system. It fits perfectly in the top slot of your pocket gizmo.",
+    "naive_title": "Radar System",
+    "actual_title": "Radar System",
+    "naive_description": "A comprehensive map system that allows you to track all visited locations.",
+    "actual_description": "A comprehensive map system that allows you to track all visited locations.",
     "unique": true,
     "build": {
-      "recipe": ["priorite", "pioneer_scrap", "pixium"],
+      "recipe": ["priorite", "pioneer_scrap", "brinium"],
       "craft_price": 200,
       "lookup": 5
     }

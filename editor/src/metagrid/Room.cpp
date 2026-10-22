@@ -15,6 +15,7 @@ Room::Room(fornani::automa::ServiceProvider& svc, fornani::data::MapData& in) : 
 	set_flag(RoomFlags::use_template, in.metadata["meta"]["use_template"].as_bool());
 	set_flag(RoomFlags::interior, in.metadata["meta"]["properties"]["interior"].as_bool());
 	set_flag(RoomFlags::day_night_shift, in.metadata["meta"]["properties"]["day_night_shift"].as_bool());
+	set_flag(RoomFlags::hidden, in.metadata["meta"]["properties"]["hidden"].as_bool());
 	auto dimensions = sf::Vector2u{in.metadata["meta"]["dimensions"][0].as<unsigned int>(), in.metadata["meta"]["dimensions"][1].as<unsigned int>()} / fornani::constants::u32_chunk_size;
 	auto real_dimensions = sf::Vector2u{in.metadata["meta"]["dimensions"][0].as<unsigned int>(), in.metadata["meta"]["dimensions"][1].as<unsigned int>()};
 	m_box.setFillColor(room_color_v);
@@ -41,6 +42,7 @@ bool Room::serialize(fornani::automa::ServiceProvider& svc) {
 	m_data->metadata["meta"]["use_template"] = has_flag_set(RoomFlags::use_template);
 	m_data->metadata["meta"]["properties"]["interior"] = has_flag_set(RoomFlags::interior);
 	m_data->metadata["meta"]["properties"]["day_night_shift"] = has_flag_set(RoomFlags::day_night_shift);
+	m_data->metadata["meta"]["properties"]["hidden"] = has_flag_set(RoomFlags::hidden);
 	m_data->metadata["meta"]["metagrid"][0] = m_position.x;
 	m_data->metadata["meta"]["metagrid"][1] = m_position.y;
 	auto msg = std::string{};

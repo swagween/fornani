@@ -243,7 +243,7 @@
         "dimensions": [12, 12],
         "radius": 10.0,
         "attributes": {
-          "base_damage": 4,
+          "base_damage": 40,
           "power": 1,
           "lifespan": 480,
           "lifespan_variance": 0,
@@ -321,7 +321,7 @@
           "omnidirectional": false,
           "reflect": true,
           "range_variance": 0.0,
-          "acceleration_factor": 2.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 0.998,
           "gravity": 0.8,
           "elasticity": 0.98
@@ -391,7 +391,7 @@
           "hitstun": true,
           "reflect": false,
           "range_variance": 0.0,
-          "acceleration_factor": 2.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 0.99,
           "gravity": 0.0,
           "elasticity": 0.98
@@ -998,7 +998,7 @@
       "dimensions": [15, 8],
       "offsets": {
         "global": [0.5, 5.5],
-        "barrel": [18.0, 1.5],
+        "barrel": [28.0, 1.5],
         "stock": [0, 0]
       },
       "spray": {
@@ -1013,9 +1013,9 @@
       "attributes": {
         "automatic": false,
         "gun": true,
-        "ammo": 2,
+        "ammo": 3,
         "reload": 260,
-        "cooldown_time": 80,
+        "cooldown_time": 10,
         "recoil": 0.5
       }
     },
@@ -1026,25 +1026,28 @@
         "radius": 10.0,
         "audio": { "hit": 2 },
         "attributes": {
-          "base_damage": 16,
-          "lifespan": 60,
+          "base_damage": 13,
+          "lifespan": 300,
           "lifespan_variance": 0,
-          "speed": 54.0,
+          "speed": 0.1,
           "power": 4,
           "variance": 0.0,
           "stun_multiplier": 0.0,
           "knockback": 0.0,
           "transcendent": false,
           "range_variance": 0.0,
-          "acceleration_factor": 0.0,
+          "acceleration_factor": 0.1,
           "dampen_factor": 1.0,
           "gravity": 0.0,
           "elasticity": 0.99,
           "spin": 0.0,
           "spin_dampen": 0.997
         },
+        "sine": { "amplitude": 16.0, "frequency": 6.0 },
         "visual": {
-          "effect_type": 1
+          "effect_type": 1,
+          "travel_emitters": [{ "tag": "ectoblaster_travel", "frequency": 20 }],
+          "hit_emitters": [{ "tag": "ectoblaster_hit" }]
         },
         "animation": {
           "num_sprites": 1,
@@ -1066,7 +1069,7 @@
       "dimensions": [16, 8],
       "offsets": {
         "global": [-0.5, 5.5],
-        "barrel": [13.0, 1.5],
+        "barrel": [5.0, 1.5],
         "stock": [0, 0]
       },
       "spray": {

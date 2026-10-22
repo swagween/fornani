@@ -1565,6 +1565,55 @@
       }
     ]
   },
+  "ibos_journal385022343905286": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "responses": [
+          [
+            {
+              "codes": [
+                [
+                  2,
+                  40,
+                  301
+                ]
+              ],
+              "message": "Yes"
+            },
+            {
+              "codes": [
+                [
+                  1,
+                  1
+                ]
+              ],
+              "message": "No"
+            }
+          ]
+        ],
+        "suite": [
+          [
+            {
+              "codes": [
+                [
+                  1,
+                  0
+                ]
+              ],
+              "message": "You find a dusty old journal. Would you like to take it?"
+            }
+          ],
+          [
+            {
+              "message": "That's probably the polite thing to do..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "infirmary385022345019399": {
     "series": [
       {

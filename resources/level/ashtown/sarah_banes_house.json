@@ -83,8 +83,8 @@
     ],
     "interior": true,
     "metagrid": [
-      89,
-      21
+      88,
+      19
     ],
     "minimap": true,
     "music": "home_again",
@@ -95,6 +95,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "hidden": false,
       "interior": true,
       "lighting": false,
       "sky_limit": 0,

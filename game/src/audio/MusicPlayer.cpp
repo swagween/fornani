@@ -12,6 +12,7 @@ constexpr auto global_volume_damp_v = 0.45f; // music is just too loud in genera
 MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine} {
 	m_name_from_id.insert({0, "none"});
 	m_name_from_id.insert({1, "glitchified"});
+	m_name_from_id.insert({2, "bryns_turn"});
 	m_filter.hi_target = 80.f;
 	m_filter.lo_target = 40.f;
 }
@@ -23,6 +24,7 @@ void MusicPlayer::quick_play(ResourceFinder const& finder, std::string_view song
 	m_ringtone.load_media(path);
 	m_ringtone.play(false);
 	m_ringtone.set_gain(m_jukebox.get_gain());
+	m_flags.set(MusicPlayerFlags::ringtone_played);
 }
 
 void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name) {
@@ -80,6 +82,11 @@ void MusicPlayer::update() {
 	auto lo_cutoff = std::clamp(juke::sample_rate_v - lo, constants::small_value, juke::sample_rate_v);
 	m_jukebox.set_cutoff(juke::FilterType::high, hi_cutoff, juke::sample_rate_v);
 	m_jukebox.set_cutoff(juke::FilterType::low, lo_cutoff, juke::sample_rate_v);
+	if (is_finished_playing() && m_flags.test(MusicPlayerFlags::ringtone_played)) {
+		m_flags.reset(MusicPlayerFlags::ringtone_played);
+		resume();
+		fade_in(std::chrono::duration<float>{1.f});
+	}
 }
 
 void MusicPlayer::pause() { m_jukebox.pause(); }

@@ -131,11 +131,11 @@ bool RotaryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]]
 		set_flag(RotaryGizmoFlags::push_to_hotbar);
 		m_gun_selector.set_animation("click");
 	}
-	if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::triggered)) {
+	if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
 		m_frame_lerp.trigger(1, false, 2.0f);
 		m_selection.modulate(-1);
 	}
-	if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::triggered)) {
+	if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
 		m_frame_lerp.trigger(1, true, 2.0f);
 		m_selection.modulate(1);
 	}

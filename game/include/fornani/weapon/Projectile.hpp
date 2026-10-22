@@ -31,7 +31,7 @@ class Weapon;
 enum class ProjectileType : std::uint8_t { bullet, missile, melee, laser };
 enum class RenderType : std::uint8_t { animated, single_sprite, multi_sprite };
 
-enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, sine, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic, impact };
+enum class ProjectileAttributes : std::uint8_t { persistent, transcendent, constrained, circle, omnidirectional, wander, reflect, sprite_flip, sticky, explode_on_impact, hitstun, automatic, impact };
 struct ProjectileSpecifications {
 	float base_damage{};
 	float power{};
@@ -69,6 +69,16 @@ struct ImpactResult {
 struct Boomerang {
 	float friction{};
 	float force{};
+};
+
+struct Sine {
+	float amplitude{1.f};
+	float frequency{1.f};
+};
+
+struct Emitter {
+	std::string tag{};
+	std::optional<util::Cooldown> frequency{};
 };
 
 struct ImpactAttributes {
@@ -137,9 +147,11 @@ class Projectile : public Animatable {
 	[[nodiscard]] auto sticky() const -> bool { return metadata.attributes.test(ProjectileAttributes::sticky); }
 	[[nodiscard]] auto wander() const -> bool { return metadata.attributes.test(ProjectileAttributes::wander); }
 	[[nodiscard]] auto is_impactable() const -> bool { return metadata.attributes.test(ProjectileAttributes::impact); }
+	[[nodiscard]] auto is_sine() const -> bool { return m_sine.has_value(); }
 
   private:
 	void handle_player_hit(automa::ServiceProvider& svc, world::Map& map, player::Player& player);
+	void trigger_hit_emitters(automa::ServiceProvider& svc, world::Map& map);
 
   private:
 	struct {
@@ -163,6 +175,8 @@ class Projectile : public Animatable {
 		graphics::SpriteHistory sprite_history{};
 		vfx::SpriteRotator rotator{};
 		Direction direction{};
+		std::vector<Emitter> hit_emitters{};
+		std::vector<Emitter> travel_emitters{};
 	} visual;
 
 	struct {
@@ -183,9 +197,11 @@ class Projectile : public Animatable {
 		sf::Vector2f destruction_point{};
 		util::BitFlags<ProjectileState> state{};
 		util::Counter hits{};
+		util::FloatCounter counter{};
 	} variables{};
 
 	std::optional<Boomerang> m_boomerang{};
+	std::optional<Sine> m_sine{};
 
 	std::uint8_t m_chunk_id{};
 

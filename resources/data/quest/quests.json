@@ -220,6 +220,10 @@
       {
         "tag": "junkyards",
         "id": 700
+      },
+      {
+        "tag": "mimic_farm",
+        "id": 212
       }
     ]
   },

@@ -2429,7 +2429,7 @@
     },
     "audio": {
       "hurt_sounds": ["beast_hurt"],
-      "death_sounds": ["downward"]
+      "death_sounds": ["sludgelord_death"]
     },
     "attributes": {
       "size": 4,

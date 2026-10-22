@@ -359,6 +359,12 @@ void Metagrid::render(sf::RenderWindow& win) {
 					serialize = true;
 				}
 			}
+			if (ImGui::MenuItem("Toggle Hidden")) {
+				if (m_highlighted_room) {
+					m_highlighted_room.value()->toggle_flag(RoomFlags::hidden);
+					serialize = true;
+				}
+			}
 			if (ImGui::Checkbox("Use Template", &ut)) {
 				if (m_highlighted_room) {
 					m_highlighted_room.value()->toggle_flag(RoomFlags::use_template);

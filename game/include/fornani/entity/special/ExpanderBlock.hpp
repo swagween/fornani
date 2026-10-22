@@ -14,6 +14,7 @@ class ExpanderBlock : public SpecialBlock {
 	ExpanderBlock(automa::ServiceProvider& svc, dj::Json const& in);
 	ExpanderBlock(automa::ServiceProvider& svc, world::Map& map, dj::Json const& in);
 	ExpanderBlock(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, std::string_view label, ExpanderBlockSpecifications specs = {}, util::BitFlags<SpecialBlockAttributes> attributes = {});
+	void expose() override;
 	[[nodiscard]] auto get_type() const -> std::string_view override { return "expander"; }
 	[[nodiscard]] auto is_unlit() const -> bool { return m_attributes.test(ExpanderBlockAttributes::unlit); }
 

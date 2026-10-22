@@ -119,19 +119,19 @@ void OutfitterGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 }
 
 bool OutfitterGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.menu_move(input::MoveDirection::up)) {
+	if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
 		m_selector.move({0, -1});
 		soundboard.play_sound("menu_shift");
 	}
-	if (controller.menu_move(input::MoveDirection::down)) {
+	if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
 		m_selector.move({0, 1});
 		soundboard.play_sound("menu_shift");
 	}
-	if (controller.menu_move(input::MoveDirection::left)) {
+	if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::repeat)) {
 		m_selector.move({-1, 0});
 		soundboard.play_sound("menu_shift");
 	}
-	if (controller.menu_move(input::MoveDirection::right)) {
+	if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::repeat)) {
 		m_selector.move({1, 0});
 		soundboard.play_sound("menu_shift");
 	}

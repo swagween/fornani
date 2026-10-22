@@ -33,7 +33,7 @@ class InventoryGizmo : public Gizmo {
 
 	void move_horizontal(audio::Soundboard& soundboard);
 	void handle_menu_selection(player::Player& player, int selection);
-	void switch_zones(int modulation);
+	void switch_zones(int modulation, HV const dir = HV::vertical);
 	void write_description(item::Item& piece, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam);
 
 	[[nodiscard]] auto zone_match(item::ItemType type) const -> bool { return static_cast<InventoryZoneType>(type) == get_zone_type(); }

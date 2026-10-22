@@ -36,6 +36,8 @@ class ZoneCollection {
 	[[nodiscard]] auto get_zone() const -> Enum { return static_cast<Enum>(m_zone_iterator.get()); }
 
 	void set_current_location(sf::Vector2i location) { m_remembered_locations.at(m_zone_iterator.get()) = location; }
+	void set_x_location(int const x) { m_remembered_locations.at(m_zone_iterator.get()).x = x; }
+	void set_y_location(int const y) { m_remembered_locations.at(m_zone_iterator.get()).y = y; }
 	void set_location(Enum zone, sf::Vector2i location = {}) {
 		m_remembered_locations.at(static_cast<std::size_t>(zone)) = location;
 		m_zone_iterator.set(static_cast<int>(zone));

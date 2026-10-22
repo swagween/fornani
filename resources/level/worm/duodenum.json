@@ -1,10 +1,77 @@
 {
   "entities": {
+    "enemies": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36,
+        "position": [
+          15,
+          14
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36,
+        "position": [
+          11,
+          19
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36,
+        "position": [
+          23,
+          9
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 1
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 36,
+        "position": [
+          19,
+          13
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 2
+      }
+    ],
     "portals": [
       {
         "activate_on_contact": true,
         "already_open": false,
         "channel": 0,
+        "custom_animation": "sphincter",
         "destination_id": 1119,
         "dimensions": [
           1,
@@ -17,6 +84,90 @@
           9
         ],
         "source_id": 1117
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 116,
+        "dimensions": [
+          2,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          4,
+          0
+        ],
+        "source_id": 1117
+      },
+      {
+        "activate_on_contact": true,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 1120,
+        "dimensions": [
+          1,
+          3
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          47,
+          26
+        ],
+        "source_id": 1117
+      }
+    ],
+    "special_blocks": [
+      {
+        "delay": 0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "factor": 3,
+        "id": 0,
+        "position": [
+          19,
+          34
+        ],
+        "threshold": 0.5,
+        "time": 400,
+        "type": "expander",
+        "wallslide": false
+      },
+      {
+        "delay": 0.5,
+        "dimensions": [
+          1,
+          1
+        ],
+        "factor": 3,
+        "id": 0,
+        "position": [
+          31,
+          34
+        ],
+        "threshold": 0.5,
+        "time": 400,
+        "type": "expander",
+        "wallslide": false
+      }
+    ],
+    "water": [
+      {
+        "dimensions": [
+          32,
+          12
+        ],
+        "id": 0,
+        "position": [
+          11,
+          33
+        ],
+        "type": 2
       }
     ]
   },
@@ -44,7 +195,7 @@
       48,
       48
     ],
-    "interior": false,
+    "interior": true,
     "metagrid": [
       63,
       25
@@ -59,17 +210,16 @@
       "day_night_shift": false,
       "environmental_randomness": false,
       "interior": true,
-      "lighting": false,
+      "lighting": true,
       "timer": false,
       "toxic": false
     },
     "room_id": 1117,
     "shader": {
-      "darken_factor": 0
+      "darken_factor": 5
     },
     "special_drop_id": 0,
-    "use_template": false,
-    "weather": null
+    "use_template": false
   },
   "tile": {
     "animated": [
@@ -3103,12 +3253,12 @@
         0,
         0,
         0,
-        283,
-        283,
-        283,
+        0,
         0,
         0,
         0,
+        0,
+        0,
         283,
         283,
         283,
@@ -3464,7 +3614,7 @@
         0,
         0,
         0,
-        283,
+        0,
         283,
         283,
         283,
@@ -3969,7 +4119,6 @@
         0,
         0,
         0,
-        283,
         283,
         283,
         283,
@@ -3994,8 +4143,6 @@
         283,
         283,
         283,
-        283,
-        283,
         0,
         0,
         0,
@@ -4016,8 +4163,9 @@
         0,
         0,
         0,
-        283,
-        283,
+        0,
+        0,
+        0,
         283,
         283,
         283,
@@ -4044,6 +4192,8 @@
         283,
         283,
         283,
+        0,
+        0,
         0,
         0,
         0,

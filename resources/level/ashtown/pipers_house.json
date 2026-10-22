@@ -77,7 +77,7 @@
     "interior": true,
     "metagrid": [
       88,
-      22
+      20
     ],
     "minimap": true,
     "music": "bossanova",
@@ -88,6 +88,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "hidden": false,
       "interior": true,
       "lighting": false,
       "timer": false,

@@ -239,7 +239,7 @@
       27,
       27
     ],
-    "minimap": false,
+    "minimap": true,
     "music": "none",
     "player_start": [
       0,
@@ -248,6 +248,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "hidden": true,
       "interior": false,
       "lighting": true,
       "sky_limit": 0,
@@ -259,7 +260,8 @@
       "darken_factor": 10
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

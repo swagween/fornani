@@ -40,6 +40,7 @@ struct ExpanderBlockSpecifications {
 	int time{360};
 	float threshold{0.5f};
 	float factor{3.f};
+	float delay{0.f};
 };
 
 } // namespace fornani

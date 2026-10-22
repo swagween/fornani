@@ -125,7 +125,10 @@
           "message": "Oh, and by the way, take this relic I found."
         },
         {
-          "codes": [[1, 3]],
+          "codes": [
+            [1, 3],
+            [34, 0]
+          ],
           "message": "It supposedly grants you the power to cling onto and jump off of walls. I hope you find it useful."
         }
       ],

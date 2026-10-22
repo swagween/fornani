@@ -231,7 +231,7 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 			}
 		} else {
 			m_zones.set_current_location(m_selector->get_index());
-			if (controller.menu_move(input::MoveDirection::up)) {
+			if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
 				m_flags.set(InventoryGizmoFlags::switched);
 				if (m_selector->move_direction({0, -1}).up()) {
 					switch_zones(-1);
@@ -240,7 +240,7 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 					soundboard.play_sound("menu_shift");
 				}
 			}
-			if (controller.menu_move(input::MoveDirection::down)) {
+			if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
 				m_flags.set(InventoryGizmoFlags::switched);
 				if (m_selector->move_direction({0, 1}).down()) {
 					switch_zones(1);
@@ -249,15 +249,15 @@ bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unuse
 					soundboard.play_sound("menu_shift");
 				}
 			}
-			if (controller.menu_move(input::MoveDirection::left)) {
+			if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::repeat)) {
 				m_flags.set(InventoryGizmoFlags::switched);
-				if (m_selector->move_direction({-1, 0}).left()) {}
+				if (m_selector->move_direction({-1, 0}).left()) { switch_zones(-1, HV::horizontal); }
 				move_horizontal(soundboard);
 				m_flags.set(InventoryGizmoFlags::moved_left);
 			}
-			if (controller.menu_move(input::MoveDirection::right)) {
+			if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::repeat)) {
 				m_flags.set(InventoryGizmoFlags::switched);
-				if (m_selector->move_direction({1, 0}).right()) {}
+				if (m_selector->move_direction({1, 0}).right()) { switch_zones(1, HV::horizontal); }
 				move_horizontal(soundboard);
 				m_flags.set(InventoryGizmoFlags::moved_right);
 			}
@@ -332,12 +332,41 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 	}
 }
 
-void InventoryGizmo::switch_zones(int modulation) {
-	m_zones.modulate(modulation);
+void InventoryGizmo::switch_zones(int modulation, HV const dir) {
+
+	auto same_x = -1;
+	auto const next_zone = static_cast<InventoryZoneType>(static_cast<int>(get_zone_type()) + modulation);
+	auto const has_useable = !m_flags.test(InventoryGizmoFlags::no_useable_items);
+
+	// handle left/right case first (just between useable and gizmo
+	if (dir == HV::horizontal) {
+		if (get_zone_type() == InventoryZoneType::gizmo && (modulation == 1 || !has_useable)) { return; }
+		if (get_zone_type() == InventoryZoneType::useable && modulation == -1) { return; }
+		if (get_zone_type() == InventoryZoneType::gizmo && next_zone == InventoryZoneType::useable && has_useable && modulation == -1) { m_zones.modulate(modulation); }
+		if (get_zone_type() == InventoryZoneType::useable && next_zone == InventoryZoneType::gizmo && has_useable && modulation == 1) { m_zones.modulate(modulation); }
+		if (get_zone_type() != InventoryZoneType::gizmo && get_zone_type() != InventoryZoneType::useable) { return; }
+	} else {
+		// janky hard-coded logic for most logical navigation flow. ideally i'd make a flexible system to support this but i'm getting old
+		if (get_zone_type() == InventoryZoneType::unique && next_zone == InventoryZoneType::equippable) { same_x = m_selector->get_current_selection(); }
+		if (get_zone_type() == InventoryZoneType::equippable && next_zone == InventoryZoneType::unique) { same_x = m_selector->get_current_selection(); }
+		auto const to_bottom = get_zone_type() == InventoryZoneType::collectible && next_zone == InventoryZoneType::useable;
+		auto const go_to_gizmo = has_useable && m_zones.get_current_location().x > 4;
+		if (to_bottom && go_to_gizmo) { ++modulation; }																				 // skip to gizmo
+		if (get_zone_type() == InventoryZoneType::gizmo && next_zone == InventoryZoneType::useable && has_useable) { --modulation; } // skip to collectible
+
+		// modulate the zone
+		m_zones.modulate(modulation);
+	}
+
+	auto new_y = modulation == 1 ? 0 : item::get_item_table_dimensions(static_cast<item::ItemType>(get_zone_type())).y - 1;
+	m_zones.set_y_location(new_y);
+
+	// post modulation logic
 	if (m_zones.get_zone() == InventoryZoneType::useable && m_flags.test(InventoryGizmoFlags::no_useable_items)) { m_zones.modulate(modulation); }
 	if (m_zones.get_zone() == InventoryZoneType::key && m_flags.test(InventoryGizmoFlags::no_keys)) { m_zones.modulate(modulation); }
 	auto position = m_selector->get_position();
 	auto& current_zone = m_zones.current();
+	if (same_x != -1) { m_zones.set_x_location(same_x); }
 	m_selector = std::make_unique<InventorySelector>(current_zone.table_dimensions, current_zone.cell_size);
 	m_selector->set_position(position, true);
 	m_selector->set_lookup({{448, 0}, {18, 18}});

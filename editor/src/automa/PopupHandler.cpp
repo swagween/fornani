@@ -90,6 +90,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static int time{360};
 		static float threshold{0.5f};
 		static float factor{3.f};
+		static float delay{0.f};
 
 		width = std::max(1, width);
 		height = std::max(1, height);
@@ -105,6 +106,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 				ImGui::SliderFloat("Threshold", &threshold, 0.f, 1.f);
 				ImGui::InputFloat("Expansion Factor", &factor, 0.1f, 0.5f);
 				factor = std::max(1.f, factor);
+				ImGui::InputFloat("Delay", &delay, 0.0f, 1.0f);
 			}
 		}
 
@@ -113,7 +115,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 
 			auto const dimensions = sf::Vector2u{static_cast<unsigned int>(width), static_cast<unsigned int>(height)};
 
-			auto const specs = fornani::ExpanderBlockSpecifications{.time = time, .threshold = threshold, .factor = factor};
+			auto const specs = fornani::ExpanderBlockSpecifications{.time = time, .threshold = threshold, .factor = factor, .delay = delay};
 
 			tool = std::make_unique<EntityEditor>(EntityMode::placer);
 

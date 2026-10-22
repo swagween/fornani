@@ -34,6 +34,9 @@
     "boss": "boss",
     "cancel": "cancel"
   },
+  "minimap": {
+    "out_of_range": "<< out of range >>"
+  },
   "minimap_legend": {
     "pan": "pan:",
     "zoom_in": "zoom in:",
@@ -56,6 +59,7 @@
     "cannot_build": "You do not have the necessary ingredients to build that item.",
     "already_have_max_item": "You already have the maximum amount of that item.",
     "insufficient_funds": "You cannot afford that item.",
+    "new_objective": "New objective added to journal gizmo.",
     "journal_updated": "Journal updated.",
     "bestiary_updated": "Bestiary updated.",
     "quest_completed": "Quest completed: ",

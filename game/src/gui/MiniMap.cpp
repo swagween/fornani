@@ -220,7 +220,7 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 			}
 		}
 		if (m_map_sprite->getGlobalBounds().contains(svc.window->f_center_screen())) {
-			m_currently_hovered_room = room->get_id();
+			if (svc.data.is_room_discovered(room->get_id())) { m_currently_hovered_room = room->get_id(); }
 			if (m_currently_hovered_room != m_previously_hovered_room && has_flag_set(MiniMapFlags::open)) { svc.soundboard.play_sound("pioneer_pap"); }
 			m_previously_hovered_room = m_currently_hovered_room;
 		}
@@ -249,6 +249,14 @@ void MiniMap::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player
 			if (has_flag_set(MiniMapFlags::marker_hovered)) {
 				if (m_tooltip) { m_tooltip->render(win, cam, constants::f_scale_vec.componentWiseDiv(port.size)); }
 			}
+		}
+		if (has_flag_set(MiniMapFlags::open) && m_message && has_flag_set(MiniMapFlags::out_of_range)) {
+			m_message->setPosition(svc.window->f_center_screen() + sf::Vector2f{0.f, 170.f});
+			static auto const start_time = std::chrono::steady_clock::now();
+			auto const elapsed_seconds = std::chrono::duration<float>(std::chrono::steady_clock::now() - start_time).count();
+			auto const t = 0.5f + 0.5f * std::sin(elapsed_seconds * 2.5f);
+			m_message->setFillColor(color_lerp(colors::pioneer_red, colors::pioneer_dark_red, t));
+			win.draw(*m_message);
 		}
 	}
 	svc.window->restore_view();
@@ -306,6 +314,14 @@ void MiniMap::update() {
 	}
 	if (!has_flag_set(MiniMapFlags::marker_hovered)) { m_tooltip.reset(); }
 	if (m_tooltip) { m_tooltip->update(); }
+	if (!m_message) {
+		auto const& svc = *m_services;
+		m_message.emplace(svc.text.fonts.title.font);
+		m_message->setString(svc.data.gui_text["minimap"]["out_of_range"].as_string());
+		m_message->setCharacterSize(svc.text.fonts.title.glyph_size);
+		m_message->setFillColor(colors::pioneer_red);
+		m_message->setOrigin(m_message->getLocalBounds().getCenter());
+	}
 }
 
 void MiniMap::clear_atlas() { m_atlas.clear(); }

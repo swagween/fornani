@@ -374,6 +374,20 @@
         },
         "type": 0
       }
+    ],
+    "water": [
+      {
+        "dimensions": [
+          12,
+          3
+        ],
+        "id": 0,
+        "position": [
+          36,
+          44
+        ],
+        "type": 0
+      }
     ]
   },
   "meta": {

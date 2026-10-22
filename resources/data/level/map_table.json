@@ -1220,6 +1220,12 @@
     },
     {
       "folder": "toxic",
+      "label": "chute.json",
+      "region": "toxic",
+      "room_id": 1020
+    },
+    {
+      "folder": "toxic",
       "label": "cove.json",
       "region": "toxic",
       "room_id": 1006
@@ -1328,6 +1334,18 @@
     },
     {
       "folder": "worm",
+      "label": "capsule.json",
+      "region": "pioneer",
+      "room_id": 1122
+    },
+    {
+      "folder": "worm",
+      "label": "cardia.json",
+      "region": "worm",
+      "room_id": 1121
+    },
+    {
+      "folder": "worm",
       "label": "chaetal_sac.json",
       "region": "worm",
       "room_id": 1104
@@ -1403,6 +1421,12 @@
       "label": "seta.json",
       "region": "worm",
       "room_id": 1111
+    },
+    {
+      "folder": "worm",
+      "label": "stomach.json",
+      "region": "worm",
+      "room_id": 1120
     },
     {
       "folder": "worm",

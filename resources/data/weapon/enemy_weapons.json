@@ -550,7 +550,7 @@
           "omnidirectional": true,
           "reflect": true,
           "range_variance": 0.0,
-          "acceleration_factor": 2.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 0.998,
           "gravity": 0.4,
           "elasticity": 0.98
@@ -874,7 +874,7 @@
           "knockback": 0.0,
           "omnidirectional": true,
           "range_variance": 0.0,
-          "acceleration_factor": 2.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 0.998,
           "gravity": 0.0,
           "elasticity": 0.98
@@ -935,7 +935,7 @@
           "knockback": 0.0,
           "omnidirectional": true,
           "range_variance": 0.0,
-          "acceleration_factor": 2.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 0.998,
           "gravity": 0.0,
           "elasticity": 0.98
@@ -1207,7 +1207,7 @@
           "omnidirectional": true,
           "reflect": true,
           "range_variance": 0.0,
-          "acceleration_factor": 2.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 0.0,
           "gravity": 0.2,
           "elasticity": 0.99,
@@ -1529,7 +1529,7 @@
           "omnidirectional": false,
           "transcendent": true,
           "range_variance": 0.0,
-          "acceleration_factor": 4.0,
+          "acceleration_factor": 0.0,
           "dampen_factor": 1.0,
           "gravity": 0.0,
           "elasticity": 0.98
@@ -1609,6 +1609,77 @@
           "result": {
             "block": "brittle"
           }
+        }
+      }
+    }
+  },
+  "toxic_spew": {
+    "metadata": {
+      "id": 5,
+      "label": "Toxic Spew"
+    },
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [18, 8],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "dimensions": [8.0, 8.0],
+        "type": "green_beam",
+        "color": "green"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 2.0
+      }
+    },
+    "audio": { "shoot": 2 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [18.0, 18.0],
+        "radius": 8.0,
+        "attributes": {
+          "base_damage": 1,
+          "lifespan": 600,
+          "lifespan_variance": 0,
+          "speed": 20.5,
+          "variance": 18.5,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "acceleration_factor": 0.0,
+          "dampen_factor": 0.999,
+          "dampen_variance": 0.002,
+          "sprite_flip": true,
+          "explode_on_impact": true,
+          "gravity": 12.0
+        },
+        "visual": {
+          "effect_type": 4
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 4,
+          "framerate": 18
+        },
+        "explosion": {
+          "tag": "large_explosion",
+          "emitter": "green_blast",
+          "radius": 28.0,
+          "channel": 6
+        },
+        "impact": {
+          "effect": "small_explosion",
+          "emitter": "green_blast",
+          "channel": 7
         }
       }
     }

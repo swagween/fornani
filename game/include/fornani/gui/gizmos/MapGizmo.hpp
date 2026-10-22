@@ -12,7 +12,7 @@
 
 namespace fornani::gui {
 
-enum class MapGizmoFlags : std::uint8_t { pin_menu, comprehensive };
+enum class MapGizmoFlags : std::uint8_t { pin_menu, comprehensive, out_of_range };
 enum class MapGizmoControls : std::uint8_t { pan, menu, zoom_out, zoom_in, END };
 
 class MapPlugin {

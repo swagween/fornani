@@ -144,7 +144,7 @@ void LothAtWorm::update(automa::ServiceProvider& svc, SceneContext& context, wor
 		if (loth->is_animation_complete()) {
 			cooldowns.end.start();
 			loth->hide();
-			svc.soundboard.play_sound("magical_sparkle");
+			svc.soundboard.play_sound("magical_disappear_2");
 			map.spawn_emitter(svc, "radiance", loth->get_collider().get_center(), Direction{});
 			map.spawn_effect(svc, "giga_flare", loth->get_collider().get_center());
 			++progress;

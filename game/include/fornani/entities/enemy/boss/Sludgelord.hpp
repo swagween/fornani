@@ -10,7 +10,7 @@
 
 namespace fornani::enemy {
 
-enum class SludgelordState : std::uint8_t { idle, turn, spit, roll, slam, bounce };
+enum class SludgelordState : std::uint8_t { idle, turn, spit, roll, slam, bounce, roar, spew };
 enum class SludgelordFlags : std::uint8_t { spit, slamming, landed, bounced };
 
 class Sludgelord final : public Boss, public StateMachine<SludgelordState> {
@@ -29,14 +29,18 @@ class Sludgelord final : public Boss, public StateMachine<SludgelordState> {
 	fsm::StateFunction update_roll();
 	fsm::StateFunction update_slam();
 	fsm::StateFunction update_bounce();
+	fsm::StateFunction update_roar();
+	fsm::StateFunction update_spew();
 
   private:
 	util::BitFlags<SludgelordFlags> m_flags{};
 	components::SteeringBehavior m_steering{};
 	util::Cooldown m_spit_time;
 	util::Cooldown m_switch_sides;
+	util::Cooldown m_slam;
 	util::Counter m_bounce_counter{};
 	std::optional<entity::WeaponPackage> m_bomb{};
+	entity::WeaponPackage m_spew;
 	std::vector<entity::Shockwave> m_shockwaves{};
 
 	shape::CircleCollider m_bounce_collider{50.f};

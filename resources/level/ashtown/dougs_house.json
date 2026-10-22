@@ -115,7 +115,7 @@
     "interior": true,
     "metagrid": [
       89,
-      20
+      19
     ],
     "minimap": true,
     "music": "",
@@ -126,6 +126,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "hidden": false,
       "interior": true,
       "lighting": false,
       "sky_limit": 0,

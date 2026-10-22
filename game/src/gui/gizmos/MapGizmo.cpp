@@ -53,6 +53,10 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"pioneer_trail", 227}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 227); }
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"hoarders_cave", 1410}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 1410); }
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"junkyard", 700}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 700); }
+	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"mimic_farm", 212}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 212); }
+
+	auto const oor = !comprehensive && map.get_biome_string() != "firstwind";
+	if (oor || !map.is_minimap()) { m_minimap->set_flag(MiniMapFlags::out_of_range); }
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -73,7 +77,7 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 			if (m_path.get_section() == 0 && m_path.completed_step(1)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::boot); }
 		}
 		if (m_path.get_section() == 0 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::open); }
-		if (m_path.get_section() == 1 && m_path.completed_step(2)) { svc.soundboard.flags.pioneer.set(audio::Pioneer::hard_slot); }
+		if (m_path.get_section() == 1 && m_path.completed_step(2)) { is_comprehensive() ? svc.soundboard.flags.pioneer.set(audio::Pioneer::hard_slot) : svc.soundboard.flags.pioneer.set(audio::Pioneer::close); }
 	}
 
 	m_path.update();
@@ -81,7 +85,9 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_minimap->update();
 
 	if (m_info) { m_info->update(svc, player, map, get_placement() + m_path.get_position()); }
-	for (auto& plugin : m_plugins) { plugin.update(svc.soundboard); }
+	if (is_comprehensive()) {
+		for (auto& plugin : m_plugins) { plugin.update(svc.soundboard); }
+	}
 
 	// create and destroy chain borders
 	auto sparams = vfx::SpringParameters{0.94f, 0.2f, 0.f, 0.f};
@@ -172,7 +178,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	if (is_foreground() != foreground) { return; }
 	auto render_position{-get_placement() + cam};
 	m_constituents.gizmo.motherboard.position = m_path.get_position() + m_motherboard_path.get_position() - m_map_screen.get_f_corner_dimensions();
-	m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f}, shader, palette);
+	if (is_comprehensive()) { m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f}, shader, palette); }
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(constants::f_scale_vec);
 	m_map_screen.render(win, cam);
@@ -322,13 +328,17 @@ void MapGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Pl
 	m_info = std::make_unique<MapInfoGizmo>(svc, map.room_id, sf::Vector2f{374.f, -90}); // make conditional when info bar is an item
 	m_plugins.push_back(MapPlugin(svc.finder, "plugin_nani", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 49}, {63, 29}}, audio::Pioneer::slot));
 	m_flags.icon.set(MapIconFlags::nani);
-	m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Pioneer::sync));
-	m_flags.icon.set(MapIconFlags::save);
-	m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::click));
-	m_flags.icon.set(MapIconFlags::bed);
-	if (player.has_item("gobe_plugin")) {
-		m_plugins.push_back(MapPlugin(svc.finder, "plugin_gobe", sf::IntRect{m_lookups.plugin + sf::Vector2i{36, 27}, {43, 22}}, audio::Pioneer::slot));
-		m_flags.icon.set(MapIconFlags::gobe);
+	if (is_comprehensive()) {
+		if (player.has_item("save_plugin")) {
+			m_plugins.push_back(MapPlugin(svc.finder, "plugin_save", sf::IntRect{m_lookups.plugin + sf::Vector2i{27, 0}, {23, 22}}, audio::Pioneer::sync));
+			m_flags.icon.set(MapIconFlags::save);
+		}
+		m_plugins.push_back(MapPlugin(svc.finder, "plugin_bed", sf::IntRect{m_lookups.plugin + sf::Vector2i{0, 27}, {36, 15}}, audio::Pioneer::click));
+		m_flags.icon.set(MapIconFlags::bed);
+		if (player.has_item("gobe_plugin")) {
+			m_plugins.push_back(MapPlugin(svc.finder, "plugin_gobe", sf::IntRect{m_lookups.plugin + sf::Vector2i{36, 27}, {43, 22}}, audio::Pioneer::slot));
+			m_flags.icon.set(MapIconFlags::gobe);
+		}
 	}
 	//
 

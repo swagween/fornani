@@ -22,7 +22,7 @@ class Portal;
 
 namespace fornani::gui {
 
-enum class MiniMapFlags : std::uint8_t { open, moving, marker_hovered, limited };
+enum class MiniMapFlags : std::uint8_t { open, moving, marker_hovered, limited, out_of_range };
 enum class MapIconFlags : std::uint8_t { nani, landmark, save, chest, bed, door, boss, gobe, vendor, quest };
 enum class ChunkType : std::uint8_t { top_left, top, top_right, bottom_left, bottom, bottom_right, left, right, inner };
 enum class QuestMarkerType : std::uint8_t { main };
@@ -112,6 +112,7 @@ class MiniMap final : public Flaggable<MiniMapFlags> {
 	std::optional<Animatable> m_reticle;
 	std::optional<sf::Sprite> m_map_sprite;
 	std::optional<Tooltip> m_tooltip{};
+	std::optional<sf::Text> m_message{};
 	sf::RectangleShape m_border{};
 	std::vector<MapIcon> m_markers{};
 	std::vector<DoorConnection> m_dotted_lines{};

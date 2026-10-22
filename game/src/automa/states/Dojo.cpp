@@ -54,6 +54,7 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	m_map_markers.insert({4, "nightside_station"});
 	m_map_markers.insert({5, "hoarders_cave"});
 	m_map_markers.insert({6, "junkyard"});
+	m_map_markers.insert({7, "mimic_farm"});
 
 	reload(svc, room_number);
 
@@ -61,14 +62,6 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
-
-	// handle events
-	if (svc.music_player.is_finished_playing() && m_flags.test(GameplayFlags::ringtone_played)) {
-		NANI_LOG_DEBUG(m_logger, "set fade in!");
-		svc.music_player.resume();
-		svc.music_player.fade_in(util::Sec{1.f});
-		m_flags.reset(GameplayFlags::ringtone_played);
-	}
 
 	if (svc.ticker.every_second()) { svc.quest_table.set_quest_progression("nighttime", svc.world_clock.is_nighttime() ? 2 : 1); }
 
@@ -110,7 +103,6 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 		p_context.console.value()->display_item(m_item_tag);
 		svc.music_player.quick_play(svc.finder, "discovery");
-		m_flags.set(GameplayFlags::ringtone_played);
 	}
 
 	if (player->has_flag_set(player::PlayerFlags::bonus_health_added) && !p_context.console) {
@@ -304,8 +296,16 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 
 	svc.menu_controller.reset_vendor_dialog();
 	if (!svc.data.is_room_discovered(target_state)) {
-		svc.data.discovered_rooms.add(target_state);
-		svc.stats.world.rooms_discovered.update();
+		auto discover_me = true;
+		auto room_data_result = svc.data.get_map_json_from_id(target_state);
+		if (room_data_result) {
+			auto room_data = std::move(*room_data_result);
+			if (room_data.get()["meta"]["properties"]["hidden"].as_bool()) { discover_me = false; }
+		}
+		if (discover_me) {
+			svc.data.discovered_rooms.add(target_state);
+			svc.stats.world.rooms_discovered.update();
+		}
 	}
 
 	bool found_one = false;
@@ -371,8 +371,6 @@ void Dojo::acquire_gun(ServiceProvider& svc, std::string_view tag) {
 	}
 	p_context.console.value()->display_gun(tag);
 	svc.music_player.quick_play(svc.finder, "revelation");
-
-	m_flags.set(GameplayFlags::ringtone_played);
 }
 
 void Dojo::remove_gun_by_id(ServiceProvider& svc, int id) {
@@ -529,15 +527,16 @@ void Dojo::handle_transition() { set_flag(GameplayStateFlags::transitioned_in, f
 
 void Dojo::set_quest_progression(int quest, int value) {
 	auto tag = p_services->quest_registry.get_json(quest)["tag"].as_string();
+	auto const& quest_data = p_services->quest_registry.get_json(tag);
 	if (p_services->quest_table.is_quest_complete(tag)) { return; }
 	p_services->quest_table.set_quest_progression(tag, value, QuestRequirementType::strict);
-	for (auto const& objective : p_services->quest_registry.get_json(tag)["objectives"].as_array()) {
-		if (objective["index"].as<int>() == value) { p_services->notifications.push_notification(*p_services, p_services->data.gui_text["notifications"]["journal_updated"].as_string()); }
-	}
 	if (p_services->quest_table.is_quest_complete(tag)) {
 		p_services->music_player.quick_play(p_services->finder, "triumph");
-		m_flags.set(GameplayFlags::ringtone_played);
-		p_services->notifications.push_notification(*p_services, p_services->data.gui_text["notifications"]["quest_completed"].as_string() + p_services->quest_registry.get_json(tag)["title"].as_string());
+		p_services->notifications.push_notification(*p_services, p_services->data.gui_text["notifications"]["quest_completed"].as_string() + quest_data["title"].as_string());
+	} else {
+		for (auto const& objective : quest_data["objectives"].as_array()) {
+			if (objective["index"].as<int>() == value) { p_services->notifications.push_notification(*p_services, p_services->data.gui_text["notifications"]["new_objective"].as_string()); }
+		}
 	}
 	NANI_LOG_DEBUG(m_logger, "Set quest {}'s progression to {}", tag, value);
 }

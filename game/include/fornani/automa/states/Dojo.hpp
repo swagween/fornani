@@ -12,7 +12,7 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags : std::uint8_t { game_over, transitioning, open_vendor, give_item, ringtone_played, death_console_launched, console_running, remove_item, health_increase_exit, open_builder, open_air_travel };
+enum class GameplayFlags : std::uint8_t { game_over, transitioning, open_vendor, give_item, death_console_launched, console_running, remove_item, health_increase_exit, open_builder, open_air_travel };
 
 class Dojo final : public GameplayState {
   public:

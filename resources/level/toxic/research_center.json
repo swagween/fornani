@@ -206,7 +206,6 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -2505,7 +2504,7 @@
         4,
         4,
         4,
-        4,
+        21,
         0,
         32,
         34,

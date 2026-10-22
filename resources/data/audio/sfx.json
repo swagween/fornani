@@ -388,6 +388,38 @@
     "pitch_offset": 0.2
   },
   {
+    "label": "expander_expand_worm_1",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.2,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "expander_expand_worm_2",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.2,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "expander_contract_worm_1",
+    "bus": "gameplay",
+    "volume": 1.0,
+    "pitch_offset": 0.2,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
+    "label": "expander_contract_worm_2",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.2,
+    "min_distance": 128.0,
+    "max_distance": 512.0
+  },
+  {
     "label": "spitefly_death",
     "bus": "gameplay",
     "volume": 1.0,
@@ -398,6 +430,22 @@
     "bus": "gameplay",
     "volume": 1.0,
     "pitch_offset": 0.2
+  },
+  {
+    "label": "sludgelord_burp",
+    "bus": "gameplay",
+    "volume": 0.2,
+    "pitch_offset": 0.2
+  },
+  {
+    "label": "sludgelord_passive",
+    "bus": "gameplay",
+    "volume": 0.8,
+    "pitch_offset": 0.0,
+    "min_distance": 128.0,
+    "max_distance": 512.0,
+    "fade_in": 100,
+    "fade_out": 100
   },
   {
     "label": "spitefly_screech",

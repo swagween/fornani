@@ -29,6 +29,8 @@ ExpanderBlock::ExpanderBlock(automa::ServiceProvider& svc, world::Map& map, dj::
 	p_animatable.set_dimensions(dim);
 	p_animatable.push_animation("open", {0, 4, 24, -1, true});
 	p_animatable.push_animation("close", {4, 5, 24, -1, true});
+
+	if (m_specs.delay > constants::tiny_value) { m_timer.start(static_cast<int>(m_specs.time * m_specs.delay)); }
 }
 
 ExpanderBlock::ExpanderBlock(automa::ServiceProvider& svc, sf::Vector2u dimensions, int id, std::string_view label, ExpanderBlockSpecifications specs, util::BitFlags<SpecialBlockAttributes> attributes)
@@ -36,11 +38,19 @@ ExpanderBlock::ExpanderBlock(automa::ServiceProvider& svc, sf::Vector2u dimensio
 	p_animatable.set_texture_rect(sf::IntRect{{}, constants::i_resolution_vec});
 }
 
+void ExpanderBlock::expose() {
+	ImGui::InputInt("Time", &m_specs.time);
+	ImGui::InputFloat("Threshold", &m_specs.threshold);
+	ImGui::InputFloat("Factor", &m_specs.factor);
+	ImGui::InputFloat("Delay", &m_specs.delay);
+}
+
 void ExpanderBlock::serialize(dj::Json& out) {
 	SpecialBlock::serialize(out);
 	out["time"] = m_specs.time;
 	out["threshold"] = m_specs.threshold;
 	out["factor"] = m_specs.factor;
+	out["delay"] = m_specs.delay;
 }
 
 void ExpanderBlock::unserialize(dj::Json const& in) {
@@ -48,6 +58,7 @@ void ExpanderBlock::unserialize(dj::Json const& in) {
 	m_specs.time = in["time"].as<int>();
 	m_specs.threshold = in["threshold"].as<float>();
 	m_specs.factor = in["factor"].as<float>();
+	m_specs.delay = in["delay"].as<float>();
 	m_timer = util::Cooldown{m_specs.time};
 }
 

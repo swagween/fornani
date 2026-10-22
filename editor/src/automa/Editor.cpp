@@ -416,60 +416,62 @@ void Editor::gui_render(sf::RenderWindow& win) {
 	ImVec2 work_size = viewport->WorkSize;
 	auto f_work_size = sf::Vector2f{static_cast<float>(work_size.x), static_cast<float>(work_size.y)};
 
-	if (current_tool->entity_menu) {
-		if (current_tool->current_entity) {
-			ImGui::OpenPopup("Entity Options");
-		} else {
-			ImGui::OpenPopup("Non-Copyable Entity Options");
-		}
-	}
-	if (current_tool->entity_mode == EntityMode::editor) {
-		if (current_tool->current_entity) { ImGui::OpenPopup("Edit Entity"); }
-	}
+	if (current_tool->entity_menu) { ImGui::OpenPopup("Entity Options"); }
+
+	if (current_tool->entity_mode == EntityMode::editor && (current_tool->current_entity || current_tool->editing_entity)) { ImGui::OpenPopup("Edit Entity"); }
+
 	if (ImGui::BeginPopupContextWindow("Entity Options")) {
+		auto const copyable = current_tool->current_entity.has_value();
+
 		if (ImGui::MenuItem("Edit")) {
 			current_tool->entity_mode = EntityMode::editor;
 			current_tool->entity_menu = false;
 		}
-		if (ImGui::MenuItem("Move")) {
-			current_tool->entity_mode = EntityMode::mover;
-			current_tool->entity_menu = false;
+
+		if (copyable) {
+			if (ImGui::MenuItem("Move")) {
+				current_tool->entity_mode = EntityMode::mover;
+				current_tool->entity_menu = false;
+			}
+
+			if (ImGui::MenuItem("Duplicate")) {
+				current_tool->entity_mode = EntityMode::placer;
+				current_tool->entity_menu = false;
+			}
 		}
-		if (ImGui::MenuItem("Duplicate")) {
-			current_tool->entity_mode = EntityMode::placer;
-			current_tool->entity_menu = false;
-		}
+
 		if (ImGui::MenuItem("Delete")) {
 			current_tool->entity_mode = EntityMode::eraser;
 			current_tool->entity_menu = false;
 		}
-		ImGui::EndPopup();
-	}
-	if (ImGui::BeginPopupContextWindow("Non-Copyable Entity Options")) {
-		if (ImGui::MenuItem("Delete")) {
-			current_tool->entity_mode = EntityMode::eraser;
-			current_tool->entity_menu = false;
-		}
-		ImGui::EndPopup();
+
 		ImGui::EndPopup();
 	}
 	if (ImGui::BeginPopupContextWindow("Edit Entity")) {
-		if (current_tool->current_entity) {
-			current_tool->current_entity.value()->expose();
+		auto* entity = current_tool->current_entity ? current_tool->current_entity->get() : current_tool->editing_entity;
+
+		if (entity) {
+			entity->expose();
+
 			if (ImGui::Button("Save Changes") || editor_flags.test(EditorFlags::create_new_room)) {
 				for (auto& ent : map.entities.variables.entities) {
 					if (ent->highlighted) { ent->overwrite = true; }
 					ent->selected = false;
 					ent->highlighted = false;
 				}
+
+				current_tool->editing_entity = nullptr;
 				ImGui::CloseCurrentPopup();
 			}
+
 			if (ImGui::Button("Close")) {
 				for (auto& ent : map.entities.variables.entities) {
 					ent->selected = false;
 					ent->highlighted = false;
 				}
+
 				current_tool->current_entity.reset();
+				current_tool->editing_entity = nullptr;
 				ImGui::CloseCurrentPopup();
 			}
 		}

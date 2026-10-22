@@ -50,7 +50,8 @@ enum class MessageCodeType : std::uint8_t {
 	set_time_of_day,
 	restore_health,
 	fade_to_black,
-	fade_from_black
+	fade_from_black,
+	set_output_type
 };
 
 enum class CodeSource : std::uint8_t { suite, response };

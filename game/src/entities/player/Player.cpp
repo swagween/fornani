@@ -118,12 +118,12 @@ void Player::unserialize(dj::Json const& in) {
 
 	auto start = std::chrono::steady_clock::now();
 	// wardrobe
-	auto& wardrobe = catalog.wardrobe;
 	auto hairstyle = in["wardrobe"]["hairstyle"].as<int>();
 	auto headgear = in["wardrobe"]["headgear"].as<int>();
 	auto shirt = in["wardrobe"]["shirt"].as<int>();
 	auto pants = in["wardrobe"]["pants"].as<int>();
 	set_outfit({hairstyle, headgear, shirt, pants});
+	NANI_LOG_INFO(m_logger, "Hairstyle: {}\nHeadgear: {}\nShirt: {}\nPants: {}\n", hairstyle, headgear, shirt, pants);
 	update_wardrobe();
 	NANI_LOG_INFO(m_logger, "Player::unserialize took {} μs", std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - start).count());
 
@@ -140,7 +140,6 @@ void Player::register_with_map(world::Map& map) {
 	m_physics_data = std::move(*result);
 	get_collider().load_properties(m_physics_data["properties"]);
 
-	if (has_collider()) { NANI_LOG_INFO(m_logger, "Player has a collider."); }
 	anchor_point = get_collider().physics.position + player_dimensions_v * 0.5f;
 	get_collider().collision_depths.emplace();
 	get_collider().physics = components::PhysicsComponent({physics_stats.ground_fric, physics_stats.ground_fric}, physics_stats.mass);
@@ -1328,10 +1327,16 @@ void Player::use_item() {
 
 EquipmentStatus Player::equip_item(int id) {
 	auto ret = catalog.inventory.equip_item(id);
+
 	if (id == 56) {
-		ret == EquipmentStatus::equipped || ret == EquipmentStatus::swapped ? catalog.wardrobe.equip(ApparelType::hairstyle, 1) : catalog.wardrobe.unequip(ApparelType::hairstyle);
+		if (ret == EquipmentStatus::equipped || ret == EquipmentStatus::swapped) {
+			catalog.wardrobe.equip(ApparelType::hairstyle, 1);
+		} else {
+			catalog.wardrobe.unequip(ApparelType::hairstyle);
+		}
 		wardrobe_widget.update(*this);
 	}
+
 	if (id == 102) {
 		set_flag(PlayerFlags::refresh_weapons);
 		if (arsenal) {
@@ -1339,12 +1344,10 @@ EquipmentStatus Player::equip_item(int id) {
 		}
 	}
 
-	// check for gas mask swapping
-	if (!std::ranges::contains(catalog.inventory.equipped_items_view(), 56) && ret == EquipmentStatus::swapped) {
+	// Remove the gas mask hairstyle when the item is no longer equipped.
+	if (id == 56 && !std::ranges::contains(catalog.inventory.equipped_items_view(), 56)) {
 		catalog.wardrobe.unequip(ApparelType::hairstyle);
 		wardrobe_widget.update(*this);
-	} else {
-		catalog.wardrobe.equip(ApparelType::hairstyle, 1);
 	}
 
 	return ret;

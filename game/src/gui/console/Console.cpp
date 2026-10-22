@@ -88,15 +88,13 @@ void Console::update(automa::ServiceProvider& svc) {
 				m_services->events.acquire_postcard_event.dispatch(*m_services, code.value);
 				processed = true;
 			}
-			if (code.is(MessageCodeType::set_quest_progression) && m_process_code_before) {
-				if (code.extras) {
-					if (code.extras->size() > 0) { m_services->events.set_quest_progression_event.dispatch(code.value, code.extras->at(0)); }
-				}
-				processed = true;
-			}
 			if (code.is_destroy_inspectable()) {
 				m_services->data.destroy_inspectable(code.value);
 				if (m_speaker_id) { m_services->data.destroy_inspectable(m_speaker_id->get()); }
+				processed = true;
+			}
+			if (code.is(MessageCodeType::set_output_type)) {
+				m_output_type = static_cast<OutputType>(code.value);
 				processed = true;
 			}
 			if (code.is_input_hint()) {
@@ -127,15 +125,6 @@ void Console::update(automa::ServiceProvider& svc) {
 			if (code.is_quest() && m_process_code_before) {
 				if (code.extras) {
 					if (code.extras->size() > 1) { svc.quest_table.progress_quest(svc.quest_registry.get_quest_metadata(code.value).get_tag(), code.extras->at(0), code.extras->at(1)); }
-				}
-				processed = true;
-			}
-			if (code.is_pop_conversation() && m_process_code_before) {
-				m_services->events.npc_pop_conversation_event.dispatch();
-				auto label = svc.data.get_npc_label_from_id(code.value);
-				if (label && code.extras) {
-					// svc.quest_table.progress_quest("npc_dialogue", {label.value().data(), code.extras->at(0)}, 1, -1, code.value);
-					NANI_LOG_DEBUG(m_logger, "Progressed NPC dialogue for NPC {} in room {}.", label.value().data(), code.extras->at(0));
 				}
 				processed = true;
 			}
@@ -426,6 +415,7 @@ bool Console::process_code(MessageCode const& code) {
 		m_services->events.remove_item_by_id_event.dispatch(*m_services, code.value);
 		NANI_LOG_DEBUG(m_logger, "Removed item from console {}", code.value);
 	}
+	if (code.is(MessageCodeType::set_output_type)) { m_output_type = static_cast<OutputType>(code.value); }
 	return false;
 }
 

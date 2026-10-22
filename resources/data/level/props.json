@@ -95,6 +95,14 @@
     "dimensions": [169, 95],
     "offset": [-11.0, -9.0]
   },
+  "pioneer_capsule": {
+    "category": "landmark",
+    "num_frames": 1,
+    "sensitivity": 0.0,
+    "radius": 16.0,
+    "dimensions": [101, 97],
+    "offset": [-11.0, 9.0]
+  },
   "totaled_championj5": {
     "category": "vehicle",
     "num_frames": 1,

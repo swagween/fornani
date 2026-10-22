@@ -56,7 +56,6 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 	if (in_data["attributes"]["sprite_flip"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sprite_flip); }
 	if (in_data["attributes"]["sticky"].as_bool()) { metadata.attributes.set(ProjectileAttributes::sticky); }
 	if (in_data["attributes"]["hitstun"].as_bool()) { metadata.attributes.set(ProjectileAttributes::hitstun); }
-	if (auto const& i = in_data["boomerang"]) { m_boomerang.emplace(Boomerang{i["friction"].as<float>(), i["force"].as<float>()}); }
 	if (in_weapon["gameplay"]["attributes"]["automatic"].as_bool()) { metadata.attributes.set(ProjectileAttributes::automatic); }
 
 	if (in_data["explosion"]) {
@@ -72,9 +71,13 @@ Projectile::Projectile(automa::ServiceProvider& svc, std::string_view label, int
 		metadata.impact.emplace(in_data["impact"]);
 		metadata.attributes.set(ProjectileAttributes::impact);
 	}
+	if (auto const& i = in_data["boomerang"]) { m_boomerang.emplace(Boomerang{i["friction"].as<float>(), i["force"].as<float>()}); }
+	if (auto const& s = in_data["sine"]) { m_sine.emplace(Sine{s["amplitude"].as<float>(), s["frequency"].as<float>()}); }
 
 	visual.num_angles = in_data["animation"]["angles"].as<int>();
 	visual.effect_type = in_data["visual"]["effect_type"].as<int>();
+	for (auto const& he : in_data["visual"]["hit_emitters"].as_array()) { visual.hit_emitters.push_back(Emitter{he["tag"].as_string()}); }
+	for (auto const& te : in_data["visual"]["travel_emitters"].as_array()) { visual.travel_emitters.push_back(Emitter{te["tag"].as_string(), util::Cooldown{te["frequency"].as<int>()}}); }
 
 	audio.hit_tag = "hit_" + std::string{label};
 
@@ -108,6 +111,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 	lifetime.update();
 	m_reflected.update();
 	damage_timer.update();
+	variables.counter.update(svc.ticker.dt.count());
 
 	if (variables.state.test(ProjectileState::destruction_initiated) && !metadata.attributes.test(ProjectileAttributes::constrained)) { destroy(true); }
 
@@ -120,6 +124,16 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 		physical.collider.physics.set_global_friction(0.998f);
 		physical.steering.smooth_random_walk(physical.collider.physics, get_inverse_hv_from_vector(physical.collider.physics.velocity), 0.002f, 24.f);
 		physical.collider.physics.simple_update();
+	} else {
+		auto& dir = get_direction().up_or_down() ? physical.collider.physics.acceleration.y : physical.collider.physics.acceleration.x;
+		auto const sign = get_direction().up() || get_direction().left() ? -1.f : 1.f;
+		if (auto const& a = metadata.specifications.acceleration_factor > constants::small_value) { dir = a * sign; }
+	}
+
+	if (is_sine()) {
+		auto& axis = get_direction().up_or_down() ? physical.collider.physics.position.x : physical.collider.physics.position.y;
+		auto& start = get_direction().up_or_down() ? variables.fired_point.x : variables.fired_point.y;
+		axis = start - std::sin(variables.counter.get() * m_sine->frequency) * m_sine->amplitude;
 	}
 	if (persistent()) {
 		if (variables.hits.get_count() > metadata.specifications.max_hits) { destroy(false); }
@@ -147,6 +161,7 @@ void Projectile::update(automa::ServiceProvider& svc, player::Player& player) {
 void Projectile::handle_impact(automa::ServiceProvider& svc, world::Map& map) {
 	for (auto& p : map.active_projectiles) {
 		if (&p == this) { continue; }
+		if (p.get_team() == get_team()) { continue; }
 		if (p.get_collider().is_very_near(get_collider())) {
 			destroy(false);
 			p.handle_successful_hit(svc, map);
@@ -167,6 +182,15 @@ void Projectile::handle_impact(automa::ServiceProvider& svc, world::Map& map) {
 }
 
 void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map) {
+	for (auto& te : visual.travel_emitters) {
+		if (te.frequency) {
+			te.frequency->update();
+			if (te.frequency->is_complete()) {
+				te.frequency->start();
+				map.spawn_emitter(svc, te.tag, physical.collider.get_global_center(), get_direction(), {4.f, 4.f}, colors::white, effect_type());
+			}
+		}
+	}
 	if (!is_stuck()) { physical.collider.update(svc); }
 	if (transcendent()) { return; }
 	if (is_impactable()) { handle_impact(svc, map); }
@@ -204,6 +228,7 @@ void Projectile::handle_collision(automa::ServiceProvider& svc, world::Map& map)
 				map.effects.push_back(entity::Effect(svc, "bullet_hit", physical.collider.get_global_center() + spot, {}, effect_type()));
 				if (physical.direction.up_or_down()) { map.effects.back().rotate(); }
 			}
+			trigger_hit_emitters(svc, map);
 		}
 		destroy(false);
 	}
@@ -246,6 +271,7 @@ void Projectile::handle_successful_hit(automa::ServiceProvider& svc, world::Map&
 	if (!destruction_initiated()) {
 		map.spawn_effect(svc, "hit_flash", get_collider().get_global_center());
 		svc.soundboard.play_sound("projectile_hit", get_collider().get_global_center());
+		trigger_hit_emitters(svc, map);
 	}
 	destroy(false);
 }
@@ -258,6 +284,7 @@ void Projectile::handle_hard_hit(automa::ServiceProvider& svc, world::Map& map) 
 	if (!destruction_initiated()) {
 		map.spawn_effect(svc, "inv_hit", get_collider().get_global_center(), {}, effect_type());
 		svc.soundboard.play_sound("hard_hit", get_collider().get_global_center());
+		trigger_hit_emitters(svc, map);
 	}
 	destroy(false);
 }
@@ -354,6 +381,14 @@ void Projectile::handle_player_hit(automa::ServiceProvider& svc, world::Map& map
 		player.stun(metadata.specifications.stun_multiplier);
 	} else {
 		player.hurt(metadata.specifications.base_damage);
+	}
+}
+
+void Projectile::trigger_hit_emitters(automa::ServiceProvider& svc, world::Map& map) {
+	for (auto const& he : visual.hit_emitters) {
+		auto to_dir = get_direction();
+		to_dir.flip();
+		map.spawn_emitter(svc, he.tag, physical.collider.get_global_center(), to_dir, {4.f, 4.f}, colors::white, effect_type());
 	}
 }
 

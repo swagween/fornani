@@ -8,12 +8,14 @@ namespace fornani::enemy {
 
 constexpr auto sludgelord_framerate = 12;
 
-Sludgelord::Sludgelord(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "sludgelord"), m_services{&svc}, m_spit_time{600}, m_switch_sides{1900} {
+Sludgelord::Sludgelord(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map, "sludgelord"), m_services{&svc}, m_spit_time{600}, m_switch_sides{1900}, m_spew{svc, "toxic_spew"}, m_slam{6} {
 	p_animatable.set_animations({{"idle", {0, 4, sludgelord_framerate * 4, -1}},
 								 {"turn", {4, 2, sludgelord_framerate * 4, 0}},
 								 {"spit", {6, 9, sludgelord_framerate * 3, 0}},
 								 {"bounce", {15, 5, sludgelord_framerate * 2, 6}},
 								 {"roll", {15, 5, sludgelord_framerate, 4}},
+								 {"roar", {18, 1, sludgelord_framerate * 20, 0}},
+								 {"spew", {15, 5, sludgelord_framerate, 8}},
 								 {"slam", {19, 7, sludgelord_framerate, 0}}});
 	p_animatable.animation.set_params(get_params("idle"));
 	p_state.actual = SludgelordState::idle;
@@ -24,6 +26,7 @@ Sludgelord::Sludgelord(automa::ServiceProvider& svc, world::Map& map) : Boss(svc
 	m_bomb = entity::WeaponPackage{svc, "poison_ball"};
 	attributes.team = arms::Team::beast;
 	m_bomb->get().set_team(arms::Team::beast);
+	m_spew.set_team(arms::Team::beast);
 
 	get_collider().physics.set_friction_componentwise({0.995f, 0.99f});
 	m_bounce_collider.physics.elasticity = 1.f;
@@ -37,7 +40,18 @@ void Sludgelord::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	flags.state.set(StateFlags::vulnerable);
 	m_spit_time.update();
 	m_switch_sides.update();
+	m_slam.update();
 	if (m_switch_sides.is_complete()) { m_switch_sides.start(); }
+	if (m_slam.is_almost_complete()) {
+		auto const shockwave_speed = 2.6f;
+		auto const offset = sf::Vector2f{30.f, 0.f};
+		m_shockwaves.push_back(entity::Shockwave{{12, 600, 6, {shockwave_speed * directions.actual.as_float(), 0.f}}});
+		m_shockwaves.back().origin = Enemy::get_collider().get_bottom() + offset;
+		m_shockwaves.back().start();
+		m_shockwaves.push_back(entity::Shockwave{{12, 600, 6, {-shockwave_speed * directions.actual.as_float(), 0.f}}});
+		m_shockwaves.back().origin = Enemy::get_collider().get_bottom() - offset;
+		m_shockwaves.back().start();
+	}
 
 	if (consume_flag(BossFlags::start_battle)) {
 		svc.music_player.load(svc.finder, "nimbus_iii");
@@ -52,10 +66,16 @@ void Sludgelord::update(automa::ServiceProvider& svc, world::Map& map, player::P
 		svc.music_player.play_looped();
 	}
 
+	if (!health.is_dead()) { svc.soundboard.repeat_sound("sludgelord_passive", 1U, get_collider().get_center()); }
+
 	if (is_alert() && !battle_mode()) { start_battle(); }
 
 	// logic
 	if (m_bomb) { m_bomb->update(svc, map, *this); }
+	auto bp = sf::Vector2f{0.f, -48.f};
+	m_spew.get().set_barrel_point(get_collider().get_center() + bp);
+	m_spew.get().set_firing_direction(CardinalDirection{UDLR::up});
+	m_spew.update(svc, map, *this);
 	for (auto& s : m_shockwaves) {
 		if (s.hit.active()) { player.hurt(); }
 		s.update(svc, map);
@@ -66,12 +86,18 @@ void Sludgelord::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	// puff effect
 	if (svc.ticker.every_x_ticks(50)) { map.spawn_effect(svc, "toxic_puff", get_collider().get_center() + sf::Vector2f{0.f, -60.f} + random::vector_float(-30.f, 30.f), {0.f, -0.5f}); }
 
-	if (is_alert()) {
+	if (battle_mode()) {
 		auto side = m_switch_sides.halfway() ? -1.f : 1.f;
 		if (!m_flags.test(SludgelordFlags::slamming)) {
 			auto target = sf::Vector2f{150.f * side, -220.f - 80.f * std::sin(3.f * svc.ticker.total_seconds_passed.count())};
 			if (is_state(SludgelordState::roll)) { target.x = 0.f; }
-			m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + target, 0.00006f);
+			if (is_state(SludgelordState::spew) || is_state(SludgelordState::roar)) {
+				get_collider().physics.set_friction_componentwise({0.97f, 0.97f});
+				m_steering.seek(Enemy::get_collider().physics, map.get_nearest_target_point(get_collider().get_center()), 0.0005f);
+			} else {
+				get_collider().physics.set_friction_componentwise({0.995f, 0.99f});
+				m_steering.seek(Enemy::get_collider().physics, player.get_collider().get_center() + target, 0.00006f);
+			}
 		}
 		if (m_spit_time.is_complete()) {
 			random::coin_flip() || m_flags.test(SludgelordFlags::bounced) ? request(SludgelordState::spit) : request(SludgelordState::bounce);
@@ -144,6 +170,7 @@ fsm::StateFunction Sludgelord::update_idle() {
 
 fsm::StateFunction Sludgelord::update_spit() {
 	p_state.actual = SludgelordState::spit;
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("sludgelord_burp", get_collider().get_center()); }
 	if (p_animatable.frame_action(2) || p_animatable.frame_action(5)) { m_flags.set(SludgelordFlags::spit); }
 	if (p_animatable.animation.is_complete()) {
 		m_flags.reset(SludgelordFlags::bounced);
@@ -169,16 +196,10 @@ fsm::StateFunction Sludgelord::update_slam() {
 	if (get_collider().grounded() && !m_flags.test(SludgelordFlags::landed)) {
 		m_flags.set(SludgelordFlags::landed);
 		m_services->camera_controller.shake(5, 0.2f, 400, 30);
-		p_map->spawn_effect(*p_services, "slam_impact", get_collider().get_center() + sf::Vector2f{0.f, 7.f});
 		p_services->soundboard.play_sound("juicy_impact", get_collider().get_center());
 		p_services->soundboard.play_sound("vibration", get_collider().get_center());
-		auto const shockwave_speed = 2.6f;
-		m_shockwaves.push_back(entity::Shockwave{{12, 600, 6, {shockwave_speed * directions.actual.as_float(), 0.f}}});
-		m_shockwaves.back().origin = Enemy::get_collider().get_bottom();
-		m_shockwaves.back().start();
-		m_shockwaves.push_back(entity::Shockwave{{12, 600, 6, {-shockwave_speed * directions.actual.as_float(), 0.f}}});
-		m_shockwaves.back().origin = Enemy::get_collider().get_bottom();
-		m_shockwaves.back().start();
+		m_slam.start();
+		p_map->spawn_effect(*p_services, "slam_impact", get_collider().get_center() + sf::Vector2f{0.f, 7.f});
 	}
 	if (p_animatable.animation.get_frame_count() < 3) { m_flags.set(SludgelordFlags::slamming); }
 	if (p_animatable.animation.complete()) {
@@ -198,14 +219,38 @@ fsm::StateFunction Sludgelord::update_bounce() {
 	}
 	if (m_bounce_collider.collided()) {
 		m_bounce_counter.update();
-		p_services->soundboard.play_sound("thud", get_collider().get_center());
+		p_services->soundboard.play_sound("short_slam", get_collider().get_center());
+		p_services->camera_controller.shake(4, 0.1f, 200, 20);
 	}
 	if (p_animatable.animation.complete() || m_bounce_collider.get_global_center().y > p_map->get_random_home_point().y || m_bounce_counter.get_count() > 2) {
 		m_bounce_counter.start();
+		half_health() ? request(SludgelordState::roar) : request(SludgelordState::idle);
+		if (change_state(SludgelordState::idle, get_params("idle"))) { return SLUDGELORD_BIND(update_idle); }
+		if (change_state(SludgelordState::roar, get_params("roar"))) { return SLUDGELORD_BIND(update_roar); }
+	}
+	return SLUDGELORD_BIND(update_bounce);
+}
+
+fsm::StateFunction Sludgelord::update_roar() {
+	p_state.actual = SludgelordState::roar;
+	if (p_animatable.animation.just_started()) { p_services->soundboard.play_sound("beast_growl", get_collider().get_center()); }
+	if (p_animatable.animation.complete()) {
+		half_health() ? request(SludgelordState::spew) : request(SludgelordState::idle);
+		if (change_state(SludgelordState::spew, get_params("spew"))) { return SLUDGELORD_BIND(update_spew); }
+		if (change_state(SludgelordState::idle, get_params("idle"))) { return SLUDGELORD_BIND(update_idle); }
+	}
+	return SLUDGELORD_BIND(update_roar);
+}
+
+fsm::StateFunction Sludgelord::update_spew() {
+	p_state.actual = SludgelordState::spew;
+	if (p_services->ticker.every_x_ticks(15)) { m_spew.shoot(*p_services, *p_map); }
+	// p_services->soundboard.repeat_sound("sludgelord_spew", 1U, get_collider().get_center());
+	if (p_animatable.animation.complete()) {
 		request(SludgelordState::idle);
 		if (change_state(SludgelordState::idle, get_params("idle"))) { return SLUDGELORD_BIND(update_idle); }
 	}
-	return SLUDGELORD_BIND(update_bounce);
+	return SLUDGELORD_BIND(update_spew);
 }
 
 fsm::StateFunction Sludgelord::update_turn() {
