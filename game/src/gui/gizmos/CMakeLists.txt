@@ -4,6 +4,7 @@ nani_add_sources(
   HotbarGizmo.cpp
   InventoryGizmo.cpp
   JournalGizmo.cpp
+  LayoutGizmo.cpp
   MapGizmo.cpp
   MapInfoGizmo.cpp
   OutfitterGizmo.cpp

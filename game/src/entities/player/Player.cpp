@@ -20,9 +20,9 @@ constexpr auto max_damage_v = 1024.f;
 constexpr auto default_sprite_offset_v = sf::Vector2f{10.f, -3.f};
 
 Player::Player(automa::ServiceProvider& svc)
-	: Mobile(svc, "nani", {26, 26}), arsenal(svc), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb},
-	  m_sprite_shake{200}, m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{default_sprite_offset_v}, m_sprite_overlay{svc, "nani", {26, 26}},
-	  m_flat_shader{svc.finder}, m_corner_sensor{.left{6.f}, .right{6.f}}, m_hurt_effect{.timer{40}, .color{colors::fucshia}} {
+	: Mobile(svc, "nani", {26, 26}), m_services(&svc), controller(svc, *this), m_animation_machine(*this), wardrobe_widget(svc), dash_effect{16}, health_indicator{svc}, orb_indicator{svc, graphics::IndicatorType::orb}, m_sprite_shake{200},
+	  m_hurt_cooldown{64}, health{3.f}, m_air_supply{100.f}, m_air_supply_bar{svc, colors::periwinkle}, m_death_cooldown{450}, sprite_offset{default_sprite_offset_v}, m_sprite_overlay{svc, "nani", {26, 26}}, m_flat_shader{svc.finder},
+	  m_corner_sensor{.left{6.f}, .right{6.f}}, m_hurt_effect{.timer{40}, .color{colors::fucshia}} {
 
 	p_animatable.center();
 	m_sprite_overlay.center();
@@ -58,7 +58,7 @@ void Player::serialize(dj::Json& out) const {
 
 	// push player arsenal
 	if (arsenal) {
-		for (auto const& gun : arsenal.value().get_loadout()) { out["arsenal"].push_back(gun->get_tag()); }
+		arsenal->serialize(out["arsenal"]);
 		if (hotbar) {
 			for (auto const& id : hotbar.value().get_tags()) { out["hotbar"].push_back(id); }
 			out["equipped_gun"] = hotbar.value().get_tag();
@@ -98,7 +98,7 @@ void Player::unserialize(dj::Json const& in) {
 	// load player's arsenal
 	arsenal.reset();
 	hotbar.reset();
-	for (auto& gun_tag : in["arsenal"].as_array()) { push_to_loadout(gun_tag.as_string(), true); }
+	arsenal.emplace(*m_services, in["arsenal"]);
 	if (!in["hotbar"].as_array().empty()) {
 		if (!hotbar) { hotbar = arms::Hotbar(1); }
 		if (hotbar) {
@@ -1394,17 +1394,17 @@ void Player::exit_water() { cooldowns.water_exit.start(); }
 
 arms::Weapon& Player::equipped_weapon() { return arsenal.value().get_weapon_at(hotbar.value().get_tag()); }
 
-void Player::push_to_loadout(std::string_view tag, bool from_save) {
-	if (!arsenal) { arsenal = arms::Arsenal(*m_services); }
-	if (!hotbar && !from_save) { hotbar = arms::Hotbar(1); }
-	if (tag == "bryns_gun" && !from_save) {
+void Player::push_to_loadout(std::string_view tag) {
+	if (!arsenal) { arsenal.emplace(*m_services); }
+	if (!hotbar) { hotbar.emplace(arms::Hotbar(1)); }
+	if (tag == "bryns_gun") {
 		m_services->stats.time_trials.bryns_gun = m_services->ticker.in_game_seconds_passed.count();
 		auto bg = util::QuestKey{1, 111, 1};
 		m_services->quest.process(*m_services, bg);
 	}
-	if (tag == "gnat" && !from_save) { m_services->data.switch_destructible_state(103); }
+	if (tag == "gnat") { m_services->data.switch_destructible_state(103); }
 	arsenal.value().push_to_loadout(tag);
-	if (!from_save) { hotbar.value().add(tag); }
+	hotbar.value().add(tag);
 	m_services->stats.player.guns_collected.update();
 }
 

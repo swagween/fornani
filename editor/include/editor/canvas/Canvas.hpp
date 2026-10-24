@@ -48,6 +48,7 @@ class Canvas {
 	void render(sf::RenderWindow& win, sf::Sprite& tileset);
 	bool load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name, bool local = false);
 	bool save(fornani::ResourceFinder& finder, std::string const& region, std::string const& room_name);
+	void set_biome(fornani::automa::ServiceProvider& svc, std::string_view label);
 	void clear();
 	void save_state(Tool& tool, bool force = false);
 	void undo();
@@ -83,6 +84,7 @@ class Canvas {
 	void reset_property(fornani::world::MapProperties to_reset) { m_attributes.properties.reset(to_reset); }
 
 	[[nodiscard]] auto test_property(fornani::world::MapProperties to_test) const -> bool { return m_attributes.properties.test(to_test); }
+	[[nodiscard]] auto get_attributes() const& -> fornani::world::MapAttributes { return m_attributes; }
 
 	[[nodiscard]] auto has_atmosphere(std::string_view to) const -> bool { return m_attributes.atmosphere.contains(to.data()); }
 	[[nodiscard]] auto get_selection_type() const -> SelectionType { return type; }

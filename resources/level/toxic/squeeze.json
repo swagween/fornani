@@ -56,7 +56,7 @@
   },
   "meta": {
     "ambience": "",
-    "background": "bright_slime",
+    "background": "slime",
     "biome": "toxic",
     "camera_effects": {
       "shake": {
@@ -84,7 +84,7 @@
       21
     ],
     "minimap": true,
-    "music": "hellions",
+    "music": "",
     "player_start": [
       0,
       0

@@ -177,7 +177,7 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 	if (m_state.test(PortalState::transitioning)) {
 		if (context.transition.is(graphics::TransitionState::black)) {
 			m_state.reset(PortalState::transitioning);
-			if (svc.data.exists(destination_id)) {
+			if (svc.data.room_exists(destination_id)) {
 				svc.state_controller.next_state = destination_id;
 			} else {
 				svc.state_controller.next_state = source_id;

@@ -263,4 +263,12 @@ void Weapon::toss() { live_instances.update(); }
 
 void Weapon::receive() { live_instances.update(-1); }
 
+void Weapon::assign_layout(dj::Json const& source) {
+	if (!m_layout) { m_layout.emplace(source); }
+}
+
+void Weapon::write_layout(dj::Json& target) {
+	if (m_layout) { m_layout->serialize(target); }
+}
+
 } // namespace fornani::arms

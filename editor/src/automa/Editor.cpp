@@ -753,7 +753,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 		if (ImGui::BeginTabBar("##themebar")) {
 			if (ImGui::BeginTabItem("Style")) {
 				for (auto const& choice : m_services->data.biomes["biomes"].as_array()) {
-					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.biome = m_services->data.construct_biome(choice.as_string()); }
+					if (ImGui::MenuItem(std::string{choice.as_string()}.c_str())) { map.set_biome(*m_services, choice.as_string_view()); }
 				}
 				ImGui::EndTabItem();
 			}
@@ -1159,13 +1159,10 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::RadioButton("file 2", &e, 1);
 			ImGui::RadioButton("file 3", &e, 2);
 			ImGui::SeparatorText("Info");
-			ImGui::Text("Current Room ID: %u", map.room_id);
-			ImGui::SeparatorText("Development");
-			auto& status = map.get_status();
-			ImGui::RadioButton("unfinished", &status, 0);
-			ImGui::RadioButton("prototype", &status, 1);
-			ImGui::RadioButton("production", &status, 2);
-
+			ImGui::Text("ID: %u", map.room_id);
+			ImGui::Text("Name: %s", p_services->finder.paths.room_name.c_str());
+			ImGui::Text("Music: %s", map.get_attributes().music.c_str());
+			ImGui::Text("Ambience: %s", map.get_attributes().ambience.c_str());
 			ImGui::End();
 		}
 		if (m_options.console) { console.write_console(prev_window_size, prev_window_pos, m_menu_alpha); }

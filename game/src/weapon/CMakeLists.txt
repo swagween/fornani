@@ -3,6 +3,7 @@ nani_add_sources(
         Arsenal.cpp
         Grenade.cpp
         Hotbar.cpp
+        Layout.cpp
         Projectile.cpp
         Weapon.cpp
 )

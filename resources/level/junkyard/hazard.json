@@ -409,7 +409,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": 1,
+    "development_status": 2,
     "dimensions": [
       80,
       48
@@ -428,6 +428,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "hidden": null,
       "interior": false,
       "lighting": true,
       "timer": false,

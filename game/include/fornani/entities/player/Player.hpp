@@ -333,7 +333,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void exit_water();
 
 	arms::Weapon& equipped_weapon();
-	void push_to_loadout(std::string_view tag, bool from_save = false);
+	void push_to_loadout(std::string_view tag);
 	void pop_from_loadout(std::string_view tag);
 
 	// map helpers

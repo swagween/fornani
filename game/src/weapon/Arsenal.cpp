@@ -4,7 +4,27 @@
 
 namespace fornani::arms {
 
-Arsenal::Arsenal(automa::ServiceProvider& svc) : m_services(&svc) {}
+Arsenal::Arsenal(automa::ServiceProvider& svc) : m_services{&svc} {}
+
+Arsenal::Arsenal(automa::ServiceProvider& svc, dj::Json const& in) : m_services{&svc} {
+	for (auto const& gun : in.as_array()) {
+		if (gun.is_string()) { // just so legacy saves still work
+			push_to_loadout(gun.as_string());
+		} else {
+			push_to_loadout(gun["tag"].as_string());
+			loadout.back()->assign_layout(gun["layout"]);
+		}
+	}
+}
+
+void Arsenal::serialize(dj::Json& out) const {
+	for (auto const& gun : loadout) {
+		dj::Json next = dj::Json::empty_object();
+		next["tag"] = gun->get_tag();
+		gun->write_layout(next["layout"]);
+		out.push_back(next);
+	}
+}
 
 void Arsenal::push_to_loadout(std::string_view tag) {
 	if (has(tag)) { return; }

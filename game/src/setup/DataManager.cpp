@@ -150,7 +150,7 @@ void DataManager::load_data() {
 		auto id = room["room_id"].as<int>();
 		if (m_map_labels.contains(id)) { continue; }
 		m_map_labels.insert(std::make_pair(id, room["label"].as_string()));
-		rooms.push_back(room["room_id"].as<int>());
+		m_room_ids.add(room["room_id"].as<int>());
 	}
 
 	load_game_data(m_services->finder);
@@ -728,13 +728,9 @@ auto DataManager::get_number_of_boss_victories(std::string_view label) const -> 
 	return save["boss_victories"][label]["count"].as<int>();
 }
 
-int DataManager::get_room_index(int id) {
-	auto ctr{0};
-	for (auto& room : rooms) {
-		if (room == id) { return ctr; }
-		++ctr;
-	}
-	return ctr;
+auto DataManager::get_room_index(int id) -> int {
+	auto const it = std::ranges::find(m_room_ids, id);
+	return static_cast<int>(std::ranges::distance(m_room_ids.begin(), it));
 }
 
 int DataManager::get_npc_location(int npc_id) {

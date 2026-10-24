@@ -298,7 +298,7 @@
       "folder": "greatwing",
       "label": "ballroom.json",
       "region": "greatwing",
-      "room_id": 2001
+      "room_id": 600
     },
     {
       "folder": "greatwing",
@@ -326,9 +326,21 @@
     },
     {
       "folder": "grove",
+      "label": "bridge.json",
+      "region": "grove",
+      "room_id": 2001
+    },
+    {
+      "folder": "grove",
       "label": "passage.json",
       "region": "grove",
       "room_id": 2000
+    },
+    {
+      "folder": "grove",
+      "label": "slide.json",
+      "region": "overturned",
+      "room_id": 2002
     },
     {
       "folder": "hoarder",
@@ -1379,6 +1391,12 @@
       "label": "gallbladder.json",
       "region": "worm",
       "room_id": 1119
+    },
+    {
+      "folder": "worm",
+      "label": "intestine.json",
+      "region": "worm",
+      "room_id": 1123
     },
     {
       "folder": "worm",

@@ -9,6 +9,8 @@ namespace fornani::arms {
 class Arsenal {
   public:
 	explicit Arsenal(automa::ServiceProvider& svc);
+	explicit Arsenal(automa::ServiceProvider& svc, dj::Json const& in);
+	void serialize(dj::Json& out) const;
 
 	void push_to_loadout(std::string_view tag);
 	void pop_from_loadout(std::string_view tag);

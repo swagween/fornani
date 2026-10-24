@@ -25,7 +25,12 @@
         "spring_dampen": 0.995,
         "spring_constant": 0.06
       },
-      "effect_channel": 4
+      "effect_channel": 4,
+      "defaults": {
+        "background": "woods",
+        "music": "whispering_island",
+        "ambience": "overturned"
+      }
     },
     "pioneer": {
       "black": [16, 8, 28],
@@ -55,7 +60,12 @@
       "black": [16, 9, 11],
       "sky_limit": 10,
       "max_light": 3.0,
-      "effect_channel": 3
+      "effect_channel": 3,
+      "defaults": {
+        "background": "overcast",
+        "music": "bronze_statue",
+        "ambience": "firstwind"
+      }
     },
     "worm": {
       "platform_sound": "organic",
@@ -67,7 +77,11 @@
       "effect_channel": 6,
       "switches": { "channel": 1, "sound": "worm_switch" },
       "breakables": { "shatter_sound": "breakable_guts", "emitter": "guts", "effect": "guts_splat" },
-      "expander_blocks": { "sounds": { "expand": ["expander_expand_worm_1", "expander_expand_worm_2"], "contract": ["expander_contract_worm_1", "expander_contract_worm_2"] } }
+      "expander_blocks": { "sounds": { "expand": ["expander_expand_worm_1", "expander_expand_worm_2"], "contract": ["expander_contract_worm_1", "expander_contract_worm_2"] } },
+      "defaults": {
+        "background": "black",
+        "music": "vesicle"
+      }
     },
     "toxic": {
       "ambience": { "interior": "industrial", "exterior": "none" },
@@ -76,7 +90,11 @@
       "haze_highlight": [210, 241, 68],
       "haze_shadow": [29, 204, 129],
       "max_light": 3.0,
-      "effect_channel": 6
+      "effect_channel": 6,
+      "defaults": {
+        "background": "bright_slime",
+        "music": "hellions"
+      }
     },
     "nightside": {
       "platform_sound": "industrial",
@@ -137,7 +155,12 @@
           "rigid": true
         }
       },
-      "effect_channel": 7
+      "effect_channel": 7,
+      "defaults": {
+        "background": "grove",
+        "music": "obscurity",
+        "ambience": "firstwind"
+      }
     }
   }
 }

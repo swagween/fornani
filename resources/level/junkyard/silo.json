@@ -87,7 +87,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": 1,
+    "development_status": 2,
     "dimensions": [
       32,
       48
@@ -106,6 +106,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
+      "hidden": null,
       "interior": true,
       "lighting": false,
       "sky_limit": 0,
@@ -117,7 +118,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null
   },
   "tile": {
     "animated": [

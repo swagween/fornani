@@ -316,6 +316,16 @@
     "x_reflection": true,
     "y_reflection": true
   },
+  "impact_frame_2": {
+    "frame_count": 5,
+    "framerate": 12,
+    "dimensions": [480, 480]
+  },
+  "impact_spark": {
+    "frame_count": 5,
+    "framerate": 12,
+    "dimensions": [480, 480]
+  },
   "lightning": {
     "frame_count": 7,
     "framerate": 16,

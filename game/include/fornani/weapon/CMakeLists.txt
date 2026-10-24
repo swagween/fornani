@@ -3,6 +3,7 @@ nani_add_headers(
         Arsenal.hpp
         Grenade.hpp
         Hotbar.hpp
+        Layout.hpp
         Projectile.hpp
         Weapon.hpp
 )

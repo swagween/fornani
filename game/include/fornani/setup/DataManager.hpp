@@ -111,12 +111,7 @@ class DataManager final {
 
 	int get_destructible_state(int id) const;
 
-	[[nodiscard]] auto exists(int candidate) const -> bool {
-		for (auto& room : rooms) {
-			if (room == candidate) { return true; }
-		}
-		return false;
-	}
+	[[nodiscard]] auto room_exists(int candidate) const -> bool { return std::ranges::contains(m_room_ids, candidate); }
 	[[nodiscard]] auto is_enemy_registered(std::string_view label) const -> bool;
 	[[nodiscard]] auto item_label_from_id(int key) const -> std::string { return item[key]["tag"].as_string(); }
 	[[nodiscard]] auto item_id_from_label(std::string_view label) const -> int;
@@ -194,7 +189,6 @@ class DataManager final {
 	gui::MiniMap minimap;
 	std::vector<std::vector<std::unique_ptr<world::Layer>>> map_layers{};
 	int num_layers{8};
-	std::vector<int> rooms{};
 	Register<int> discovered_rooms{};
 
 	automa::ServiceProvider* m_services;
@@ -221,6 +215,7 @@ class DataManager final {
 	Register<EnemyRecord> m_bestiary{};
 	Register<MapPinRecord> m_map_pins{};
 	Register<int> activated_switches{};
+	Register<int> m_room_ids{};
 	Register<DestructibleRecord> destructible_states{};
 	std::vector<util::QuestKey> quest_progressions{};
 	std::vector<std::string> m_biomes{};

@@ -3,6 +3,7 @@
 
 #include <fornani/entities/world/Laser.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/weapon/Layout.hpp>
 #include <optional>
 #include "fornani/audio/Soundboard.hpp"
 #include "fornani/components/SteeringBehavior.hpp"
@@ -91,6 +92,8 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void reset();
 	void toss();
 	void receive();
+	void assign_layout(dj::Json const& source);
+	void write_layout(dj::Json& target);
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
 	void set_reserved() { inventory_state = InventoryState::reserve; }
@@ -186,6 +189,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 
 	WeaponModifiers m_modifiers{};
 	std::optional<LaserSpecifications> m_laser{};
+	std::optional<Layout> m_layout{};
 
 	automa::ServiceProvider* m_services;
 

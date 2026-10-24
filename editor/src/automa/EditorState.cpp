@@ -101,6 +101,7 @@ bool EditorState::create_new_room() {
 	ImGui::InputTextWithHint("Region Name", "firstwind", regbuffer, IM_ARRAYSIZE(regbuffer));
 	ImGui::InputTextWithHint("Room Name", "boiler_room", roombuffer, IM_ARRAYSIZE(roombuffer));
 	ImGui::InputInt("ID", &p_new_id);
+	if (p_services->data.room_exists(p_new_id)) { ImGui::TextColored({200, 60, 60, 255}, "Warning! Room ID already exists."); }
 	ImGui::Separator();
 	ImGui::NewLine();
 

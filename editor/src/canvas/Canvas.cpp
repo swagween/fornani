@@ -37,6 +37,8 @@ Canvas::Canvas(fornani::automa::ServiceProvider& svc, sf::Vector2<std::uint32_t>
 	auto const& config = svc.data.hazards[m_hazard_properties.tag];
 	m_hazard_properties.dimensions = sf::Vector2i{config["dimensions"][0].as<int>(), config["dimensions"][1].as<int>()};
 	m_hazard_properties.table_dimensions = sf::Vector2i{config["table_dimensions"][0].as<int>(), config["table_dimensions"][1].as<int>()};
+
+	m_attributes.properties.set(fornani::world::MapProperties::minimap);
 }
 
 void Canvas::update(Tool& tool) {
@@ -273,6 +275,14 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 		NANI_LOG_INFO(m_logger, "Failed to save metadata to file {}", to_file.string());
 	}
 	return success;
+}
+
+void Canvas::set_biome(fornani::automa::ServiceProvider& svc, std::string_view label) {
+	biome = svc.data.construct_biome(label);
+	auto const& biome_data = svc.data.biomes["properties"][label]["defaults"];
+	background = std::make_unique<fornani::graphics::Background>(svc, biome_data["background"].as_string());
+	m_attributes.music = biome_data["music"].as_string();
+	m_attributes.ambience = biome_data["ambience"].as_string();
 }
 
 void Canvas::clear() {
