@@ -33,6 +33,9 @@
         "reload": 260,
         "cooldown_time": 1,
         "recoil": 0.0
+      },
+      "layout": {
+        "slots": [{}, { "pins": [2, 3] }, { "pins": [0] }, {}, {}]
       }
     },
     "audio": { "shoot": 0 },
@@ -170,6 +173,9 @@
         "reload": 1000,
         "cooldown_time": 14,
         "recoil": 0.25
+      },
+      "layout": {
+        "slots": [{}, { "pins": [2] }, { "pins": [0] }, { "pins": [2] }, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -234,6 +240,9 @@
         "reload": 180,
         "cooldown_time": 8,
         "recoil": 0.0
+      },
+      "layout": {
+        "slots": [{ "pins": [0, 1, 2] }, { "pins": [] }, { "pins": [] }, { "pins": [] }, { "pins": [3] }]
       }
     },
     "audio": { "shoot": 1 },
@@ -578,6 +587,9 @@
         "reload": 180,
         "cooldown_time": 32,
         "recoil": 10.0
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {

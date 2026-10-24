@@ -6,6 +6,7 @@
 #include <fornani/entities/packages/Attack.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/particle/Sparkler.hpp>
 #include <fornani/utils/Circuit.hpp>
 

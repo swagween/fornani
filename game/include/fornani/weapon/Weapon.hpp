@@ -94,6 +94,7 @@ class Weapon : public Animatable, public Flaggable<WeaponFlags> {
 	void receive();
 	void assign_layout(dj::Json const& source);
 	void write_layout(dj::Json& target);
+	Layout& get_layout() { return m_layout.value(); }
 
 	void set_hotbar() { inventory_state = InventoryState::hotbar; }
 	void set_reserved() { inventory_state = InventoryState::reserve; }

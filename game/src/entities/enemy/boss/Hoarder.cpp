@@ -2,6 +2,7 @@
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/core/Debug.hpp>
 #include <fornani/entities/enemy/boss/Hoarder.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/entities/player/Player.hpp>
 #include <fornani/service/ServiceProvider.hpp>
 #include <fornani/utils/Random.hpp>

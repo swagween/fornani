@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/particle/Spring.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #define BEAMSPROUT_BIND(f) std::bind(&Beamsprout::f, this)

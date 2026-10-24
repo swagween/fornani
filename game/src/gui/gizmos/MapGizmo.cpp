@@ -11,7 +11,7 @@ namespace fornani::gui {
 
 MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool comprehensive)
 	: Gizmo("Minimap", false), m_minimap{&svc.data.minimap}, m_sprite{svc.assets.get_texture("map_gizmo")}, m_plugin_sprite{svc.assets.get_texture("map_gizmo")}, m_icon_sprite{svc.assets.get_texture("minimap_icons")},
-	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture(comprehensive ? "map_shadow" : "map_square_shadow"), {45, 45}, {1, 1}),
+	  m_map_screen(svc, svc.assets.get_texture("map_screen"), {45, 45}, {1, 1}), m_map_shadow(svc, svc.assets.get_texture(comprehensive ? "map_shadow" : "map_shadow"), {45, 45}, {1, 1}),
 	  m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap", 32, util::InterpolationType::quadratic},
 	  m_motherboard_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "minimap_motherboard", 108, util::InterpolationType::linear},
 	  m_constituents{.gizmo{.top_left{.lookup{{0, 0}, {67, 55}}},
@@ -30,7 +30,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (comprehensive) {
 		m_flags.general.set(MapGizmoFlags::comprehensive);
 	} else {
-		m_map_border.emplace(util::NineSlice(svc, svc.assets.get_texture("limited_map_border"), {49, 49}, {2, 2}));
+		m_map_border.emplace(util::NineSlice(svc, svc.assets.get_texture("limited_map_border"), {38, 38}, {1, 1}));
 		m_minimap->set_flag(MiniMapFlags::limited);
 	}
 	m_dashboard_port = DashboardPort::minimap;
@@ -165,8 +165,8 @@ void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Pla
 	m_map_shadow.set_position(m_path.get_position() + get_placement());
 	m_map_shadow.set_dimensions(m_path.get_dimensions());
 	if (m_map_border) {
-		m_map_border->set_position(m_path.get_position() + get_placement());
-		m_map_border->set_dimensions(m_path.get_dimensions());
+		m_map_border->set_position(m_path.get_position() + get_placement() - sf::Vector2f{40.f, 40.f});
+		m_map_border->set_dimensions(m_path.get_dimensions() + sf::Vector2f{80.f, 80.f});
 	}
 
 	if (m_info) { m_info->current_room = m_minimap->get_currently_hovered_room(); }
@@ -181,7 +181,7 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	if (is_comprehensive()) { m_constituents.gizmo.motherboard.render(win, m_sprite, render_position, sf::Vector2f{100.f, -6.f}, shader, palette); }
 	m_minimap->render(svc, win, player, cam, m_icon_sprite);
 	m_icon_sprite.setScale(constants::f_scale_vec);
-	m_map_screen.render(win, cam);
+	if (is_comprehensive()) { m_map_screen.render(win, cam); }
 	m_map_shadow.render(win, cam);
 	if (m_map_border) { m_map_border->render(win, cam); }
 	if (is_comprehensive()) {

@@ -2,6 +2,7 @@
 
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/entities/packages/Caution.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
 #define HIVLE_BIND(f) std::bind(&Hivle::f, this)

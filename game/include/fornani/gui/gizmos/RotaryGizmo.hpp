@@ -4,6 +4,7 @@
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/gui/Gizmo.hpp>
 #include <fornani/gui/gizmos/HotbarGizmo.hpp>
+#include <fornani/gui/gizmos/LayoutGizmo.hpp>
 #include <fornani/utils/Circuit.hpp>
 #include <fornani/utils/CyclicLerp.hpp>
 #include <fornani/utils/Flaggable.hpp>
@@ -11,6 +12,8 @@
 namespace fornani::gui {
 
 enum class RotaryGizmoFlags : std::uint8_t { push_to_hotbar };
+
+enum class RotaryGizmoMode : std::uint8_t { layout, rotary, hotbar };
 
 class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
   public:
@@ -26,7 +29,9 @@ class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
 	void debug();
 
   private:
+	RotaryGizmoMode m_mode{RotaryGizmoMode::rotary};
 	std::optional<std::unique_ptr<HotbarGizmo>> m_hotbar{};
+	std::optional<std::unique_ptr<LayoutGizmo>> m_layout{};
 	Animatable m_sprite;
 	Animatable m_gun_display;
 	Animatable m_gun_selector;

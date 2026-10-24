@@ -43,10 +43,16 @@ void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::
 	m_rail_path.update();
 
 	if (m_hotbar) { m_hotbar.value()->update(svc, player, map, get_placement() + m_rail_path.get_position()); }
+	if (m_layout) {
+		m_layout.value()->update(svc, player, map, get_placement());
+		m_layout.value()->set_flag(LayoutGizmoFlags::selected, m_mode == RotaryGizmoMode::layout);
+	}
 
 	if (player.arsenal) {
 		if (player.arsenal->get_loadout().size() >= m_selection.get_order()) {
-			m_gun_id = player.arsenal->get_loadout().at(m_selection.get())->get_id();
+			auto const& gun = player.arsenal->get_loadout().at(m_selection.get());
+			if (m_layout) { m_layout.value()->set_layout(*gun); }
+			m_gun_id = gun->get_id();
 			if (consume_flag(RotaryGizmoFlags::push_to_hotbar)) {
 				if (auto tag = svc.data.get_gun_tag_from_id(m_gun_id)) {
 					auto popped = false;
@@ -92,12 +98,14 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 	auto frame = static_cast<int>(m_frame_lerp.get());
 	m_sprite.set_frame(frame);
 	m_sprite.set_position(get_placement() + m_path.get_position() - cam);
+	if (m_mode == RotaryGizmoMode::layout) { shader.set_darken(1.f); }
 	shader.submit(win, palette, m_sprite.get_sprite());
 
 	if (m_hotbar) {
 		m_hotbar.value()->render(svc, win, player, shader, palette, cam);
 		m_hotbar.value()->set_hovered_gun(m_gun_id);
 	}
+	if (m_layout) { m_layout.value()->render(svc, win, player, shader, palette, cam); }
 
 	if (player.arsenal) {
 		for (auto i = -1; i <= 1; ++i) {
@@ -127,17 +135,29 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 }
 
 bool RotaryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
-	if (controller.digital(input::DigitalAction::menu_select).triggered) {
-		set_flag(RotaryGizmoFlags::push_to_hotbar);
-		m_gun_selector.set_animation("click");
-	}
-	if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
-		m_frame_lerp.trigger(1, false, 2.0f);
-		m_selection.modulate(-1);
-	}
-	if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
-		m_frame_lerp.trigger(1, true, 2.0f);
-		m_selection.modulate(1);
+	if (m_mode == RotaryGizmoMode::layout) {
+		if (m_layout) {
+			if (m_layout.value()->handle_inputs(controller, soundboard)) { m_mode = RotaryGizmoMode::rotary; }
+		}
+	} else if (m_mode == RotaryGizmoMode::rotary) {
+		if (controller.digital(input::DigitalAction::menu_select).triggered) {
+			set_flag(RotaryGizmoFlags::push_to_hotbar);
+			m_gun_selector.set_animation("click");
+		}
+		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
+			m_frame_lerp.trigger(1, false, 2.0f);
+			m_selection.modulate(-1);
+		}
+		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
+			m_frame_lerp.trigger(1, true, 2.0f);
+			m_selection.modulate(1);
+		}
+		if (controller.menu_move(input::MoveDirection::left)) {
+			m_mode = RotaryGizmoMode::layout;
+			if (m_layout) { m_layout.value()->set_selection(arms::layout_size_v - 1); }
+		}
+		if (controller.menu_move(input::MoveDirection::right)) { m_mode = RotaryGizmoMode::hotbar; }
+	} else {
 	}
 	return Gizmo::handle_inputs(controller, soundboard);
 }
@@ -147,7 +167,9 @@ void RotaryGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	m_frame_lerp.trigger(6, false, 4.0f);
 	m_path.set_section("open");
 	m_rail_path.set_section("open");
-	m_hotbar = std::make_unique<HotbarGizmo>(svc, map, sf::Vector2f{200.f, 0.f});
+	m_hotbar.emplace(std::make_unique<HotbarGizmo>(svc, map, sf::Vector2f{200.f, 0.f}));
+	m_layout.emplace(std::make_unique<LayoutGizmo>(svc, map, sf::Vector2f{0.f, 100.f}));
+	m_layout.value()->set_layout(player.equipped_weapon());
 	svc.soundboard.play_sound("pioneer_tech", player.get_ear_position());
 }
 
@@ -157,6 +179,7 @@ void RotaryGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player
 	m_path.set_section("close");
 	m_rail_path.set_section("close");
 	m_hotbar.reset();
+	m_layout.reset();
 	svc.soundboard.play_sound("pioneer_drawer", player.get_ear_position());
 }
 

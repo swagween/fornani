@@ -4,6 +4,7 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entities/packages/Attack.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/gui/BossHealth.hpp>
 #include <fornani/particle/Chain.hpp>
 #include <fornani/particle/Sparkler.hpp>

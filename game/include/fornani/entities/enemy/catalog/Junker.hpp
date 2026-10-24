@@ -3,6 +3,7 @@
 
 #include <fornani/entities/enemy/Enemy.hpp>
 #include <fornani/entities/packages/Caution.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
 #define JUNKER_BIND(f) std::bind(&Junker::f, this)

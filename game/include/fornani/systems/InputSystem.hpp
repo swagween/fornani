@@ -123,6 +123,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	void sync_mouse(sf::RenderWindow& window);
 	void update(); // calls gather + resolve
 	void flush_inputs();
+	void flush_triggers();
 	void cancel_input(DigitalAction action);
 
 	// --- Action set control ---

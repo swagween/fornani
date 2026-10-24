@@ -72,8 +72,8 @@ void InventoryWindow::update(automa::ServiceProvider& svc, player::Player& playe
 	auto offset = m_view == InventoryView::dashboard ? sf::Vector2f{m_dashboard->get_selected_position()} * 128.f : sf::Vector2f{};
 	auto horizontal_dampen{0.7f}; // we want to display the gizmo's connection to the dashboard for wardrobe and inventory gizmos
 	auto target{sf::Vector2f{m_cell_dimensions.x * m_grid_position.x * horizontal_dampen, m_cell_dimensions.y * m_grid_position.y} + offset};
-	if (m_dashboard->get_selected_position().x == -1) { target += sf::Vector2f{48.f, 24.f}; } // inventory is slightly lower than other gizmos
-	if (m_dashboard->get_selected_position().y == 1) { target += sf::Vector2f{-24.f, 0.f}; }  // rotary is slightly shifted left
+	if (m_dashboard->get_selected_position().x == -1) { target += sf::Vector2f{48.f, 24.f}; }													   // inventory is slightly lower than other gizmos
+	if (m_dashboard->get_selected_position().y == 1) { target += m_dashboard->is_gizmo() ? sf::Vector2f{-124.f, 0.f} : sf::Vector2f{-24.f, 0.f}; } // rotary is slightly shifted left
 	m_camera.steering.seek(m_camera.physics, target, 0.0035f);
 	m_camera.physics.simple_update();
 	m_view == InventoryView::exit ? m_dashboard->set_position({250.f, 800.f}) : m_dashboard->set_position({250.f, 0.f});

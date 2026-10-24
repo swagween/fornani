@@ -4,6 +4,7 @@
 #include <fornani/entities/enemy/Boss.hpp>
 #include <fornani/entities/packages/Caution.hpp>
 #include <fornani/entities/packages/Shockwave.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/utils/Flaggable.hpp>
 
 #define SLUDGELORD_BIND(f) std::bind(&Sludgelord::f, this)

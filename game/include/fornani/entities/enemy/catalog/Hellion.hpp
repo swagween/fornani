@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/entities/enemy/Enemy.hpp>
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #define HELLION_BIND(f) std::bind(&Hellion::f, this)
 
 namespace fornani::enemy {

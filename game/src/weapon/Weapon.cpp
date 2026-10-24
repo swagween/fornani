@@ -72,6 +72,7 @@ Weapon::Weapon(automa::ServiceProvider& svc, std::string_view tag, bool enemy)
 	NANI_LOG_DEBUG(m_logger, "Weapon audio tag: {}", metadata.audio_tag);
 
 	set_parameters({in_data["visual"]["texture_lookup"].as<int>(), 1, 32, -1});
+	assign_layout(in_data["gameplay"]["layout"]);
 }
 
 void Weapon::update(automa::ServiceProvider& svc, world::Map& map, Direction to_direction) {
@@ -264,6 +265,7 @@ void Weapon::toss() { live_instances.update(); }
 void Weapon::receive() { live_instances.update(-1); }
 
 void Weapon::assign_layout(dj::Json const& source) {
+	if (!source) { return; }
 	if (!m_layout) { m_layout.emplace(source); }
 }
 

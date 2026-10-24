@@ -1,5 +1,6 @@
 #pragma once
 
+#include <fornani/entities/packages/WeaponPackage.hpp>
 #include "fornani/entities/enemy/Enemy.hpp"
 #include "fornani/entities/packages/Caution.hpp"
 #include "fornani/entities/packages/FloatingPart.hpp"

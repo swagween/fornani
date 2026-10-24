@@ -8,7 +8,6 @@
 #include <fornani/entities/animation/StateMachine.hpp>
 #include <fornani/entities/packages/FloatingPart.hpp>
 #include <fornani/entities/packages/Health.hpp>
-#include <fornani/entities/packages/WeaponPackage.hpp>
 #include <fornani/entities/world/Chest.hpp>
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/graphics/Indicator.hpp>
