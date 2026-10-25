@@ -108,6 +108,9 @@
         "reload": 180,
         "cooldown_time": 8,
         "recoil": 0.8
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "audio": { "shoot": 1 },
@@ -242,7 +245,7 @@
         "recoil": 0.0
       },
       "layout": {
-        "slots": [{ "pins": [0, 1, 2] }, { "pins": [] }, { "pins": [] }, { "pins": [] }, { "pins": [3] }]
+        "slots": [{ "pins": [0, 1, 2] }, { "pins": [2, 3] }, { "pins": [0, 1] }, { "pins": [2, 3] }, { "pins": [3] }]
       }
     },
     "audio": { "shoot": 1 },
@@ -252,7 +255,7 @@
         "dimensions": [12, 12],
         "radius": 10.0,
         "attributes": {
-          "base_damage": 40,
+          "base_damage": 5,
           "power": 1,
           "lifespan": 480,
           "lifespan_variance": 0,
@@ -309,6 +312,9 @@
         "reload": 100,
         "cooldown_time": 3,
         "recoil": 0.45
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "audio": { "shoot": 2 },
@@ -378,6 +384,9 @@
         "reload": 500,
         "cooldown_time": 3,
         "recoil": 0.45
+      },
+      "layout": {
+        "slots": [{ "pins": [0] }, { "pins": [3] }, { "pins": [0] }, {}, {}]
       }
     },
     "class_package": {
@@ -450,6 +459,9 @@
         "reload": 550,
         "cooldown_time": 3,
         "recoil": 2.8
+      },
+      "layout": {
+        "slots": [{ "pins": [2] }, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -523,6 +535,9 @@
         "reload": 32,
         "cooldown_time": 18,
         "recoil": 0.0
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -656,6 +671,9 @@
         "reload": 100,
         "cooldown_time": 14,
         "recoil": 0.0
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -713,6 +731,9 @@
         "reload": 600,
         "cooldown_time": 16,
         "recoil": 0.45
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -773,6 +794,9 @@
         "reload": 300,
         "cooldown_time": 32,
         "recoil": 0.85
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -834,6 +858,9 @@
         "reload": 300,
         "cooldown_time": 12,
         "recoil": 0.45
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -895,6 +922,9 @@
         "reload": 480,
         "cooldown_time": 10,
         "recoil": 0.15
+      },
+      "layout": {
+        "slots": [{}, {}, {}, {}, { "pins": [3] }]
       }
     },
     "class_package": {
@@ -960,6 +990,9 @@
         "reload": 360,
         "cooldown_time": 20,
         "recoil": 0.15
+      },
+      "layout": {
+        "slots": [{}, { "pins": [1, 3] }, {}, { "pins": [2, 3] }, {}]
       }
     },
     "class_package": {
@@ -1029,6 +1062,9 @@
         "reload": 260,
         "cooldown_time": 10,
         "recoil": 0.5
+      },
+      "layout": {
+        "slots": [{}, { "pins": [3] }, { "pins": [3] }, { "pins": [1] }, {}]
       }
     },
     "class_package": {
@@ -1055,7 +1091,7 @@
           "spin": 0.0,
           "spin_dampen": 0.997
         },
-        "sine": { "amplitude": 16.0, "frequency": 6.0 },
+        "sine": { "amplitude": 12.0, "frequency": 6.0 },
         "visual": {
           "effect_type": 1,
           "travel_emitters": [{ "tag": "ectoblaster_travel", "frequency": 20 }],
@@ -1099,6 +1135,9 @@
         "reload": 32,
         "cooldown_time": 18,
         "recoil": 0.0
+      },
+      "layout": {
+        "slots": [{}, {}, {}, { "pins": [3] }, { "pins": [0, 1, 3] }]
       }
     },
     "class_package": {

@@ -282,7 +282,7 @@
     "rarity": 1,
     "value": 900,
     "build": {
-      "recipe": ["priorite", "pioneer_scrap", "brinium"],
+      "recipe": ["indigum", "pioneer_scrap", "rhenite"],
       "craft_price": 400,
       "lookup": 2
     }
@@ -1343,5 +1343,129 @@
       "craft_price": 200,
       "lookup": 5
     }
+  },
+  {
+    "tag": "extension_slot_top_left",
+    "category": 10,
+    "lookup": [12, 10],
+    "actual_title": "Extension Slot",
+    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
+    "sellable": true,
+    "value": 2500,
+    "pin_location": 0,
+    "stack_limit": 8
+  },
+  {
+    "tag": "extension_slot_top_right",
+    "category": 10,
+    "lookup": [13, 10],
+    "actual_title": "Extension Slot",
+    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
+    "sellable": true,
+    "value": 2500,
+    "pin_location": 1,
+    "stack_limit": 8
+  },
+  {
+    "tag": "extension_slot_bottom_left",
+    "category": 10,
+    "lookup": [14, 10],
+    "actual_title": "Extension Slot",
+    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
+    "sellable": true,
+    "value": 2500,
+    "pin_location": 2,
+    "stack_limit": 8
+  },
+  {
+    "tag": "extension_slot_bottom_right",
+    "category": 10,
+    "lookup": [15, 10],
+    "actual_title": "Extension Slot",
+    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
+    "sellable": true,
+    "value": 2500,
+    "pin_location": 3,
+    "stack_limit": 8
+  },
+  {
+    "tag": "extension_crit",
+    "category": 9,
+    "lookup": [8, 8],
+    "actual_title": "Critical Hit Extension",
+    "naive_description": "Doubles this weapon's critical hit multiplier.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 0
+  },
+  {
+    "tag": "extension_reload",
+    "category": 9,
+    "lookup": [9, 8],
+    "actual_title": "Quick Reload Extension",
+    "naive_description": "Decreases reload time by 25%.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 3
+  },
+  {
+    "tag": "extension_automatic",
+    "category": 9,
+    "lookup": [10, 8],
+    "actual_title": "Fully Automatic Extension",
+    "naive_description": "Makes the target gun automatic.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 1
+  },
+  {
+    "tag": "extension_speed",
+    "category": 9,
+    "lookup": [11, 8],
+    "actual_title": "Speed Extension",
+    "naive_description": "Increases this weapon's bullet speed by 25%.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 0
+  },
+  {
+    "tag": "extension_power",
+    "category": 9,
+    "lookup": [12, 8],
+    "actual_title": "Power Extension",
+    "naive_description": "Gives the target weapon max destructive power.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 3
+  },
+  {
+    "tag": "extension_ammo",
+    "category": 9,
+    "lookup": [13, 8],
+    "actual_title": "Ammo Extension",
+    "naive_description": "Adds one extra ammo to the target weapon, or +25% magazine capacity for guns with more than 15 ammo.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 4
+  },
+  {
+    "tag": "extension_damage",
+    "category": 9,
+    "lookup": [14, 8],
+    "actual_title": "Damage Extension",
+    "naive_description": "Increases the target weapon's damage by 10%.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 2
+  },
+  {
+    "tag": "sextension_ticky",
+    "category": 9,
+    "lookup": [15, 8],
+    "actual_title": "Sticky Extension",
+    "naive_description": "Makes this gun's bullets sticky.",
+    "value": 2500,
+    "stack_limit": 8,
+    "pin_location": 1
   }
 ]

@@ -128,6 +128,12 @@
     },
     {
       "folder": "config",
+      "label": "gun_studio.json",
+      "region": "ashtown",
+      "room_id": 90999
+    },
+    {
+      "folder": "config",
       "label": "test_portals.json",
       "region": "toxic",
       "room_id": 6767672
@@ -419,6 +425,12 @@
       "label": "silo.json",
       "region": "junkyard",
       "room_id": 700
+    },
+    {
+      "folder": "junkyard",
+      "label": "storage.json",
+      "region": "junkyard",
+      "room_id": 717
     },
     {
       "folder": "junkyard",

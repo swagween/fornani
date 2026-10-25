@@ -64,6 +64,8 @@ class Item : public Polymorphic {
 	[[nodiscard]] auto is_invisible() const -> bool { return m_flags.test(ItemFlags::invisible); }
 	[[nodiscard]] auto is_buildable() const -> bool { return m_flags.test(ItemFlags::buildable); }
 	[[nodiscard]] auto is_ingredient() const -> bool { return m_flags.test(ItemFlags::ingredient); }
+	[[nodiscard]] auto is_extension() const -> bool { return m_type == ItemType::extension; }
+	[[nodiscard]] auto is_special() const -> bool { return m_type == ItemType::special; }
 
 	[[nodiscard]] auto is_key() const -> bool { return m_type == ItemType::key; }
 	[[nodiscard]] auto is_gizmo() const -> bool { return m_type == ItemType::gizmo; }

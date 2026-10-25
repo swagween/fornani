@@ -64,7 +64,10 @@
     "bestiary_updated": "Bestiary updated.",
     "quest_completed": "Quest completed: ",
     "add_postcard": "Added postcard to album.",
-    "already_here": "You are already here."
+    "already_here": "You are already here.",
+    "no_fixture_match": "You don't have any fixtures that fit the selected slot's pins",
+    "no_extension_slots": "You do not have any available extension slots.",
+    "mismatched_item_pin": "The item's pin location does not match that of the fixture."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - ",

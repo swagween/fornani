@@ -1431,7 +1431,6 @@ void Player::handle_item_logic() {
 	m_air_supply.set_capacity(has_item_equipped("oxygen_tank") ? 400.f : 100.f, true);
 	set_flag(PlayerFlags::heavy, has_item_equipped("diver_boots"));
 	has_item_equipped("hoarders_trinket") ? health.set_invincibility(default_invincibility_time_v * 1.3f) : health.set_invincibility(default_invincibility_time_v);
-	if (arsenal && hotbar) { has_item_equipped("feather") ? equipped_weapon().set_reload_multiplier(0.85f) : equipped_weapon().set_reload_multiplier(1.f); }
 	if (has_item("soda")) { m_services->quest_table.set_quest_progression("carl_soda", 1, QuestRequirementType::loose); }
 	if (has_item("screwdriver") && m_services->quest_table.get_quest_progression("pioneer_tech") == 1) { m_services->quest_table.set_quest_progression("pioneer_tech", 2, QuestRequirementType::loose); }
 	if (has_item("velvet_rose")) { m_services->quest_table.set_quest_progression("cajole_doug", 2, QuestRequirementType::strict); }
@@ -1451,7 +1450,19 @@ void Player::handle_item_logic() {
 		get_collider().p_physics_properties.water_friction = {m_physics_data["properties"]["water_friction"][0].as<float>(), m_physics_data["properties"]["water_friction"][1].as<float>()};
 	}
 	m_services->quest_table.set_quest_progression("collect_radar_beacons", get_item_count("radar_beacon"), QuestRequirementType::strict);
-	if (has_item_equipped("magazine")) { equipped_weapon().ammo.add(); }
+
+	// weapon stuff
+	if (arsenal && hotbar) {
+		auto ammo_additions = 0;
+		if (equipped_weapon().get_layout().has_item("extension_ammo")) { ++ammo_additions; }
+		if (has_item_equipped("magazine")) { ++ammo_additions; }
+		equipped_weapon().ammo.add(ammo_additions);
+
+		auto reload_mult = 1.f;
+		if (has_item_equipped("feather")) { reload_mult *= 0.85f; }
+		if (equipped_weapon().get_layout().has_item("extension_reload")) { reload_mult *= 0.85f; }
+		equipped_weapon().set_reload_multiplier(reload_mult);
+	}
 
 	if (m_currently_held_item) {
 		m_currently_held_item->update();

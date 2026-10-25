@@ -183,7 +183,9 @@ void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f t
 		map.spawn_emitter(*m_services, "bullet_casing", get_barrel_point() + sf::Vector2f{get_firing_direction().as<float>() * -16.f, 0.f}, casing_dir, {2.f, 2.f});
 	}
 	shoot();
-	map.spawn_projectile_at(svc, *this, get_barrel_point(), target, m_modifiers.speed_multiplier, m_modifiers.damage_multiplier);
+	auto mult = 1.f;
+	if (m_layout) { mult = m_modifiers.damage_multiplier * get_layout().has_item("extension_damage") ? m_modifiers.damage_multiplier + m_modifiers.damage_multiplier * 0.25f : m_modifiers.damage_multiplier; }
+	map.spawn_projectile_at(svc, *this, get_barrel_point(), target, m_modifiers.speed_multiplier, mult);
 }
 
 void Weapon::decrement_projectiles() { active_projectiles.update(-1); }
@@ -266,7 +268,9 @@ void Weapon::receive() { live_instances.update(-1); }
 
 void Weapon::assign_layout(dj::Json const& source) {
 	if (!source) { return; }
-	if (!m_layout) { m_layout.emplace(source); }
+	arms::Layout incoming{source};
+	if (m_layout && !m_layout->has_matching_pins(incoming)) { return; }
+	m_layout.emplace(std::move(incoming));
 }
 
 void Weapon::write_layout(dj::Json& target) {

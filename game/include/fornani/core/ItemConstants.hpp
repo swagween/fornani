@@ -5,7 +5,7 @@
 
 namespace fornani::item {
 
-enum class ItemType : std::uint8_t { ability, key, unique, equippable, collectible, useable, gizmo, apparel, plugin, COUNT };
+enum class ItemType : std::uint8_t { ability, key, unique, equippable, collectible, useable, gizmo, apparel, plugin, extension, special, COUNT };
 
 [[nodiscard]] constexpr auto get_item_table_dimensions(item::ItemType type) -> sf::Vector2i {
 	switch (type) {

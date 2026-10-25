@@ -224,6 +224,10 @@ void InputSystem::flush_inputs() {
 	}
 }
 
+void InputSystem::flush_triggers() {
+	for (auto& state : m_resolved_digital) { state.triggered = false; }
+}
+
 void InputSystem::cancel_input(DigitalAction action) {
 	m_raw_digital[static_cast<size_t>(action)].held = false;
 	m_raw_digital[static_cast<size_t>(action)].active = false;

@@ -7,27 +7,32 @@ namespace fornani::arms {
 
 Layout::Layout(dj::Json const& in) {
 	std::size_t index{};
+
 	for (auto [i, slot] : std::views::enumerate(in["slots"].as_array())) {
 		Slot next{};
-		next.status = SlotStatus::unavailable;
-		for (auto const& pin : slot["pins"].as_array()) {
-			next.pin_locations.push_back(static_cast<PinLocation>(pin.as<int>()));
-			next.status = SlotStatus::deactivated;
-		}
-		if (auto const& s = slot["active_pin"]) {
-			next.active_slot.emplace(static_cast<PinLocation>(s.as<int>()));
+
+		for (auto const& pin : slot["pins"].as_array()) { next.pin_locations.push_back(static_cast<PinLocation>(pin.as<int>())); }
+
+		if (!next.pin_locations.empty()) { next.status = SlotStatus::deactivated; }
+
+		if (auto const& active_pin = slot["active_pin"]) {
+			next.active_slot.emplace(static_cast<PinLocation>(active_pin.as<int>()));
 			next.status = SlotStatus::activated;
 		}
-		if (auto const& s = slot["item"]) {
-			next.item.emplace(s.as_string());
+
+		if (auto const& item = slot["item"]) {
+			next.item.emplace(item.as_string());
 			next.status = SlotStatus::occupied;
 		}
+
 		if (next.status != SlotStatus::unavailable) { next.index.emplace(index++); }
-		m_slots[i] = next;
+
+		m_slots[i] = std::move(next);
 	}
 }
 
 void Layout::serialize(dj::Json& out) const {
+	out["slots"] = dj::Json::empty_array();
 	for (auto const& slot : m_slots) {
 		dj::Json next = dj::Json::empty_object();
 		for (auto const& pin : slot.pin_locations) { next["pins"].push_back(static_cast<int>(pin)); }
@@ -37,18 +42,53 @@ void Layout::serialize(dj::Json& out) const {
 	}
 }
 
-bool Layout::place_segment(PinLocation pin, std::size_t where) const { return false; }
+bool Layout::place_segment(PinLocation pin, std::size_t where) {
+	if (!can_place_segment(pin, where)) { return false; }
 
-bool Layout::place_item(PinLocation pin, std::size_t where) const { return false; }
+	m_slots[where].active_slot.emplace(pin);
+	m_slots[where].status = SlotStatus::activated;
+	return true;
+}
 
-auto Layout::can_place_segment(PinLocation pin, std::size_t where) const -> bool { return false; }
+bool Layout::place_item(std::string_view tag, PinLocation pin, std::size_t where) {
+	if (!can_place_item(pin, where)) { return false; }
 
-auto Layout::can_place_item(PinLocation pin, std::size_t where) const -> bool { return false; }
+	m_slots[where].item.emplace(tag);
+	m_slots[where].status = SlotStatus::occupied;
+	return true;
+}
 
-auto Layout::is_empty() const -> bool { return false; }
+auto Layout::can_place_segment(PinLocation pin, std::size_t where) const -> bool {
+	if (where >= m_slots.size()) { return false; }
+
+	auto const& slot = m_slots[where];
+	return slot.status == SlotStatus::deactivated && std::ranges::find(slot.pin_locations, pin) != slot.pin_locations.end();
+}
+
+auto Layout::can_place_item(PinLocation pin, std::size_t where) const -> bool {
+	if (where >= m_slots.size()) { return false; }
+
+	auto const& slot = m_slots[where];
+	return slot.status == SlotStatus::activated && slot.active_slot == pin;
+}
+
+auto Layout::has_item(std::string_view tag) const -> bool {
+	return std::ranges::any_of(m_slots, [tag](auto const& slot) { return slot.item && *slot.item == tag; });
+}
+
+auto Layout::is_empty() const -> bool {
+	return std::ranges::none_of(m_slots, [](auto const& slot) { return slot.item.has_value() || slot.active_slot.has_value(); });
+}
 
 auto Layout::get_number_of_slots() const -> int {
 	return std::ranges::count_if(m_slots, [](auto const& s) { return s.status != SlotStatus::unavailable; });
+}
+
+auto Layout::has_matching_pins(Layout const& other) const -> bool {
+	for (std::size_t i = 0; i < layout_size_v; ++i) {
+		if (m_slots[i].pin_locations != other.m_slots[i].pin_locations) { return false; }
+	}
+	return true;
 }
 
 std::vector<std::string> Layout::get_items() const { return std::vector<std::string>(); }

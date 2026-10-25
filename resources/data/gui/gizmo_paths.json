@@ -691,6 +691,40 @@
       ]
     },
     {
+      "label": "select",
+      "path": [
+        {
+          "position": [0, 300],
+          "dimensions": [100, 20]
+        },
+        {
+          "position": [0, 300],
+          "dimensions": [112, 32]
+        },
+        {
+          "position": [0, 300],
+          "dimensions": [110, 30]
+        }
+      ]
+    },
+    {
+      "label": "deselect",
+      "path": [
+        {
+          "position": [0, 300],
+          "dimensions": [110, 30]
+        },
+        {
+          "position": [0, 300],
+          "dimensions": [98, 18]
+        },
+        {
+          "position": [0, 300],
+          "dimensions": [100, 20]
+        }
+      ]
+    },
+    {
       "label": "close",
       "path": [
         {

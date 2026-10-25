@@ -12,12 +12,15 @@
           25,
           3
         ],
-        "tag": "vermite",
+        "tag": "extension_slot_bottom_right",
         "type": 2
       }
     ],
     "cutscene_triggers": [
       {
+        "attributes": {
+          "persistent": true
+        },
         "dimensions": [
           2,
           32
@@ -25,7 +28,7 @@
         "id": 998,
         "position": [
           14,
-          4294967292
+          -4
         ]
       },
       {

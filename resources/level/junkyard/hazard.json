@@ -162,19 +162,23 @@
           11
         ],
         "source_id": 702
-      }
-    ],
-    "save_point": [
+      },
       {
+        "activate_on_contact": false,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 717,
         "dimensions": [
           1,
           1
         ],
-        "id": 702,
+        "id": 0,
+        "locked": false,
         "position": [
-          8,
-          21
-        ]
+          24,
+          6
+        ],
+        "source_id": 702
       }
     ],
     "switch_blocks": [
@@ -428,7 +432,6 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
-      "hidden": null,
       "interior": false,
       "lighting": true,
       "timer": false,
@@ -901,8 +904,8 @@
         176,
         10,
         10,
-        160,
-        161,
+        10,
+        10,
         10,
         10,
         177,
@@ -981,8 +984,8 @@
         176,
         10,
         10,
-        160,
-        161,
+        10,
+        10,
         10,
         10,
         177,
@@ -17128,7 +17131,7 @@
         65,
         64,
         12,
-        0,
+        23,
         12,
         65,
         64,
@@ -17208,7 +17211,7 @@
         17,
         17,
         18,
-        0,
+        39,
         80,
         81,
         482,
@@ -17288,7 +17291,7 @@
         33,
         33,
         34,
-        0,
+        39,
         96,
         97,
         0,
@@ -17368,9 +17371,9 @@
         49,
         49,
         50,
-        0,
-        0,
-        0,
+        55,
+        96,
+        97,
         0,
         0,
         0,

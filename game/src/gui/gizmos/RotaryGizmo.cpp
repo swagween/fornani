@@ -45,7 +45,7 @@ void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::
 	if (m_hotbar) { m_hotbar.value()->update(svc, player, map, get_placement() + m_rail_path.get_position()); }
 	if (m_layout) {
 		m_layout.value()->update(svc, player, map, get_placement());
-		m_layout.value()->set_flag(LayoutGizmoFlags::selected, m_mode == RotaryGizmoMode::layout);
+		m_layout.value()->set_selected(m_mode == RotaryGizmoMode::layout);
 	}
 
 	if (player.arsenal) {
@@ -154,6 +154,8 @@ bool RotaryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]]
 		}
 		if (controller.menu_move(input::MoveDirection::left)) {
 			m_mode = RotaryGizmoMode::layout;
+			soundboard.play_sound("pioneer_forward");
+			soundboard.play_sound("pioneer_open");
 			if (m_layout) { m_layout.value()->set_selection(arms::layout_size_v - 1); }
 		}
 		if (controller.menu_move(input::MoveDirection::right)) { m_mode = RotaryGizmoMode::hotbar; }
@@ -168,9 +170,10 @@ void RotaryGizmo::on_open(automa::ServiceProvider& svc, [[maybe_unused]] player:
 	m_path.set_section("open");
 	m_rail_path.set_section("open");
 	m_hotbar.emplace(std::make_unique<HotbarGizmo>(svc, map, sf::Vector2f{200.f, 0.f}));
-	m_layout.emplace(std::make_unique<LayoutGizmo>(svc, map, sf::Vector2f{0.f, 100.f}));
+	m_layout.emplace(std::make_unique<LayoutGizmo>(svc, map, player, sf::Vector2f{0.f, 100.f}));
 	m_layout.value()->set_layout(player.equipped_weapon());
 	svc.soundboard.play_sound("pioneer_tech", player.get_ear_position());
+	m_mode = RotaryGizmoMode::rotary;
 }
 
 void RotaryGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) {

@@ -25,14 +25,16 @@ class Layout {
 	Layout(dj::Json const& in);
 	void serialize(dj::Json& out) const;
 
-	bool place_segment(PinLocation pin, std::size_t where) const; // returns true if placement was successful
-	bool place_item(PinLocation pin, std::size_t where) const;	  // returns true if placement was successful
+	bool place_segment(PinLocation pin, std::size_t where);					   // returns true if placement was successful
+	bool place_item(std::string_view tag, PinLocation pin, std::size_t where); // returns true if placement was successful
 
 	[[nodiscard]] auto can_place_segment(PinLocation pin, std::size_t where) const -> bool;
 	[[nodiscard]] auto can_place_item(PinLocation pin, std::size_t where) const -> bool;
+	[[nodiscard]] auto has_item(std::string_view tag) const -> bool;
 	[[nodiscard]] auto is_empty() const -> bool;
-	[[nodiscard]] auto get_slots() const& -> std::array<Slot, layout_size_v> { return m_slots; }
+	[[nodiscard]] auto get_slots() const -> std::array<Slot, layout_size_v> const& { return m_slots; }
 	[[nodiscard]] auto get_number_of_slots() const -> int;
+	[[nodiscard]] auto has_matching_pins(Layout const& other) const -> bool;
 
 	std::vector<std::string> get_items() const;
 
