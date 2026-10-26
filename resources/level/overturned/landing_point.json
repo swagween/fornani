@@ -35,7 +35,8 @@
     "cutscene_triggers": [
       {
         "attributes": {
-          "callbox": true
+          "callbox": true,
+          "persistent": true
         },
         "dimensions": [
           1,

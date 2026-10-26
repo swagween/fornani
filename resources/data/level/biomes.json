@@ -46,7 +46,8 @@
     "kariba": {
       "black": [12, 12, 20],
       "max_light": 3.0,
-      "effect_channel": 4
+      "effect_channel": 4,
+      "switches": { "channel": 2, "sound": "kariba_switch" }
     },
     "ashtown": {
       "platform_sound": "industrial",
@@ -100,8 +101,7 @@
       "platform_sound": "industrial",
       "black": [19, 18, 16],
       "sky_limit": 10,
-      "max_light": 3.0,
-      "effect_channel": 2
+      "max_light": 3.0
     },
     "abandoned": {
       "black": [19, 18, 16],

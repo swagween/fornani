@@ -33,11 +33,9 @@ void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	if (!p_context.console) {
 		if (m_file_select_menu) {
 			m_file_select_menu->handle_inputs(svc.input_system, svc.soundboard);
+			if (m_file_select_menu->was_closed()) { m_file_select_menu.reset(); }
 		} else {
 			if (svc.input_system.menu_move(input::MoveDirection::down) || svc.input_system.menu_move(input::MoveDirection::up) || current_selection.get() != m_previous_selection) { switched.start(); }
-		}
-		if (svc.input_system.digital(input::DigitalAction::menu_back).triggered) {
-			if (m_file_select_menu) { m_file_select_menu.reset(); }
 		}
 		if (was_selected(svc.input_system, true)) {
 			if (m_file_select_menu) {

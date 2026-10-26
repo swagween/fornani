@@ -3,6 +3,7 @@
 
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/gui/Gizmo.hpp>
+#include <fornani/gui/MiniMenu.hpp>
 #include <fornani/gui/NumberDisplay.hpp>
 #include <fornani/utils/Flaggable.hpp>
 #include <fornani/utils/NineSlice.hpp>
@@ -22,6 +23,7 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground = false) override;
 	bool handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) override;
 
+	void toggle();
 	void set_selected(bool const to);
 	void set_layout(arms::Weapon& weapon);
 	void set_selection(int const to) {
@@ -37,7 +39,16 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	void exit_item_select_mode();
 	void exit_fixture_select_mode();
 
+	void close_menu();
+
   private:
+	void open_slot_menu(arms::SlotStatus status);
+	void handle_menu_selection(audio::Soundboard& soundboard);
+	auto handle_activated_slot(audio::Soundboard& soundboard) -> bool;
+	void handle_deactivated_slot(audio::Soundboard& soundboard);
+	void exit_menu_if_finished();
+	[[nodiscard]] auto make_menu(std::string_view key, std::initializer_list<std::string_view> options) -> MiniMenu;
+
 	void debug();
 
   private:
@@ -47,6 +58,7 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	Animatable m_fixtures;
 	util::RectPath m_path;
 	std::vector<NumberDisplay> m_number_displays{};
+	std::optional<MiniMenu> m_menu{};
 
 	util::Circuit m_selection{arms::layout_size_v};
 	std::size_t m_slot_index{};

@@ -27,5 +27,7 @@ struct RestoreHealthEvent : Event<> {};
 struct SetTimeOfDayEvent : Event<int> {};
 struct FadeToBlackEvent : Event<> {};
 struct FadeFromBlackEvent : Event<> {};
+struct NewDayEvent : Event<> {};
+struct NewWeekEvent : Event<> {};
 
 } // namespace fornani

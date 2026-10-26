@@ -12,6 +12,8 @@
 
 namespace fornani::world {
 
+constexpr auto maximum_push_speed_v = 1.8f;
+
 Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, int style, int size)
 	: Drawable{svc, "pushables"}, m_map{&map}, style(style), size(size), m_collider{map, constants::f_cell_vec * static_cast<float>(size) - sf::Vector2f{1.f, 0.5f}}, collision_box{constants::f_cell_vec * static_cast<float>(size)},
 	  speed{size == 1 ? 1.5f : 1.3f}, m_blink{120}, m_intro{64} {
@@ -87,8 +89,12 @@ void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& pl
 	set_flag(PushableFlags::pushed, false);
 	handle_collision(player.get_collider());
 	if (player.get_collider().wallslider.overlaps(collision_box) && player.pushing() && get_collider().physics.actual_velocity().y < 0.3f) {
-		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) { get_collider().physics.acceleration.x = speed * player.get_arm_strength() / mass; }
-		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) { get_collider().physics.acceleration.x = -speed * player.get_arm_strength() / mass; }
+		if (player.controller.moving_right() && player.get_collider().physics.position.x < get_collider().physics.position.x) {
+			get_collider().physics.acceleration.x = std::min(speed * player.get_arm_strength() / mass, maximum_push_speed_v);
+		}
+		if (player.controller.moving_left() && player.get_collider().physics.position.x > get_collider().physics.position.x) {
+			get_collider().physics.acceleration.x = std::max(-speed * player.get_arm_strength() / mass, -maximum_push_speed_v);
+		}
 		if (std::abs(get_collider().physics.actual_velocity().x) > constants::small_value) { svc.soundboard.repeat_sound("pushable_move"); }
 
 		set_flag(PushableFlags::moved);

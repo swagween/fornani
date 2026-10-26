@@ -44,6 +44,23 @@
       "friction": 0.95
     }
   },
+  "super_lantern": {
+    "luminosity": 3.5,
+    "radius": 256.0,
+    "attenuation_constant": 1.0,
+    "attenuation_linear": 3.0,
+    "attenuation_quadratic": 1.0,
+    "distance_flat": 0.0,
+    "distance_scaling": 1.0,
+    "flicker_rate": 0.2,
+    "flicker_radius": 0.005,
+    "steering": {
+      "dampen": 0.0041,
+      "radius": 64.0,
+      "force": 0.0055,
+      "friction": 0.95
+    }
+  },
   "daylight": {
     "luminosity": 2.8,
     "radius": 360.0,

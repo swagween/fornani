@@ -1,6 +1,7 @@
 
 #include <fornani/automa/SceneContext.hpp>
 #include <fornani/entities/player/Player.hpp>
+#include <fornani/entity/AmbientProp.hpp>
 #include <fornani/entity/NPC.hpp>
 #include <fornani/gui/console/Console.hpp>
 #include <fornani/service/ServiceProvider.hpp>
@@ -31,6 +32,9 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 		svc.quest_table.set_quest_progression("npc_dialogue", {"dr_willett", 300}, 4, {209});
 		svc.quest_table.set_quest_progression("npc_dialogue", {"bryn", 300}, 2, {209});
 		svc.quest_table.set_quest_progression("landing_points", {"pioneer_base", 209}, 1, {209});
+		for (auto& p : map.get_entities<AmbientProp>()) {
+			if (p->get_tag() == "championj5") { p->set_hidden(false); }
+		}
 
 		Cutscene::end(svc, player);
 	}
@@ -67,6 +71,9 @@ void ReturnToBase::update(automa::ServiceProvider& svc, SceneContext& context, w
 		m_champion->set_target(constants::f_cell_size * sf::Vector2f{40.f, 8.f});
 		bryn->set_flag(NPCFlags::airborne);
 		bryn->set_flag(NPCFlags::custom_camera);
+		for (auto& p : map.get_entities<AmbientProp>()) {
+			if (p->get_tag() == "championj5") { p->set_hidden(true); }
+		}
 	}
 
 	if (m_intro.is_almost_complete()) { cooldowns.beginning.start(); }

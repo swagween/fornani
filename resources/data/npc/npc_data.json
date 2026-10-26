@@ -11,7 +11,11 @@
       },
       {
         "label": "walk",
-        "parameters": [8, 4, 24, -1, false]
+        "parameters": [8, 4, 24, -1, false],
+        "sounds": [
+          { "frames": [0], "tag": "basic_step" },
+          { "frames": [2], "tag": "basic_step" }
+        ]
       },
       {
         "label": "turn",
@@ -52,7 +56,11 @@
       },
       {
         "label": "walk",
-        "parameters": [7, 4, 40, -1, false]
+        "parameters": [7, 4, 40, -1, false],
+        "sounds": [
+          { "frames": [0], "tag": "basic_step" },
+          { "frames": [2], "tag": "basic_step" }
+        ]
       },
       {
         "label": "turn",
@@ -96,9 +104,9 @@
     "vendor": {
       "upcharge": 0.2,
       "stock_size": 6,
-      "common_items": ["bronze_bracelet", "soda"],
-      "uncommon_items": ["lantern", "magnifying_glass"],
-      "rare_items": ["pioneer_scrap", "red_jeans", "indigum", "magnet"],
+      "common_items": ["bronze_bracelet", "soda", "extension_slot_bottom_right"],
+      "uncommon_items": ["lantern", "magnifying_glass", "extension_slot_top_right", "extension_crit"],
+      "rare_items": ["pioneer_scrap", "red_jeans", "indigum", "magnet", "extension_speed"],
       "guaranteed_finite_items": ["gas_mask", "screwdriver"]
     },
     "locations": {
@@ -402,9 +410,9 @@
     "vendor": {
       "upcharge": 0.3,
       "stock_size": 8,
-      "common_items": ["flashbang", "soda"],
-      "uncommon_items": ["feather", "flippers"],
-      "rare_items": ["brinium", "skycorps_tee", "indigum", "magnet"],
+      "common_items": ["flashbang", "soda", "extension_slot_bottom_left"],
+      "uncommon_items": ["feather", "flippers", "extension_reload"],
+      "rare_items": ["brinium", "skycorps_tee", "indigum", "magnet", "extension_damage"],
       "guaranteed_finite_items": ["velvet_rose", "radar_beacon"]
     }
   },
@@ -494,7 +502,7 @@
       "upcharge": 0.25,
       "stock_size": 8,
       "common_items": ["clay_statue", "soda"],
-      "uncommon_items": ["silver_bracelet", "gas_mask", "boxing_glove", "ashtown_raspberry_preserves"],
+      "uncommon_items": ["silver_bracelet", "gas_mask", "boxing_glove", "ashtown_raspberry_preserves", "extension_slot_bottom_right"],
       "rare_items": ["sapphire", "ceremonial_skirt", "screwdriver"],
       "guaranteed_finite_items": ["lantern"]
     }
@@ -550,7 +558,7 @@
     "vendor": {
       "upcharge": 0.4,
       "stock_size": 8,
-      "common_items": ["screwdriver", "soda"],
+      "common_items": ["screwdriver", "soda", "extension_slot_bottom_left"],
       "uncommon_items": ["save_plugin", "vendor_plugin"],
       "rare_items": ["punk_pants", "punk_shirt", "punk_hair_dye"],
       "guaranteed_finite_items": ["athletic_band"]

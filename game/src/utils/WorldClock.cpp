@@ -32,7 +32,11 @@ void WorldClock::update(automa::ServiceProvider& svc) {
 				current_time_of_day.modulate(1);
 				increments.days.modulate(1);
 				rng.daily = random::range_float(0.f, 1.f);
-				if (increments.days.cycled()) { rng.weekly = random::range_float(0.f, 1.f); }
+				svc.events.new_day_event.dispatch();
+				if (increments.days.cycled()) {
+					rng.weekly = random::range_float(0.f, 1.f);
+					svc.events.new_week_event.dispatch();
+				}
 			}
 			if (is_nighttime() && change) { current_time_of_day.modulate(1); }
 		}

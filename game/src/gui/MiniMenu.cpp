@@ -90,6 +90,8 @@ void MiniMenu::handle_inputs(input::InputSystem& controller, [[maybe_unused]] au
 	if (controller.digital(input::DigitalAction::menu_back).triggered) {
 		m_flags.set(MiniMenuFlags::closed);
 		soundboard.play_sound("menu_back");
+		controller.cancel_input(input::DigitalAction::menu_back);
+		controller.cancel_input(input::DigitalAction::menu_close);
 	}
 }
 

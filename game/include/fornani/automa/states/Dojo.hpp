@@ -49,6 +49,8 @@ class Dojo final : public GameplayState {
 	void set_time_of_day(int const to);
 	void fade_to_black();
 	void fade_from_black();
+	void handle_new_day();
+	void handle_new_week();
 
 	bool show_colliders{false};
 

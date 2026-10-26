@@ -18,6 +18,22 @@
     "build": "build",
     "cancel": "cancel"
   },
+  "rotary_menu": {
+    "hotbar": "hotbar",
+    "configure": "configure",
+    "cancel": "cancel"
+  },
+  "fixure_menu": {
+    "add_item": "add item",
+    "swap": "swap",
+    "remove": "remove",
+    "cancel": "cancel"
+  },
+  "extension_menu": {
+    "swap": "swap",
+    "remove": "remove",
+    "cancel": "cancel"
+  },
   "minimap_menu": {
     "pin": "pin",
     "center": "center",
@@ -67,6 +83,7 @@
     "already_here": "You are already here.",
     "no_fixture_match": "You don't have any fixtures that fit the selected slot's pins",
     "no_extension_slots": "You do not have any available extension slots.",
+    "no_matching_extensions": "You do not have any extensions that match this fixture.",
     "mismatched_item_pin": "The item's pin location does not match that of the fixture."
   },
   "locations": {

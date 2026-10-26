@@ -297,7 +297,7 @@
           33,
           19
         ],
-        "tag": "brinium",
+        "tag": "priorite",
         "type": 2
       },
       {
@@ -883,7 +883,6 @@
       "environmental_randomness": false,
       "interior": false,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

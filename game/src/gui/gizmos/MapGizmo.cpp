@@ -186,8 +186,8 @@ void MapGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[may
 	if (m_map_border) { m_map_border->render(win, cam); }
 	if (is_comprehensive()) {
 		for (auto& chain : m_chains) { chain->render(svc, win, cam, false); }
-		for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
 	}
+	for (auto& plugin : m_plugins) { plugin.render(win, m_plugin_sprite, cam, {}, shader, palette); }
 	if (m_info) { m_info->render(svc, win, player, shader, palette, cam, foreground); }
 	if (is_comprehensive()) {
 		m_constituents.gizmo.top_left.position = m_path.get_position();

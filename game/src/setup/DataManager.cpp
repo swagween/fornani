@@ -273,6 +273,8 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	auto& save = files.at(current_save).save_data;
 	files.at(current_save).write();
 
+	save["version"] = m_services->version->version();
+
 	// set file data based on player state
 	save["save_point_id"] = save_point_id;
 

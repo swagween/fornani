@@ -53,8 +53,15 @@
         ]
       },
       {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "defeat_haunch"
+          }
+        ],
         "dimensions": [
-          3,
+          2,
           14
         ],
         "id": 900,

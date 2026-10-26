@@ -11,7 +11,7 @@ namespace fornani::gui {
 RotaryGizmo::RotaryGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Rotary", false), m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "rotary", 120, util::InterpolationType::quadratic}, m_selection{static_cast<int>(player.arsenal_size())},
 	  m_sprite{svc, "rotary_gizmo", {124, 94}}, m_gun_selector{svc, "gun_selector", {64, 31}}, m_frame_lerp{6.f}, m_gun_display{svc, "heads_up_display_gun", {44, 9}}, m_dashboard_rail{svc, "pioneer_dashboard"},
-	  m_rail_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_rail", 256, util::InterpolationType::quadratic} {
+	  m_rail_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "dashboard_rail", 256, util::InterpolationType::quadratic}, m_services{&svc} {
 	m_dashboard_port = DashboardPort::arsenal;
 	m_placement = placement;
 	m_path.set_section("start");
@@ -21,6 +21,7 @@ RotaryGizmo::RotaryGizmo(automa::ServiceProvider& svc, world::Map& map, player::
 	m_gun_selector.push_and_set_animation("standard", {0, 10, 24, -1});
 	m_gun_selector.push_animation("click", {10, 3, 12, 0});
 	m_gun_selector.center();
+	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 }
 
 void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
@@ -83,6 +84,9 @@ void RotaryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::
 	}
 
 	m_previous_position = current_pos;
+
+	if (m_menu) { m_menu->update(svc, m_gun_selector.get_window_position()); }
+	if (!is_selected()) { m_menu.reset(); }
 }
 
 void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -132,33 +136,65 @@ void RotaryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[
 	m_sprite.set_frame(frame);
 	m_sprite.set_position(get_placement() + m_path.get_position() - cam);
 	shader.submit(win, palette, m_sprite.get_sprite());
+
+	if (m_menu) { m_menu->render(win); }
 }
 
 bool RotaryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (m_mode == RotaryGizmoMode::layout) {
 		if (m_layout) {
-			if (m_layout.value()->handle_inputs(controller, soundboard)) { m_mode = RotaryGizmoMode::rotary; }
+			if (m_layout.value()->handle_inputs(controller, soundboard)) {
+				m_mode = RotaryGizmoMode::rotary;
+				m_layout.value()->close_menu();
+			}
 		}
 	} else if (m_mode == RotaryGizmoMode::rotary) {
-		if (controller.digital(input::DigitalAction::menu_select).triggered) {
-			set_flag(RotaryGizmoFlags::push_to_hotbar);
-			m_gun_selector.set_animation("click");
+		if (m_menu) {
+			m_menu->handle_inputs(controller, soundboard);
+			if (m_menu->was_selected()) {
+				switch (m_menu->get_selection()) {
+				case 0: {
+					set_flag(RotaryGizmoFlags::push_to_hotbar);
+					break;
+				}
+				case 1: {
+					m_mode = RotaryGizmoMode::layout;
+					soundboard.play_sound("pioneer_forward");
+					soundboard.play_sound("pioneer_open");
+					if (m_layout) { m_layout.value()->set_selection(arms::layout_size_v - 1); }
+					break;
+				}
+				}
+				close_menu();
+			}
+			if (m_menu) {
+				if (m_menu->was_closed()) { close_menu(); }
+			}
+		} else {
+			if (controller.digital(input::DigitalAction::menu_select).triggered) {
+				m_menu.emplace(MiniMenu{*m_services,
+										{m_services->data.gui_text["rotary_menu"]["hotbar"].as_string(), m_services->data.gui_text["rotary_menu"]["configure"].as_string(), m_services->data.gui_text["rotary_menu"]["cancel"].as_string()},
+										m_services->window->f_center_screen(),
+										*p_theme});
+				m_gun_selector.set_animation("click");
+			}
+			if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
+				m_frame_lerp.trigger(1, false, 2.0f);
+				m_selection.modulate(-1);
+				if (m_layout) { m_layout.value()->toggle(); }
+			}
+			if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
+				m_frame_lerp.trigger(1, true, 2.0f);
+				m_selection.modulate(1);
+				if (m_layout) { m_layout.value()->toggle(); }
+			}
+			// these controls are a bit too unwieldy
+			if (controller.menu_move(input::MoveDirection::left)) { /*m_mode = RotaryGizmoMode::layout;*/
+			}
+			if (controller.menu_move(input::MoveDirection::right)) { /*m_mode = RotaryGizmoMode::hotbar; */
+			}
 		}
-		if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
-			m_frame_lerp.trigger(1, false, 2.0f);
-			m_selection.modulate(-1);
-		}
-		if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
-			m_frame_lerp.trigger(1, true, 2.0f);
-			m_selection.modulate(1);
-		}
-		if (controller.menu_move(input::MoveDirection::left)) {
-			m_mode = RotaryGizmoMode::layout;
-			soundboard.play_sound("pioneer_forward");
-			soundboard.play_sound("pioneer_open");
-			if (m_layout) { m_layout.value()->set_selection(arms::layout_size_v - 1); }
-		}
-		if (controller.menu_move(input::MoveDirection::right)) { m_mode = RotaryGizmoMode::hotbar; }
+
 	} else {
 	}
 	return Gizmo::handle_inputs(controller, soundboard);
@@ -183,7 +219,13 @@ void RotaryGizmo::on_close(automa::ServiceProvider& svc, [[maybe_unused]] player
 	m_rail_path.set_section("close");
 	m_hotbar.reset();
 	m_layout.reset();
+	m_menu.reset();
 	svc.soundboard.play_sound("pioneer_drawer", player.get_ear_position());
+}
+
+void RotaryGizmo::close_menu() {
+	m_menu.reset();
+	m_services->input_system.flush_triggers();
 }
 
 void RotaryGizmo::debug() {

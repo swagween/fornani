@@ -14,7 +14,83 @@
           "message": "What is this crystal?"
         },
         {
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "daily_gem"
+            },
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "gem_roll"
+            }
+          ],
           "codes": [[1, 2]],
+          "message": "Got anything for me?"
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "daily_gem"
+            },
+            {
+              "requirement": 1,
+              "strict": true,
+              "tag": "gem_roll"
+            }
+          ],
+          "codes": [[1, 3]],
+          "message": "Got anything for me?"
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "daily_gem"
+            },
+            {
+              "requirement": 2,
+              "strict": true,
+              "tag": "gem_roll"
+            }
+          ],
+          "codes": [[1, 4]],
+          "message": "Got anything for me?"
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "daily_gem"
+            },
+            {
+              "requirement": 3,
+              "strict": true,
+              "tag": "gem_roll"
+            }
+          ],
+          "codes": [[1, 5]],
+          "message": "Got anything for me?"
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 0,
+              "strict": true,
+              "tag": "daily_gem"
+            },
+            {
+              "requirement": 4,
+              "strict": true,
+              "tag": "gem_roll"
+            }
+          ],
+          "codes": [[1, 6]],
           "message": "Got anything for me?"
         }
       ]
@@ -43,8 +119,55 @@
       ],
       [
         {
-          "codes": [1, 0],
-          "message": "Not today, sorry to say. Come back in a little while!"
+          "message": "Not today, sorry to say. Come back another day!"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [2, 68],
+            [27, 44, 1]
+          ],
+          "message": "Yes indeed, check this little beauty out!"
+        },
+        {
+          "messages": ["Happy hunting!", "See you soon!", "Don't you just love a shining gem?"]
+        }
+      ],
+      [
+        {
+          "codes": [
+            [2, 66],
+            [27, 44, 1]
+          ],
+          "message": "You're not gonna believe your eyes!"
+        },
+        {
+          "messages": ["Happy hunting!", "See you soon!", "Don't you just love a shining gem?"]
+        }
+      ],
+      [
+        {
+          "codes": [
+            [2, 81],
+            [27, 44, 1]
+          ],
+          "message": "This was quite a find, even for me!"
+        },
+        {
+          "messages": ["Happy hunting!", "See you soon!", "Don't you just love a shining gem?"]
+        }
+      ],
+      [
+        {
+          "codes": [
+            [2, 67],
+            [27, 44, 1]
+          ],
+          "message": "One of my most prized gems, just for you!"
+        },
+        {
+          "messages": ["Happy hunting!", "See you soon!", "Don't you just love a shining gem?"]
         }
       ]
     ]

@@ -5,7 +5,7 @@
         "channel": 0,
         "contingencies": [
           {
-            "requirement": 3,
+            "requirement": 1,
             "strict": false,
             "tag": "defeat_haunch"
           }
@@ -63,7 +63,8 @@
     "cutscene_triggers": [
       {
         "attributes": {
-          "callbox": true
+          "callbox": true,
+          "persistent": true
         },
         "dimensions": [
           1,
@@ -111,6 +112,43 @@
             ]
           }
         ]
+      }
+    ],
+    "interactables": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          42,
+          8
+        ],
+        "tag": "signal_tower"
+      },
+      {
+        "contingencies": [
+          {
+            "requirement": 1,
+            "strict": false,
+            "subquest": {
+              "id": 209,
+              "tag": "pioneer_base"
+            },
+            "tag": "landing_points"
+          }
+        ],
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "position": [
+          42,
+          8
+        ],
+        "tag": "signal_beacon"
       }
     ],
     "npcs": [

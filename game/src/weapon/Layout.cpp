@@ -58,6 +58,20 @@ bool Layout::place_item(std::string_view tag, PinLocation pin, std::size_t where
 	return true;
 }
 
+void Layout::remove_item(std::size_t const index) {
+	if (index >= m_slots.size()) { return; }
+
+	m_slots[index].item.reset();
+	m_slots[index].status = SlotStatus::activated;
+}
+
+void Layout::remove_fixture(std::size_t const index) {
+	if (index >= m_slots.size()) { return; }
+
+	m_slots[index].active_slot.reset();
+	m_slots[index].status = SlotStatus::deactivated;
+}
+
 auto Layout::can_place_segment(PinLocation pin, std::size_t where) const -> bool {
 	if (where >= m_slots.size()) { return false; }
 

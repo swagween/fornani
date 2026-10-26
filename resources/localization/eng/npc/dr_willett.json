@@ -562,13 +562,35 @@
         {
           "contingencies": [
             {
-              "requirement": 2,
-              "strict": false,
+              "requirement": 1,
+              "strict": true,
               "tag": "pioneer_tech"
             }
           ],
           "codes": [[1, 2]],
           "message": "What is this place?"
+        },
+        {
+          "contingencies": [
+            {
+              "requirement": 2,
+              "strict": true,
+              "tag": "pioneer_tech"
+            }
+          ],
+          "codes": [[1, 9]],
+          "message": "I have a screwdriver."
+        },
+        {
+          "codes": [[1, 10]],
+          "contingencies": [
+            {
+              "requirement": 3,
+              "strict": true,
+              "tag": "pioneer_tech"
+            }
+          ],
+          "message": "Let's make some pioneer tech!"
         },
         {
           "contingencies": [
@@ -742,6 +764,28 @@
             [1, 1]
           ],
           "message": "Here, I can indicate it on your radar screen, however much help that'll be."
+        }
+      ],
+      [
+        {
+          "codes": [
+            [17, 32],
+            [3, 22, 1, 301]
+          ],
+          "message": "Excellent! You're someone who gets things done, eh?"
+        },
+        {
+          "codes": [[1, 0]],
+          "message": "Now we can get building!"
+        }
+      ],
+      [
+        {
+          "codes": [
+            [4, 0],
+            [26, 2]
+          ],
+          "message": "Have at it!"
         }
       ]
     ]

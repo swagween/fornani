@@ -809,7 +809,7 @@
           "damage_rate": 1,
           "max_hits": 16,
           "power": 4,
-          "lifespan": 200,
+          "lifespan": 140,
           "lifespan_variance": 0,
           "speed": 46.0,
           "variance": 0.5,

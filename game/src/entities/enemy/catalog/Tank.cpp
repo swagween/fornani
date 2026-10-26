@@ -313,7 +313,7 @@ fsm::StateFunction Tank::update_jump() {
 		set_flag(TankFlags::shorthop, false);
 		request(TankState::land);
 		m_services->soundboard.play_sound("thud", get_collider().get_center());
-		m_services->camera_controller.shake(10, 0.3f, 200, 20);
+		m_services->camera_controller.shake(6, 0.2f, 200, 20);
 		if (change_state(TankState::land, get_params("land"))) { return TANK_BIND(update_land); }
 	}
 	return TANK_BIND(update_jump);

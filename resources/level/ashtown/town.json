@@ -641,7 +641,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
-        "channel": 0,
+        "channel": 2,
         "destination_id": 1304,
         "dimensions": [
           1,
@@ -649,7 +649,7 @@
         ],
         "id": 0,
         "key_tag": "bane_house_key",
-        "locked": true,
+        "locked": false,
         "position": [
           18,
           37
@@ -761,7 +761,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
-        "channel": 0,
+        "channel": 2,
         "destination_id": 1312,
         "dimensions": [
           1,
@@ -795,7 +795,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
-        "channel": 0,
+        "channel": 2,
         "destination_id": 1313,
         "dimensions": [
           1,
@@ -846,7 +846,7 @@
       {
         "activate_on_contact": false,
         "already_open": false,
-        "channel": 0,
+        "channel": 3,
         "destination_id": 1316,
         "dimensions": [
           1,

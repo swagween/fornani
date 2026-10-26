@@ -54,9 +54,8 @@ void Boss::end_battle() {
 	set_flag(BossFlags::end_battle);
 	set_flag(BossFlags::battle_mode, false);
 	p_health_bar.send_out();
-	auto const sign = random::coin_flip() ? -1.f : 1.f;
-	p_map->spawn_frame_effect(*p_services, "impact_spark", get_collider().get_center(), {}, 0, sign);
-	p_map->spawn_frame_effect(*p_services, "impact_frame_2", get_collider().get_center(), {}, 0, sign);
+	// p_map->spawn_frame_effect(*p_services, "impact_spark", get_collider().get_center(), {}, 0);
+	p_map->spawn_frame_effect(*p_services, "impact_frame_2", get_collider().get_center(), {}, 0);
 	p_services->soundboard.play_sound("boss_defeat");
 	p_services->soundboard.play_sound("boss_death");
 	p_services->ticker.freeze_frame(1.2f, 0.6f);

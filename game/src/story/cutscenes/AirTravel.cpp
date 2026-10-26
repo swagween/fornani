@@ -74,7 +74,7 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 		pilot->hide();
 		context.transition.end();
 		Cutscene::end(svc, player);
-		if (m_target_room) {
+		if (m_target_room && !m_flags.test(AirTravelFlags::no_go)) {
 			svc.events.load_room_event.dispatch(svc, *m_target_room);
 			svc.events.launch_cutscene_event.dispatch(svc, landing_id_v);
 			player.get_collider().set_attribute(shape::ColliderAttributes::no_collision);
@@ -102,7 +102,7 @@ void AirTravel::update(automa::ServiceProvider& svc, SceneContext& context, worl
 	if (m_champion) {
 		if (svc.ticker.every_x_ticks(8)) { m_jitter = random::vector_float(-8.f, 8.f); }
 		auto targetpos = map.get_random_home_point() - m_champion->get_collider().get_local_center() + m_jitter;
-		if (progress > 21) {
+		if (progress > 21 && !m_flags.test(AirTravelFlags::no_go)) {
 			targetpos = {map.get_random_home_point().x + 1000.f, -500.f};
 			player.get_collider().set_attribute(shape::ColliderAttributes::no_collision);
 			player.get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);

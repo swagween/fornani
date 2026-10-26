@@ -42,9 +42,9 @@ class MiniMenu {
 
 	[[nodiscard]] auto get_selection() const -> int { return selection.get(); }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return m_nineslice.get_global_center(); }
-	[[nodiscard]] auto was_selected() const -> int { return m_flags.test(MiniMenuFlags::selected); }
-	[[nodiscard]] auto was_closed() const -> int { return m_flags.test(MiniMenuFlags::closed); }
-	[[nodiscard]] auto was_last_option() const -> int { return selection.get() == options.size() - 1; }
+	[[nodiscard]] auto was_selected() const -> bool { return m_flags.test(MiniMenuFlags::selected); }
+	[[nodiscard]] auto was_closed() const -> bool { return m_flags.test(MiniMenuFlags::closed); }
+	[[nodiscard]] auto was_last_option() const -> bool { return selection.get() == options.size() - 1; }
 	[[nodiscard]] auto get_option() const -> std::string { return options.size() > selection.get() ? options.at(selection.get()).label.getString() : null_key; }
 	[[nodiscard]] auto is_mouse_hovering_option() const -> bool { return m_flags.test(MiniMenuFlags::option_hovered); }
 

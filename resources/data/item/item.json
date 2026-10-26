@@ -227,7 +227,7 @@
     "actual_description": "A clock that reads the current time of day. It was designed to fit snugly into your pocket gizmo.",
     "unique": true,
     "build": {
-      "recipe": ["priorite", "pioneer_scrap", "magnet"],
+      "recipe": ["priorite", "pioneer_scrap", "pixium"],
       "craft_price": 100,
       "lookup": 4
     }
@@ -1467,5 +1467,20 @@
     "value": 2500,
     "stack_limit": 8,
     "pin_location": 1
+  },
+  {
+    "tag": "super_lantern",
+    "category": 3,
+    "lookup": [14, 4],
+    "origin": [6, 0],
+    "naive_title": "Super Lantern",
+    "actual_title": "Super Lantern",
+    "naive_description": "An oil-fueled lantern that will light up any dark areas.",
+    "actual_description": "An oil-fueled lantern that will light up any dark areas.",
+    "unique": true,
+    "equippable": true,
+    "sellable": true,
+    "rarity": 2,
+    "value": 1800
   }
 ]

@@ -3,6 +3,7 @@
 
 #include <fornani/graphics/Animatable.hpp>
 #include <fornani/gui/Gizmo.hpp>
+#include <fornani/gui/MiniMenu.hpp>
 #include <fornani/gui/gizmos/HotbarGizmo.hpp>
 #include <fornani/gui/gizmos/LayoutGizmo.hpp>
 #include <fornani/utils/Circuit.hpp>
@@ -25,6 +26,7 @@ class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
   private:
 	void on_open(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
 	void on_close(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map) override;
+	void close_menu();
 
 	void debug();
 
@@ -32,6 +34,7 @@ class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
 	RotaryGizmoMode m_mode{RotaryGizmoMode::rotary};
 	std::optional<std::unique_ptr<HotbarGizmo>> m_hotbar{};
 	std::optional<std::unique_ptr<LayoutGizmo>> m_layout{};
+	std::optional<MiniMenu> m_menu{};
 	Animatable m_sprite;
 	Animatable m_gun_display;
 	Animatable m_gun_selector;
@@ -42,6 +45,8 @@ class RotaryGizmo final : public Gizmo, public Flaggable<RotaryGizmoFlags> {
 	util::RectPath m_rail_path;
 	float m_previous_position{};
 	int m_gun_id{};
+
+	automa::ServiceProvider* m_services;
 };
 
 } // namespace fornani::gui

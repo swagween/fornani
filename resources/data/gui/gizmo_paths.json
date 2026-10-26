@@ -691,6 +691,19 @@
       ]
     },
     {
+      "label": "toggle",
+      "path": [
+        {
+          "position": [6, 306],
+          "dimensions": [88, 8]
+        },
+        {
+          "position": [0, 300],
+          "dimensions": [100, 20]
+        }
+      ]
+    },
+    {
       "label": "select",
       "path": [
         {
@@ -698,11 +711,11 @@
           "dimensions": [100, 20]
         },
         {
-          "position": [0, 300],
-          "dimensions": [112, 32]
+          "position": [-7, 293],
+          "dimensions": [114, 34]
         },
         {
-          "position": [0, 300],
+          "position": [-5, 295],
           "dimensions": [110, 30]
         }
       ]
@@ -711,12 +724,8 @@
       "label": "deselect",
       "path": [
         {
-          "position": [0, 300],
+          "position": [-5, 295],
           "dimensions": [110, 30]
-        },
-        {
-          "position": [0, 300],
-          "dimensions": [98, 18]
         },
         {
           "position": [0, 300],

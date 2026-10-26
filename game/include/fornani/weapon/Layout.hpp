@@ -27,6 +27,8 @@ class Layout {
 
 	bool place_segment(PinLocation pin, std::size_t where);					   // returns true if placement was successful
 	bool place_item(std::string_view tag, PinLocation pin, std::size_t where); // returns true if placement was successful
+	void remove_item(std::size_t const index);
+	void remove_fixture(std::size_t const index);
 
 	[[nodiscard]] auto can_place_segment(PinLocation pin, std::size_t where) const -> bool;
 	[[nodiscard]] auto can_place_item(PinLocation pin, std::size_t where) const -> bool;

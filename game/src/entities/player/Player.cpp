@@ -105,6 +105,7 @@ void Player::unserialize(dj::Json const& in) {
 			for (auto& gun_tag : in["hotbar"].as_array()) { hotbar.value().add(gun_tag.as_string()); }
 			auto equipped_gun = in["equipped_gun"].as_string();
 			hotbar.value().set_selection(equipped_gun);
+			equipped_weapon().set_firing_direction({UDLR::left});
 		}
 	}
 
@@ -994,7 +995,7 @@ void Player::update_weapon(world::Map& map) {
 	// update all weapons in loadout to avoid unusual behavior upon weapon switching
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
-		auto dir = controller.is_wallsliding() || pushing() ? controller.direction.flipped() : controller.direction;
+		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
 		weapon->update(*m_services, map, dir);
 		weapon->set_position(m_weapon_socket);
 		weapon->set_firing_direction(dir);
@@ -1010,7 +1011,7 @@ void Player::update_weapon_simple() {
 	if (!arsenal) { return; }
 	if (!hotbar) { return; }
 	for (auto& weapon : arsenal.value().get_loadout()) {
-		auto dir = controller.is_wallsliding() || pushing() ? controller.direction.flipped() : controller.direction;
+		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
 		weapon->tick();
 		weapon->set_position(m_weapon_socket);
 		weapon->set_orientation(dir);

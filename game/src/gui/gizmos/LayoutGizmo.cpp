@@ -15,6 +15,8 @@ LayoutGizmo::LayoutGizmo(automa::ServiceProvider& svc, world::Map& map, player::
 	m_fixtures.center();
 	m_item_sprite.center();
 	m_placement = placement;
+	p_theme.emplace(svc.data.menu_themes["mini_white"]);
+
 	for (auto& piece : player.catalog.inventory.items_view()) {
 		if (piece.item->is_invisible()) { continue; }
 		if (!piece.item->is_extension() && !piece.item->is_special()) { continue; }
@@ -36,6 +38,8 @@ void LayoutGizmo::update(automa::ServiceProvider& svc, player::Player& player, w
 		if (piece.item->is_invisible()) { continue; }
 		if (piece.item->get_type() != item::ItemType::extension && piece.item->get_type() != item::ItemType::special) { continue; }
 	}
+
+	if (m_menu) { m_menu->update(svc, m_slots.get_window_position()); }
 }
 
 void LayoutGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
@@ -79,9 +83,9 @@ void LayoutGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, pl
 		}
 	}
 
-	// debug();
+	if (debug::is_debug()) { debug(); }
 
-	auto const origin = m_board.get_position() - cam;
+	auto const origin = m_board.get_position() - cam + sf::Vector2f{40.f, 280.f};
 	auto constexpr spacing = 40.f;
 	auto constexpr selected_offset = 8.f;
 
@@ -132,87 +136,73 @@ void LayoutGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, pl
 			if (display.matches(piece.item->get_id())) { display.render(win, where + count_offset); }
 		}
 	}
+
+	if (m_menu) { m_menu->render(win); }
 }
 
 bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
-	if (controller.digital(input::DigitalAction::menu_select).triggered) {
-		auto const& slot = m_current_layout->get_slots()[m_slot_index];
-		if (slot.status == arms::SlotStatus::activated) {
-			if (!m_current_item) {
-
-				if (!m_current_item) {
-					if (!has_flag_set(LayoutGizmoFlags::item_select_mode)) {
-						enter_item_select_mode();
-						soundboard.play_sound("pioneer_open");
-						return false;
-					}
-
-					if (!m_selectable_items.empty()) {
-						m_current_item.emplace(m_selectable_items[m_item_selection]);
-						set_flag(LayoutGizmoFlags::item_select_mode, false);
-						m_selectable_items.clear();
-					}
-				}
-			} else {
-				auto const item_data = m_services->data.get_item_json_from_tag(*m_current_item);
-				auto const item_pin = static_cast<arms::PinLocation>(item_data["pin_location"].as<int>());
-
-				if (m_current_layout->place_item(*m_current_item, item_pin, m_slot_index)) {
-					soundboard.play_sound("pioneer_slot");
-					m_current_item.reset();
-				} else {
-					soundboard.play_sound("error");
-					m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["mismatched_item_pin"].as_string());
-				}
-			}
-		}
-		if (slot.status == arms::SlotStatus::deactivated) {
-			if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
-				auto const pin = m_selectable_fixtures[m_fixture_selection];
-
-				if (m_current_layout->place_segment(pin, m_slot_index)) {
-					soundboard.play_sound("menu_select");
-					exit_fixture_select_mode();
-				} else {
-					soundboard.play_sound("error");
-					m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["wrong_extension_pin"].as_string());
-				}
-			} else {
-				m_selectable_fixtures.clear();
-
-				constexpr std::array fixture_items{std::pair{"extension_slot_top_left", arms::PinLocation::top_left}, std::pair{"extension_slot_top_right", arms::PinLocation::top_right},
-												   std::pair{"extension_slot_bottom_left", arms::PinLocation::bottom_left}, std::pair{"extension_slot_bottom_right", arms::PinLocation::bottom_right}};
-
-				auto has_any_fixture = false;
-
-				for (auto const& [tag, pin] : fixture_items) {
-					if (!m_player->has_item(tag)) { continue; }
-
-					has_any_fixture = true;
-
-					if (std::ranges::find(slot.pin_locations, pin) != slot.pin_locations.end()) { m_selectable_fixtures.push_back(pin); }
-				}
-
-				if (!m_selectable_fixtures.empty()) {
-					m_fixture_selection = 0;
-					enter_fixture_select_mode();
-					soundboard.play_sound("map_open");
-				} else {
-					soundboard.play_sound("error");
-
-					auto const notification = has_any_fixture ? "no_fixture_match" : "no_extension_slots";
-					m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"][notification].as_string());
-				}
-			}
-		}
-	}
-	if (controller.digital(input::DigitalAction::menu_back).triggered) {
-		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) { exit_fixture_select_mode(); }
-		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) { exit_item_select_mode(); }
-		soundboard.play_sound("menu_back");
-		controller.flush_triggers();
+	if (controller.digital(input::DigitalAction::menu_close).triggered) {
+		close_menu();
+		exit_fixture_select_mode();
+		exit_item_select_mode();
 		return true;
 	}
+
+	// process menu input
+	if (m_menu) {
+		m_menu->handle_inputs(controller, soundboard);
+		if (m_menu->was_selected()) { handle_menu_selection(soundboard); }
+		exit_menu_if_finished();
+		return false;
+	}
+
+	// back
+	if (controller.digital(input::DigitalAction::menu_back).triggered) {
+		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
+			exit_fixture_select_mode();
+		} else if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
+			exit_item_select_mode();
+		} else {
+			soundboard.play_sound("menu_back");
+			controller.flush_triggers();
+			return true;
+		}
+
+		soundboard.play_sound("menu_back");
+		return false;
+	}
+
+	// select
+	if (controller.digital(input::DigitalAction::menu_select).triggered) {
+		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
+			if (m_selectable_items.empty()) { return false; }
+			m_current_item.emplace(m_selectable_items.at(m_item_selection));
+			auto const item_data = m_services->data.get_item_json_from_tag(*m_current_item);
+			auto const pin = static_cast<arms::PinLocation>(item_data["pin_location"].as<int>());
+			if (m_current_layout->place_item(*m_current_item, pin, m_slot_index)) {
+				soundboard.play_sound("pioneer_slot");
+				m_current_item.reset();
+			} else {
+				soundboard.play_sound("error");
+				m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["mismatched_item_pin"].as_string());
+			}
+
+			exit_item_select_mode();
+			return false;
+		}
+
+		auto const status = m_current_layout->get_slots()[m_slot_index].status;
+
+		switch (status) {
+		case arms::SlotStatus::deactivated: handle_deactivated_slot(soundboard); break;
+		case arms::SlotStatus::activated:
+		case arms::SlotStatus::occupied: open_slot_menu(status); break;
+		default: break;
+		}
+
+		return false;
+	}
+
 	if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::repeat)) {
 		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
 			if (!m_selectable_fixtures.empty()) {
@@ -233,7 +223,7 @@ bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboar
 	if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::repeat)) {
 		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
 			if (!m_selectable_fixtures.empty()) {
-				m_fixture_selection = (m_fixture_selection + m_selectable_fixtures.size() + 1) % m_selectable_fixtures.size();
+				m_fixture_selection = (m_fixture_selection + 1) % m_selectable_fixtures.size();
 				soundboard.play_sound("pioneer_tick");
 			}
 		} else if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
@@ -246,8 +236,11 @@ bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboar
 			soundboard.play_sound("pioneer_pap");
 		}
 	}
+
 	return false;
 }
+
+void LayoutGizmo::toggle() { m_path.set_section("toggle"); }
 
 void LayoutGizmo::set_selected(bool const to) {
 	if (!has_flag_set(LayoutGizmoFlags::selected) && to) { m_path.set_section("select"); }
@@ -272,9 +265,14 @@ void LayoutGizmo::enter_item_select_mode() {
 		m_selectable_items.push_back(piece.item->get_label());
 	}
 
-	if (m_selectable_items.empty()) { return; }
+	if (m_selectable_items.empty()) {
+		m_services->soundboard.play_sound("error");
+		m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["no_matching_extensions"].as_string());
+		return;
+	}
 
 	set_flag(LayoutGizmoFlags::item_select_mode);
+	m_menu.reset();
 }
 
 void LayoutGizmo::enter_fixture_select_mode() {
@@ -298,6 +296,135 @@ void LayoutGizmo::exit_fixture_select_mode() {
 	set_flag(LayoutGizmoFlags::fixture_select_mode, false);
 	m_selectable_fixtures.clear();
 	m_fixture_selection = 0;
+}
+
+void LayoutGizmo::close_menu() { m_menu.reset(); }
+
+void LayoutGizmo::open_slot_menu(arms::SlotStatus status) {
+	if (status == arms::SlotStatus::activated) { m_menu.emplace(make_menu("fixure_menu", {"add_item", "swap", "remove", "cancel"})); }
+	if (status == arms::SlotStatus::occupied) { m_menu.emplace(make_menu("extension_menu", {"swap", "remove", "cancel"})); }
+}
+
+void LayoutGizmo::handle_menu_selection(audio::Soundboard& soundboard) {
+	auto const status = m_current_layout->get_slots()[m_slot_index].status;
+
+	if (status == arms::SlotStatus::activated) {
+		switch (m_menu->get_selection()) {
+		case 0: // add item
+			enter_item_select_mode();
+			soundboard.play_sound("pioneer_sync");
+			break;
+		case 1: // swap
+			enter_fixture_select_mode();
+			soundboard.play_sound("pioneer_open");
+			break;
+		case 2: // remove
+			m_current_layout->remove_fixture(m_slot_index);
+			soundboard.play_sound("item_unequip");
+			break;
+		default: // cancel
+			break;
+		}
+	} else if (status == arms::SlotStatus::occupied) {
+		switch (m_menu->get_selection()) {
+		case 0: // swap
+			enter_item_select_mode();
+			soundboard.play_sound("pioneer_sync");
+			break;
+		case 1: // remove
+			m_current_layout->remove_item(m_slot_index);
+			soundboard.play_sound("item_unequip");
+			break;
+		default: // cancel
+			break;
+		}
+	}
+}
+
+auto LayoutGizmo::handle_activated_slot(audio::Soundboard& soundboard) -> bool {
+	if (!m_current_item) {
+		if (!has_flag_set(LayoutGizmoFlags::item_select_mode)) {
+			enter_item_select_mode();
+			soundboard.play_sound("pioneer_open");
+			return true;
+		}
+
+		if (!m_selectable_items.empty()) {
+			m_current_item.emplace(m_selectable_items[m_item_selection]);
+			set_flag(LayoutGizmoFlags::item_select_mode, false);
+			m_selectable_items.clear();
+		}
+		return false;
+	}
+
+	auto const item_data = m_services->data.get_item_json_from_tag(*m_current_item);
+	auto const item_pin = static_cast<arms::PinLocation>(item_data["pin_location"].as<int>());
+
+	if (m_current_layout->place_item(*m_current_item, item_pin, m_slot_index)) {
+		soundboard.play_sound("pioneer_slot");
+		m_current_item.reset();
+	} else {
+		soundboard.play_sound("error");
+		m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["mismatched_item_pin"].as_string());
+	}
+
+	return false;
+}
+
+void LayoutGizmo::handle_deactivated_slot(audio::Soundboard& soundboard) {
+	if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
+		auto const pin = m_selectable_fixtures[m_fixture_selection];
+		if (m_current_layout->place_segment(pin, m_slot_index)) {
+			soundboard.play_sound("menu_select");
+			exit_fixture_select_mode();
+		} else {
+			soundboard.play_sound("error");
+			m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["wrong_extension_pin"].as_string());
+		}
+		return;
+	}
+
+	m_selectable_fixtures.clear();
+
+	constexpr std::array fixture_items{std::pair{"extension_slot_top_left", arms::PinLocation::top_left}, std::pair{"extension_slot_top_right", arms::PinLocation::top_right},
+									   std::pair{"extension_slot_bottom_left", arms::PinLocation::bottom_left}, std::pair{"extension_slot_bottom_right", arms::PinLocation::bottom_right}};
+
+	auto has_any_fixture = false;
+	auto const& slot = m_current_layout->get_slots()[m_slot_index];
+
+	for (auto const& [tag, pin] : fixture_items) {
+		if (!m_player->has_item(tag)) { continue; }
+
+		has_any_fixture = true;
+
+		if (std::ranges::find(slot.pin_locations, pin) != slot.pin_locations.end()) { m_selectable_fixtures.push_back(pin); }
+	}
+
+	if (!m_selectable_fixtures.empty()) {
+		m_fixture_selection = 0;
+		enter_fixture_select_mode();
+		soundboard.play_sound("map_open");
+	} else {
+		soundboard.play_sound("error");
+
+		auto const notification = has_any_fixture ? "no_fixture_match" : "no_extension_slots";
+		m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"][notification].as_string());
+	}
+}
+
+void LayoutGizmo::exit_menu_if_finished() {
+	if (!m_menu) { return; }
+	if (m_menu->was_closed() || (m_menu->was_selected() && m_menu->was_last_option())) { m_menu.reset(); }
+}
+
+MiniMenu LayoutGizmo::make_menu(std::string_view key, std::initializer_list<std::string_view> options) {
+	auto& gui_text = m_services->data.gui_text;
+	std::vector<std::string> labels;
+	labels.reserve(options.size());
+
+	for (auto const option : options) { labels.push_back(gui_text[key][option].as_string()); }
+
+	return MiniMenu{*m_services, std::move(labels), m_services->window->f_center_screen(), *p_theme};
 }
 
 void LayoutGizmo::debug() {

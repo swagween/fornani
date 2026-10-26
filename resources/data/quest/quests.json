@@ -554,5 +554,17 @@
     "target": 2,
     "objectives": [],
     "displayed": false
+  },
+  {
+    "tag": "gem_roll",
+    "target": 6,
+    "objectives": [],
+    "displayed": false
+  },
+  {
+    "tag": "daily_gem",
+    "target": 2,
+    "objectives": [],
+    "displayed": false
   }
 ]

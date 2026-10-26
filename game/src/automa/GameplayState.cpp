@@ -30,7 +30,7 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	p_dialog.has_value() ? p_context.flags.set(SceneContextFlags::has_dialog) : p_context.flags.reset(SceneContextFlags::has_dialog);
 
 	// cutscenes
-	p_context.cutscene_catalog.update(svc, p_context, *m_map, *player);
+	if (!p_pause_window) { p_context.cutscene_catalog.update(svc, p_context, *m_map, *player); }
 
 	// gamepad disconnected
 	if (svc.input_system.process_gamepad_disconnection()) { pause(svc); }

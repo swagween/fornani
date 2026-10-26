@@ -47,6 +47,8 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	svc.events.set_time_of_day_event.attach_to(p_slot, &Dojo::set_time_of_day, this);
 	svc.events.fade_to_black_event.attach_to(p_slot, &Dojo::fade_to_black, this);
 	svc.events.fade_from_black_event.attach_to(p_slot, &Dojo::fade_from_black, this);
+	svc.events.new_day_event.attach_to(p_slot, &Dojo::handle_new_day, this);
+	svc.events.new_week_event.attach_to(p_slot, &Dojo::handle_new_week, this);
 
 	m_map_markers.insert({1, "main"});
 	m_map_markers.insert({2, "woodshine"});
@@ -63,7 +65,13 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
-	if (svc.ticker.every_second()) { svc.quest_table.set_quest_progression("nighttime", svc.world_clock.is_nighttime() ? 2 : 1); }
+	if (svc.ticker.every_second()) {
+		svc.quest_table.set_quest_progression("nighttime", svc.world_clock.is_nighttime() ? 2 : 1);
+		if (svc.world_clock.happens(WorldClockInterval::day, 0.4f)) { svc.quest_table.set_quest_progression("gem_roll", 1); }
+		if (svc.world_clock.happens(WorldClockInterval::day, 0.25f)) { svc.quest_table.set_quest_progression("gem_roll", 2); }
+		if (svc.world_clock.happens(WorldClockInterval::day, 0.1f)) { svc.quest_table.set_quest_progression("gem_roll", 3); }
+		if (svc.world_clock.happens(WorldClockInterval::day, 0.05f)) { svc.quest_table.set_quest_progression("gem_roll", 4); }
+	}
 
 	if (!p_context.console && !m_cutscenes.is_empty()) {
 		for (auto const& cutscene : m_cutscenes) {
@@ -259,6 +267,12 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		if (player->has_item_equipped("lantern")) {
 			p_world_shader->add_point_light(ppl);
 			p_entity_shader->add_point_light(ppl);
+		}
+		auto sppl = PointLight(svc.data.light["super_lantern"], puv);
+		sppl.position = normalized;
+		if (player->has_item_equipped("super_lantern")) {
+			p_world_shader->add_point_light(sppl);
+			p_entity_shader->add_point_light(sppl);
 		}
 
 		// m_shader->debug();
@@ -556,5 +570,9 @@ void Dojo::set_time_of_day(int const to) {
 void Dojo::fade_to_black() { p_context.transition.start(); }
 
 void Dojo::fade_from_black() { p_context.transition.end(); }
+
+void Dojo::handle_new_day() { p_services->quest_table.set_quest_progression("daily_gem", 0); }
+
+void Dojo::handle_new_week() {}
 
 } // namespace fornani::automa

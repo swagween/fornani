@@ -34,6 +34,8 @@ struct EventRegistry {
 	SetTimeOfDayEvent set_time_of_day_event{};
 	FadeToBlackEvent fade_to_black_event{};
 	FadeFromBlackEvent fade_from_black_event{};
+	NewDayEvent new_day_event{};
+	NewWeekEvent new_week_event{};
 
 	AcquireItemFromConsoleEvent acquire_item_from_console_event{};
 	AcquireItemEvent acquire_item_event{};
