@@ -39,7 +39,7 @@
         "activate_on_contact": true,
         "already_open": false,
         "channel": 0,
-        "destination_id": 117,
+        "destination_id": 1117,
         "dimensions": [
           2,
           1
@@ -386,7 +386,7 @@
       "interior": false,
       "lighting": true,
       "timer": false,
-      "toxic": false
+      "toxic": true
     },
     "room_id": 1116,
     "shader": {

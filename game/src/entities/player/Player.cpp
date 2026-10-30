@@ -30,6 +30,7 @@ Player::Player(automa::ServiceProvider& svc)
 
 	health.set_invincibility(default_invincibility_time_v);
 	hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
+	waterbox.set_dimensions(sf::Vector2f{2.f, 2.f});
 
 	texture_updater.load_pixel_map(svc.assets.get_texture_modifiable("nani_palette_default"));
 	texture_updater.load_base_texture(svc.assets.get_texture_modifiable("nani"));
@@ -77,6 +78,7 @@ void Player::serialize(dj::Json& out) const {
 		this_item["label"] = item.item->get_label();
 		this_item["quantity"] = item.quantity;
 		this_item["revealed"] = item.item->is_revealed();
+		this_item["in_use"] = item.in_use;
 		out["items"].push_back(this_item);
 	}
 	out["item_log"] = dj::Json::empty_array();
@@ -206,9 +208,9 @@ void Player::update(world::Map& map) {
 	// toxicity
 	add_toxicity(-0.001f);
 	if (counters.toxicity.get() >= 1.f) {
+		set_flag(PlayerFlags::poisoned);
 		hurt();
 		counters.toxicity.reset();
-		set_flag(PlayerFlags::poisoned);
 	}
 	if (counters.toxicity.get() < 0.f) { counters.toxicity.reset(); }
 	if (map.is_toxic() && !m_animation_machine.is_state(AnimState::sleep)) {
@@ -334,6 +336,7 @@ void Player::update(world::Map& map) {
 	auto low_profile = is_in_animation(AnimState::crawl) || is_in_animation(AnimState::crouch) || is_in_animation(AnimState::roll) || is_in_animation(AnimState::slide) || is_in_animation(AnimState::turn_slide);
 	low_profile ? hurtbox.set_dimensions(sf::Vector2f{12.f, 12.f}) : hurtbox.set_dimensions(sf::Vector2f{12.f, 26.f});
 	low_profile ? hurtbox.set_position(get_collider().hurtbox.get_position() + sf::Vector2f{0.f, 4.f}) : hurtbox.set_position(get_collider().hurtbox.get_position() - sf::Vector2f{0.f, 10.f});
+	waterbox.set_position(get_collider().get_center() - sf::Vector2f{1.f, 1.f});
 	m_corner_sensor.left.set_position(get_collider().bounding_box.vertices[0] + sf::Vector2f{0.f, -8.f});
 	m_corner_sensor.right.set_position(get_collider().bounding_box.vertices[1] + sf::Vector2f{0.f, -8.f});
 	map.overlaps_corner(m_corner_sensor.left, LR::left) && directions.input.left() ? m_corner_sensor.left.activate() : m_corner_sensor.left.deactivate();
@@ -1326,8 +1329,8 @@ void Player::use_item() {
 	}
 }
 
-EquipmentStatus Player::equip_item(int id) {
-	auto ret = catalog.inventory.equip_item(id);
+EquipmentStatus Player::equip_item(int const id, int const swapped) {
+	auto ret = catalog.inventory.equip_item(id, swapped);
 
 	if (id == 56) {
 		if (ret == EquipmentStatus::equipped || ret == EquipmentStatus::swapped) {
@@ -1536,6 +1539,7 @@ bool Player::can_roll() const {
 	if (abilities_disabled()) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded() && !controller.is(AbilityType::dash)) { return false; }
+	if (get_collider().is_swimming()) { return false; }
 	if (!catalog.inventory.has_item("woodshine_totem")) { return false; }
 	return true;
 }
@@ -1545,6 +1549,7 @@ bool Player::can_slide() const {
 	if (m_animation_machine.is_state(AnimState::between_push) || m_animation_machine.is_state(AnimState::push)) { return false; }
 	if (controller.is_wallsliding() || controller.slid_in_air()) { return false; }
 	if (!grounded()) { return false; }
+	if (get_collider().is_swimming()) { return false; }
 	if (!catalog.inventory.has_item("pioneer_medal")) { return false; }
 	return true;
 }

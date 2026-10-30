@@ -319,7 +319,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void give_item(std::string_view label, int amount, bool from_save = false);
 	void hold_item(int id);
 	void use_item();
-	EquipmentStatus equip_item(int id);
+	EquipmentStatus equip_item(int const id, int const swapped = -1);
 	void add_to_hotbar(std::string_view tag);
 	void remove_from_hotbar(std::string_view tag);
 	void set_outfit(std::array<int, static_cast<int>(ApparelType::END)> to_outfit);
@@ -345,6 +345,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	// components
 	PlayerController controller;
 	shape::Shape hurtbox{};
+	shape::Shape waterbox{};
 	shape::Shape distant_vicinity{};
 	Health health;
 	Wallet wallet{};

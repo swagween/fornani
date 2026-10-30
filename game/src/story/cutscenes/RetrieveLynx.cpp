@@ -96,6 +96,9 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	gus->set_flag(NPCFlags::custom_camera);
 	nimbus->set_flag(NPCFlags::cutscene);
 	gus->set_flag(NPCFlags::cutscene);
+	gus->set_flag(NPCFlags::custom_animation_control);
+	nimbus->set_flag(NPCFlags::custom_animation_control);
+
 	if (context.console.has_value()) { nimbus->disengage(); }
 	if (context.console.has_value()) { gus->disengage(); }
 	auto camera_focus = (nimbus->get_collider().get_center() + gus->get_collider().get_center()) * 0.5f + sf::Vector2f{0.f, 49.f};
@@ -151,7 +154,11 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 		m_flags.reset(RetrieveLynxFlags::pre_intro);
 		m_flags.set(RetrieveLynxFlags::intro_done);
 	}
-	if (m_intro.running()) { return; }
+	if (m_intro.running()) {
+		gus->state_function = gus->state_function();
+		nimbus->state_function = nimbus->state_function();
+		return;
+	}
 
 	if (context.console) { context.console.value()->set_no_exit(true); }
 
@@ -159,7 +166,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 
 	for (auto n : npcs) { total_suites += n->get_number_of_suites(); }
 	total_conversations = std::max(total_conversations, total_suites);
-	if (cooldowns.end.get() == 1) {
+	if (cooldowns.end.is_almost_complete()) {
 		flags.set(CutsceneFlags::complete);
 		return;
 	}
@@ -178,10 +185,11 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 			gus->get_collider().set_flag(shape::ColliderFlags::simple, false);
 			gus->get_collider().physics.velocity.y = -2.f;
 			gus->get_collider().physics.gravity = 0.1f;
+			gus->request(NPCAnimationState::fall);
 			m_flags.set(RetrieveLynxFlags::arrived);
 		}
 	}
-	auto lynx_offset = progress < 9 || progress > 16 ? sf::Vector2f{-56.f, -65.f} : sf::Vector2f{-56.f, 0.f};
+	auto lynx_offset = progress < 9 || progress > 16 ? sf::Vector2f{-6.f, -25.f} : sf::Vector2f{-6.f, 0.f};
 	m_lynx_target = gus->get_collider().get_center() + lynx_offset;
 	gus->set_prop_socket(m_lynx_target);
 	auto channel = m_flags.test(RetrieveLynxFlags::holding_lynx) ? 1 : 0;
@@ -190,6 +198,9 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (cooldowns.beginning.running()) {
 		nimbus->walk();
 		if (cooldowns.beginning.is_almost_complete()) { nimbus->request(NPCAnimationState::idle); }
+
+		gus->state_function = gus->state_function();
+		nimbus->state_function = nimbus->state_function();
 		return;
 	}
 
@@ -202,10 +213,14 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 			nimbus->request(NPCAnimationState::special_1);
 			cooldowns.long_pause.start(400);
 			++progress;
+
+			gus->state_function = gus->state_function();
+			nimbus->state_function = nimbus->state_function();
 			return;
 		}
 		if (gus->get_collider().grounded() && !cooldowns.pause.running()) {
 			m_flags.set(RetrieveLynxFlags::gus_landed);
+			gus->request(NPCAnimationState::land);
 			svc.soundboard.play_sound("heavy_land");
 			svc.camera_controller.shake(10, 0.3f, 200, 20);
 			cooldowns.pause.start();
@@ -222,7 +237,6 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 			gus->flush_and_push(60);
 			gus->force_engage();
 			++progress;
-			return;
 		}
 		break;
 	case 2:
@@ -241,7 +255,6 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 			gus->force_engage();
 			cooldowns.pause.start();
 			++progress;
-			return;
 		}
 		break;
 	case 5:
@@ -250,7 +263,6 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 			nimbus->force_engage();
 			cooldowns.pause.start();
 			++progress;
-			return;
 		}
 		break;
 	case 6: break;
@@ -259,7 +271,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 			if (gus->has_prop()) {
 				gus->get_prop().set_animation("fall");
 				gus->drop_prop();
-				gus->request(NPCAnimationState::idle);
+				gus->request(NPCAnimationState::special_3);
 				m_flags.reset(RetrieveLynxFlags::holding_lynx);
 			}
 			cooldowns.pause.start(450);
@@ -268,6 +280,7 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 		break;
 	case 9:
 		nimbus->walk();
+		if (cooldowns.pause.get() == 360) { gus->request(NPCAnimationState::idle); }
 		if (cooldowns.pause.is_almost_complete()) {
 			nimbus->request(NPCAnimationState::inspect);
 			nimbus->flush_and_push(62);
@@ -374,6 +387,9 @@ void RetrieveLynx::update(automa::ServiceProvider& svc, SceneContext& context, w
 	if (gus->has_prop()) {
 		if (gus->get_prop().get_animation().get_frame() == 4 && gus->get_prop().get_animation().keyframe_started()) { svc.soundboard.play_sound("basic_land"); }
 	}
+
+	gus->state_function = gus->state_function();
+	nimbus->state_function = nimbus->state_function();
 }
 
 void RetrieveLynx::render(sf::RenderWindow& win, sf::Vector2f cam) {}

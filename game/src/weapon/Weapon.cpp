@@ -180,7 +180,7 @@ void Weapon::shoot(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f t
 		auto cdir = get_firing_direction();
 		cdir.rotate(get_firing_direction().left() ? RotationType::clockwise : RotationType::counterclockwise);
 		auto casing_dir = Direction{cdir};
-		map.spawn_emitter(*m_services, "bullet_casing", get_barrel_point() + sf::Vector2f{get_firing_direction().as<float>() * -16.f, 0.f}, casing_dir, {2.f, 2.f});
+		map.spawn_emitter(*m_services, "bullet_casing", get_barrel_point(), casing_dir, {2.f, 2.f});
 	}
 	shoot();
 	auto mult = 1.f;

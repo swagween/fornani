@@ -96,6 +96,7 @@ class ICollider : public Polymorphic, public Flaggable<ColliderFlags> {
 	[[nodiscard]] auto has_trait(ColliderTrait const test) const -> bool { return m_traits.test(test); }
 	[[nodiscard]] auto is(ColliderType const test) const -> bool { return p_type == test; }
 	[[nodiscard]] auto get_vicinity_rect() const -> sf::FloatRect { return p_vicinity.as_rect(); }
+	[[nodiscard]] auto is_swimming() const -> bool { return has_flag_set(ColliderFlags::submerged) && !has_flag_set(ColliderFlags::sink); }
 
 	components::PhysicsComponent physics{};
 	PhysicsProperties p_physics_properties{};

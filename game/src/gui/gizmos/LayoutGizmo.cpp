@@ -6,9 +6,11 @@
 
 namespace fornani::gui {
 
+auto constexpr selected_fixture_offset_v = 4.f;
+
 LayoutGizmo::LayoutGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player& player, sf::Vector2f placement)
 	: Gizmo("Layout", false), m_board{svc, svc.assets.get_texture("layout_board"), {38, 38}, {1, 1}}, m_path{svc.finder, std::filesystem::path{"/data/gui/gizmo_paths.json"}, "layout", 100, util::InterpolationType::quadratic},
-	  m_slots{svc, "slot_fixtures", {28, 28}}, m_fixtures{svc, "extension_fixtures", {30, 30}}, m_item_sprite{svc, "inventory_items", constants::i_resolution_vec_padded}, m_player{&player}, m_services{&svc} {
+	  m_slots{svc, "fixture_slots", {24, 24}}, m_fixtures{svc, "fixture_plate", {36, 36}}, m_item_sprite{svc, "inventory_items", constants::i_resolution_vec_padded}, m_player{&player}, m_services{&svc} {
 	m_path.set_section("open");
 	m_slots.push_and_set_animation("basic", {0, 1, 32, -1});
 	m_slots.center();
@@ -17,12 +19,7 @@ LayoutGizmo::LayoutGizmo(automa::ServiceProvider& svc, world::Map& map, player::
 	m_placement = placement;
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 
-	for (auto& piece : player.catalog.inventory.items_view()) {
-		if (piece.item->is_invisible()) { continue; }
-		if (!piece.item->is_extension() && !piece.item->is_special()) { continue; }
-		m_number_displays.push_back(NumberDisplay(svc, player.catalog.inventory.get_quantity(piece.item->get_label()), piece.item->get_id()));
-		if (!piece.item->is_extension()) { continue; }
-	}
+	refresh();
 }
 
 void LayoutGizmo::update(automa::ServiceProvider& svc, player::Player& player, world::Map& map, sf::Vector2f position) {
@@ -40,82 +37,81 @@ void LayoutGizmo::update(automa::ServiceProvider& svc, player::Player& player, w
 	}
 
 	if (m_menu) { m_menu->update(svc, m_slots.get_window_position()); }
+	auto const dt = m_animation_clock.restart().asSeconds();
+	update_item_flight(dt);
 }
 
 void LayoutGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
 	if (is_foreground() != foreground) { return; }
+	m_cam = cam;
 	auto const base = m_board.get_global_center() - cam;
 	m_board.render(win, cam);
 
 	// render board and gun layout
 	if (m_current_layout != nullptr) {
-		auto const half = 18.f;
+		auto const half = 20.f;
 		auto const offset = half * arms::layout_size_v;
+
 		for (auto [i, slot] : std::views::enumerate(m_current_layout->get_slots())) {
+			auto position = get_slot_position(i, cam);
 			auto const y = i % 2 == 0 ? -half : half;
-			m_slots.set_position(base + sf::Vector2f{static_cast<float>(i) * half * 2.f - offset, y});
-			m_slots.set_channel(std::min(2, static_cast<int>(slot.status)));
+			auto is_selected = false;
+			if (slot.index && has_flag_set(LayoutGizmoFlags::selected)) { is_selected = m_selection.get() == static_cast<int>(*slot.index); }
+			if (is_selected) { position.y -= 4.f; }
+
+			// fixture plate - always render, regardless of layout or slot status
+			m_fixtures.set_position(position);
+			m_fixtures.set_channel(0);
+			if (is_selected) { m_fixtures.set_channel(1); }
+			win.draw(m_fixtures);
+
+			if (slot.status == arms::SlotStatus::unavailable) { continue; }
+
+			// slot pins
+			m_slots.set_position(position);
+
+			// base slot (channel 0)
+			m_slots.set_channel(0);
+			m_slots.set_frame(0);
+			win.draw(m_slots);
+
+			// selected slot highlight (channel 0, frame 1)
 			if (slot.index && has_flag_set(LayoutGizmoFlags::selected)) {
-				if (m_selection.get() == static_cast<int>(*slot.index)) {
-					m_slots.set_channel(slot.status == arms::SlotStatus::activated || slot.status == arms::SlotStatus::occupied ? 3 : 2);
+				if (is_selected) {
+					m_slots.set_frame(1);
+					win.draw(m_slots);
 					m_slot_index = static_cast<std::size_t>(i);
 				}
 			}
-			if (slot.pin_locations.empty()) { win.draw(m_slots); }
+
+			// corner pins (channel 1)
+			m_slots.set_channel(is_selected ? 2 : 1);
 			for (auto const& pin : slot.pin_locations) {
 				m_slots.set_frame(static_cast<int>(pin));
 				win.draw(m_slots);
 			}
-			if (slot.status == arms::SlotStatus::activated || slot.status == arms::SlotStatus::occupied) {
-				if (slot.active_slot) {
-					m_fixtures.set_position(m_slots.get_window_position());
-					m_fixtures.set_channel(static_cast<int>(*slot.active_slot));
-					win.draw(m_fixtures);
-				}
+
+			// occupied slot item
+			auto is_flying = false;
+			if (m_item_flight) {
+				if (m_item_flight->tag == *slot.item) { is_flying = true; }
 			}
-			if (slot.status == arms::SlotStatus::occupied) {
-				m_item_sprite.set_position(m_slots.get_window_position());
+			if (slot.status == arms::SlotStatus::occupied && slot.item && !is_flying) {
+				m_item_sprite.set_position(position);
+
 				auto const id = svc.data.item_id_from_label(*slot.item);
 				auto const lookup = sf::Vector2i{svc.data.item[id]["lookup"][0].as<int>(), svc.data.item[id]["lookup"][1].as<int>()} * constants::i_cell_resolution_padded;
+
 				m_item_sprite.set_texture_rect(sf::IntRect{lookup, constants::i_resolution_vec_padded});
 				win.draw(m_item_sprite);
 			}
 		}
 	}
 
-	if (debug::is_debug()) { debug(); }
+	// debug();
 
 	auto const origin = m_board.get_position() - cam + sf::Vector2f{40.f, 280.f};
 	auto constexpr spacing = 40.f;
-	auto constexpr selected_offset = 8.f;
-
-	// Fixtures: render only the fixtures available for the selected slot.
-	for (std::size_t i = 0; i < m_selectable_fixtures.size(); ++i) {
-		auto const pin = m_selectable_fixtures[i];
-		auto const selected = has_flag_set(LayoutGizmoFlags::fixture_select_mode) && i == m_fixture_selection;
-		auto const where = origin + sf::Vector2f{static_cast<float>(i) * spacing, -130.f - (selected ? selected_offset : 0.f)};
-
-		auto const tag = [&]() -> std::string_view {
-			switch (pin) {
-			case arms::PinLocation::top_left: return "extension_slot_top_left";
-			case arms::PinLocation::top_right: return "extension_slot_top_right";
-			case arms::PinLocation::bottom_left: return "extension_slot_bottom_left";
-			case arms::PinLocation::bottom_right: return "extension_slot_bottom_right";
-			default: return {};
-			}
-		}();
-
-		if (tag.empty()) { continue; }
-
-		auto const& data = m_services->data.get_item_json_from_tag(tag);
-		auto const& lookup = data["lookup"];
-		auto const rect = sf::IntRect{sf::Vector2i{lookup[0].as<int>(), lookup[1].as<int>()} * constants::i_cell_resolution_padded, constants::i_resolution_vec_padded};
-
-		auto sprite = m_item_sprite.get_sprite();
-		sprite.setTextureRect(rect);
-		sprite.setPosition(where);
-		win.draw(sprite);
-	}
 
 	// items
 	// highlight by tag so the display order can differ from the selection order.
@@ -127,23 +123,32 @@ void LayoutGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, pl
 
 		auto const& tag = piece.item->get_label();
 		auto const selected = !selected_tag.empty() && tag == selected_tag;
-		auto const where = origin + sf::Vector2f{static_cast<float>(display_index++) * spacing, -90.f - (selected ? selected_offset : 0.f)};
+		auto const where = origin + sf::Vector2f{static_cast<float>(display_index++) * spacing, -90.f - (selected ? selected_fixture_offset_v : 0.f)};
 
 		piece.item->render(win, m_item_sprite.get_sprite(), where);
 
-		auto const count_offset = sf::Vector2f{0.f, 20.f};
+		auto const count_offset = sf::Vector2f{0.f, 16.f};
 		for (auto& display : m_number_displays) {
 			if (display.matches(piece.item->get_id())) { display.render(win, where + count_offset); }
 		}
 	}
+	if (m_item_flight) {
+		auto const item_data = m_services->data.get_item_json_from_tag(m_item_flight->tag);
+		auto const lookup = sf::Vector2i{item_data["lookup"][0].as<int>(), item_data["lookup"][1].as<int>()} * constants::i_cell_resolution_padded;
+
+		m_item_sprite.set_position(m_item_flight->position);
+		m_item_sprite.set_texture_rect(sf::IntRect{lookup, constants::i_resolution_vec_padded});
+		win.draw(m_item_sprite);
+	}
 
 	if (m_menu) { m_menu->render(win); }
+
+	if (m_effect) { m_effect->render(win, {}); }
 }
 
 bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboard& soundboard) {
 	if (controller.digital(input::DigitalAction::menu_close).triggered) {
 		close_menu();
-		exit_fixture_select_mode();
 		exit_item_select_mode();
 		return true;
 	}
@@ -158,9 +163,7 @@ bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboar
 
 	// back
 	if (controller.digital(input::DigitalAction::menu_back).triggered) {
-		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
-			exit_fixture_select_mode();
-		} else if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
+		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
 			exit_item_select_mode();
 		} else {
 			soundboard.play_sound("menu_back");
@@ -174,28 +177,14 @@ bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboar
 
 	// select
 	if (controller.digital(input::DigitalAction::menu_select).triggered) {
-		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
-			if (m_selectable_items.empty()) { return false; }
-			m_current_item.emplace(m_selectable_items.at(m_item_selection));
-			auto const item_data = m_services->data.get_item_json_from_tag(*m_current_item);
-			auto const pin = static_cast<arms::PinLocation>(item_data["pin_location"].as<int>());
-			if (m_current_layout->place_item(*m_current_item, pin, m_slot_index)) {
-				soundboard.play_sound("pioneer_slot");
-				m_current_item.reset();
-			} else {
-				soundboard.play_sound("error");
-				m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["mismatched_item_pin"].as_string());
-			}
 
-			exit_item_select_mode();
-			return false;
-		}
+		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) { return handle_activated_slot(soundboard); }
 
 		auto const status = m_current_layout->get_slots()[m_slot_index].status;
 
 		switch (status) {
-		case arms::SlotStatus::deactivated: handle_deactivated_slot(soundboard); break;
-		case arms::SlotStatus::activated:
+		case arms::SlotStatus::unavailable: handle_unavailable_slot(soundboard); break;
+		case arms::SlotStatus::available:
 		case arms::SlotStatus::occupied: open_slot_menu(status); break;
 		default: break;
 		}
@@ -204,12 +193,7 @@ bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboar
 	}
 
 	if (controller.menu_move(input::MoveDirection::left, input::DigitalActionQueryType::repeat)) {
-		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
-			if (!m_selectable_fixtures.empty()) {
-				m_fixture_selection = (m_fixture_selection + m_selectable_fixtures.size() - 1) % m_selectable_fixtures.size();
-				soundboard.play_sound("pioneer_tick");
-			}
-		} else if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
+		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
 			if (!m_selectable_items.empty()) {
 				m_item_selection = (m_item_selection + m_selectable_items.size() - 1) % m_selectable_items.size();
 				soundboard.play_sound("pioneer_tick");
@@ -221,12 +205,7 @@ bool LayoutGizmo::handle_inputs(input::InputSystem& controller, audio::Soundboar
 	}
 
 	if (controller.menu_move(input::MoveDirection::right, input::DigitalActionQueryType::repeat)) {
-		if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
-			if (!m_selectable_fixtures.empty()) {
-				m_fixture_selection = (m_fixture_selection + 1) % m_selectable_fixtures.size();
-				soundboard.play_sound("pioneer_tick");
-			}
-		} else if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
+		if (has_flag_set(LayoutGizmoFlags::item_select_mode)) {
 			if (!m_selectable_items.empty()) {
 				m_item_selection = (m_item_selection + 1) % m_selectable_items.size();
 				soundboard.play_sound("pioneer_tick");
@@ -275,66 +254,54 @@ void LayoutGizmo::enter_item_select_mode() {
 	m_menu.reset();
 }
 
-void LayoutGizmo::enter_fixture_select_mode() {
-	m_selectable_fixtures.clear();
-	m_fixture_selection = 0;
-
-	auto const& slot = m_current_layout->get_slots()[m_slot_index];
-	for (auto const pin : slot.pin_locations) { m_selectable_fixtures.push_back(pin); }
-
-	if (!m_selectable_fixtures.empty()) { set_flag(LayoutGizmoFlags::fixture_select_mode); }
-}
-
 void LayoutGizmo::exit_item_select_mode() {
 	set_flag(LayoutGizmoFlags::item_select_mode, false);
 	m_selectable_items.clear();
 	m_item_selection = 0;
 	m_current_item.reset();
-}
-
-void LayoutGizmo::exit_fixture_select_mode() {
-	set_flag(LayoutGizmoFlags::fixture_select_mode, false);
-	m_selectable_fixtures.clear();
-	m_fixture_selection = 0;
+	refresh();
 }
 
 void LayoutGizmo::close_menu() { m_menu.reset(); }
 
 void LayoutGizmo::open_slot_menu(arms::SlotStatus status) {
-	if (status == arms::SlotStatus::activated) { m_menu.emplace(make_menu("fixure_menu", {"add_item", "swap", "remove", "cancel"})); }
+	if (status == arms::SlotStatus::available) { m_menu.emplace(make_menu("fixture_menu", {"add_item", "cancel"})); }
 	if (status == arms::SlotStatus::occupied) { m_menu.emplace(make_menu("extension_menu", {"swap", "remove", "cancel"})); }
 }
 
 void LayoutGizmo::handle_menu_selection(audio::Soundboard& soundboard) {
 	auto const status = m_current_layout->get_slots()[m_slot_index].status;
-
-	if (status == arms::SlotStatus::activated) {
+	auto const item = m_current_layout->get_slots()[m_slot_index].item;
+	if (status == arms::SlotStatus::available) {
 		switch (m_menu->get_selection()) {
 		case 0: // add item
 			enter_item_select_mode();
 			soundboard.play_sound("pioneer_sync");
-			break;
-		case 1: // swap
-			enter_fixture_select_mode();
-			soundboard.play_sound("pioneer_open");
-			break;
-		case 2: // remove
-			m_current_layout->remove_fixture(m_slot_index);
-			soundboard.play_sound("item_unequip");
+			close_menu();
 			break;
 		default: // cancel
 			break;
 		}
-	} else if (status == arms::SlotStatus::occupied) {
+	}
+	if (status == arms::SlotStatus::occupied) {
 		switch (m_menu->get_selection()) {
-		case 0: // swap
+		case 0: { // swap
 			enter_item_select_mode();
 			soundboard.play_sound("pioneer_sync");
+			close_menu();
 			break;
-		case 1: // remove
+		}
+		case 1: { // remove
 			m_current_layout->remove_item(m_slot_index);
+			auto const from = get_slot_position(m_slot_index, m_cam);
+			if (auto const to = get_item_position(*item, m_cam)) { start_item_flight(*item, from, *to, true); }
+			m_current_layout->remove_item(m_slot_index);
+			m_player->catalog.inventory.recuperate_item(*item);
+			refresh();
 			soundboard.play_sound("item_unequip");
+			close_menu();
 			break;
+		}
 		default: // cancel
 			break;
 		}
@@ -349,72 +316,81 @@ auto LayoutGizmo::handle_activated_slot(audio::Soundboard& soundboard) -> bool {
 			return true;
 		}
 
-		if (!m_selectable_items.empty()) {
-			m_current_item.emplace(m_selectable_items[m_item_selection]);
-			set_flag(LayoutGizmoFlags::item_select_mode, false);
-			m_selectable_items.clear();
-		}
-		return false;
+		if (m_selectable_items.empty()) { return false; }
+
+		m_current_item.emplace(m_selectable_items[m_item_selection]);
 	}
 
 	auto const item_data = m_services->data.get_item_json_from_tag(*m_current_item);
 	auto const item_pin = static_cast<arms::PinLocation>(item_data["pin_location"].as<int>());
 
-	if (m_current_layout->place_item(*m_current_item, item_pin, m_slot_index)) {
-		soundboard.play_sound("pioneer_slot");
-		m_current_item.reset();
-	} else {
+	if (!m_current_layout->can_place_item(item_pin, m_slot_index)) {
 		soundboard.play_sound("error");
 		m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["mismatched_item_pin"].as_string());
+		exit_item_select_mode();
+		return false;
 	}
 
+	if (m_player->catalog.inventory.get_available(*m_current_item) > 0) {
+		if (m_current_layout->place_item(*m_current_item, item_pin, m_slot_index)) {
+			auto const from = get_item_position(*m_current_item, m_cam);
+			auto const to = get_slot_position(m_slot_index, m_cam);
+
+			if (from) { start_item_flight(*m_current_item, *from, to, false); }
+
+			soundboard.play_sound("pioneer_slot");
+			m_player->catalog.inventory.use_item(*m_current_item);
+			exit_item_select_mode();
+			return false;
+		}
+	} else {
+		soundboard.play_sound("error");
+		m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["no_available_extensions"].as_string());
+		exit_item_select_mode();
+		return false;
+	}
+
+	soundboard.play_sound("error");
+	m_current_item.reset();
 	return false;
 }
 
-void LayoutGizmo::handle_deactivated_slot(audio::Soundboard& soundboard) {
-	if (has_flag_set(LayoutGizmoFlags::fixture_select_mode)) {
-		auto const pin = m_selectable_fixtures[m_fixture_selection];
-		if (m_current_layout->place_segment(pin, m_slot_index)) {
-			soundboard.play_sound("menu_select");
-			exit_fixture_select_mode();
-		} else {
-			soundboard.play_sound("error");
-			m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"]["wrong_extension_pin"].as_string());
-		}
-		return;
-	}
-
-	m_selectable_fixtures.clear();
-
-	constexpr std::array fixture_items{std::pair{"extension_slot_top_left", arms::PinLocation::top_left}, std::pair{"extension_slot_top_right", arms::PinLocation::top_right},
-									   std::pair{"extension_slot_bottom_left", arms::PinLocation::bottom_left}, std::pair{"extension_slot_bottom_right", arms::PinLocation::bottom_right}};
-
-	auto has_any_fixture = false;
-	auto const& slot = m_current_layout->get_slots()[m_slot_index];
-
-	for (auto const& [tag, pin] : fixture_items) {
-		if (!m_player->has_item(tag)) { continue; }
-
-		has_any_fixture = true;
-
-		if (std::ranges::find(slot.pin_locations, pin) != slot.pin_locations.end()) { m_selectable_fixtures.push_back(pin); }
-	}
-
-	if (!m_selectable_fixtures.empty()) {
-		m_fixture_selection = 0;
-		enter_fixture_select_mode();
-		soundboard.play_sound("map_open");
-	} else {
-		soundboard.play_sound("error");
-
-		auto const notification = has_any_fixture ? "no_fixture_match" : "no_extension_slots";
-		m_services->notifications.push_notification(*m_services, m_services->data.gui_text["notifications"][notification].as_string());
-	}
-}
+void LayoutGizmo::handle_unavailable_slot(audio::Soundboard& soundboard) { soundboard.play_sound("error"); }
 
 void LayoutGizmo::exit_menu_if_finished() {
 	if (!m_menu) { return; }
 	if (m_menu->was_closed() || (m_menu->was_selected() && m_menu->was_last_option())) { m_menu.reset(); }
+}
+
+void LayoutGizmo::refresh() {
+	m_number_displays.clear();
+	for (auto& piece : m_player->catalog.inventory.items_view()) {
+		if (piece.item->is_invisible()) { continue; }
+		if (!piece.item->is_extension() && !piece.item->is_special()) { continue; }
+		m_number_displays.push_back(NumberDisplay(*m_services, m_player->catalog.inventory.get_available(piece.item->get_label()), piece.item->get_id()));
+		if (!piece.item->is_extension()) { continue; }
+	}
+}
+
+void LayoutGizmo::start_item_flight(std::string_view tag, sf::Vector2f from, sf::Vector2f to, bool removing) {
+	m_item_flight.emplace(ItemFlight{.from = from, .to = to, .position = from, .tag = std::string{tag}, .elapsed = 0.f, .duration = 0.12f, .removing = removing});
+}
+
+void LayoutGizmo::update_item_flight(float dt) {
+	if (!m_item_flight) { return; }
+
+	auto& flight = *m_item_flight;
+	flight.elapsed += dt;
+
+	if (flight.elapsed >= flight.duration) {
+		m_effect.emplace(entity::Effect{*m_services, "diamond_flash", m_item_flight->position});
+		m_item_flight.reset();
+		return;
+	}
+	auto const t = flight.elapsed / flight.duration;
+	auto const eased = t < 0.5f ? 4.f * t * t * t : 1.f - std::pow(-2.f * t + 2.f, 3.f) / 2.f;
+
+	flight.position = flight.from + (flight.to - flight.from) * eased;
 }
 
 MiniMenu LayoutGizmo::make_menu(std::string_view key, std::initializer_list<std::string_view> options) {
@@ -427,82 +403,119 @@ MiniMenu LayoutGizmo::make_menu(std::string_view key, std::initializer_list<std:
 	return MiniMenu{*m_services, std::move(labels), m_services->window->f_center_screen(), *p_theme};
 }
 
+auto LayoutGizmo::get_item_position(std::string_view tag, sf::Vector2f cam) const -> std::optional<sf::Vector2f> {
+	auto const origin = m_board.get_position() - cam + sf::Vector2f{40.f, 280.f};
+	auto constexpr spacing = 40.f;
+	auto display_index = std::size_t{};
+
+	auto const selected_tag = has_flag_set(LayoutGizmoFlags::item_select_mode) && m_item_selection < m_selectable_items.size() ? std::string_view{m_selectable_items[m_item_selection]} : std::string_view{};
+
+	for (auto const& piece : m_player->catalog.inventory.items_view()) {
+		if (piece.item->is_invisible() || !piece.item->is_extension()) { continue; }
+
+		auto const& item_tag = piece.item->get_label();
+		auto const selected = !selected_tag.empty() && item_tag == selected_tag;
+		auto const where = origin + sf::Vector2f{static_cast<float>(display_index++) * spacing, -90.f - (selected ? selected_fixture_offset_v : 0.f)};
+
+		if (item_tag == tag) { return where; }
+	}
+
+	return std::nullopt;
+}
+
+auto LayoutGizmo::get_slot_position(std::size_t const index, sf::Vector2f cam) const -> sf::Vector2f {
+	auto const base = m_board.get_global_center() - cam;
+	auto constexpr half = 20.f;
+	auto constexpr offset = half * arms::layout_size_v;
+
+	auto const y = index % 2 == 0 ? -half : half;
+	auto position = base + sf::Vector2f{static_cast<float>(index) * half * 2.f - offset, y};
+
+	auto const& slot = m_current_layout->get_slots()[index];
+	if (slot.index && has_flag_set(LayoutGizmoFlags::selected)) {
+		if (m_selection.get() == static_cast<int>(*slot.index)) { position.y -= selected_fixture_offset_v; }
+	}
+
+	return position;
+}
+
 void LayoutGizmo::debug() {
 	static auto sz = ImVec2{440.f, 420.f};
 	ImGui::SetNextWindowSize(sz, ImGuiCond_FirstUseEver);
 
 	if (ImGui::Begin("Layout Debug")) {
 		ImGui::SeparatorText("Mode");
-		ImGui::Text("Fixture Select Mode: %s", has_flag_set(LayoutGizmoFlags::fixture_select_mode) ? "ON" : "");
 		ImGui::Text("Item Select Mode: %s", has_flag_set(LayoutGizmoFlags::item_select_mode) ? "ON" : "");
 		if (ImGui::CollapsingHeader("Layout Gizmo", ImGuiTreeNodeFlags_DefaultOpen)) {
-			ImGui::Text("Fixture select mode: %s", has_flag_set(LayoutGizmoFlags::fixture_select_mode) ? "true" : "false");
-			ImGui::Text("Fixture selection: %zu", m_fixture_selection);
-			ImGui::Text("Selectable fixtures: %zu", m_selectable_fixtures.size());
-
-			if (!m_selectable_fixtures.empty()) {
-				if (m_fixture_selection < m_selectable_fixtures.size()) {
-					ImGui::Text("Selected pin: %d", static_cast<int>(m_selectable_fixtures[m_fixture_selection]));
-				} else {
-					ImGui::TextColored(ImVec4(1.f, 0.f, 0.f, 1.f), "Selection index OUT OF RANGE!");
-				}
-			}
-
+			ImGui::Text("Layout: %s", m_current_layout ? "assigned" : "none");
+			ImGui::Text("Selected: %s", has_flag_set(LayoutGizmoFlags::selected) ? "yes" : "no");
+			ImGui::Text("Item select mode: %s", has_flag_set(LayoutGizmoFlags::item_select_mode) ? "yes" : "no");
 			ImGui::Separator();
-			ImGui::Text("Fixture list:");
 
-			for (std::size_t i = 0; i < m_selectable_fixtures.size(); ++i) {
-				auto const pin = m_selectable_fixtures[i];
-				auto const selected = i == m_fixture_selection;
+			if (m_current_layout != nullptr) {
+				auto const& slots = m_current_layout->get_slots();
+				ImGui::Text("Slot count: %d", m_current_layout->get_number_of_slots());
+				ImGui::Text("Selection: %d", m_selection.get());
+				ImGui::Text("Slot index: %zu", m_slot_index);
+				ImGui::Text("Selectable items: %zu", m_selectable_items.size());
 
-				if (selected) {
-					ImGui::TextColored(ImVec4(0.f, 1.f, 0.f, 1.f), "> [%zu] pin = %d (selected)", i, static_cast<int>(pin));
-				} else {
-					ImGui::Text("  [%zu] pin = %d", i, static_cast<int>(pin));
-				}
-			}
-		}
-		ImGui::SeparatorText("Selection");
-		ImGui::Text("Slot Index: %zu", m_slot_index);
-		ImGui::Text("Selection: %i", m_selection.get());
-		ImGui::Text("Order: %i", m_selection.get_order());
-		ImGui::Text("Slot Count: %i", m_current_layout->get_number_of_slots());
-		ImGui::Text("Current Pin: %u", static_cast<unsigned>(m_current_pin));
+				ImGui::Separator();
 
-		ImGui::SeparatorText("Item Selection");
-		ImGui::Text("Current Item: %s", m_current_item ? m_current_item->c_str() : "<none>");
-		ImGui::Text("Available Items: %zu", m_selectable_items.size());
-		if (!m_selectable_items.empty()) {
-			ImGui::Text("Item Selection: %zu", m_item_selection);
-			ImGui::Text("Highlighted: %s", m_selectable_items[m_item_selection].c_str());
-			for (std::size_t i = 0; i < m_selectable_items.size(); ++i) { ImGui::BulletText("%s%s", i == m_item_selection ? "> " : "  ", m_selectable_items[i].c_str()); }
-		}
+				for (auto [i, slot] : std::views::enumerate(slots)) {
+					ImGui::PushID(static_cast<int>(i));
 
-		ImGui::SeparatorText("Slots");
-		for (std::size_t i = 0; i < m_current_layout->get_slots().size(); ++i) {
-			auto const& slot = m_current_layout->get_slots()[i];
-			auto const status = [&]() -> char const* {
-				switch (slot.status) {
-				case arms::SlotStatus::unavailable: return "unavailable";
-				case arms::SlotStatus::deactivated: return "deactivated";
-				case arms::SlotStatus::activated: return "activated";
-				case arms::SlotStatus::occupied: return "occupied";
-				}
-				return "unknown";
-			}();
+					auto const selected = slot.index && m_selection.get() == static_cast<int>(*slot.index);
+					if (selected) {
+						ImGui::TextColored(ImVec4{0.3f, 1.f, 0.3f, 1.f}, "Slot %zu", i);
+					} else {
+						ImGui::Text("Slot %zu", i);
+					}
 
-			if (ImGui::TreeNode((void*)(std::uintptr_t)i, "Slot %zu [%s]", i, status)) {
-				ImGui::Text("Logical Index: %s", slot.index ? std::to_string(*slot.index).c_str() : "<none>");
-				ImGui::Text("Active Pin: %s", slot.active_slot ? std::to_string(static_cast<int>(*slot.active_slot)).c_str() : "<none>");
-				ImGui::Text("Item: %s", slot.item ? slot.item->c_str() : "<none>");
-
-				ImGui::Text("Allowed Pins:");
-				for (auto const pin : slot.pin_locations) {
 					ImGui::SameLine();
-					ImGui::Text("%u", static_cast<unsigned>(pin));
+					switch (slot.status) {
+					case arms::SlotStatus::unavailable: ImGui::TextDisabled("Unavailable"); break;
+					case arms::SlotStatus::available: ImGui::Text("Available"); break;
+					case arms::SlotStatus::occupied: ImGui::Text("Occupied"); break;
+					}
+
+					ImGui::Text("  Index: ");
+					if (slot.index) {
+						ImGui::SameLine();
+						ImGui::Text("%zu", *slot.index);
+					} else {
+						ImGui::SameLine();
+						ImGui::TextDisabled("none");
+					}
+
+					ImGui::Text("  Pins: ");
+					ImGui::SameLine();
+					if (slot.pin_locations.empty()) {
+						ImGui::TextDisabled("none");
+					} else {
+						for (auto [pin_i, pin] : std::views::enumerate(slot.pin_locations)) {
+							if (pin_i > 0) { ImGui::SameLine(); }
+							ImGui::Text("%s%d", pin_i > 0 ? ", " : "", static_cast<int>(pin));
+						}
+					}
+
+					ImGui::Text("  Item: ");
+					ImGui::SameLine();
+					if (slot.item) {
+						ImGui::TextUnformatted(slot.item->c_str());
+					} else {
+						ImGui::TextDisabled("empty");
+					}
+
+					ImGui::Separator();
+					ImGui::PopID();
 				}
 
-				ImGui::TreePop();
+				if (m_menu) {
+					ImGui::Text("Menu: open");
+					ImGui::Text("Menu selection: %d", m_menu->get_selection());
+				} else {
+					ImGui::TextDisabled("Menu: closed");
+				}
 			}
 		}
 

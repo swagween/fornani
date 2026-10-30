@@ -26,7 +26,7 @@
           13,
           6
         ],
-        "tag": "vermite",
+        "tag": "extension_ammo",
         "type": 2
       }
     ],
@@ -173,7 +173,6 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },

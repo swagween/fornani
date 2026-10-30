@@ -395,8 +395,8 @@ void Dojo::remove_item_by_id(ServiceProvider& svc, int id) { remove_item(svc, sv
 
 void Dojo::acquire_postcard(ServiceProvider& svc, int id) { player->catalog.album.add_postcard(svc, id); }
 
-void Dojo::equip_item(ServiceProvider& svc, int id) {
-	auto equipped = player->equip_item(id);
+void Dojo::equip_item(ServiceProvider& svc, int const id, int const swapped) {
+	auto equipped = player->equip_item(id, swapped);
 	equipped == player::EquipmentStatus::equipped	  ? svc.soundboard.flags.item.set(audio::Item::equip)
 	: equipped == player::EquipmentStatus::unequipped ? svc.soundboard.flags.menu.set(audio::Menu::backward_switch)
 													  : svc.soundboard.flags.menu.set(audio::Menu::error);

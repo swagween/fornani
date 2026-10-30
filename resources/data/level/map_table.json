@@ -301,6 +301,12 @@
       "room_id": 810
     },
     {
+      "folder": "frozen",
+      "label": "sterncastle.json",
+      "region": "junkyard",
+      "room_id": 1900
+    },
+    {
       "folder": "greatwing",
       "label": "ballroom.json",
       "region": "greatwing",
@@ -1322,6 +1328,12 @@
     },
     {
       "folder": "toxic",
+      "label": "well.json",
+      "region": "toxic",
+      "room_id": 1015
+    },
+    {
+      "folder": "toxic",
       "label": "workaround.json",
       "region": "toxic",
       "room_id": 467
@@ -1475,6 +1487,12 @@
       "label": "upper_coelum.json",
       "region": "worm",
       "room_id": 1105
+    },
+    {
+      "folder": "worm",
+      "label": "ventral_septum.json",
+      "region": "worm",
+      "room_id": 1112
     },
     {
       "folder": "worm",

@@ -66,6 +66,7 @@ void Water::expose() {
 void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	m_replenish_cooldown.update();
 	if (m_sparkler) { m_sparkler->update(svc); }
+	// if (m_type == WaterType::toxic) { svc.soundboard.repeat_sound("bubbling_liquid", 1U, m_bounding_box.get_center()); }
 	if (m_bounding_box.contains_point(player.get_collider().get_bottom())) {
 		if (!has_flag_set(WaterFlags::touched)) {
 			m_replenish_cooldown.start();
@@ -83,11 +84,12 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 		set_flag(WaterFlags::touched, false);
 		m_replenish_cooldown.cancel();
 	}
-	if (m_bounding_box.contains_point(player.hurtbox.get_center())) {
+	if (m_bounding_box.overlaps(player.waterbox)) {
 		if (m_type == WaterType::toxic) {
-			if (!player.has_item_equipped("purifier")) { player.add_toxicity(0.007f); }
+			auto const rate = player.has_item_equipped("purifier") ? 0.0015f : 0.007f;
+			player.add_toxicity(rate);
 		}
-		if (!has_flag_set(WaterFlags::splashed)) {
+		if (!has_flag_set(WaterFlags::splashed) && !player.get_collider().has_flag_set(shape::ColliderFlags::in_water)) {
 			svc.soundboard.flags.world.set(audio::World::splash);
 			map.spawn_effect(svc, "splash", sf::Vector2f{player.get_collider().get_center().x, m_bounding_box.get_position().y}, {}, get_i_type());
 		}
@@ -102,17 +104,11 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 		player.exit_water();
 	}
 
-	m_level = sf::Vector2f{0.f, map.get_water_level()};
 	m_wave_timer.update(m_type == WaterType::toxic ? 0.001f : 0.005f);
-	auto phase = m_wave_timer.get();
-	auto wrapped = std::fmod(phase, 2.f * std::numbers::pi);
-	auto const shift_multiplier = 2.f;
-	m_wave_shift.x = m_type == WaterType::toxic ? 0.f : std::cos(wrapped);
-	m_wave_shift.y = std::sin(2.f * wrapped) + 2.f;
-	if (phase >= 2.f * std::numbers::pi) { m_wave_timer.reset(); }
+	m_level = sf::Vector2f{0.f, map.get_water_level()};
 	auto pos = get_world_position() == sf::Vector2f{0.f, 0.f} ? -constants::f_cell_vec : get_world_position();
 	m_bounding_box.set_position(pos);
-	m_bounding_box.set_position(sf::Vector2f{m_bounding_box.get_position().x + m_wave_shift.x * 3.f, m_bounding_box.get_position().y + m_wave_shift.y * shift_multiplier} - m_level);
+	m_bounding_box.set_position(m_bounding_box.get_position() - m_level);
 }
 
 void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
@@ -125,14 +121,24 @@ void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	}
 	if (m_editor) { return; }
 	auto sprite = sf::Sprite{m_texture.getTexture()};
+
+	auto const offset = sf::Vector2f{0.f, -6.f};
+	auto phase = m_wave_timer.get();
+	auto wrapped = std::fmod(phase, 2.f * std::numbers::pi);
+	auto const shift_multiplier = 2.f;
+	m_wave_shift.x = m_type == WaterType::toxic ? 0.f : std::cos(wrapped);
+	m_wave_shift.y = std::sin(2.f * wrapped) + 2.f;
+	if (phase >= 2.f * std::numbers::pi) { m_wave_timer.reset(); }
+	auto const final_position = sf::Vector2f{m_bounding_box.get_position().x + m_wave_shift.x * 3.f, m_bounding_box.get_position().y + m_wave_shift.y * shift_multiplier};
+
 	sprite.setTextureRect(sf::IntRect{{}, sf::Vector2i{get_world_dimensions() * 0.5f}});
 	sprite.setScale(constants::f_scale_vec);
-	sprite.setPosition(m_bounding_box.get_position() - cam + sf::Vector2f{0.f, 2.f} + m_wave_shift);
+	sprite.setPosition(final_position - cam + sf::Vector2f{0.f, 2.f} + m_wave_shift + offset);
 	win.draw(sprite);
 	auto surface_sprite = sf::Sprite{m_surface_texture.getTexture()};
 	surface_sprite.setTextureRect(sf::IntRect{{}, sf::Vector2i{static_cast<int>(get_world_dimensions().x * 0.5f), 32}});
 	surface_sprite.setScale(constants::f_scale_vec);
-	surface_sprite.setPosition(m_bounding_box.get_position() + m_wave_shift - cam);
+	surface_sprite.setPosition(final_position + m_wave_shift - cam + offset);
 	win.draw(surface_sprite);
 	if (m_sparkler) { m_sparkler->render(win, cam); }
 }

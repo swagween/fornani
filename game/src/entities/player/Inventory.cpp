@@ -31,15 +31,13 @@ void Inventory::remove_item(std::string_view tag, int amount) {
 	}
 }
 
-EquipmentStatus Inventory::equip_item(int item_id) {
+EquipmentStatus Inventory::equip_item(int const item_id, int const swapped_id) {
+	auto const num_equippable_items = 1 + get_quantity("equip_slot");
 
-	auto num_equippable_items = 1 + get_quantity("equip_slot");
-
-	// get the item in question
-	auto this_item = find_item(item_id);
+	auto* this_item = find_item(item_id);
 	if (this_item == nullptr) { return EquipmentStatus::failure; }
 
-	// check if it's already equipped; if so, unequip it
+	// unequip if already equipped
 	for (auto& item : m_equipped_items) {
 		if (item == item_id) {
 			item = -1;
@@ -47,19 +45,30 @@ EquipmentStatus Inventory::equip_item(int item_id) {
 			return EquipmentStatus::unequipped;
 		}
 	}
+
+	// equip into an available slot
 	auto num_currently_equipped = 0;
-	// otherwise, equip it
 	for (auto& item : m_equipped_items) {
-		if (item == -1 && num_currently_equipped < num_equippable_items) {
+		if (item != -1) {
+			++num_currently_equipped;
+			continue;
+		}
+
+		if (num_currently_equipped < num_equippable_items) {
 			item = item_id;
 			this_item->set_equipped(true);
 			return EquipmentStatus::equipped;
-		} else {
-			++num_currently_equipped;
 		}
-		if (num_currently_equipped == num_equippable_items) {
-			auto to_replace = find_item(item);
-			if (to_replace == nullptr) { return EquipmentStatus::failure; }
+	}
+
+	// inventory is full. only swap if a valid replacement was specified
+	if (swapped_id == -1) { return EquipmentStatus::failure; }
+
+	auto* to_replace = find_item(swapped_id);
+	if (to_replace == nullptr) { return EquipmentStatus::failure; }
+
+	for (auto& item : m_equipped_items) {
+		if (item == swapped_id) {
 			item = item_id;
 			to_replace->set_equipped(false);
 			this_item->set_equipped(true);
@@ -67,7 +76,7 @@ EquipmentStatus Inventory::equip_item(int item_id) {
 		}
 	}
 
-	return EquipmentStatus::failure; // no more space
+	return EquipmentStatus::failure;
 }
 
 void Inventory::reveal_item(int item_id) {
@@ -75,6 +84,13 @@ void Inventory::reveal_item(int item_id) {
 		if (item.item->get_id() == item_id) { item.item->reveal(); }
 	}
 }
+
+void Inventory::use_item(std::string_view tag, int amount) {
+	auto const& item = find_item_stack(tag);
+	item->in_use = std::clamp(item->in_use + amount, 0, item->quantity);
+}
+
+void Inventory::recuperate_item(std::string_view tag, int amount) { use_item(tag, -amount); }
 
 void Inventory::build_item(dj::Json const& product) {
 	auto const& recipe = product["build"]["recipe"];
@@ -113,7 +129,27 @@ item::Item* Inventory::find_item(std::string_view label) const {
 	return nullptr;
 }
 
-ItemStack* Inventory::find_item_stack(int id) {
+auto Inventory::find_item_stack(int id) -> ItemStack* {
+	for (auto& stack : m_items) {
+		if (!stack.item) { continue; }
+		auto* ptr = stack.item.get();
+		assert(ptr != nullptr);
+		if (ptr->get_id() == id) { return &stack; }
+	}
+	return nullptr;
+}
+
+auto Inventory::find_item_stack(int id) const -> ItemStack const* {
+	for (auto const& stack : m_items) {
+		if (!stack.item) { continue; }
+		auto const* ptr = stack.item.get();
+		assert(ptr != nullptr);
+		if (ptr->get_id() == id) { return &stack; }
+	}
+	return nullptr;
+}
+
+auto Inventory::find_item_stack(std::string_view label) const -> ItemStack const* {
 	for (auto& stack : m_items) {
 		if (!stack.item) { continue; }
 		auto* ptr = stack.item.get();
@@ -121,7 +157,7 @@ ItemStack* Inventory::find_item_stack(int id) {
 		try {
 			[[maybe_unused]] auto l = ptr->get_label(); // access to detect crash
 		} catch (...) { assert(false && "Corrupted Item detected"); }
-		if (ptr->get_id() == id) { return &stack; }
+		if (ptr->get_label() == label) { return &stack; }
 	}
 	return nullptr;
 }
@@ -139,10 +175,17 @@ ItemStack* Inventory::find_item_stack(std::string_view label) {
 	return nullptr;
 }
 
-int Inventory::get_quantity(std::string_view label) {
+int Inventory::get_quantity(std::string_view label) const {
 	if (auto* stack = find_item_stack(label)) { return stack->quantity; }
 	return 0;
 }
+
+int Inventory::get_in_use(std::string_view label) {
+	if (auto* stack = find_item_stack(label)) { return stack->in_use; }
+	return 0;
+}
+
+int Inventory::get_available(std::string_view label) { return get_quantity(label) - get_in_use(label); }
 
 auto Inventory::can_build(dj::Json const& product) const -> bool {
 	auto const& recipe = product["build"]["recipe"];
@@ -158,6 +201,11 @@ auto Inventory::get_number_of_items(item::ItemType type) const -> std::size_t {
 
 auto Inventory::get_number_of_equipped_items() const -> int {
 	return std::ranges::count_if(m_equipped_items, [](auto const& i) { return i != -1; });
+}
+
+auto Inventory::has_max_equipped_items() const -> bool {
+	auto num_equippable_items = 1 + get_quantity("equip_slot");
+	return get_number_of_equipped_items() >= num_equippable_items;
 }
 
 } // namespace fornani::player

@@ -95,7 +95,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	mtv_snapshot.actual.y = std::max(std::abs(mtv_snapshot.actual.y), std::abs(mtvs.actual.y));
 
 	// let's first settle all actual block collisions
-	auto is_on_ramp = slidebox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && physics.apparent_velocity().y > -0.001f && bottom() >= cell.top() - 1.f && tile.is_ground_ramp();
+	auto const water_flag = physics.apparent_velocity().y > -0.001f || is_swimming();
+	auto is_on_ramp = slidebox.SAT(cell) && !flags.state.test(State::on_flat_surface) && !flags.movement.test(Movement::jumping) && water_flag && bottom() >= cell.top() - 1.f && tile.is_ground_ramp();
 	auto const skip_the_corner = tile.ramp_adjacent();
 	if (!is_ramp) {
 		if (collision_depths) {
@@ -183,11 +184,11 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			auto positive_input = to_the_right ? cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x) : cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x);
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(physics.position.x - cell.get_position().x)); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, positive_input); }
-			if (!has_flag_set(ColliderFlags::submerged) || has_flag_set(ColliderFlags::sink)) {
+			if (!is_swimming()) {
 				physics.position.y = cell.get_position().y + cell.get_dimensions().y - maximum_ramp_height - dimensions.y;
 				set_flag(ColliderFlags::on_ramp);
 			} else if (jumpbox.SAT(cell)) {
-				physics.velocity.y += -2.1f;
+				physics.velocity.y += -0.01f;
 			}
 			if ((physics.apparent_velocity().x >= 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x <= 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
 		} else if (flags.state.test(State::on_flat_surface)) {

@@ -31,7 +31,7 @@ class Dojo final : public GameplayState {
 	void remove_gun_by_id(ServiceProvider& svc, int id);
 	void remove_item_by_id(ServiceProvider& svc, int id);
 	void acquire_postcard(ServiceProvider& svc, int id);
-	void equip_item(ServiceProvider& svc, int id);
+	void equip_item(ServiceProvider& svc, int const id, int const swapped = -1);
 	void use_item(ServiceProvider& svc, int id);
 	void open_vendor(ServiceProvider& svc, int id);
 	void open_builder(ServiceProvider& svc, int id);

@@ -19,6 +19,7 @@ struct Attack {
 	bool hurt_player(player::Player& player, float damage = 1.f, sf::Vector2f knockback = {}, bool force = false);
 	bool stun_player(player::Player& player, float multiplier = 1.f, float damage = 0.f);
 	bool kill_player(player::Player& player, player::PlayerDeathType death, bool center_only = false);
+	bool poison_player(player::Player& player, float multiplier = 0.1f);
 	void cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, float freezeframe = 0.05f);
 	void set_constant_radius(float to);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);

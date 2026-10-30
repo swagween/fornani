@@ -341,7 +341,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	if (!context.console.has_value()) { m_state.reset(NPCState::talking); }
 
-	if (!has_flag_set(NPCFlags::no_animation)) { state_function = std::move(state_function()); }
+	if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::custom_animation_control)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }
 	Mobile::post_update(svc, map, player);
 }
@@ -378,7 +378,9 @@ void NPC::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 		break;
 	}
 	if (m_vehicle && has_flag_set(NPCFlags::in_vehicle) && has_flag_set(NPCFlags::background)) { m_vehicle->render(win, cam, DrawOrder::front); }
-	if (m_mobile_prop) { m_mobile_prop->render(win, cam); }
+	if (m_mobile_prop) {
+		if (Mobile::p_animatable.get_channel() == 0) m_mobile_prop->render(win, cam);
+	}
 }
 
 void NPC::render_props(sf::RenderWindow& win, sf::Vector2f cam, DrawOrder order) {
@@ -628,6 +630,7 @@ fsm::StateFunction NPC::update_special_1() {
 	if (change_state(NPCAnimationState::turn, "turn")) { return std::move(fsm::StateFunction{NPC_BIND(update_turn)}); }
 	if (change_state(NPCAnimationState::idle, "idle")) { return std::move(fsm::StateFunction{NPC_BIND(update_idle)}); }
 	if (change_state(NPCAnimationState::walk, "walk")) { return std::move(fsm::StateFunction{NPC_BIND(update_walk)}); }
+	if (change_state(NPCAnimationState::fall, "fall")) { return std::move(fsm::StateFunction{NPC_BIND(update_fall)}); }
 	return std::move(fsm::StateFunction{NPC_BIND(update_special_1)});
 }
 

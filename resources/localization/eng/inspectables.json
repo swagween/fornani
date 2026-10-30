@@ -1093,6 +1093,21 @@
       }
     ]
   },
+  "cistern_artifact0": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "The flowers are still alive, yet it appears no one has stepped here in centuries..."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "console385022343643148": {
     "series": [
       {

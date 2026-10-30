@@ -110,7 +110,6 @@
     "unique": true,
     "sellable": true,
     "equippable": true,
-    "ingredient": true,
     "value": 1100
   },
   {
@@ -1345,50 +1344,6 @@
     }
   },
   {
-    "tag": "extension_slot_top_left",
-    "category": 10,
-    "lookup": [12, 10],
-    "actual_title": "Extension Slot",
-    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
-    "sellable": true,
-    "value": 2500,
-    "pin_location": 0,
-    "stack_limit": 8
-  },
-  {
-    "tag": "extension_slot_top_right",
-    "category": 10,
-    "lookup": [13, 10],
-    "actual_title": "Extension Slot",
-    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
-    "sellable": true,
-    "value": 2500,
-    "pin_location": 1,
-    "stack_limit": 8
-  },
-  {
-    "tag": "extension_slot_bottom_left",
-    "category": 10,
-    "lookup": [14, 10],
-    "actual_title": "Extension Slot",
-    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
-    "sellable": true,
-    "value": 2500,
-    "pin_location": 2,
-    "stack_limit": 8
-  },
-  {
-    "tag": "extension_slot_bottom_right",
-    "category": 10,
-    "lookup": [15, 10],
-    "actual_title": "Extension Slot",
-    "naive_description": "Connect this to a weapon layout in your rotary gizmo to support gun extensions.",
-    "sellable": true,
-    "value": 2500,
-    "pin_location": 3,
-    "stack_limit": 8
-  },
-  {
     "tag": "extension_crit",
     "category": 9,
     "lookup": [8, 8],
@@ -1482,5 +1437,16 @@
     "sellable": true,
     "rarity": 2,
     "value": 1800
+  },
+  {
+    "tag": "purifier",
+    "category": 3,
+    "lookup": [15, 4],
+    "origin": [6, 0],
+    "naive_title": "Purifier",
+    "naive_description": "When equipped, this device will greatly reduce toxicity from poison water.",
+    "unique": true,
+    "equippable": true,
+    "rarity": 2
   }
 ]

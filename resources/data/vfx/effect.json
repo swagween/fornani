@@ -340,6 +340,23 @@
     "x_reflection": true,
     "y_reflection": true
   },
+  "diamond_flash": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [32, 32]
+  },
+  "small_gas_bubble": {
+    "frame_count": 6,
+    "framerate": 32,
+    "dimensions": [64, 64],
+    "x_reflection": true
+  },
+  "gas_bubble": {
+    "frame_count": 7,
+    "framerate": 48,
+    "dimensions": [64, 64],
+    "x_reflection": true
+  },
   "grass_burst": {
     "frame_count": 5,
     "framerate": 24,

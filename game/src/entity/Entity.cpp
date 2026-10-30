@@ -38,16 +38,19 @@ void Entity::unserialize(dj::Json const& in) {
 void Entity::expose() {
 	static int w = IWorldPositionable::m_dimensions.x;
 	static int h = IWorldPositionable::m_dimensions.y;
+	static int x = IWorldPositionable::get_grid_position().x;
+	static int y = IWorldPositionable::get_grid_position().y;
 	ImGui::Text("Category: %s", m_label.c_str());
 	ImGui::Separator();
 	ImGui::InputInt("Entity ID", &m_id);
-	ImGui::Text("Position: (%i", get_grid_position().x);
-	ImGui::SameLine();
-	ImGui::Text(", %i)", get_grid_position().y);
+	ImGui::Text("Position: (%i, %i)", get_grid_position().x, get_grid_position().y);
+	ImGui::InputInt("X", &x);
+	ImGui::InputInt("Y", &y);
 	ImGui::Separator();
 	ImGui::InputInt("Width", &w);
 	ImGui::InputInt("Height", &h);
 	set_grid_dimensions(sf::Vector2u{static_cast<std::uint32_t>(w), static_cast<std::uint32_t>(h)});
+	set_grid_position(sf::Vector2u{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)});
 	ImGui::Text("Quest Contingencies");
 	static char tag_buffer[256] = "";
 	static int requirement{};

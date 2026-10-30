@@ -130,14 +130,14 @@ class Collider : public ICollider {
 	bool pushes(Collider& other) const;
 
 	sf::Vector2f snap_to_grid(float size = 1.f, float scale = 32.f, float factor = 2.f);
-	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded); }
-	[[nodiscard]] auto slide_grounded() const -> bool { return flags.external_state.test(ExternalState::slide_grounded); }
+	[[nodiscard]] auto grounded() const -> bool { return flags.external_state.test(ExternalState::grounded) && !is_swimming(); }
+	[[nodiscard]] auto slide_grounded() const -> bool { return flags.external_state.test(ExternalState::slide_grounded) && !is_swimming(); }
 	[[nodiscard]] auto is_complex() const -> bool { return flags.general.test(General::complex); }
 	[[nodiscard]] auto jumping() const -> bool { return flags.movement.test(Movement::jumping); }
-	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded); }
+	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded) && !is_swimming(); }
 	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
 	[[nodiscard]] auto jumped_into() -> bool { return flags.external_state.consume(ExternalState::jumped_into); }
-	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded); }
+	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded) && !is_swimming(); }
 	[[nodiscard]] auto dash_was_canceled() const -> bool { return flags.dash.test(Dash::dash_cancel_collision); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return physics.position + dimensions * 0.5f; }

@@ -13,18 +13,12 @@ Layout::Layout(dj::Json const& in) {
 
 		for (auto const& pin : slot["pins"].as_array()) { next.pin_locations.push_back(static_cast<PinLocation>(pin.as<int>())); }
 
-		if (!next.pin_locations.empty()) { next.status = SlotStatus::deactivated; }
-
-		if (auto const& active_pin = slot["active_pin"]) {
-			next.active_slot.emplace(static_cast<PinLocation>(active_pin.as<int>()));
-			next.status = SlotStatus::activated;
-		}
-
+		next.status = SlotStatus::unavailable;
+		if (!next.pin_locations.empty()) { next.status = SlotStatus::available; }
 		if (auto const& item = slot["item"]) {
 			next.item.emplace(item.as_string());
 			next.status = SlotStatus::occupied;
 		}
-
 		if (next.status != SlotStatus::unavailable) { next.index.emplace(index++); }
 
 		m_slots[i] = std::move(next);
@@ -36,25 +30,17 @@ void Layout::serialize(dj::Json& out) const {
 	for (auto const& slot : m_slots) {
 		dj::Json next = dj::Json::empty_object();
 		for (auto const& pin : slot.pin_locations) { next["pins"].push_back(static_cast<int>(pin)); }
-		if (slot.active_slot) { next["active_pin"] = static_cast<int>(*slot.active_slot); }
 		if (slot.item) { next["item"] = *slot.item; }
 		out["slots"].push_back(next);
 	}
 }
 
-bool Layout::place_segment(PinLocation pin, std::size_t where) {
-	if (!can_place_segment(pin, where)) { return false; }
-
-	m_slots[where].active_slot.emplace(pin);
-	m_slots[where].status = SlotStatus::activated;
-	return true;
-}
-
-bool Layout::place_item(std::string_view tag, PinLocation pin, std::size_t where) {
+auto Layout::place_item(std::string_view tag, PinLocation pin, std::size_t const where) -> bool {
 	if (!can_place_item(pin, where)) { return false; }
 
-	m_slots[where].item.emplace(tag);
-	m_slots[where].status = SlotStatus::occupied;
+	auto& slot = m_slots[where];
+	slot.item = tag;
+	slot.status = SlotStatus::occupied;
 	return true;
 }
 
@@ -62,28 +48,16 @@ void Layout::remove_item(std::size_t const index) {
 	if (index >= m_slots.size()) { return; }
 
 	m_slots[index].item.reset();
-	m_slots[index].status = SlotStatus::activated;
+	m_slots[index].status = SlotStatus::available;
 }
 
-void Layout::remove_fixture(std::size_t const index) {
-	if (index >= m_slots.size()) { return; }
-
-	m_slots[index].active_slot.reset();
-	m_slots[index].status = SlotStatus::deactivated;
-}
-
-auto Layout::can_place_segment(PinLocation pin, std::size_t where) const -> bool {
+auto Layout::can_place_item(PinLocation pin, std::size_t const where) const -> bool {
 	if (where >= m_slots.size()) { return false; }
 
 	auto const& slot = m_slots[where];
-	return slot.status == SlotStatus::deactivated && std::ranges::find(slot.pin_locations, pin) != slot.pin_locations.end();
-}
+	if (slot.status == SlotStatus::unavailable) { return false; }
 
-auto Layout::can_place_item(PinLocation pin, std::size_t where) const -> bool {
-	if (where >= m_slots.size()) { return false; }
-
-	auto const& slot = m_slots[where];
-	return slot.status == SlotStatus::activated && slot.active_slot == pin;
+	return pin == PinLocation::any || std::ranges::find(slot.pin_locations, pin) != slot.pin_locations.end();
 }
 
 auto Layout::has_item(std::string_view tag) const -> bool {
@@ -91,7 +65,7 @@ auto Layout::has_item(std::string_view tag) const -> bool {
 }
 
 auto Layout::is_empty() const -> bool {
-	return std::ranges::none_of(m_slots, [](auto const& slot) { return slot.item.has_value() || slot.active_slot.has_value(); });
+	return std::ranges::none_of(m_slots, [](auto const& slot) { return slot.item.has_value() || !slot.pin_locations.empty(); });
 }
 
 auto Layout::get_number_of_slots() const -> int {

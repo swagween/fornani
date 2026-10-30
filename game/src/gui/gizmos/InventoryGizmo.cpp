@@ -20,7 +20,7 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, pl
 			  InventoryZone{item::get_item_table_dimensions(item::ItemType::collectible), {38.f, 62.f}, {124.f, 280.f}}, InventoryZone{item::get_item_table_dimensions(item::ItemType::useable), {36.f, 62.f}, {20.f, 450.f}},
 			  InventoryZone{item::get_item_table_dimensions(item::ItemType::gizmo), {60.f, 36.f}, {404.f, 430.f}}},
 	  m_selector(std::make_unique<InventorySelector>(m_zones.at(InventoryZoneType::unique).table_dimensions, m_zones.at(InventoryZoneType::unique).cell_size)), m_orb_display(svc), m_services(&svc), m_equipped_items_position{506.f, 104.f},
-	  m_menu_offset{96.f, -16.f}, m_player{&player}, m_horizontal_toggle{64} {
+	  m_menu_offset{96.f, -16.f}, m_player{&player}, m_horizontal_toggle{64}, m_equip_selector{svc, "corner_selector", {32, 32}} {
 	m_zones.set_location(InventoryZoneType::unique);
 	p_theme.emplace(svc.data.menu_themes["mini_white"]);
 	m_dashboard_port = DashboardPort::inventory;
@@ -30,6 +30,8 @@ InventoryGizmo::InventoryGizmo(automa::ServiceProvider& svc, world::Map& map, pl
 	m_sprite.setScale(constants::f_scale_vec);
 	m_item_sprite.setScale(constants::f_scale_vec);
 	m_selector->set_lookup({{448, 0}, {18, 18}});
+	m_equip_selector.center();
+	m_equip_selector.push_and_set_animation("basic", {0, 6, 32, -1});
 	m_description = std::make_unique<DescriptionGizmo>(svc, map, m_placement, sf::IntRect{}, sf::FloatRect{{600.f, 182.f}, {180.f, 120.f}}, sf::Vector2f{});
 	m_description->set_text_only(true);
 	auto num_keys = 0;
@@ -101,6 +103,11 @@ void InventoryGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] playe
 	if (get_zone_type() == InventoryZoneType::ability) { selector_offset = sf::Vector2f{4.f, 4.f}; }
 	m_selector->set_position(m_physics.position + m_path.get_position() + m_placement + current_zone.render_offset - selector_offset);
 	m_selector->update();
+	if (m_swap_selector) {
+		m_swap_selector->set_position(m_physics.position + m_path.get_position() + m_placement + sf::Vector2f{492.f, 90.f});
+		m_swap_selector->update();
+		m_equip_selector.tick();
+	}
 
 	m_orb_display.update(player.wallet.get_balance(), svc.ticker.dt.count());
 
@@ -212,14 +219,59 @@ void InventoryGizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win,
 			win.draw(m_sprite);
 		}
 
-		if (is_selected()) { m_selector->render(win, m_sprite, cam, {}, shader, palette); }
+		if (is_selected()) {
+			m_selector->render(win, m_sprite, cam, {}, shader, palette);
+			if (m_swap_selector) { m_swap_selector->render(win, m_equip_selector.get_sprite(), cam, {}, shader, palette); }
+		}
 		if (m_item_menu) { m_item_menu->render(win, cam); }
+		if (m_effect) { m_effect->render(win, {}); }
 	}
 }
 
 bool InventoryGizmo::handle_inputs(input::InputSystem& controller, [[maybe_unused]] audio::Soundboard& soundboard) {
 	if (is_selected()) {
-		if (m_item_menu) {
+		if (item_swap_mode()) {
+			auto const& eiv = m_player->catalog.inventory.equipped_items_view();
+			auto const num_equipped = m_player->catalog.inventory.get_number_of_equipped_items();
+			if (!m_swap_selector) {
+				if (num_equipped < 1) {
+					NANI_LOG_ERROR(m_logger, "Tried to swap items when none were equipped!");
+					m_flags.reset(InventoryGizmoFlags::item_swap_mode);
+					return false;
+				}
+				m_swap_selector.emplace(sf::Vector2i{1, num_equipped}, sf::Vector2f{44.f, 44.f});
+				m_swap_selector->set_lookup({{0, 0}, {32, 32}});
+				m_swapped_item.emplace(eiv[0]);
+			}
+			if (controller.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat)) {
+				m_swap_selector->move({0, -1});
+				auto const index = m_swap_selector->get_current_selection();
+				if (index < eiv.size()) { m_swapped_item = eiv[index]; }
+				soundboard.play_sound("pioneer_pap");
+			}
+			if (controller.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat)) {
+				m_swap_selector->move({0, 1});
+				auto const index = m_swap_selector->get_current_selection();
+				if (index < eiv.size()) { m_swapped_item = eiv[index]; }
+				soundboard.play_sound("pioneer_pap");
+			}
+			if (controller.digital(input::DigitalAction::menu_select).triggered) {
+				if (m_swapped_item) {
+					m_services->events.equip_item_by_id_event.dispatch(*m_services, *m_current_item, *m_swapped_item);
+					m_effect.emplace(entity::Effect{*m_services, "pioneer_select", m_equip_selector.get_window_position() + m_equip_selector.get_f_dimensions()});
+				}
+				m_swap_selector.reset();
+				m_flags.reset(InventoryGizmoFlags::item_swap_mode);
+				controller.flush_triggers();
+				soundboard.play_sound("menu_select");
+			}
+			if (controller.digital(input::DigitalAction::menu_back).triggered) {
+				m_swap_selector.reset();
+				m_flags.reset(InventoryGizmoFlags::item_swap_mode);
+				controller.flush_triggers();
+				soundboard.play_sound("menu_back");
+			}
+		} else if (m_item_menu) {
 			m_item_menu->handle_inputs(controller, soundboard);
 			if (m_item_menu->was_selected()) { handle_menu_selection(*m_player, m_item_menu->get_selection()); }
 			if (m_item_menu) { // need to wrap again because it might have been closed
@@ -306,20 +358,27 @@ void InventoryGizmo::handle_menu_selection(player::Player& player, int selection
 		m_item_menu.reset();
 		return;
 	}
+	auto const& gui = m_services->data.gui_text["item_menu"];
 	if (m_current_item) {
+		auto const& tag = m_services->data.item_label_from_id(*m_current_item);
 		if (auto* item = m_player->catalog.inventory.find_item(*m_current_item)) {
-			if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["read"].as_string()) {
+			if (m_item_menu->get_option() == gui["read"].as_string()) {
 				if (item->is_readable()) {
 					m_services->events.read_item_by_id_event.dispatch(*m_current_item);
 					m_item_menu.reset();
 				}
-			} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["equip"].as_string() || m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["unequip"].as_string()) {
+			} else if (m_item_menu->get_option() == gui["equip"].as_string() || m_item_menu->get_option() == gui["unequip"].as_string()) {
 				if (item->is_equippable()) {
 					NANI_LOG_DEBUG(m_logger, "Equipping Item {}", *m_current_item);
-					m_services->events.equip_item_by_id_event.dispatch(*m_services, *m_current_item);
-					m_item_menu.reset();
+					if (player.catalog.inventory.has_max_equipped_items() && !player.catalog.inventory.has_item_equipped(tag)) {
+						m_flags.set(InventoryGizmoFlags::item_swap_mode);
+						m_item_menu.reset();
+					} else {
+						m_services->events.equip_item_by_id_event.dispatch(*m_services, *m_current_item, *m_swapped_item);
+						m_item_menu.reset();
+					}
 				}
-			} else if (m_item_menu->get_option() == m_services->data.gui_text["item_menu"]["use"].as_string()) {
+			} else if (m_item_menu->get_option() == gui["use"].as_string()) {
 				if (item->is_useable()) {
 					NANI_LOG_DEBUG(m_logger, "Using Item {}", *m_current_item);
 					m_services->events.use_item_by_id_event.dispatch(*m_services, *m_current_item);

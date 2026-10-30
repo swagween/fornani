@@ -45,6 +45,7 @@ class Animatable : public Drawable {
 	[[nodiscard]] auto get_f_dimensions() const -> sf::Vector2f { return sf::Vector2f{m_dimensions}; }
 	[[nodiscard]] auto get_animation_tag() const -> std::string_view { return m_current; }
 	[[nodiscard]] auto get_frame() const -> int { return animation.get_frame(); }
+	[[nodiscard]] auto get_channel() const -> int { return m_channel; }
 	[[nodiscard]] auto has_animation(std::string_view key) const -> bool { return p_animations.contains(key); }
 	[[nodiscard]] auto frame_action(int frame) -> bool;
 	anim::Parameters const& get_params(std::string const& key) { return p_animations.at(key); }

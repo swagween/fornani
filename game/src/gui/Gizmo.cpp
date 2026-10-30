@@ -8,7 +8,13 @@
 
 namespace fornani::gui {
 
-void Gizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) { m_light_shift.update(); }
+void Gizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {
+	m_light_shift.update();
+	if (m_effect) {
+		m_effect->update();
+		if (m_effect->done()) { m_effect.reset(); }
+	}
+}
 
 void Gizmo::render(automa::ServiceProvider& svc, sf::RenderWindow& win, [[maybe_unused]] player::Player& player, LightShader& shader, Palette& palette, sf::Vector2f cam, bool foreground) {
 	if (is_hovered() || is_selected()) {

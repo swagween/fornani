@@ -9,48 +9,6 @@
         "id": 83162,
         "modifier": 0,
         "position": [
-          4,
-          3
-        ],
-        "tag": "extension_slot_top_right",
-        "type": 2
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 83162,
-        "modifier": 0,
-        "position": [
-          5,
-          3
-        ],
-        "tag": "extension_slot_bottom_right",
-        "type": 2
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 83162,
-        "modifier": 0,
-        "position": [
-          6,
-          3
-        ],
-        "tag": "extension_slot_bottom_left",
-        "type": 2
-      },
-      {
-        "dimensions": [
-          1,
-          1
-        ],
-        "id": 83162,
-        "modifier": 0,
-        "position": [
           8,
           3
         ],
@@ -97,6 +55,62 @@
           3
         ],
         "tag": "super_lantern",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 18941,
+        "modifier": 0,
+        "position": [
+          3,
+          12
+        ],
+        "tag": "purifier",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 18941,
+        "modifier": 0,
+        "position": [
+          5,
+          12
+        ],
+        "tag": "gas_mask",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 70858,
+        "modifier": 0,
+        "position": [
+          9,
+          12
+        ],
+        "tag": "oxygen_tank",
+        "type": 2
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 70858,
+        "modifier": 0,
+        "position": [
+          8,
+          12
+        ],
+        "tag": "flippers",
         "type": 2
       }
     ],

@@ -248,6 +248,8 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 			auto sid = StableID{};
 			sid = sid.from(room_id, static_cast<int>(pos.x), static_cast<int>(pos.y));
 			if (svc.data.enemy_is_fallen(room_id, sid)) { continue; }
+			auto contingency_list = QuestContingencySet{entry["contingencies"]};
+			if (entry["contingencies"] && !svc.quest_table.are_contingencies_met(contingency_list)) { continue; }
 			enemy_catalog.push_enemy(svc, *this, context, entry["id"].as<int>(), {variant, start, enemy::Multispawn{spawn_range}, false});
 			enemy_catalog.enemies.back()->set_position_from_scaled(sf::Vector2f{pos * constants::f_cell_size});
 			enemy_catalog.enemies.back()->get_collider().physics.zero();

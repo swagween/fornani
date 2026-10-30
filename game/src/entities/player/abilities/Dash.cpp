@@ -8,7 +8,7 @@
 namespace fornani::player {
 
 Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& collider, Direction direction, bool omni, bool second)
-	: Ability(svc, map, collider, direction), m_horizontal_multiplier{16.5f}, m_vertical_multiplier{2.f}, m_rate{2}, m_omni{omni} {
+	: Ability(svc, map, collider, direction), m_horizontal_multiplier{16.5f}, m_vertical_multiplier{2.4f}, m_rate{2}, m_omni{omni} {
 	m_type = AbilityType::dash;
 	m_state = second ? AnimState::dash : AnimState::dash;
 	if (omni) { m_state = direction.up() ? AnimState::dash_up : direction.down() ? AnimState::dash_down : m_state; }

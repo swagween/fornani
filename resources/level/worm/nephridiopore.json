@@ -63,6 +63,38 @@
           0
         ],
         "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 49,
+        "position": [
+          42,
+          14
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
+      },
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 49,
+        "position": [
+          65,
+          14
+        ],
+        "start_direction": [
+          0,
+          0
+        ],
+        "variant": 0
       }
     ],
     "lights": [

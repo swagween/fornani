@@ -14,7 +14,17 @@ class Layout;
 
 namespace fornani::gui {
 
-enum class LayoutGizmoFlags : std::uint8_t { selected, item_select_mode, fixture_select_mode };
+enum class LayoutGizmoFlags : std::uint8_t { selected, item_select_mode };
+
+struct ItemFlight {
+	sf::Vector2f from{};
+	sf::Vector2f to{};
+	sf::Vector2f position{};
+	std::string tag{};
+	float elapsed{};
+	float duration{0.22f};
+	bool removing{};
+};
 
 class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
   public:
@@ -35,9 +45,7 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	}
 
 	void enter_item_select_mode();
-	void enter_fixture_select_mode();
 	void exit_item_select_mode();
-	void exit_fixture_select_mode();
 
 	void close_menu();
 
@@ -45,9 +53,15 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	void open_slot_menu(arms::SlotStatus status);
 	void handle_menu_selection(audio::Soundboard& soundboard);
 	auto handle_activated_slot(audio::Soundboard& soundboard) -> bool;
-	void handle_deactivated_slot(audio::Soundboard& soundboard);
+	void handle_unavailable_slot(audio::Soundboard& soundboard);
 	void exit_menu_if_finished();
+	void refresh();
+	void start_item_flight(std::string_view tag, sf::Vector2f from, sf::Vector2f to, bool removing);
+	void update_item_flight(float dt);
+
 	[[nodiscard]] auto make_menu(std::string_view key, std::initializer_list<std::string_view> options) -> MiniMenu;
+	[[nodiscard]] auto get_item_position(std::string_view tag, sf::Vector2f cam) const -> std::optional<sf::Vector2f>;
+	[[nodiscard]] auto get_slot_position(std::size_t index, sf::Vector2f cam) const -> sf::Vector2f;
 
 	void debug();
 
@@ -60,6 +74,10 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	std::vector<NumberDisplay> m_number_displays{};
 	std::optional<MiniMenu> m_menu{};
 
+	std::optional<ItemFlight> m_item_flight{};
+	sf::Vector2f m_cam{};
+	sf::Clock m_animation_clock{};
+
 	util::Circuit m_selection{arms::layout_size_v};
 	std::size_t m_slot_index{};
 
@@ -68,8 +86,6 @@ class LayoutGizmo : public Gizmo, public Flaggable<LayoutGizmoFlags> {
 	std::optional<std::string> m_current_item{};
 	std::vector<std::string> m_selectable_items{};
 	std::size_t m_item_selection{};
-	std::vector<arms::PinLocation> m_selectable_fixtures{};
-	std::size_t m_fixture_selection{};
 
 	player::Player* m_player;
 	automa::ServiceProvider* m_services;

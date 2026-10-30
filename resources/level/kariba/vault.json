@@ -502,6 +502,13 @@
     ],
     "enemies": [
       {
+        "contingencies": [
+          {
+            "requirement": 0,
+            "strict": true,
+            "tag": "defeat_miaag"
+          }
+        ],
         "dimensions": [
           1,
           1

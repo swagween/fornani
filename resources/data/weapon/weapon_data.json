@@ -239,7 +239,7 @@
       "attributes": {
         "automatic": false,
         "gun": true,
-        "ammo": 6,
+        "ammo": 4,
         "reload": 180,
         "cooldown_time": 8,
         "recoil": 0.0
@@ -962,7 +962,7 @@
   },
   "toxigat": {
     "metadata": {
-      "id": 19,
+      "id": 20,
       "label": "Toxigat",
       "description": "A tactical toxic spray gun."
     },
@@ -1043,7 +1043,7 @@
       "dimensions": [15, 8],
       "offsets": {
         "global": [0.5, 5.5],
-        "barrel": [28.0, 1.5],
+        "barrel": [28.0, -1.5],
         "stock": [0, 0]
       },
       "spray": {
@@ -1064,14 +1064,14 @@
         "recoil": 0.5
       },
       "layout": {
-        "slots": [{}, { "pins": [3] }, { "pins": [3] }, { "pins": [1] }, {}]
+        "slots": [{}, { "pins": [3] }, { "pins": [1] }, { "pins": [2] }, {}]
       }
     },
     "class_package": {
       "projectile": {
         "type": 0,
         "dimensions": [16.0, 16.0],
-        "radius": 10.0,
+        "radius": 7.0,
         "audio": { "hit": 2 },
         "attributes": {
           "base_damage": 13,
@@ -1091,7 +1091,7 @@
           "spin": 0.0,
           "spin_dampen": 0.997
         },
-        "sine": { "amplitude": 12.0, "frequency": 6.0 },
+        "sine": { "amplitude": 8.0, "frequency": 6.0 },
         "visual": {
           "effect_type": 1,
           "travel_emitters": [{ "tag": "ectoblaster_travel", "frequency": 20 }],

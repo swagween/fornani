@@ -23,10 +23,8 @@
     "configure": "configure",
     "cancel": "cancel"
   },
-  "fixure_menu": {
+  "fixture_menu": {
     "add_item": "add item",
-    "swap": "swap",
-    "remove": "remove",
     "cancel": "cancel"
   },
   "extension_menu": {
@@ -81,10 +79,8 @@
     "quest_completed": "Quest completed: ",
     "add_postcard": "Added postcard to album.",
     "already_here": "You are already here.",
-    "no_fixture_match": "You don't have any fixtures that fit the selected slot's pins",
-    "no_extension_slots": "You do not have any available extension slots.",
-    "no_matching_extensions": "You do not have any extensions that match this fixture.",
-    "mismatched_item_pin": "The item's pin location does not match that of the fixture."
+    "no_matching_extensions": "You do not have any available extensions that match this fixture.",
+    "no_available_extensions": "All extensions of this type are currently in use elsewhere."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - ",

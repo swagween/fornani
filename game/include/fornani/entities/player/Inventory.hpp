@@ -18,6 +18,7 @@ enum class EquipmentStatus : std::uint8_t { equipped, unequipped, swapped, failu
 struct ItemStack {
 	std::unique_ptr<item::Item> item{};
 	int quantity{};
+	int in_use{};
 
 	bool operator==(ItemStack const& other) const {
 		if (!item || !other.item) { return item == other.item; } // both nullptr = equal
@@ -31,19 +32,24 @@ class Inventory {
 	void add_item(data::DataManager& data, std::string_view label);
 	void remove_item(std::string_view tag, int amount);
 	void reveal_item(int item_id);
+	void use_item(std::string_view tag, int amount = 1);
+	void recuperate_item(std::string_view tag, int amount = 1);
 	void add_equip_slot(int amount = 1) { m_open_equip_slots = std::clamp(m_open_equip_slots + amount, 0, num_equippable_items_v); }
 	void build_item(dj::Json const& product);
 
-	[[nodiscard]] EquipmentStatus equip_item(int item_id);
+	[[nodiscard]] EquipmentStatus equip_item(int const item_id, int const swapped_id = -1);
 	[[nodiscard]] bool has_item(int id) const;
 	[[nodiscard]] bool has_item_equipped(std::string_view id) const;
 	[[nodiscard]] bool has_item(std::string_view label) const;
 	[[nodiscard]] bool was_item_logged(std::string_view label) const;
-	[[nodiscard]] int get_quantity(std::string_view label);
+	[[nodiscard]] int get_quantity(std::string_view label) const;
+	[[nodiscard]] int get_in_use(std::string_view label);
+	[[nodiscard]] int get_available(std::string_view label);
 	[[nodiscard]] auto get_latest_item() const -> std::optional<std::string_view> { return m_latest_item; };
 	[[nodiscard]] auto can_build(dj::Json const& product) const -> bool;
 	[[nodiscard]] auto get_number_of_items(item::ItemType type) const -> std::size_t;
 	[[nodiscard]] auto get_number_of_equipped_items() const -> int;
+	[[nodiscard]] auto has_max_equipped_items() const -> bool;
 
 	Register<ItemStack> const& items_view() const { return m_items; }
 	Register<std::string> const& item_log_view() const { return m_item_log; }
@@ -52,6 +58,8 @@ class Inventory {
 	item::Item* find_item(std::string_view label) const;
 	ItemStack* find_item_stack(int id);
 	ItemStack* find_item_stack(std::string_view label);
+	[[nodiscard]] auto find_item_stack(int id) const -> ItemStack const*;
+	[[nodiscard]] auto find_item_stack(std::string_view label) const -> ItemStack const*;
 
   private:
 	Register<ItemStack> m_items{};

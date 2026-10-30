@@ -22,7 +22,7 @@
 
 namespace fornani {
 
-enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle };
+enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle, custom_animation_control };
 enum class NPCState : std::uint8_t { overlapping_player, force_interact, talking, cutscene, piggybacking, hidden, random_walk, invisible, player_walked_away };
 enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
 

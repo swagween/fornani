@@ -14,7 +14,8 @@ void NumberDisplay::render(sf::RenderWindow& win, sf::Vector2f position) {
 	for (auto [i, ch] : std::views::enumerate(digits)) {
 		if (ch < '0' || ch > '9') { continue; }
 		int digit = ch - '0';
-		set_texture_rect(sf::IntRect{{digit * 5, 0}, {5, 7}});
+		auto const frame = ch == '0' ? 7 : 0;
+		set_texture_rect(sf::IntRect{{digit * 5, frame}, {5, 7}});
 		set_position(position + sf::Vector2f{static_cast<float>(i) * 10.f, 0.f});
 		win.draw(*this);
 	}

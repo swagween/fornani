@@ -6,6 +6,7 @@
 #include <fornani/components/SteeringBehavior.hpp>
 #include <fornani/graphics/MenuTheme.hpp>
 #include <fornani/io/Logger.hpp>
+#include <fornani/particle/Effect.hpp>
 #include <fornani/utils/Polymorphic.hpp>
 #include <fornani/utils/RectPath.hpp>
 #include <string>
@@ -106,6 +107,7 @@ class Gizmo : public UniquePolymorphic {
 	// the (x, y) of the target top left position of gizmo. all constituent parts will refer to this position for drawing.
 	sf::Vector2f m_placement{};
 	sf::Vector2f m_displacement{};
+	std::optional<entity::Effect> m_effect{};
 	//
 	io::Logger m_logger{"Gizmo"};
 };

@@ -14,6 +14,7 @@ nani_add_sources(
         Eyebot.cpp
         Fiend.cpp
         Frdog.cpp
+        Geyser.cpp
         Glub.cpp
         Golem.cpp
         Grappler.cpp
@@ -32,6 +33,7 @@ nani_add_sources(
         Minion.cpp
         Mizzle.cpp
         MizzleEgg.cpp
+Spewer.cpp
         Tank.cpp
         Thief.cpp
         Thug.cpp

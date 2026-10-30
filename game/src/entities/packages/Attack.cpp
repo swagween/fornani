@@ -46,6 +46,12 @@ bool Attack::kill_player(player::Player& player, player::PlayerDeathType death, 
 	return false;
 }
 
+bool Attack::poison_player(player::Player& player, float multiplier) {
+	if (!hit.active()) { return false; }
+	if (!hit.within_bounds(player.hurtbox)) { return false; }
+	player.add_toxicity(multiplier);
+}
+
 void Attack::cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, float freezeframe) {
 	if (hit.active()) {
 		for (auto& proj : map.active_projectiles) {

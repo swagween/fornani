@@ -460,7 +460,9 @@ void Enemy::kill(automa::ServiceProvider& svc, world::Map& map, sf::Vector2f dir
 	auto tag = attributes.size == EnemySize::tiny ? "small_carnage" : attributes.size == EnemySize::giant ? "large_carnage" : "carnage";
 	map.spawn_emitter(svc, tag, get_collider().get_center(), Direction{});
 	if (!flags.general.test(GeneralFlags::no_death_flare)) {
-		auto const vel = flags.state.test(StateFlags::dash_kicked) ? sf::Vector2f{} : get_collider().physics.actual_velocity() * 0.5f;
+		auto const avel = get_collider().physics.actual_velocity();
+		auto const clamped_vel = sf::Vector2f{std::clamp(avel.x * 0.5f, -1.f, 1.f), std::clamp(avel.y * 0.5f, -1.f, 1.f)};
+		auto const vel = flags.state.test(StateFlags::dash_kicked) ? sf::Vector2f{} : clamped_vel;
 		map.spawn_effect(svc, "dark_flare", get_collider().get_center(), vel);
 	}
 }

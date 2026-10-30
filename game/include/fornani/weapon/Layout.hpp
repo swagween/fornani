@@ -9,13 +9,12 @@ namespace fornani::arms {
 
 constexpr std::size_t layout_size_v = 5;
 
-enum class SlotStatus : std::uint8_t { unavailable, deactivated, activated, occupied };
+enum class SlotStatus : std::uint8_t { unavailable, available, occupied };
 enum class PinLocation : std::uint8_t { top_left, top_right, bottom_left, bottom_right, any };
 
 struct Slot {
 	std::vector<PinLocation> pin_locations{};
 	SlotStatus status{};
-	std::optional<PinLocation> active_slot{};
 	std::optional<std::string> item{};
 	std::optional<std::size_t> index{};
 };
@@ -25,12 +24,9 @@ class Layout {
 	Layout(dj::Json const& in);
 	void serialize(dj::Json& out) const;
 
-	bool place_segment(PinLocation pin, std::size_t where);					   // returns true if placement was successful
 	bool place_item(std::string_view tag, PinLocation pin, std::size_t where); // returns true if placement was successful
 	void remove_item(std::size_t const index);
-	void remove_fixture(std::size_t const index);
 
-	[[nodiscard]] auto can_place_segment(PinLocation pin, std::size_t where) const -> bool;
 	[[nodiscard]] auto can_place_item(PinLocation pin, std::size_t where) const -> bool;
 	[[nodiscard]] auto has_item(std::string_view tag) const -> bool;
 	[[nodiscard]] auto is_empty() const -> bool;

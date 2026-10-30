@@ -448,6 +448,16 @@
     "fade_out": 100
   },
   {
+    "label": "bubbling_liquid",
+    "bus": "gameplay",
+    "volume": 0.2,
+    "pitch_offset": 0.0,
+    "min_distance": 128.0,
+    "max_distance": 512.0,
+    "fade_in": 100,
+    "fade_out": 100
+  },
+  {
     "label": "spitefly_screech",
     "bus": "gameplay",
     "volume": 1.0,
