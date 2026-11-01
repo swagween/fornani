@@ -398,6 +398,7 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	if (!m_entity_texture.resize(u_dim)) { NANI_LOG_WARN(m_logger, "Failed to resize entity texture!"); }
 	if (!m_static_entity_texture.resize(u_dim)) { NANI_LOG_WARN(m_logger, "Failed to resize static entity texture!"); }
 	m_static_entity_texture.clear(colors::transparent);
+	if (get_biome_properties()["cold"].as_bool()) { m_attributes.properties.set(MapProperties::cold); }
 
 	generate_collidable_layer(live);
 }
@@ -577,7 +578,13 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	m_entity_texture.clear(colors::transparent);
 
 	auto use_shader = m_attributes.properties.test(MapProperties::lighting) && m_palette && shader;
-	if (use_shader) { shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>()); }
+	if (use_shader) {
+		auto const& biome = get_biome_properties();
+		shader->finalize(biome["max_light"].as<float>());
+		std::array<sf::Color, 3> qualifying_colors{Color{biome["qualifying_sparkle_colors"][0]}, Color{biome["qualifying_sparkle_colors"][1]}, Color{biome["qualifying_sparkle_colors"][2]}};
+		std::array<sf::Color, 3> sparkle_colors{Color{biome["sparkle_colors"][0]}, Color{biome["sparkle_colors"][1]}, Color{biome["sparkle_colors"][2]}};
+		shader->set_sparkle(is_cold(), svc.assets.get_texture("sparkle_noise"), svc.assets.get_texture("diagonal_mask"), 1.0f, colors::white, qualifying_colors, sparkle_colors, cam);
+	}
 
 	if (m_entities) {
 		// TODO: uncomment below once all entities have been refactored!
@@ -645,7 +652,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	for (auto& incinerite : incinerite_blocks) { incinerite->render(svc, win, cam); }
 	for (auto& mine : mines) { mine->submit(renderer); }
 	for (auto& brittle : brittle_blocks) { brittle->render(svc, win, cam); }
-	for (auto& pushable : pushables) { pushable->render(svc, win, cam); }
+	for (auto& pushable : pushables) { has_property(MapProperties::lighting) ? pushable->render(svc, m_entity_texture, cam) : pushable->render(svc, win, cam); }
 	for (auto& checkpoint : checkpoints) { checkpoint.render(svc, win, cam); }
 	for (auto& switch_block : switch_blocks) { switch_block->render(svc, win, cam); }
 	for (auto& switch_button : switch_buttons) { switch_button->render(svc, win, cam); }
@@ -669,14 +676,17 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		for (auto w : get_entities<Water>()) { w->render(win, cam, 1.0); }
 	}
 
+	sf::RenderTarget& target = win;
+
 	for (auto [i, layer] : std::views::enumerate(get_layers())) {
 		if (use_shader && !layer->ignore_lighting()) {
 			shader->set_texture_size(real_dimensions / constants::f_scale_factor);
 			shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
-			layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+			layer->render(svc, target, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 		} else {
-			layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+			layer->render(svc, target, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
 		}
+
 		if (i == m_middleground) {
 			for (auto n : get_entities<AmbientProp>()) {
 				if (n->is_foreground()) { n->is_light_shaded() ? n->render(win, m_entity_texture, cam) : n->render(win, cam, 1.f); }
@@ -1017,6 +1027,8 @@ void Map::manage_projectiles(automa::ServiceProvider& svc) {
 void Map::generate_collidable_layer(bool live) {
 	auto train_style = get_style_id() == 1 ? 1 : 0;
 	auto pushable_offset = sf::Vector2f{1.f, 0.f};
+	auto const has_materials = get_biome_properties()["tile_materials"].is_array();
+	auto const& materials = get_biome_properties()["tile_materials"].as_array();
 	for (auto& cell : get_middleground()->grid.cells) {
 		auto chunk_id = cell.get_chunk_id();
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
@@ -1042,6 +1054,11 @@ void Map::generate_collidable_layer(bool live) {
 		}
 		if (cell.is_camera_anchor()) { m_camera_anchors.push_back(CameraAnchor{cell.bounding_box.get_center()}); }
 		if (cell.is_solid() && get_middleground()->grid.is_exposed_to_sky(cell.one_d_index, m_attributes.sky_limit)) { m_surface_points.push_back(SurfacePoint{cell.bounding_box.get_top(), true}); }
+		if (has_materials) {
+			for (auto const& mat : materials) {
+				if (mat["lookup"].as<int>() == cell.value) { cell.set_material(static_cast<TileMaterial>(mat["material"].as<int>())); }
+			}
+		}
 	}
 	m_static_entity_texture.display();
 }
@@ -1223,7 +1240,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 			if (!cell.is_collidable() || cell.is_cage()) { continue; }
 			if (cell.is_platform() && (world::is_above_platform(cell, collider.get_radius() + collider.get_global_center().y) || collider.physics.actual_velocity().y < 0.f)) { continue; }
 			cell.collision_check = true;
-			collider.handle_collision(cell.bounding_box);
+			collider.handle_map_collision(cell);
 		}
 	}
 }

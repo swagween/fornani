@@ -46,7 +46,10 @@ enum class TileType : std::uint8_t {
 	mine,
 	camera_anchor
 };
+
 enum class TileState : std::uint8_t { ramp_adjacent, big_ramp, covered, border };
+
+enum class TileMaterial : std::uint8_t { normal, ice };
 
 constexpr auto special_index_v = 448;
 constexpr auto platform_buffer_v = 4;
@@ -92,6 +95,7 @@ struct Tile {
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void draw(sf::RenderTexture& tex);
 	void set_type();
+	void set_material(TileMaterial const to) { m_material = to; }
 
 	[[nodiscard]] auto is(TileType const check) const -> bool { return type == check; }
 	[[nodiscard]] auto is_occupied() const -> bool { return value > 0; }
@@ -138,7 +142,8 @@ struct Tile {
 	[[nodiscard]] auto get_local_center() const -> sf::Vector2f { return bounding_box.get_dimensions() * 0.5f; }
 	[[nodiscard]] auto get_global_center() const -> sf::Vector2f { return bounding_box.get_position() + bounding_box.get_dimensions() * 0.5f; }
 	[[nodiscard]] auto position() const -> sf::Vector2f { return bounding_box.get_position(); }
-	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; };
+	[[nodiscard]] auto get_chunk_id() const -> std::uint8_t { return m_chunk_id; }
+	[[nodiscard]] auto get_material() const -> TileMaterial { return m_material; }
 
 	sf::Vector2<std::uint32_t> index;
 	std::uint32_t one_d_index;
@@ -156,6 +161,7 @@ struct Tile {
   private:
 	float m_spacing;
 	std::uint8_t m_chunk_id{};
+	TileMaterial m_material{};
 };
 
 static auto is_above_platform(Tile const& tile, float y) -> bool { return tile.is_platform() && (y > tile.bounding_box.get_position().y + platform_buffer_v); }

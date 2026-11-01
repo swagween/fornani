@@ -17,6 +17,7 @@ Dash::Dash(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 		   : map.spawn_effect(svc, "small_flash", collider.get_center(), sf::Vector2f{collider.physics.apparent_velocity().x * 0.5f, 0.f});
 	second ? svc.soundboard.play_sound("nani_double_dash") : svc.soundboard.play_sound("nani_dash");
 	if (second) { map.spawn_emitter(svc, "double_dash", collider.get_center(), {}); }
+	collider.set_flag(shape::ColliderFlags::on_ice, false);
 }
 
 void Dash::update(shape::Collider& collider, PlayerController& controller) {

@@ -44,6 +44,10 @@ void ICollider::update(automa::ServiceProvider& svc) {
 		physics.gravity = p_physics_properties.gravity * 0.1f;
 	}
 	if (has_flag_set(ColliderFlags::encumbered)) { physics.set_friction_componentwise(p_physics_properties.friction.componentWiseMul({0.96f, 1.f})); }
+	if (has_flag_set(ColliderFlags::on_ice)) {
+		auto const k = p_physics_properties.ice_friction;
+		physics.set_friction_componentwise({p_physics_properties.friction.x + (1.f - p_physics_properties.friction.x) * k, p_physics_properties.friction.y});
+	}
 }
 
 void ICollider::handle_map_collision(world::Map& map) {}

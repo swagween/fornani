@@ -6,7 +6,7 @@
 
 namespace fornani::graphics {
 
-void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Sprite& sprite, int ctr) {
+void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderTarget& win, sf::Sprite& sprite, int ctr) {
 	auto cycle = svc.world_clock.as_trio();
 	auto from_cycle = svc.world_clock.get_previous_as_trio();
 	auto tod = static_cast<int>(svc.world_clock.get_time_of_day());
@@ -25,7 +25,7 @@ void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderWindow& win
 	sprite.setColor(sf::Color::White);
 }
 
-void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Sprite& sprite, int ctr, std::uint8_t const native_alpha) {
+void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderTarget& win, sf::Sprite& sprite, int ctr, std::uint8_t const native_alpha) {
 	auto cycle = svc.world_clock.as_trio();
 	auto from_cycle = svc.world_clock.get_previous_as_trio();
 	if (cycle == ctr) {

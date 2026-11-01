@@ -711,22 +711,20 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 	if (ImGui::BeginPopupModal("Light Specifications", NULL, ImGuiWindowFlags_AlwaysAutoResize)) {
 		m_is_open = true;
 		static int id{fornani::random::range(10000, 99999)};
-		static char const* types[2] = {"lantern", "candlelight"};
-		static int type{};
+		static std::string type{};
 
-		auto ctr{0};
-		if (ImGui::BeginCombo("Type", types[type])) {
-			for (auto const& t : types) {
-				if (ImGui::Selectable(t)) { type = ctr; }
-				++ctr;
+		auto const& lights = svc.data.light;
+		if (ImGui::BeginCombo("Type", type.empty() ? "Select..." : type.c_str())) {
+			for (auto const& [name, value] : lights.as_object()) {
+				if (ImGui::Selectable(name.c_str(), type == name)) { type = name; }
 			}
 			ImGui::EndCombo();
 		}
 
-		if (ImGui::Button("Create")) {
+		if (ImGui::Button("Create") && !type.empty()) {
 			m_is_open = false;
-			tool = std::move(std::make_unique<EntityEditor>(EntityMode::placer));
-			tool->current_entity = std::make_unique<fornani::Light>(svc, id, types[type]);
+			tool = std::make_unique<EntityEditor>(EntityMode::placer);
+			tool->current_entity = std::make_unique<fornani::Light>(svc, id, type);
 			ImGui::CloseCurrentPopup();
 		}
 		close_popup();

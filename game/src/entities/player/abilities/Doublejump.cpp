@@ -16,6 +16,7 @@ Doublejump::Doublejump(automa::ServiceProvider& svc, world::Map& map, shape::Col
 	// map.spawn_emitter(svc, "doublejump", collider.get_center() + sf::Vector2f{-1.f, -1.f}, Direction{LR::left}, {2.f, 2.f});
 	m_duration.start(256);
 	// svc.ticker.freeze_frame(0.032f);
+	collider.set_flag(shape::ColliderFlags::on_ice, false);
 }
 
 void Doublejump::update(shape::Collider& collider, PlayerController& controller) {

@@ -24,6 +24,8 @@ void Fire::update(automa::ServiceProvider& svc, player::Player& player, Map& map
 	tick();
 	sparkler.update(svc);
 	if (svc.ticker.every_x_ticks(64) && !player.has_flag_set(player::PlayerFlags::boss_fight)) { map.spawn_emitter(svc, "smoke", bounding_box.get_center() - sf::Vector2f{0.f, 32.f}, {UND::up}, bounding_box.get_dimensions()); }
+	if ((player.hurtbox.get_center() - bounding_box.get_center()).length() < 100.f) { player.add_chill(-0.002f); }
+	svc.soundboard.repeat_sound("campfire", 3U, bounding_box.get_center());
 }
 
 void Fire::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam) {

@@ -34,6 +34,7 @@ class Pushable : public Drawable, public Flaggable<PushableFlags> {
 	void post_update(automa::ServiceProvider& svc, Map& map, player::Player& player);
 	void handle_collision(shape::Collider& other) const;
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);
+	void render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam);
 	void on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj);
 	void reset(automa::ServiceProvider& svc, world::Map& map);
 	void register_chunk(std::uint8_t chunk) { m_chunk_id = chunk; }

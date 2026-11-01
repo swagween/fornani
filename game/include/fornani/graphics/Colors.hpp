@@ -18,6 +18,7 @@ constexpr sf::Color goldenrod{247, 199, 74};
 constexpr sf::Color dark_goldenrod{208, 119, 0};
 constexpr sf::Color red{255, 7, 100};
 constexpr sf::Color blue{110, 98, 173};
+constexpr sf::Color ice_blue{150, 201, 229};
 constexpr sf::Color navy_blue{25, 35, 65};
 constexpr sf::Color dark_fucshia{148, 40, 84};
 constexpr sf::Color dark_blood{145, 0, 57};

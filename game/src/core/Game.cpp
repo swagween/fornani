@@ -148,7 +148,7 @@ void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesys
 				if (key_pressed->scancode == sf::Keyboard::Scancode::R && key_pressed->control) { restart_trial(levelpath); }
 				if (key_pressed->scancode == sf::Keyboard::Scancode::Y) {
 					auto view = services.window->get_view();
-					view.zoom(0.95f);
+					view.zoom(0.75f);
 					services.window->get().setView(view);
 					m_zooming = !m_zooming;
 				}
@@ -735,6 +735,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Wallsliding? %s", player->controller.is_wallsliding() ? "Yes" : "No");
 								ImGui::Text("Walljumping? %s", player->controller.is_walljumping() ? "Yes" : "No");
 								ImGui::Text("On Ramp? %s", player->get_collider().on_ramp() ? "Yes" : "No");
+								ImGui::Text("On Ice? %s", player->get_collider().has_flag_set(shape::ColliderFlags::on_ice) ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Water Exit Cooldown");
 								ImGui::ProgressBar(player->cooldowns.water_exit.get_normalized(), {300.f, 4.f}, "");

@@ -45,7 +45,8 @@ enum class ColliderFlags : std::uint8_t {
 	momentum,
 	encumbered,
 	sink,
-	on_ramp
+	on_ramp,
+	on_ice
 };
 enum class ColliderType : std::uint8_t { rectangle, circle };
 enum class ColliderAttributes : std::uint8_t { fixed, soft, top_only, no_collision, no_map_collision, sturdy, crusher, custom_resolution, sticky, no_wallslide };

@@ -44,6 +44,8 @@ void Jump::update(shape::Collider& collider, PlayerController& controller) {
 		collider.flags.movement.set(shape::Movement::jumping);
 		if (is_water) {
 			m_map->spawn_effect(*m_services, "splash", collider.get_center());
+		} else if (m_map->is_cold()) {
+			m_map->spawn_emitter(*m_services, "frost", collider.jumpbox.get_position(), Direction(UND::up), collider.jumpbox.get_dimensions(), colors::white, random::range(0, 7));
 		} else {
 			m_map->spawn_effect(*m_services, "jump", collider.get_center(), {collider.physics.apparent_velocity().x * 0.1f, 0.f});
 		}

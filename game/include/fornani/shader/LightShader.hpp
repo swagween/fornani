@@ -41,6 +41,7 @@ struct PointLight {
 	float distance_flat;
 	float flicker_rate;
 	float flicker_radius;
+	sf::Glsl::Vec4 color{1.f, 1.f, 1.f, 1.f};
 	void unserialize(dj::Json const& in);
 
   private:
@@ -52,6 +53,7 @@ struct PointLight {
 	float m_steering_force{};
 	bool m_has_steering{};
 };
+
 struct Spotlight {
 	sf::Vector2f position;
 	sf::Vector2f direction;
@@ -64,6 +66,7 @@ struct Spotlight {
 	float outer_cutoff_angle;
 	float distance_scaling;
 	float distance_flat;
+	sf::Glsl::Vec4 color{1.f, 1.f, 1.f, 1.f};
 };
 
 class ResourceFinder;
@@ -74,14 +77,19 @@ class LightShader {
 	void clear_point_lights();
 	void clear_spotlights();
 
-	void add_point_light(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distance_scaling, float distance_flat);
+	void add_point_light(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distance_scaling, float distance_flat, sf::Glsl::Vec4 color = {1.f, 1.f, 1.f, 1.f});
+
 	void add_point_light(PointLight pointlight) {
-		add_point_light(pointlight.position, pointlight.luminosity, pointlight.radius, pointlight.attenuation_constant, pointlight.attenuation_linear, pointlight.attenuation_quadratic, pointlight.distance_scaling, pointlight.distance_flat);
+		add_point_light(pointlight.position, pointlight.luminosity, pointlight.radius, pointlight.attenuation_constant, pointlight.attenuation_linear, pointlight.attenuation_quadratic, pointlight.distance_scaling, pointlight.distance_flat,
+						pointlight.color);
 	}
-	void add_spotlight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outer_cutoff, float distance_scaling, float distance_flat);
+
+	void add_spotlight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outer_cutoff, float distance_scaling, float distance_flat,
+					   sf::Glsl::Vec4 color = {1.f, 1.f, 1.f, 1.f});
+
 	void add_spotlight(Spotlight spotlight) {
 		add_spotlight(spotlight.position, spotlight.direction, spotlight.luminosity, spotlight.radius, spotlight.attenuation_constant, spotlight.attenuation_linear, spotlight.attenuation_quadratic, spotlight.cutoff_angle,
-					  spotlight.outer_cutoff_angle, spotlight.distance_scaling, spotlight.distance_flat);
+					  spotlight.outer_cutoff_angle, spotlight.distance_scaling, spotlight.distance_flat, spotlight.color);
 	}
 
 	void set_scale(float const to) { m_scale = to; }
@@ -93,7 +101,9 @@ class LightShader {
 	void set_parity(sf::Vector2i const reference) { m_parity = sf::Vector2f{static_cast<float>(std::abs(reference.x) % 2), static_cast<float>(std::abs(reference.y) % 2)}; }
 
 	void finalize(float max_light = max_light_v);
-	void submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite);
+	void submit(sf::RenderTarget& win, Palette& palette, sf::Sprite const& sprite);
+
+	void set_sparkle(bool enabled, sf::Texture const& white_noise, sf::Texture const& diagonal_mask, float intensity, sf::Color highlight, std::span<sf::Color const> qualifying_colors, std::span<sf::Color const> colors, sf::Vector2f cam);
 
 	void debug();
 
@@ -104,6 +114,7 @@ class LightShader {
 	int current_spotlight{};
 
 	std::vector<sf::Vector2f> pointlight_position{};
+	std::vector<sf::Glsl::Vec4> pointlight_color;
 	std::vector<float> pointlight_luminosity{};
 	std::vector<float> pointlight_radius{};
 	std::vector<float> pointlight_attenuation_constant{};
@@ -114,6 +125,7 @@ class LightShader {
 
 	std::vector<sf::Vector2f> spotlight_position{};
 	std::vector<sf::Vector2f> spotlight_direction{};
+	std::vector<sf::Glsl::Vec4> spotlight_color{};
 	std::vector<float> spotlight_luminosity{};
 	std::vector<float> spotlight_radius{};
 	std::vector<float> spotlight_attenuation_constant{};

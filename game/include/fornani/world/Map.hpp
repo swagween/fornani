@@ -27,7 +27,6 @@
 #include <fornani/physics/CircleCollider.hpp>
 #include <fornani/physics/Shape.hpp>
 #include <fornani/shader/FlatShader.hpp>
-#include <fornani/shader/LightShader.hpp>
 #include <fornani/shader/Palette.hpp>
 #include <fornani/systems/Register.hpp>
 #include <fornani/utils/Constants.hpp>
@@ -50,6 +49,10 @@
 #include <unordered_set>
 #include <vector>
 
+namespace fornani {
+class LightShader;
+} // namespace fornani
+
 namespace fornani::gui {
 class Portrait;
 class InventoryWindow;
@@ -60,7 +63,7 @@ namespace fornani::world {
 enum class LevelState : std::uint8_t { camera_shake, spawn_enemy };
 enum class MapState : std::uint8_t { unobscure };
 enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic };
+enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic, cold };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
@@ -187,6 +190,7 @@ class Map {
 	[[nodiscard]] auto has_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_obscuring_layer); }
 	[[nodiscard]] auto has_reverse_obscuring_layer() const -> bool { return m_layer_properties.test(LayerProperties::has_reverse_obscuring_layer); }
 	[[nodiscard]] auto is_toxic() const -> bool;
+	[[nodiscard]] auto is_cold() const -> bool { return m_attributes.properties.test(MapProperties::cold); }
 	[[nodiscard]] auto get_biome_string() const -> std::string_view { return m_biome.get_label(); }
 	[[nodiscard]] auto get_room_string() const -> std::string { return m_metadata.room; }
 	[[nodiscard]] auto get_player_start() const -> sf::Vector2f { return m_player_start; }

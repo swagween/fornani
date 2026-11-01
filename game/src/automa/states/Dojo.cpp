@@ -61,6 +61,11 @@ Dojo::Dojo(ServiceProvider& svc, player::Player& player, int room_number) : Game
 	reload(svc, room_number);
 
 	NANI_LOG_INFO(m_logger, "New Dojo instance created.");
+
+	svc.assets.get_texture_modifiable("white_noise").setRepeated(true);
+	svc.assets.get_texture_modifiable("sparkle_noise").setRepeated(true);
+	svc.assets.get_texture_modifiable("diagonal_mask").setRepeated(true);
+	svc.assets.get_texture_modifiable("diagonal_mask").setSmooth(false);
 }
 
 void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
@@ -293,6 +298,14 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 		p_filter_shader->submit(win);
 	}
 
+	static bool shader_debug_v = true;
+	if (p_vignette_shader && debug::is_production() && shader_debug_v) {
+		auto const pos = svc.window->f_center_screen();
+		auto const pixel_position = win.mapCoordsToPixel(pos);
+		p_vignette_shader->finalize(svc.ticker.total_seconds_passed.count(), win.getSize(), sf::Vector2f{pixel_position}, sf::Color::White, 0.3f * player->get_chill(), &svc.assets.get_texture("ice_overlay"), 1.2f - player->get_chill());
+		p_vignette_shader->submit(win);
+	}
+
 	GameplayState::render(svc, win);
 
 	if (p_reward_sequence) {
@@ -353,6 +366,8 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 
 	m_flags.reset(GameplayFlags::death_console_launched);
 	svc.state_controller.actions.reset(Actions::save_loaded);
+
+	if (m_map->is_cold()) { p_vignette_shader.emplace(svc.finder, svc.window->u_screen_dimensions()); }
 }
 
 void Dojo::acquire_item_from_console(ServiceProvider& svc, int id) { acquire_item(svc, svc.data.item_label_from_id(id)); }

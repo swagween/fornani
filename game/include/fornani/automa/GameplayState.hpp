@@ -38,6 +38,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	std::optional<LightShader> p_gui_shader{};
 	std::optional<HazeShader> p_haze_shader{};
 	std::optional<FilterShader> p_filter_shader{};
+	std::optional<FilterShader> p_vignette_shader{};
 	std::optional<std::unique_ptr<gui::PauseWindow>> p_pause_window{};
 	std::optional<std::unique_ptr<gui::IDialog>> p_dialog{};
 	std::optional<std::unique_ptr<gui::InventoryWindow>> p_inventory_window{};

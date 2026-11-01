@@ -212,6 +212,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.perma_state.set(PermaFlags::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
+			set_flag(ColliderFlags::on_ice, tile.get_material() == world::TileMaterial::ice);
 		} else {
 			flags.state.reset(State::grounded);
 			flags.state.reset(State::world_grounded);
@@ -226,6 +227,7 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.perma_state.set(PermaFlags::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
+			set_flag(ColliderFlags::on_ice, tile.get_material() == world::TileMaterial::ice);
 		} else {
 			flags.state.reset(State::grounded);
 			flags.state.reset(State::world_grounded);
@@ -235,7 +237,10 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 	sync_components();
 	auto const rightc = flags.state.test(State::right_wallslide_collision) && m_direction.right();
 	auto const leftc = flags.state.test(State::left_wallslide_collision) && m_direction.left();
-	if (rightc || leftc) { flags.external_state.set(ExternalState::roll_collision); }
+	if (rightc || leftc) {
+		flags.external_state.set(ExternalState::roll_collision);
+		if (!grounded()) { set_flag(ColliderFlags::on_ice, false); }
+	}
 }
 
 void Collider::detect_map_collision(world::Map& map) {
@@ -445,6 +450,7 @@ void Collider::handle_collider_collision(Collider const& collider, bool momentum
 		flags.external_state.set(ExternalState::grounded);
 		flags.state.set(State::grounded);
 		flags.state.set(State::is_any_jump_collision);
+		set_flag(ColliderFlags::on_ice, false);
 	} else {
 		flags.state.reset(State::grounded);
 	}

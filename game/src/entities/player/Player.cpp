@@ -220,11 +220,26 @@ void Player::update(world::Map& map) {
 			set_flag(PlayerFlags::poisoned, false);
 		}
 	}
-	auto color = colors::mythic_green;
+	auto tcolor = colors::mythic_green;
 	if (counters.toxicity.running()) {
 		auto cvec = std::vector{colors::transparent, colors::mythic_green};
-		color = gradient_color(cvec, counters.toxicity.get());
-		flat_shade(color);
+		tcolor = gradient_color(cvec, counters.toxicity.get());
+		flat_shade(tcolor);
+	}
+
+	// chill
+	if (!is_dead()) { map.is_cold() ? add_chill(0.0004f) : add_chill(-0.0005f); }
+	if (counters.chill.get() < 0.f) { counters.chill.reset(); }
+	if (counters.chill.get() >= 1.f) {
+		set_flag(PlayerFlags::frozen);
+		hurt();
+		counters.chill.set(0.8f);
+	}
+	auto ccolor = colors::ice_blue;
+	if (counters.chill.running()) {
+		auto cvec = std::vector{colors::transparent, colors::ice_blue};
+		ccolor = gradient_color(cvec, counters.chill.get());
+		flat_shade(ccolor);
 	}
 
 	// laser logic
@@ -318,13 +333,28 @@ void Player::update(world::Map& map) {
 	if (controller.is_wallsliding() && !controller.is_wallclinging()) {
 		auto freq = controller.wallslide_slowdown.get_quadratic_normalized() * 80.f;
 		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 24, 80))) {
-			map.effects.push_back(entity::Effect(*m_services, "wallslide", get_collider().get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f}, get_collider().physics.apparent_velocity() * 0.3f));
+			auto const wpos = get_collider().get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f};
+			if (map.is_cold()) {
+				map.spawn_emitter(*m_services, "frost", wpos, Direction(UND::up), get_collider().jumpbox.get_dimensions(), colors::white, random::range(0, 7));
+			} else {
+				map.effects.push_back(entity::Effect(*m_services, "wallslide", wpos, get_collider().physics.apparent_velocity() * 0.3f));
+			}
 		}
 	}
 	if ((controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) && !has_flag_set(PlayerFlags::cutscene)) {
-		if (m_services->ticker.every_x_ticks(24)) { map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f})); }
+		if (m_services->ticker.every_x_ticks(24)) {
+			if (map.is_cold()) {
+				map.spawn_emitter(*m_services, "frost", get_collider().jumpbox.get_position(), Direction(UND::up), get_collider().jumpbox.get_dimensions(), colors::white, random::range(0, 7));
+			} else {
+				map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f}));
+			}
+		}
 	}
 	if (m_animation_machine.is_state(AnimState::turn_slide) && (p_animatable.animation.get_frame_count() > 2 && p_animatable.animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
+	if (map.is_cold() && !is_dead()) {
+		if (m_services->ticker.every_x_ticks(180)) { map.spawn_effect(*m_services, "breath", get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 8.f, -6.f}, {directions.actual.as_float() * 0.2f, -0.1f}); }
+		if (m_services->ticker.every_x_ticks(200)) { map.spawn_effect(*m_services, "breath", get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 8.f, -2.f}, {directions.actual.as_float() * 0.1f, -0.1f}); }
+	}
 
 	// camera stuff
 	update_camera();
@@ -378,6 +408,7 @@ void Player::update(world::Map& map) {
 	// materials
 	get_collider().set_flag(shape::ColliderFlags::in_goo, has_flag_set(PlayerFlags::in_goo));
 	reset_flag(PlayerFlags::in_goo);
+	// if (get_collider().has_flag_set(shape::ColliderFlags::on_ice) && controller.is(AbilityType::jump)) { apply_impulse(sf::Vector2f{get_collider().physics.actual_speed() * 0.5f, 0.f} * directions.movement.as_float()); }
 
 	// encumbered
 	get_collider().set_flag(shape::ColliderFlags::encumbered, has_flag_set(PlayerFlags::encumbered));
@@ -853,6 +884,8 @@ void Player::piggyback(int id) {
 
 void Player::add_toxicity(float amount) { counters.toxicity.update(amount); }
 
+void Player::add_chill(float amount) { counters.chill.update(amount); }
+
 auto Player::has_weapon(std::string_view tag) const -> bool {
 	if (!arsenal) { return false; }
 	return arsenal->has(tag);
@@ -1032,7 +1065,9 @@ void Player::walk() {
 	if (m_animation_machine.is_state(AnimState::sharp_turn)) { get_collider().physics.acceleration.x *= 0.1f; }
 	auto const stuck_left = get_collider().has_left_collision() || (get_collider().has_head_collision() && directions.actual.left() && !get_collider().downhill());
 	auto const stuck_right = get_collider().has_right_collision() || (get_collider().has_head_collision() && directions.actual.right() && !get_collider().downhill());
-	auto const speed = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	auto speed = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
+	if (get_collider().has_flag_set(shape::ColliderFlags::on_ice)) { speed *= get_collider().p_physics_properties.ice_inertia; }
+	if (counters.chill.get() > 0.1f) { speed *= 1.f - (counters.chill.get() * 0.5f); }
 	if (controller.moving_right()) {
 		if (!stuck_right) {
 			get_collider().physics.acceleration.x = speed;
@@ -1084,8 +1119,11 @@ void Player::hurt(float amount, bool force) {
 				m_services->ticker.freeze_frame(2.5f, 4.f);
 			}
 			if (m_map) {
-				m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
-				m_map.value()->spawn_frame_effect(*m_services, "hurt_spark", hurtbox.get_center());
+				if (consume_flag(PlayerFlags::frozen)) {
+				} else {
+					m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
+					m_map.value()->spawn_frame_effect(*m_services, "hurt_spark", hurtbox.get_center());
+				}
 			}
 			auto const energy = amount > 1.f ? 0.15f : 0.05f;
 			m_services->camera_controller.shake(2, energy, 200, 50);
@@ -1232,6 +1270,8 @@ void Player::start_over() {
 	m_death_type.reset();
 	m_air_supply.refill();
 	health.reset();
+	counters.toxicity.reset();
+	counters.chill.reset();
 	controller.unrestrict();
 	m_services->camera_controller.constrain();
 	m_services->camera_controller.set_owner(graphics::CameraOwner::player);

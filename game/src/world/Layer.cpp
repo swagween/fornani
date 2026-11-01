@@ -11,6 +11,10 @@
 
 namespace fornani::world {
 
+auto Layer::get_texture() const -> sf::Texture const& {
+	return m_texture.day.getTexture();
+	// TODO: insert return statement here
+}
 void Layer::generate_textures(sf::Texture const& tex, bool day_night_shift) {
 	if (middleground()) { m_barrier.emplace(); }
 	if (!m_flags.test(LayerFlags::animated)) {
@@ -75,14 +79,15 @@ void Layer::generate_textures(sf::Texture const& tex, bool day_night_shift) {
 	}
 }
 
-void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
+void Layer::render(automa::ServiceProvider& svc, sf::RenderTarget& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift, bool sparkle) const {
 	if (!debug::is_production()) { return; }
 	if (background() != is_bg) { return; }
+	auto const scale = sparkle ? sf::Vector2f{1.f, 1.f} : constants::f_scale_vec;
 	if (m_barrier) {
 		auto spr = sf::Sprite{m_barrier->getTexture()};
 		auto border = sf::Vector2i{512, 512};
 		spr.setTextureRect(sf::IntRect{-border, {sf::Vector2i{m_barrier->getSize()} + 2 * border}});
-		spr.setScale(constants::f_scale_vec);
+		spr.setScale(scale);
 		spr.setPosition(-cam - sf::Vector2f{2 * border});
 		win.draw(spr);
 		++debug::draw_calls;
@@ -93,7 +98,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 	if (day_night_shift) {
 		auto sprites = std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
 		for (auto [i, sprite] : std::views::enumerate(sprites)) {
-			sprite.setScale(constants::f_scale_vec);
+			sprite.setScale(scale);
 			sprite.setPosition({-cam.x * m_parallax, -cam.y});
 			if (obscuring()) { shifter.render(svc, win, sprite, i, alpha); }
 			if (reverse_obscuring()) { shifter.render(svc, win, sprite, i, revalpha); }
@@ -101,7 +106,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 		}
 	} else {
 		auto sprite = sf::Sprite{m_texture.day.getTexture()};
-		sprite.setScale(constants::f_scale_vec);
+		sprite.setScale(scale);
 		sprite.setPosition({-cam.x * m_parallax, -cam.y});
 		if (obscuring()) {
 			sprite.setColor({255, 255, 255, alpha});
@@ -114,7 +119,7 @@ void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics
 			sprite.setColor(sf::Color::White);
 		}
 		if (not_obscuring()) {
-			sprite.setScale(constants::f_scale_vec);
+			sprite.setScale(scale);
 			sprite.setPosition({-cam.x * m_parallax, -cam.y});
 			win.draw(sprite);
 			sprite.setColor(sf::Color::White);
@@ -126,35 +131,37 @@ void Layer::update(automa::ServiceProvider& svc) {
 	if (svc.ticker.every_x_ticks(48)) { m_current_frame.modulate(1); }
 }
 
-void Layer::render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift) const {
+void Layer::render(automa::ServiceProvider& svc, sf::RenderTarget& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg, bool day_night_shift, bool sparkle) const {
 	if (!debug::is_production()) { return; }
 	if (background() != is_bg) { return; }
+	auto const scale = sparkle ? sf::Vector2f{1.f, 1.f} : constants::f_scale_vec;
+	auto const layer_cam = sparkle ? cam / constants::f_scale_factor : cam;
 	if (m_barrier) {
 		auto spr = sf::Sprite{m_barrier->getTexture()};
 		auto border = sf::Vector2i{512, 512};
 		spr.setTextureRect(sf::IntRect{-border, {sf::Vector2i{m_barrier->getSize()} + 2 * border}});
-		spr.setScale(constants::f_scale_vec);
-		spr.setPosition(-cam - sf::Vector2f{2 * border});
+		spr.setScale(scale);
+		spr.setPosition(-layer_cam - sf::Vector2f{border} * scale.x);
 		win.draw(spr);
 	}
 
 	if (m_flags.test(LayerFlags::animated) && m_animated_texture) {
 		auto sprite = sf::Sprite{m_animated_texture->frames[m_current_frame.get()].getTexture()};
-		sprite.setScale(constants::f_scale_vec);
-		sprite.setPosition({-cam.x * m_parallax, -cam.y});
+		sprite.setScale(scale);
+		sprite.setPosition({-layer_cam.x * m_parallax, -layer_cam.y});
 		shader.submit(win, palette, sprite);
 	} else {
 		if (day_night_shift) {
 			auto sprites = std::vector<sf::Sprite>{sf::Sprite{m_texture.day.getTexture()}, sf::Sprite{m_texture.twilight.getTexture()}, sf::Sprite{m_texture.night.getTexture()}};
 			for (auto& sprite : sprites) {
-				sprite.setScale(constants::f_scale_vec);
-				sprite.setPosition({-cam.x * m_parallax, -cam.y});
+				sprite.setScale(scale);
+				sprite.setPosition({-layer_cam.x * m_parallax, -layer_cam.y});
 				shader.submit(win, palette, sprite);
 			}
 		} else {
 			auto sprite = sf::Sprite{m_texture.day.getTexture()};
-			sprite.setScale(constants::f_scale_vec);
-			sprite.setPosition({-cam.x * m_parallax, -cam.y});
+			sprite.setScale(scale);
+			sprite.setPosition({-layer_cam.x * m_parallax, -layer_cam.y});
 			shader.submit(win, palette, sprite);
 		}
 	}

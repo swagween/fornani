@@ -20,6 +20,7 @@ CornerFlip::CornerFlip(automa::ServiceProvider& svc, world::Map& map, shape::Col
 	m_duration.start(16);
 	m_beginning.start();
 	map.spawn_emitter(svc, "flip", pos, {});
+	collider.set_flag(shape::ColliderFlags::on_ice, false);
 }
 
 void CornerFlip::update(shape::Collider& collider, PlayerController& controller) {

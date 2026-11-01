@@ -302,9 +302,27 @@
     },
     {
       "folder": "frozen",
+      "label": "hallway.json",
+      "region": "frozen",
+      "room_id": 1901
+    },
+    {
+      "folder": "frozen",
+      "label": "precipice.json",
+      "region": "frozen",
+      "room_id": 1903
+    },
+    {
+      "folder": "frozen",
       "label": "sterncastle.json",
-      "region": "junkyard",
+      "region": "frozen",
       "room_id": 1900
+    },
+    {
+      "folder": "frozen",
+      "label": "wet_bar.json",
+      "region": "frozen",
+      "room_id": 1902
     },
     {
       "folder": "greatwing",

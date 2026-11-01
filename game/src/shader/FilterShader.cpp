@@ -15,16 +15,22 @@ FilterShader::FilterShader(ResourceFinder& finder, sf::Vector2u size) {
 	m_texture.setRepeated(true);
 }
 
-void FilterShader::finalize(float time, sf::Vector2u size, sf::Vector2f position, sf::Color highlight, float intensity) {
-
+void FilterShader::finalize(float time, sf::Vector2u size, sf::Vector2f position, sf::Color highlight, float intensity, sf::Texture const* overlay, float radius) {
 	m_shader.setUniform("uTime", time);
 	m_shader.setUniform("uResolution", sf::Glsl::Vec2(size));
-	auto float_hr = highlight.r / 255.f;
-	auto float_hg = highlight.g / 255.f;
-	auto float_hb = highlight.b / 255.f;
+
+	auto const float_hr = highlight.r / 255.f;
+	auto const float_hg = highlight.g / 255.f;
+	auto const float_hb = highlight.b / 255.f;
+
 	m_shader.setUniform("uHighlightColor", sf::Glsl::Vec3(float_hr, float_hg, float_hb));
 	m_shader.setUniform("uIntensity", intensity);
 	m_shader.setUniform("uCenter", sf::Glsl::Vec2{position});
+	m_shader.setUniform("uVignette", 1.0f);
+	m_shader.setUniform("uRadius", radius);
+
+	m_shader.setUniform("uUseOverlay", overlay != nullptr);
+	if (overlay) { m_shader.setUniform("uOverlay", *overlay); }
 }
 
 void FilterShader::submit(sf::RenderWindow& win) {
@@ -32,7 +38,10 @@ void FilterShader::submit(sf::RenderWindow& win) {
 	auto const blanket_size = sf::Vector2f{window_size};
 
 	auto blanket = sf::RectangleShape{blanket_size};
-	win.draw(blanket, &m_shader);
+	auto states = sf::RenderStates{};
+	states.blendMode = sf::BlendAdd;
+	states.shader = &m_shader;
+	win.draw(blanket, states);
 }
 
 void FilterShader::draw(sf::Drawable const& target) { m_texture.draw(target); }

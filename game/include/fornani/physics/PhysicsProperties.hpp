@@ -13,6 +13,7 @@ struct PhysicsProperties {
 		gravity = in["gravity"].as<float>();
 		water_gravity_multiplier = in["water_gravity_multiplier"].as<float>();
 		water_surface_multiplier = in["water_surface_multiplier"].as<float>();
+		ice_inertia = in["ice_inertia"].as<float>();
 	}
 	sf::Vector2f friction{0.938f, 0.929f};
 	sf::Vector2f water_friction{0.9f, 0.9f};
@@ -20,6 +21,8 @@ struct PhysicsProperties {
 	float water_gravity_multiplier{-0.5f};
 	float water_surface_multiplier{0.995f};
 	float water_sinking_multiplier{0.995f};
+	float ice_inertia{0.2f};
+	float ice_friction{0.9f};
 };
 
 } // namespace fornani::shape

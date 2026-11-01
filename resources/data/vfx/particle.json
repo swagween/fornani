@@ -1208,6 +1208,36 @@
     }
   },
 
+  "frost": {
+    "load": 16,
+    "rate": 1.0,
+    "expulsion": 4.0,
+    "expulsion_variance": 3.0,
+    "cone": 0.6,
+    "friction": 0.99,
+    "elasticity": 0.95,
+    "gravity": -0.5,
+    "lifespan": 300,
+    "lifespan_variance": 0,
+    "dimensions": [13, 13],
+    "animated": true,
+    "colliding": false,
+    "animation": {
+      "lookup": 0,
+      "duration": 6,
+      "framerate": 20,
+      "loop": 0
+    },
+    "physics": {
+      "gravity": -1.0,
+      "friction": [0.99, 0.99],
+      "water_gravity_multiplier": -10.0,
+      "water_friction": [0.99, 0.99],
+      "water_surface_multiplier": 0.995,
+      "water_sinking_multiplier": 0.9
+    }
+  },
+
   "smoke": {
     "load": 2,
     "rate": 4.0,

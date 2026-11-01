@@ -27,6 +27,42 @@
       "friction": 0.95
     }
   },
+  "lamp": {
+    "luminosity": 2.5,
+    "radius": 90.0,
+    "attenuation_constant": 1.68,
+    "attenuation_linear": 3.0,
+    "attenuation_quadratic": 2.5,
+    "distance_flat": 0.0,
+    "distance_scaling": 1.0,
+    "flicker_rate": 0.8,
+    "flicker_radius": 0.001,
+    "color": [1.0, 0.5, 0.0, 0.5],
+    "steering": {
+      "dampen": 0.0041,
+      "radius": 64.0,
+      "force": 0.0052,
+      "friction": 0.95
+    }
+  },
+  "blue_lamp": {
+    "luminosity": 2.8,
+    "radius": 140.0,
+    "attenuation_constant": 1.68,
+    "attenuation_linear": 3.0,
+    "attenuation_quadratic": 2.5,
+    "distance_flat": 0.0,
+    "distance_scaling": 1.0,
+    "flicker_rate": 0.8,
+    "flicker_radius": 0.001,
+    "color": [0.0, 0.85, 0.95, 0.9],
+    "steering": {
+      "dampen": 0.0041,
+      "radius": 64.0,
+      "force": 0.0052,
+      "friction": 0.95
+    }
+  },
   "lantern": {
     "luminosity": 2.5,
     "radius": 128.0,
@@ -46,7 +82,7 @@
   },
   "super_lantern": {
     "luminosity": 3.5,
-    "radius": 256.0,
+    "radius": 192.0,
     "attenuation_constant": 1.0,
     "attenuation_linear": 3.0,
     "attenuation_quadratic": 1.0,
@@ -58,6 +94,24 @@
       "dampen": 0.0041,
       "radius": 64.0,
       "force": 0.0055,
+      "friction": 0.95
+    }
+  },
+  "fire": {
+    "luminosity": 2.5,
+    "radius": 128.0,
+    "attenuation_constant": 1.0,
+    "attenuation_linear": 3.0,
+    "attenuation_quadratic": 1.0,
+    "distance_flat": 0.0,
+    "distance_scaling": 1.0,
+    "flicker_rate": 0.2,
+    "flicker_radius": 0.005,
+    "color": [1.0, 0.18, 0.04, 1.0],
+    "steering": {
+      "dampen": 0.0041,
+      "radius": 64.0,
+      "force": 0.0052,
       "friction": 0.95
     }
   },

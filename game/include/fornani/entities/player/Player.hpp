@@ -99,6 +99,7 @@ struct PhysicsStats {
 struct Counters {
 	int invincibility{};
 	util::FloatCounter toxicity{};
+	util::FloatCounter chill{};
 };
 
 struct CornerSensor {
@@ -148,7 +149,8 @@ enum class PlayerFlags : std::uint8_t {
 	poisoned,
 	refresh_weapons,
 	laser_collision,
-	no_hurt_effects
+	no_hurt_effects,
+	frozen
 };
 enum class Triggers : std::uint8_t { hurt };
 
@@ -222,6 +224,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void place_at_demo_position() { set_position(m_demo_position); }
 	void reveal_item(int id) { catalog.inventory.reveal_item(id); }
 	void add_toxicity(float amount = 0.1f);
+	void add_chill(float amount = 0.1f);
 
 	// state
 	[[nodiscard]] auto alive() const -> bool { return !health.is_dead(); }
@@ -276,6 +279,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_kick_damage() const -> float;
 	[[nodiscard]] auto get_arm_strength() const -> float;
 	[[nodiscard]] auto get_hurt_effect() const -> HurtEffect const& { return m_hurt_effect; }
+	[[nodiscard]] auto get_chill() const -> float { return counters.chill.get(); }
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 

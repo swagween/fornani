@@ -36,6 +36,22 @@
       "black": [16, 8, 28],
       "max_light": 3.0
     },
+    "frozen": {
+      "black": [9, 7, 27],
+      "max_light": 5.0,
+      "tile_materials": [{ "lookup": 2, "material": 1 }],
+      "qualifying_sparkle_colors": [
+        [47, 148, 214],
+        [150, 201, 229],
+        [64, 184, 224]
+      ],
+      "sparkle_colors": [
+        [255, 177, 248],
+        [190, 255, 233],
+        [255, 248, 172]
+      ],
+      "cold": true
+    },
     "greatwing": {
       "ambience": { "interior": "industrial", "exterior": "firstwind" },
       "platform_sound": "industrial",

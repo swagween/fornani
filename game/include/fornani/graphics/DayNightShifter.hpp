@@ -12,8 +12,8 @@ namespace fornani::graphics {
 
 class DayNightShifter {
   public:
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Sprite& sprite, int ctr);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Sprite& sprite, int ctr, std::uint8_t const native_alpha);
+	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, sf::Sprite& sprite, int ctr);
+	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, sf::Sprite& sprite, int ctr, std::uint8_t const native_alpha);
 
   private:
 	io::Logger m_logger{"Graphics"};

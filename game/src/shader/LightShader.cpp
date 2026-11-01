@@ -46,6 +46,10 @@ void PointLight::unserialize(dj::Json const& in) {
 		m_steering_radius = in["steering"]["radius"].as<float>();
 		m_physics.set_global_friction(in["steering"]["friction"].as<float>());
 	}
+	if (in["color"].is_array()) {
+		auto const& c = in["color"];
+		color = sf::Glsl::Vec4{c[0].as<float>(), c[1].as<float>(), c[2].as<float>(), c[3].as<float>()};
+	}
 }
 
 LightShader::LightShader(ResourceFinder& finder) {
@@ -55,7 +59,7 @@ LightShader::LightShader(ResourceFinder& finder) {
 	if (!m_shader.loadFromFile(vert, frag)) { NANI_LOG_WARN(m_logger, "Failed to load shader {}", frag.string()); }
 }
 
-void LightShader::add_point_light(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distance_scaling, float distance_flat) {
+void LightShader::add_point_light(sf::Vector2f position, int luminosity, float radius, float att_c, float att_l, float att_q, float distance_scaling, float distance_flat, sf::Glsl::Vec4 color) {
 	if (current_point_light >= (MAX_POINT_LIGHTS - 1)) {
 		NANI_LOG_WARN(m_logger, "Maximum lights reached.");
 		return;
@@ -69,11 +73,13 @@ void LightShader::add_point_light(sf::Vector2f position, int luminosity, float r
 	pointlight_attenuation_quadratic.push_back(att_q);
 	pointlight_distance_scaling.push_back(distance_scaling);
 	pointlight_distance_flat.push_back(distance_flat);
+	pointlight_color.push_back(color);
 
 	current_point_light++;
 }
 
-void LightShader::add_spotlight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outer_cutoff, float distance_scaling, float distance_flat) {
+void LightShader::add_spotlight(sf::Vector2f position, sf::Vector2f direction, int luminosity, float radius, float att_c, float att_l, float att_q, float cutoff, float outer_cutoff, float distance_scaling, float distance_flat,
+								sf::Glsl::Vec4 color) {
 	if (current_spotlight >= (MAX_POINT_LIGHTS - 1)) {
 		NANI_LOG_WARN(m_logger, "Maximum lights reached.");
 		return;
@@ -90,6 +96,7 @@ void LightShader::add_spotlight(sf::Vector2f position, sf::Vector2f direction, i
 	spotlight_outer_cutoff.push_back(outer_cutoff);
 	spotlight_distance_scaling.push_back(distance_scaling);
 	spotlight_distance_flat.push_back(distance_flat);
+	spotlight_color.push_back(color);
 
 	current_spotlight++;
 }
@@ -102,6 +109,7 @@ void LightShader::finalize(float max_light) {
 
 	m_shader.setUniform("pointlight_count", current_point_light + 1);
 	m_shader.setUniformArray("pointlight_position", pointlight_position.data(), pointlight_position.size());
+	m_shader.setUniformArray("pointlight_color", pointlight_color.data(), pointlight_color.size());
 	m_shader.setUniformArray("pointlight_luminence", pointlight_luminosity.data(), pointlight_luminosity.size());
 	m_shader.setUniformArray("pointlight_radius", pointlight_radius.data(), pointlight_radius.size());
 	m_shader.setUniformArray("pointlight_attenuation_constant", pointlight_attenuation_constant.data(), pointlight_attenuation_constant.size());
@@ -113,6 +121,7 @@ void LightShader::finalize(float max_light) {
 	m_shader.setUniform("spotlight_count", current_spotlight + 1);
 	m_shader.setUniformArray("spotlight_position", spotlight_position.data(), spotlight_position.size());
 	m_shader.setUniformArray("spotlight_direction", spotlight_direction.data(), spotlight_direction.size());
+	m_shader.setUniformArray("spotlight_color", spotlight_color.data(), spotlight_color.size());
 	m_shader.setUniformArray("spotlight_luminence", spotlight_luminosity.data(), spotlight_luminosity.size());
 	m_shader.setUniformArray("spotlight_radius", spotlight_radius.data(), spotlight_radius.size());
 	m_shader.setUniformArray("spotlight_attenuation_constant", spotlight_attenuation_constant.data(), spotlight_attenuation_constant.size());
@@ -126,7 +135,35 @@ void LightShader::finalize(float max_light) {
 	m_shader.setUniform("u_darken", m_darken_factor);
 }
 
-void LightShader::submit(sf::RenderWindow& win, Palette& palette, sf::Sprite const& sprite) {
+void LightShader::set_sparkle(bool enabled, sf::Texture const& white_noise, sf::Texture const& diagonal_mask, float intensity, sf::Color highlight, std::span<sf::Color const> qualifying_colors, std::span<sf::Color const> colors,
+							  sf::Vector2f cam) {
+	m_shader.setUniform("u_sparkle_enabled", enabled);
+	m_shader.setUniform("u_sparkle_intensity", intensity);
+	m_shader.setUniform("u_sparkle_highlight", sf::Glsl::Vec4{highlight});
+	m_shader.setUniform("u_resolution", sf::Glsl::Vec2{white_noise.getSize()});
+	m_shader.setUniform("u_white_noise", white_noise);
+	m_shader.setUniform("u_diagonal_mask", diagonal_mask);
+	m_shader.setUniform("u_diagonal_mask_size", sf::Glsl::Vec2{diagonal_mask.getSize()});
+	m_shader.setUniform("u_diagonal_mask_pixel_scale", 2.f);
+	auto const parallax = 0.3f;
+	sf::Vector2f mask_offset{cam.x * parallax / 480.f, cam.y * parallax / 256.f};
+	m_shader.setUniform("u_diagonal_mask_offset", sf::Glsl::Vec2{mask_offset});
+
+	auto set_colors = [this](std::string_view uniform, std::span<sf::Color const> colors, std::size_t max) {
+		auto const count = std::min(colors.size(), max);
+		std::array<sf::Glsl::Vec3, 3> values{};
+
+		for (auto const [i, color] : std::views::enumerate(colors | std::views::take(count))) { values[i] = {static_cast<float>(color.r) / 255.f, static_cast<float>(color.g) / 255.f, static_cast<float>(color.b) / 255.f}; }
+
+		m_shader.setUniform(std::string{uniform} + "_count", static_cast<int>(count));
+		m_shader.setUniformArray(std::string{uniform}, values.data(), count);
+	};
+
+	set_colors("u_sparkle_colors", colors, 3);
+	set_colors("u_sparkle_qualifying_colors", qualifying_colors, 3);
+}
+
+void LightShader::submit(sf::RenderTarget& win, Palette& palette, sf::Sprite const& sprite) {
 	m_shader.setUniform("palette_size", static_cast<int>(palette.get_size()));
 	m_shader.setUniform("palette", palette.get_texture().getTexture());
 	m_shader.setUniform("texture", sprite.getTexture());
@@ -145,6 +182,7 @@ void LightShader::clear_point_lights() {
 	pointlight_attenuation_quadratic.clear();
 	pointlight_distance_scaling.clear();
 	pointlight_distance_flat.clear();
+	pointlight_color.clear();
 }
 
 void LightShader::clear_spotlights() {
@@ -159,6 +197,7 @@ void LightShader::clear_spotlights() {
 	spotlight_cutoff.clear();
 	spotlight_outer_cutoff.clear();
 	spotlight_distance_scaling.clear();
+	spotlight_color.clear();
 }
 
 void LightShader::debug() {

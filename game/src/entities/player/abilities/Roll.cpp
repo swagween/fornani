@@ -16,9 +16,12 @@ Roll::Roll(automa::ServiceProvider& svc, world::Map& map, shape::Collider& colli
 }
 
 void Roll::update(shape::Collider& collider, PlayerController& controller) {
+	auto speed = m_multiplier;
+	auto const on_ice = collider.has_flag_set(shape::ColliderFlags::on_ice);
+	if (on_ice) { speed *= 1.0f; }
 	if (m_direction.lnr != collider.get_direction().lnr) {
 		m_state = AnimState::turn_slide;
-		m_multiplier *= 0.99f;
+		speed *= 0.99f;
 	}
 	if (m_request.running()) {
 		m_request.update();
@@ -30,13 +33,13 @@ void Roll::update(shape::Collider& collider, PlayerController& controller) {
 		}
 		return;
 	}
-	controller.set_flag(PlayerControllerFlags::slide_jump);
+	if (!on_ice) { controller.set_flag(PlayerControllerFlags::slide_jump); }
 	Ability::update(collider, controller);
 	if (m_duration.is_complete()) {
 		collider.physics.acceleration.x = {};
 		return;
 	}
-	auto mult = m_direction.as_float() * m_multiplier * collider.acceleration_multiplier;
+	auto mult = m_direction.as_float() * speed * collider.acceleration_multiplier;
 	if (!collider.flags.external_state.consume(shape::ExternalState::roll_collision)) {
 		collider.physics.acceleration.x = mult;
 		collider.physics.velocity.x = mult;

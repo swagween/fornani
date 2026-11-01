@@ -5,4 +5,5 @@ nani_add_sources(
   HoloShader.cpp
     LightShader.cpp
     Palette.cpp
+    SparkleShader.cpp
 )

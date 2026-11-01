@@ -12,6 +12,7 @@ Wallslide::Wallslide(automa::ServiceProvider& svc, world::Map& map, shape::Colli
 	m_state = AnimState::wallslide;
 	m_duration.start();
 	svc.soundboard.repeat_sound("nani_wallslide");
+	collider.set_flag(shape::ColliderFlags::on_ice, false);
 }
 
 void Wallslide::update(shape::Collider& collider, PlayerController& controller) {

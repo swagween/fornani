@@ -212,6 +212,12 @@
     "framerate": 16,
     "dimensions": [8, 8]
   },
+  "breath": {
+    "frame_count": 4,
+    "framerate": 90,
+    "dimensions": [8, 8],
+    "x_reflection": true
+  },
   "drop_collect": {
     "frame_count": 4,
     "framerate": 16,

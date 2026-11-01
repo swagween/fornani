@@ -10,7 +10,7 @@ namespace fornani {
 class FilterShader {
   public:
 	FilterShader(ResourceFinder& finder, sf::Vector2u size);
-	void finalize(float time, sf::Vector2u size, sf::Vector2f position, sf::Color highlight, float intensity = 0.f);
+	void finalize(float time, sf::Vector2u size, sf::Vector2f position, sf::Color highlight, float intensity = 0.f, sf::Texture const* overlay = nullptr, float radius = 1.f);
 	void submit(sf::RenderWindow& win);
 	void draw(sf::Drawable const& target);
 

@@ -26,6 +26,7 @@ Walljump::Walljump(automa::ServiceProvider& svc, world::Map& map, shape::Collide
 	m_duration.start(72);
 	m_beginning.start();
 	m_direction.lnr = direction.left() ? LNR::right : LNR::left;
+	collider.set_flag(shape::ColliderFlags::on_ice, false);
 }
 
 void Walljump::update(shape::Collider& collider, PlayerController& controller) {

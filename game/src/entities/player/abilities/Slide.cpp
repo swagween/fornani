@@ -18,28 +18,35 @@ Slide::Slide(automa::ServiceProvider& svc, world::Map& map, shape::Collider& col
 
 void Slide::update(shape::Collider& collider, PlayerController& controller) {
 	Ability::update(collider, controller);
+	auto speed = m_speed_multiplier;
+	auto const on_ice = collider.has_flag_set(shape::ColliderFlags::on_ice);
+	if (on_ice) { speed *= collider.p_physics_properties.ice_inertia; }
 	m_dampen = m_duration.get_cubic_normalized();
 	m_animation_trigger.start(); // always request slide animation
 	auto prev_count = m_accumulated_speed.get_count();
-	if (collider.downhill()) {
+	if (collider.downhill() || on_ice) {
 		m_duration.start();
-		m_accumulated_speed.update();
+		if (!on_ice) { m_accumulated_speed.update(); }
 	} else {
 		m_accumulated_speed.update(-1);
 	}
 	auto super_threshold = 200;
 	auto super = m_accumulated_speed.get_count() > super_threshold;
-	controller.set_flag(PlayerControllerFlags::slide_jump);
+	if (!on_ice) { controller.set_flag(PlayerControllerFlags::slide_jump); }
 	if (super) { controller.set_flag(PlayerControllerFlags::super_slide); }
 	if (m_accumulated_speed.get_count() == super_threshold && prev_count < m_accumulated_speed.get_count()) { m_services->soundboard.flags.player.set(audio::Player::super_slide); }
-	collider.physics.acceleration.x = m_direction.as_float() * (m_speed_multiplier * m_dampen + static_cast<float>(m_accumulated_speed.get_count()) * 0.01f);
+	collider.physics.acceleration.x = m_direction.as_float() * (speed * m_dampen + static_cast<float>(m_accumulated_speed.get_count()) * 0.01f);
 	if ((std::abs(collider.physics.apparent_velocity().x) < m_minimum_threshold) || !collider.slide_grounded() || Direction{controller.last_requested_direction()}.lnr != m_direction.lnr) {
 		controller.post_slide.start();
 		fail();
 	}
 	if (m_services->ticker.every_x_ticks(12)) {
-		auto tag = super ? "super_slide" : "slide";
-		m_map->spawn_emitter(*m_services, tag, collider.jumpbox.get_position(), Direction(UND::up), collider.jumpbox.get_dimensions());
+		if (m_map->is_cold()) {
+			m_map->spawn_emitter(*m_services, "frost", collider.jumpbox.get_position(), Direction(UND::up), collider.jumpbox.get_dimensions(), colors::white, random::range(0, 7));
+		} else {
+			auto tag = super ? "super_slide" : "slide";
+			m_map->spawn_emitter(*m_services, tag, collider.jumpbox.get_position(), Direction(UND::up), collider.jumpbox.get_dimensions());
+		}
 	}
 }
 

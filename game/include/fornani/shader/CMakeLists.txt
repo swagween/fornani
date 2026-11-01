@@ -5,4 +5,5 @@ nani_add_headers(
   HoloShader.hpp
 	LightShader.hpp
 	Palette.hpp
+  SparkleShader.hpp
 )

@@ -59,6 +59,7 @@ class Layer {
 	[[nodiscard]] auto get_layer_type() const -> LayerType { return m_type; }
 	[[nodiscard]] auto ignore_lighting() const -> bool { return m_flags.test(LayerFlags::ignore_lighting); }
 	[[nodiscard]] auto is_animated() const -> bool { return m_flags.test(LayerFlags::animated); }
+	auto get_texture() const -> sf::Texture const&;
 	bool collidable{};
 	sf::Vector2<std::uint32_t> dimensions{};
 
@@ -66,8 +67,9 @@ class Layer {
 
   private:
 	void generate_textures(sf::Texture const& tex, bool day_night_shift);
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false) const;
-	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false) const;
+	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false, bool sparkle = false) const;
+	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false,
+				bool sparkle = false) const;
 	std::uint8_t m_render_order{};
 	LayerType m_type{};
 	LayerTexture m_texture{};

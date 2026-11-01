@@ -35,7 +35,7 @@ class FloatCounter {
 		if (m_value >= m_cycle_point) { m_value -= m_cycle_point; }
 	}
 	constexpr void update() noexcept { update(m_interval); }
-	constexpr void set(int const value) { m_value = value; }
+	constexpr void set(float const value) { m_value = value; }
 	constexpr void cancel() { m_value = -1.f; }
 	[[nodiscard]] auto running() const -> bool { return m_value != 0.f; }
 	[[nodiscard]] auto canceled() const -> bool { return m_value == -1.f; }

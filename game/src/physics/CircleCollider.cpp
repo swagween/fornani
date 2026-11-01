@@ -38,7 +38,17 @@ void CircleCollider::handle_collision(ICollider& other) {
 
 void CircleCollider::handle_collider_collision(Collider const& collider, bool momentum) { handle_collision(collider.bounding_box, collider.has_trait(ColliderTrait::block)); }
 
-void CircleCollider::detect_map_collision(world::Map& map) { handle_map_collision(map); }
+void CircleCollider::detect_map_collision(world::Map& map) {
+	set_flag(ColliderFlags::on_ice, false);
+	handle_map_collision(map);
+}
+
+void CircleCollider::handle_map_collision(world::Tile const& tile) {
+	handle_collision(tile.bounding_box);
+	if (tile.get_material() == world::TileMaterial::ice) {
+		if (sensor.is_very_near(tile.bounding_box)) { set_flag(ColliderFlags::on_ice); }
+	}
+}
 
 void CircleCollider::resolve_collision() {
 	physics.position += m_correction;

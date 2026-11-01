@@ -38,6 +38,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().vert_threshold = 0.1f;
 
 	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
+	get_collider().set_flag(shape::ColliderFlags::custom_properties);
 	get_collider().set_trait(shape::ColliderTrait::block);
 	get_collider().set_trait(shape::ColliderTrait::pushable);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);
@@ -50,6 +51,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().wallslide_buffer = 0.9f;
 	m_intro.start();
 	get_collider().physics.acceleration.x = speed / mass;
+	get_collider().p_physics_properties.ice_friction = 0.999f;
 }
 
 void Pushable::update(automa::ServiceProvider& svc, Map& map, player::Player& player) {
@@ -223,6 +225,17 @@ void Pushable::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::V
 		win.draw(*this);
 		++debug::draw_calls;
 	}
+}
+
+void Pushable::render(automa::ServiceProvider& svc, sf::RenderTexture& tex, sf::Vector2f cam) {
+	Drawable::set_position(collision_box.get_position() + sf::Vector2f{0.f, 0.5f} + random_offset);
+	m_blink.get_normalized() < 0.25f ? m_return_indicator.setOutlineColor(colors::red) : m_blink.get_normalized() < 0.5f ? m_return_indicator.setOutlineColor(colors::dark_fucshia) : m_return_indicator.setOutlineColor(colors::transparent);
+	m_blink.get_normalized() < 0.25f ? m_return_indicator.setOutlineThickness(-4.f) : m_blink.get_normalized() < 0.5f ? m_return_indicator.setOutlineThickness(-2.f) : m_return_indicator.setOutlineThickness(-4.f);
+
+	m_return_indicator.setPosition(start_position);
+	if (has_flag_set(PushableFlags::trying_to_respawn)) { tex.draw(m_return_indicator); }
+	tex.draw(*this);
+	++debug::draw_calls;
 }
 
 void Pushable::on_hit(automa::ServiceProvider& svc, world::Map& map, arms::Projectile& proj) {
