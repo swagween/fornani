@@ -158,9 +158,11 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 	if (meta["weather"]) {
 		m_weather_specs.emplace(vfx::WeatherSpecifications{meta["weather"]});
 		if (svc.world_clock.happens(WorldClockInterval::day, m_weather_specs->chance)) {
-			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->params);
-			svc.ambience_player.load(svc.finder, m_weather_specs->ambience);
-			svc.ambience_player.play();
+			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->type);
+			if (auto const& amb = m_weather.value()->get_parameters().ambience) {
+				svc.ambience_player.load(svc.finder, *amb);
+				svc.ambience_player.play();
+			}
 		}
 	}
 	auto bg_type = m_weather ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();
@@ -422,11 +424,13 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	// weather
 	if (svc.ticker.every_x_ticks(24)) {
 		if (m_weather && !m_attributes.properties.test(MapProperties::interior)) {
-			auto chance_per_point = 20;
-			for (auto& p : m_surface_points) {
-				if (random::percent_chance(chance_per_point)) {
-					auto pos = p.position + sf::Vector2f{random::range_float(-8.f, 8.f), 0.f};
-					spawn_effect(svc, m_weather_specs->effect, pos);
+			if (auto const& eff = m_weather.value()->get_parameters().effect) {
+				auto chance_per_point = 20;
+				for (auto& p : m_surface_points) {
+					if (random::percent_chance(chance_per_point)) {
+						auto pos = p.position + sf::Vector2f{random::range_float(-8.f, 8.f), 0.f};
+						spawn_effect(svc, *eff, pos);
+					}
 				}
 			}
 		}
@@ -892,9 +896,11 @@ void Map::determine_weather() {
 	if (meta["weather"]) {
 		m_weather_specs.emplace(vfx::WeatherSpecifications{meta["weather"]});
 		if (svc.world_clock.happens(WorldClockInterval::day, m_weather_specs->chance)) {
-			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->params);
-			svc.ambience_player.load(svc.finder, m_weather_specs->ambience);
-			svc.ambience_player.play();
+			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->type);
+			if (auto const& amb = m_weather.value()->get_parameters().ambience) {
+				svc.ambience_player.load(svc.finder, *amb);
+				svc.ambience_player.play();
+			}
 		}
 	}
 	auto bg_type = m_weather ? meta["background"].as_string() + "_" + m_weather_specs->type : meta["background"].as_string();

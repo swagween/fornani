@@ -147,6 +147,11 @@
     "dimensions": [16, 16],
     "x_reflection": true
   },
+  "fallen_snow": {
+    "frame_count": 5,
+    "framerate": 60,
+    "dimensions": [16, 16]
+  },
   "large_explosion": {
     "frame_count": 8,
     "framerate": 30,

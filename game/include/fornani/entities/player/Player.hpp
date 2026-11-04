@@ -113,7 +113,7 @@ struct HurtEffect {
 	float damage;
 };
 
-enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated };
+enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated, frozen };
 enum class PlayerFlags : std::uint8_t {
 	killed,
 	dir_switch,

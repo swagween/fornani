@@ -53,7 +53,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": 0,
+    "development_status": 1,
     "dimensions": [
       32,
       16
@@ -64,7 +64,7 @@
       24
     ],
     "minimap": true,
-    "music": "",
+    "music": "brown",
     "player_start": [
       0,
       0
@@ -82,7 +82,11 @@
       "darken_factor": 5
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": {
+      "chance": 1,
+      "type": "snow"
+    }
   },
   "tile": {
     "animated": [

@@ -19,6 +19,7 @@ void Animation::start() {
 void Animation::update() {
 	frame_timer.update();
 	global_counter.update();
+	if (flags.test(State::paused)) { return; }
 	if (params.interruptible && flags.test(State::param_switch)) {
 		switch_params();
 		return;
@@ -27,7 +28,7 @@ void Animation::update() {
 
 		// reset the timers
 		flags.set(State::keyframe);
-		frame_timer.start(params.framerate);
+		frame_timer.start(get_framerate());
 		auto dir = flags.test(State::inverted) ? -1 : 1;
 		frame.get_count() == 0 && flags.test(State::inverted) ? frame.cancel() : frame.update(dir); // increment frame
 
@@ -77,7 +78,7 @@ void Animation::set_params(Parameters const new_params, bool hard) {
 void Animation::switch_params() {
 	params = next_params;
 	global_counter.start();
-	frame_timer.start(params.framerate);
+	frame_timer.start(get_framerate());
 	refresh();
 }
 
@@ -91,7 +92,7 @@ void Animation::log_info() const { NANI_LOG_INFO(m_logger, "\n\nCurrent Frame: [
 
 int Animation::get_frame() const { return frame.canceled() ? params.lookup : params.lookup + frame.get_count(); }
 
-auto Animation::is_first_loop() const -> bool { return global_counter.get_count() < params.duration * params.framerate; }
+auto Animation::is_first_loop() const -> bool { return global_counter.get_count() < params.duration * get_framerate(); }
 
 auto Parameters::from_json(dj::Json const& in) -> Parameters {
 	Parameters ret{};

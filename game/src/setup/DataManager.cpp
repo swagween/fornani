@@ -191,6 +191,8 @@ void DataManager::load_game_data(ResourceFinder& finder) {
 	assert(!travel.is_null());
 	interactables = *dj::Json::from_file((finder.resource_path() + "/data/level/interactables.json").c_str());
 	assert(!interactables.is_null());
+	weather = *dj::Json::from_file((finder.resource_path() + "/data/level/weather.json").c_str());
+	assert(!weather.is_null());
 
 	platform = *dj::Json::from_file((finder.resource_path() + "/data/level/platform.json").c_str());
 	assert(!platform.is_null());

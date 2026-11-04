@@ -400,7 +400,8 @@ void Canvas::report_weather() {
 		ImGui::SliderFloat("Chance", &m_weather->chance, 0.f, 1.f, "%.1f");
 		if (ImGui::Button("Remove")) { m_weather.reset(); }
 	} else {
-		if (ImGui::Button("Add Weather")) { m_weather.emplace(); }
+		if (ImGui::Button("Add Rain")) { m_weather.emplace("rain", 1.f); }
+		if (ImGui::Button("Add Snow")) { m_weather.emplace("snow", 1.f); }
 	}
 }
 

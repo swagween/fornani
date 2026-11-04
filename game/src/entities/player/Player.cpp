@@ -187,6 +187,7 @@ void Player::unregister_with_map() {
 
 void Player::update(world::Map& map) {
 	if (is_dead() && !m_death_cooldown.running()) { m_death_cooldown.start(); }
+	if (is_dead()) { controller.restrict_movement(); }
 	set_flag(PlayerFlags::in_front_of_door, false);
 	m_death_cooldown.update();
 	cooldowns.suffocate.update();
@@ -228,11 +229,13 @@ void Player::update(world::Map& map) {
 	}
 
 	// chill
-	if (!is_dead()) { map.is_cold() ? add_chill(0.0004f) : add_chill(-0.0005f); }
+	if (!is_dead()) { map.is_cold() ? add_chill(0.0002f) : add_chill(-0.0005f); }
 	if (counters.chill.get() < 0.f) { counters.chill.reset(); }
 	if (counters.chill.get() >= 1.f) {
 		set_flag(PlayerFlags::frozen);
-		hurt();
+		set_flag(PlayerFlags::no_hurt_effects);
+		hurt(max_damage_v, true);
+		m_death_type.emplace(PlayerDeathType::frozen);
 		counters.chill.set(0.8f);
 	}
 	auto ccolor = colors::ice_blue;
@@ -241,6 +244,8 @@ void Player::update(world::Map& map) {
 		ccolor = gradient_color(cvec, counters.chill.get());
 		flat_shade(ccolor);
 	}
+	if (counters.chill.get() > 0.3f) { m_services->soundboard.repeat_sound("ice_cracks"); }
+	p_animatable.animation.framerate_multiplier = 1.f + counters.chill.get();
 
 	// laser logic
 	if (consume_flag(PlayerFlags::laser_collision)) {
@@ -779,10 +784,11 @@ void Player::update_animation() {
 	if (consume_flag(PlayerFlags::sleep)) { m_animation_machine.request(AnimState::sleep); }
 	if (consume_flag(PlayerFlags::wake_up)) { m_animation_machine.request(AnimState::wake_up); }
 
-	if (is_dead()) {
+	if (is_dead() && !has_death_type(PlayerDeathType::frozen)) {
 		has_death_type(PlayerDeathType::drowned) ? m_animation_machine.request(AnimState::drown) : m_animation_machine.request(AnimState::die);
 		set_flag(PlayerFlags::show_weapon, false);
 	}
+	if (has_death_type(PlayerDeathType::frozen)) { p_animatable.pause(); }
 
 	if (has_flag_set(PlayerFlags::holding_item)) { set_flag(PlayerFlags::show_weapon, false); }
 
@@ -1067,7 +1073,7 @@ void Player::walk() {
 	auto const stuck_right = get_collider().has_right_collision() || (get_collider().has_head_collision() && directions.actual.right() && !get_collider().downhill());
 	auto speed = grounded() ? physics_stats.x_acc * controller.horizontal_movement() : (physics_stats.x_acc / physics_stats.air_multiplier) * controller.horizontal_movement();
 	if (get_collider().has_flag_set(shape::ColliderFlags::on_ice)) { speed *= get_collider().p_physics_properties.ice_inertia; }
-	if (counters.chill.get() > 0.1f) { speed *= 1.f - (counters.chill.get() * 0.5f); }
+	if (counters.chill.get() > 0.1f) { speed *= 1.f - (counters.chill.get() * 0.3f); }
 	if (controller.moving_right()) {
 		if (!stuck_right) {
 			get_collider().physics.acceleration.x = speed;
@@ -1090,21 +1096,19 @@ void Player::hurt(float amount, bool force) {
 	if (!health.invincible() || force) {
 		auto const effects = !has_flag_set(PlayerFlags::no_hurt_effects);
 		m_hurt_cooldown.start();
-		health.inflict(amount, force);
+		health.inflict(amount, force, !has_flag_set(PlayerFlags::frozen));
 		health_indicator.add(-amount);
 		get_collider().physics.velocity.y = 0.0f;
 		get_collider().physics.acceleration.y += -physics_stats.hurt_acc;
 		force_cooldown.start(60);
 
+		auto const systemic = has_flag_set(PlayerFlags::poisoned) || has_flag_set(PlayerFlags::frozen);
+
 		if (effects) {
 			m_hurt_effect.timer.start();
 			m_hurt_effect.color = has_flag_set(PlayerFlags::poisoned) ? colors::mythic_green : colors::pioneer_black;
 			m_hurt_effect.damage = std::min(-health_indicator.get_amount(), 4.f);
-			auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp"
-					   : cooldowns.stun.started()															  ? "nani_stun"
-					   : consume_flag(PlayerFlags::poisoned)												  ? "nani_gulp"
-					   : amount > 1.f																		  ? "nani_double_hurt"
-																											  : "nani_hurt";
+			auto tag = has_death_type(PlayerDeathType::swallowed) || has_death_type(PlayerDeathType::drowned) ? "nani_gulp" : cooldowns.stun.started() ? "nani_stun" : systemic ? "nani_gulp" : amount > 1.f ? "nani_double_hurt" : "nani_hurt";
 			m_services->soundboard.play_sound(tag);
 			m_services->soundboard.play_sound("impact");
 			if (health.is_dead() && !is_dead()) {
@@ -1119,7 +1123,7 @@ void Player::hurt(float amount, bool force) {
 				m_services->ticker.freeze_frame(2.5f, 4.f);
 			}
 			if (m_map) {
-				if (consume_flag(PlayerFlags::frozen)) {
+				if (systemic) {
 				} else {
 					m_map.value()->spawn_emitter(*m_services, "player_blood", get_collider().get_center(), Direction{});
 					m_map.value()->spawn_frame_effect(*m_services, "hurt_spark", hurtbox.get_center());
@@ -1128,9 +1132,12 @@ void Player::hurt(float amount, bool force) {
 			auto const energy = amount > 1.f ? 0.15f : 0.05f;
 			m_services->camera_controller.shake(2, energy, 200, 50);
 		}
-		if (m_map) { m_map.value()->sound_impact(); }
+		if (m_map && !has_flag_set(PlayerFlags::frozen)) { m_map.value()->sound_impact(); }
 		hurt_cooldown.start(2);
 		set_flag(PlayerFlags::no_hurt_effects, false);
+
+		set_flag(PlayerFlags::poisoned, false);
+		set_flag(PlayerFlags::frozen, false);
 	}
 }
 
@@ -1270,6 +1277,8 @@ void Player::start_over() {
 	m_death_type.reset();
 	m_air_supply.refill();
 	health.reset();
+	p_animatable.animation.framerate_multiplier = 1.f;
+	p_animatable.unpause();
 	counters.toxicity.reset();
 	counters.chill.reset();
 	controller.unrestrict();

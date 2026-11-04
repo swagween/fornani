@@ -26,7 +26,7 @@ struct Parameters {
 	static auto from_json(dj::Json const& in) -> Parameters;
 };
 
-enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete, inverted };
+enum class State : std::uint8_t { param_switch, keyframe, oneoff_complete, inverted, paused };
 
 struct Animation {
 
@@ -43,6 +43,8 @@ struct Animation {
 	void set_frame(int to) { frame.set(to); }
 	void linger_on_frame(int which, bool condition);
 	void end() { frame.cancel(); }
+	void pause() { flags.set(State::paused); }
+	void unpause() { flags.reset(State::paused); }
 	void log_info() const;
 	int get_frame() const;
 
@@ -62,11 +64,14 @@ struct Animation {
 	[[nodiscard]] auto just_started() const -> bool { return global_counter.get_count() == 1; }
 	[[nodiscard]] auto get_frame_count() const -> int { return frame.get_count(); }
 	[[nodiscard]] auto get_elapsed_ticks() const -> int { return global_counter.get_count(); }
+	[[nodiscard]] auto get_framerate() const -> int { return static_cast<int>(static_cast<float>(params.framerate) * framerate_multiplier); }
 
 	util::Cooldown frame_timer{};
 	util::Counter global_counter{};
 	util::Counter loop{};
 	util::Counter frame{};
+
+	float framerate_multiplier{1.f};
 
 	util::BitFlags<State> flags{};
 	io::Logger m_logger{"anim"};

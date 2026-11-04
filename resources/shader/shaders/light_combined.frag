@@ -200,24 +200,25 @@ void main() {
     vec3 light_color_sum = vec3(0.0);
     float total_light_weight = 0.0;
 
-    for(int light = 0; light < pointlight_count; light++) {
-        float amount = CalculatePointLightShift(pixelPoint, light);
-        float weight = max(amount, 0.0);
+    if(u_darken != 0.0) {
+        for(int light = 0; light < pointlight_count; light++) {
+            float amount = CalculatePointLightShift(pixelPoint, light);
+            float weight = max(amount, 0.0);
 
-        highest_amount = max(highest_amount, amount);
-        light_color_sum += pointlight_color[light].rgb * weight;
-        total_light_weight += weight;
+            highest_amount = max(highest_amount, amount);
+            light_color_sum += pointlight_color[light].rgb * weight;
+            total_light_weight += weight;
+        }
+
+        for(int light = 0; light < spotlight_count; light++) {
+            float amount = CalculateSpotLightShift(pixelPoint, light);
+            float weight = max(amount, 0.0);
+
+            highest_amount = max(highest_amount, amount);
+            light_color_sum += spotlight_color[light].rgb * weight;
+            total_light_weight += weight;
+        }
     }
-
-    for(int light = 0; light < spotlight_count; light++) {
-        float amount = CalculateSpotLightShift(pixelPoint, light);
-        float weight = max(amount, 0.0);
-
-        highest_amount = max(highest_amount, amount);
-        light_color_sum += spotlight_color[light].rgb * weight;
-        total_light_weight += weight;
-    }
-
     vec3 light_color = total_light_weight > 0.0001 ? light_color_sum / total_light_weight : vec3(1.0);
 
     float fraction = fract(highest_amount);

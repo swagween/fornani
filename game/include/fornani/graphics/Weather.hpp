@@ -11,24 +11,32 @@
 namespace fornani::vfx {
 
 struct WeatherParameters {
-	int density{};
-	int framerate{};
+	WeatherParameters(dj::Json const& in);
+	int density{1};
+	int framerate{8};
+	float parallax_factor{0.05f};
+	std::optional<std::string> effect{};
+	std::optional<std::string> ambience{};
 };
 
 struct WeatherLayer {
 	std::array<sf::RenderTexture, 16> textures{};
 	float parallax{};
+	float seed{};
 	util::Circuit loop{16};
+	sf::Vector2f position{};
 };
 
 class Weather {
   public:
-	explicit Weather(automa::ServiceProvider& svc, world::Map& map, WeatherParameters params);
+	explicit Weather(automa::ServiceProvider& svc, world::Map& map, std::string_view tag);
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam, std::size_t layer);
 
+	[[nodiscard]] auto get_parameters() const -> WeatherParameters const& { return m_parameters; }
+
   private:
-	WeatherParameters m_parameters{};
+	WeatherParameters m_parameters;
 	std::array<WeatherLayer, 3> m_layers{};
 	sf::IntRect m_rect{};
 
@@ -37,13 +45,10 @@ class Weather {
 
 // for pioneer
 struct WeatherSpecifications {
-	WeatherSpecifications();
+	WeatherSpecifications(std::string_view type, float const chance);
 	WeatherSpecifications(dj::Json const& in);
 	void serialize(dj::Json& out);
 	std::string type{};
-	std::string effect{};
-	std::string ambience{};
-	WeatherParameters params{};
 	float chance{};
 };
 

@@ -28,6 +28,7 @@ class Animatable : public Drawable {
 	void tick();
 	void check_for_switch();
 	void pause();
+	void unpause() { p_anim_flags.reset(AnimatableFlags::paused); }
 
 	/// <summary>
 	/// @brief starts the animation at a random frame.

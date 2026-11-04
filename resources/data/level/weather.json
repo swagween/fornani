@@ -1,0 +1,15 @@
+{
+  "rain": {
+    "ambience": "rain",
+    "density": 1,
+    "effect": "raindrop",
+    "framerate": 8,
+    "type": "rain"
+  },
+  "snow": {
+    "density": 1,
+    "parallax_factor": 0.1,
+    "framerate": 0,
+    "type": "snow"
+  }
+}

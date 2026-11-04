@@ -2493,6 +2493,21 @@
       }
     ]
   },
+  "scenic_view385022346199060": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "^ Scenic View"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "shop385022346526748": {
     "series": [
       {

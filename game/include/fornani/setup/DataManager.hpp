@@ -163,6 +163,7 @@ class DataManager final {
 	dj::Json arenas{};
 	dj::Json travel{};
 	dj::Json interactables{};
+	dj::Json weather{};
 
 	// enemy
 	dj::Json enemy{};

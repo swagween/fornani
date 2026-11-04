@@ -458,6 +458,16 @@
     "fade_out": 100
   },
   {
+    "label": "ice_cracks",
+    "bus": "gameplay",
+    "volume": 0.1,
+    "pitch_offset": 0.0,
+    "min_distance": 64.0,
+    "max_distance": 256.0,
+    "fade_in": 100,
+    "fade_out": 100
+  },
+  {
     "label": "bubbling_liquid",
     "bus": "gameplay",
     "volume": 0.2,
