@@ -9,6 +9,7 @@ nani_add_sources(
         Crow.cpp
         Demolisher.cpp
         Demon.cpp
+        DogfightHulmet.cpp
         DumpsterDiver.cpp
         Eyebit.cpp
         Eyebot.cpp

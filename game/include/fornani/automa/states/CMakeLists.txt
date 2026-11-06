@@ -1,6 +1,7 @@
 nani_add_headers(
         ControlsMenu.hpp
         CreditsMenu.hpp
+        Dogfight.hpp
         Dojo.hpp
         FileMenu.hpp
         Intro.hpp

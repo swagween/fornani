@@ -24,5 +24,6 @@ nani_add_headers(
         TextureUpdater.hpp
         Transition.hpp
         Tutorial.hpp
+        WeatherSpecifications.hpp
 )
 add_subdirectory(rewards)

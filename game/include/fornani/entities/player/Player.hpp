@@ -150,7 +150,8 @@ enum class PlayerFlags : std::uint8_t {
 	refresh_weapons,
 	laser_collision,
 	no_hurt_effects,
-	frozen
+	frozen,
+	dogfight
 };
 enum class Triggers : std::uint8_t { hurt };
 
@@ -215,6 +216,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	void set_slow_walk();
 	void set_knocked_over();
 	void set_sleeping(bool on_floor = false);
+	void set_dogfight();
 	void stall_idle_timer();
 	void flat_shade(sf::Color color);
 	void set_hurt();

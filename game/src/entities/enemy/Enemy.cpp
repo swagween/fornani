@@ -147,6 +147,7 @@ Enemy::Enemy(automa::ServiceProvider& svc, world::Map& map, std::string_view lab
 	if (ieo) {
 		m_effects_overlay.emplace(Animatable{svc, "enemy_" + std::string{label} + "_effects", {ieo["dimensions"][0].as<int>(), ieo["dimensions"][1].as<int>()}});
 		m_effects_overlay->center({ieo["offset"][0].as<float>(), ieo["offset"][1].as<float>()});
+		if (ieo["animation"]) { m_effects_overlay->push_and_set_animation("basic", {0, ieo["animation"]["frames"].as<int>(), ieo["animation"]["framerate"].as<int>(), -1}); }
 	}
 
 	p_animatable.center();
@@ -328,7 +329,7 @@ void Enemy::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vect
 	auto sprite_position = get_collider().get_center() - cam + m_random_offset + m_native_offset.componentWiseMul(horizontal_offset);
 	p_animatable.set_position(sprite_position);
 	if (m_effects_overlay) {
-		m_effects_overlay->set_frame(p_animatable.get_frame());
+		if (!m_effects_overlay->has_animation("basic")) { m_effects_overlay->set_frame(p_animatable.get_frame()); }
 		m_effects_overlay->set_position(sprite_position);
 		m_effects_overlay->set_scale(p_animatable.get_scale());
 	}

@@ -867,6 +867,38 @@
       }
     ]
   },
+  "dogfight_bryn": {
+    "id": 35,
+    "dimensions": [24, 24],
+    "sprite_dimensions": [26, 26],
+    "sprite_offset": [0, -11],
+    "animation": [
+      {
+        "label": "idle",
+        "parameters": [0, 8, 30, -1, false]
+      },
+      {
+        "label": "walk",
+        "parameters": [8, 4, 24, -1, false]
+      },
+      {
+        "label": "turn",
+        "parameters": [12, 1, 32, 0, false]
+      },
+      {
+        "label": "sit",
+        "parameters": [13, 1, 32, -1, true]
+      },
+      {
+        "label": "looping_1",
+        "parameters": [18, 2, 256, -1, false]
+      },
+      {
+        "label": "oneoff_1",
+        "parameters": [20, 1, 320, 0, false]
+      }
+    ]
+  },
   "loth": {
     "id": 37,
     "dimensions": [24, 24],

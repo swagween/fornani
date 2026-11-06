@@ -87,11 +87,7 @@
     "special_drop_id": 0,
     "use_template": false,
     "weather": {
-      "ambience": "rain",
       "chance": 0.30000001192092896,
-      "density": 1,
-      "effect": "raindrop",
-      "framerate": 8,
       "type": "rain"
     }
   },

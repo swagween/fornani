@@ -20,10 +20,11 @@ struct WeatherParameters {
 };
 
 struct WeatherLayer {
-	std::array<sf::RenderTexture, 16> textures{};
+	std::vector<sf::RenderTexture> textures{};
 	float parallax{};
 	float seed{};
-	util::Circuit loop{16};
+	std::size_t render_order{};
+	util::Circuit loop;
 	sf::Vector2f position{};
 };
 
@@ -37,19 +38,10 @@ class Weather {
 
   private:
 	WeatherParameters m_parameters;
-	std::array<WeatherLayer, 3> m_layers{};
+	std::vector<WeatherLayer> m_layers{};
 	sf::IntRect m_rect{};
 
 	io::Logger m_logger{"Weather"};
-};
-
-// for pioneer
-struct WeatherSpecifications {
-	WeatherSpecifications(std::string_view type, float const chance);
-	WeatherSpecifications(dj::Json const& in);
-	void serialize(dj::Json& out);
-	std::string type{};
-	float chance{};
 };
 
 } // namespace fornani::vfx

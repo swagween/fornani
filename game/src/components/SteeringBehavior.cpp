@@ -52,7 +52,7 @@ void SteeringBehavior::inertial_seek(components::PhysicsComponent& physics, sf::
 	// Normalize
 	sf::Vector2f desired = toTarget / distance;
 
-	// 🔑 Scale speed based on distance
+	// Scale speed based on distance
 	float speed = max_speed;
 	if (distance < 100.f) speed *= (distance / 100.f);
 
@@ -132,6 +132,26 @@ void SteeringBehavior::arrive(components::PhysicsComponent& physics, sf::Vector2
 	if (steering_length > params.thrust_power) { steering *= params.thrust_power / steering_length; }
 
 	physics.apply_force(steering);
+}
+
+void SteeringBehavior::pursue(components::PhysicsComponent& physics, sf::Vector2f target_position, sf::Vector2f target_velocity, sf::Vector2f target_forward, PursuitParameters const& params) {
+	auto const position = physics.position;
+	auto const velocity = physics.actual_velocity();
+
+	auto const predicted_position = target_position + target_velocity * params.prediction_time;
+	auto const trailing_point = predicted_position - target_forward * params.trailing_distance;
+
+	auto error = trailing_point - position;
+	auto const distance = std::hypot(error.x, error.y);
+
+	if (distance < 60.f) { error = {}; }
+
+	auto force = error * params.stiffness + (target_velocity - velocity) * params.damping;
+	auto const magnitude = std::hypot(force.x, force.y);
+
+	if (magnitude > params.max_force) { force *= params.max_force / magnitude; }
+
+	physics.apply_force(force);
 }
 
 void SteeringBehavior::evade(components::PhysicsComponent& physics, sf::Vector2f point, float strength, float max_force) {

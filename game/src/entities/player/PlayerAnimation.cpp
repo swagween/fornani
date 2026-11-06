@@ -57,7 +57,8 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 									 {"melee_roundhouse_kick", {153, 4, 7 * nani_animation_rate_v, 0}},
 									 {"drink", {162, 12, 7 * nani_animation_rate_v, 0}},
 									 {"uphill_ramp_death", {181, 1, nani_animation_rate_v, -1}},
-									 {"downhill_ramp_death", {182, 1, nani_animation_rate_v, -1}}});
+									 {"downhill_ramp_death", {182, 1, nani_animation_rate_v, -1}},
+									 {"dogfight", {183, 4, 4 * nani_animation_rate_v, -1}}});
 
 	state_function = state_function();
 	m_player->p_animatable.animation.set_params(get_params("idle"));
@@ -128,6 +129,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	if (change_state(AnimState::shield, get_params("shield"))) { return PA_BIND(update_shield); }
 	if (change_state(AnimState::hurt, get_params("hurt"))) { return PA_BIND(update_hurt); }
 	if (change_state(AnimState::turn, get_params("turn"))) { return PA_BIND(update_turn); }
+	if (change_state(AnimState::dogfight, get_params("dogfight"))) { return PA_BIND(update_dogfight); }
 
 	return std::move(state_function);
 }
@@ -1379,7 +1381,14 @@ fsm::StateFunction PlayerAnimation::update_corner_flip() {
 		m_player->p_animatable.animation.set_params(get_params("suspend"));
 		return PA_BIND(update_suspend);
 	}
-	return PA_BIND(update_walljump);
+	return PA_BIND(update_corner_flip);
+}
+
+fsm::StateFunction PlayerAnimation::update_dogfight() {
+	m_player->p_animatable.animation.label = "dogfight";
+	p_state.actual = AnimState::dogfight;
+	if (change_state(AnimState::die, get_params("die"), true)) { return PA_BIND(update_die); }
+	return PA_BIND(update_dogfight);
 }
 
 bool PlayerAnimation::change_state(AnimState next, anim::Parameters params, bool hard) {

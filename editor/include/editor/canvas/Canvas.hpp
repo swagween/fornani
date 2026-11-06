@@ -10,7 +10,7 @@
 #include <fornani/graphics/Background.hpp>
 #include <fornani/graphics/Biome.hpp>
 #include <fornani/graphics/CameraController.hpp>
-#include <fornani/graphics/Weather.hpp>
+#include <fornani/graphics/WeatherSpecifications.hpp>
 #include <fornani/utils/Constants.hpp>
 #include <fornani/world/HazardMap.hpp>
 #include <fornani/world/Map.hpp>

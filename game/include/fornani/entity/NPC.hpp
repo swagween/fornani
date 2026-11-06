@@ -22,9 +22,9 @@
 
 namespace fornani {
 
-enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle, custom_animation_control };
+enum class NPCFlags : std::uint8_t { has_turn_animation, face_player, background, no_animation, random_walk, cutscene, piggyback, busy, airborne, custom_camera, in_vehicle, custom_animation_control, custom_requests };
 enum class NPCState : std::uint8_t { overlapping_player, force_interact, talking, cutscene, piggybacking, hidden, random_walk, invisible, player_walked_away };
-enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3 };
+enum class NPCAnimationState : std::uint8_t { idle, turn, walk, inspect, fall, land, busy, stagger, respond, special_1, special_2, special_3, looping_1, oneoff_1 };
 
 struct NPCSpawn {
 	NPCSpawn(dj::Json const& in) {
@@ -97,6 +97,8 @@ class NPC : public Entity, public Mobile, public StateMachine<NPCAnimationState>
 	fsm::StateFunction update_special_1();
 	fsm::StateFunction update_special_2();
 	fsm::StateFunction update_special_3();
+	fsm::StateFunction update_looping_1();
+	fsm::StateFunction update_oneoff_1();
 
 	/* gameplay helpers */
 	void walk();

@@ -2571,5 +2571,40 @@
       "background": true,
       "sturdy": true
     }
+  },
+  "dogfight_hulmet": {
+    "metadata": {
+      "name": "Spewer",
+      "id": 51
+    },
+    "physical": {
+      "dimensions": [60, 60],
+      "sprite_dimensions": [88, 64],
+      "offset": [0, -13]
+    },
+    "visual": {
+      "effects_overlay": {
+        "dimensions": [88, 64],
+        "offset": [0, 0],
+        "animation": { "frames": 4, "framerate": 10 }
+      }
+    },
+    "attributes": {
+      "base_hp": 70,
+      "base_damage": 1.0,
+      "speed": 5.0,
+      "loot_multiplier": 2.0,
+      "drop_range": [5, 8],
+      "rare_drop_id": 0,
+      "respawn_distance": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false,
+      "map_collision": false,
+      "background": true,
+      "sturdy": false
+    }
   }
 }

@@ -31,7 +31,9 @@ constexpr T cubic(T y0, T y1, T y2, T y3, T t) {
 
 namespace fornani::util {
 
-constexpr auto f_pi{static_cast<float>(std::numbers::pi)};
+constexpr auto f_pi{std::numbers::pi_v<float>};
+constexpr float rad_to_deg = 180.f / std::numbers::pi_v<float>;
+constexpr float deg_to_rad = std::numbers::pi_v<float> / 180.f;
 
 enum class InterpolationType : std::uint8_t { linear, quadratic, cubic, ease };
 

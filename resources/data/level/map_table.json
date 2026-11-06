@@ -1178,6 +1178,12 @@
     },
     {
       "folder": "shadow",
+      "label": "dogfight.json",
+      "region": "firstwind",
+      "room_id": 1899
+    },
+    {
+      "folder": "shadow",
       "label": "east_death_road.json",
       "region": "shadow",
       "room_id": 1700

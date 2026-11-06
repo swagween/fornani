@@ -159,7 +159,7 @@ void Map::load(automa::ServiceProvider& svc, [[maybe_unused]] SceneContext& cont
 		m_weather_specs.emplace(vfx::WeatherSpecifications{meta["weather"]});
 		if (svc.world_clock.happens(WorldClockInterval::day, m_weather_specs->chance)) {
 			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->type);
-			if (auto const& amb = m_weather.value()->get_parameters().ambience) {
+			if (auto const& amb = m_weather->get_parameters().ambience) {
 				svc.ambience_player.load(svc.finder, *amb);
 				svc.ambience_player.play();
 			}
@@ -424,7 +424,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	// weather
 	if (svc.ticker.every_x_ticks(24)) {
 		if (m_weather && !m_attributes.properties.test(MapProperties::interior)) {
-			if (auto const& eff = m_weather.value()->get_parameters().effect) {
+			if (auto const& eff = m_weather->get_parameters().effect) {
 				auto chance_per_point = 20;
 				for (auto& p : m_surface_points) {
 					if (random::percent_chance(chance_per_point)) {
@@ -570,7 +570,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	for (auto& pl : point_lights) { pl.update(); }
 	if (player->get_collider().collision_depths) { player->get_collider().collision_depths.value().update(); }
 	// if (save_point) { save_point->update(svc, *player, console); }
-	if (m_weather) { m_weather.value()->update(svc, *this); }
+	if (m_weather) { m_weather->update(svc, *this); }
 
 	player->get_collider().reset_ground_flags();
 
@@ -746,7 +746,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	// for (auto& inspectable : inspectables) { inspectable.render(svc, win, cam); }
 
-	if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 0); }
+	if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather->render(svc, win, cam, 0); }
 
 	auto const& props = get_entities<AmbientProp>();
 	auto render_order = std::views::iota(std::size_t{0}, props.size()) | std::ranges::to<std::vector>();
@@ -792,7 +792,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 
 	if (debug::is_production()) {
 		background->render(svc, win, cam);
-		if (m_weather) { m_weather.value()->render(svc, win, cam, 2); }
+		if (m_weather) { m_weather->render(svc, win, cam, 2); }
 		for (auto& layer : scenery_layers) {
 			for (auto& piece : layer) { piece->render(svc, win, cam); }
 		}
@@ -807,7 +807,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 
 		for (auto [i, layer] : std::views::enumerate(get_layers())) {
 			if (i == 1) {
-				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather.value()->render(svc, win, cam, 1); }
+				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather->render(svc, win, cam, 1); }
 				if (m_entities) {
 					for (auto n : props) {
 						if (!n->is_foreground()) { n->is_light_shaded() ? n->render(win, m_entity_texture, cam) : n->render(win, cam, 1.f); }
@@ -897,7 +897,7 @@ void Map::determine_weather() {
 		m_weather_specs.emplace(vfx::WeatherSpecifications{meta["weather"]});
 		if (svc.world_clock.happens(WorldClockInterval::day, m_weather_specs->chance)) {
 			m_weather = std::make_unique<vfx::Weather>(svc, *this, m_weather_specs->type);
-			if (auto const& amb = m_weather.value()->get_parameters().ambience) {
+			if (auto const& amb = m_weather->get_parameters().ambience) {
 				svc.ambience_player.load(svc.finder, *amb);
 				svc.ambience_player.play();
 			}
@@ -956,7 +956,7 @@ void Map::spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, st
 	}
 }
 
-void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximity_to_player, bool effect) {
+void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximity_to_player, bool effect, bool anywhere) {
 	if (!allow_proximity_to_player) {
 		auto break_out = 0;
 		while (player->distant_vicinity.contains_point(pos) && break_out < 32) {
@@ -965,11 +965,13 @@ void Map::spawn_enemy(int id, sf::Vector2f pos, int variant, bool allow_proximit
 			++break_out;
 		}
 	}
-	auto break_out = 0;
-	while ((overlaps_middleground(pos) || !within_bounds(pos)) && break_out < 32) {
-		auto distance = (pos - real_dimensions * 0.5f) * 0.1f;
-		pos += distance;
-		++break_out;
+	if (!anywhere) {
+		auto break_out = 0;
+		while ((overlaps_middleground(pos) || !within_bounds(pos)) && break_out < 32) {
+			auto distance = (pos - real_dimensions * 0.5f) * 0.1f;
+			pos += distance;
+			++break_out;
+		}
 	}
 	enemy_spawns.push_back({pos, id, variant, effect});
 	spawn_counter.update();

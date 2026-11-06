@@ -19,6 +19,7 @@
 #include <fornani/entities/enemy/catalog/Crow.hpp>
 #include <fornani/entities/enemy/catalog/Demolisher.hpp>
 #include <fornani/entities/enemy/catalog/Demon.hpp>
+#include <fornani/entities/enemy/catalog/DogfightHulmet.hpp>
 #include <fornani/entities/enemy/catalog/DumpsterDiver.hpp>
 #include <fornani/entities/enemy/catalog/Eyebit.hpp>
 #include <fornani/entities/enemy/catalog/Eyebot.hpp>
@@ -104,6 +105,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(48, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Hoarder>(svc, map); });
 	EnemyRegistry::register_factory(49, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Geyser>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(50, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Spewer>(svc, map); });
+	EnemyRegistry::register_factory(51, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<DogfightHulmet>(svc, map); });
 }
 
 void EnemyCatalog::update() {

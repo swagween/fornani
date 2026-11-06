@@ -3,6 +3,7 @@
 #include <fornani/core/Debug.hpp>
 #include <cstring>
 #include <ctime>
+#include "fornani/automa/states/Dogfight.hpp"
 #include "fornani/automa/states/Dojo.hpp"
 #include "fornani/automa/states/MainMenu.hpp"
 #include "fornani/automa/states/Trial.hpp"
@@ -312,6 +313,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Checkbox("Limit Framerate", &limit_framerate);
 					ImGui::InputInt("Frame Limit", &frame_limit);
 					limit_framerate ? services.window->get().setFramerateLimit(frame_limit) : services.window->get().setFramerateLimit(0);
+					if (ImGui::Button("Dogfight")) { game_state->set_current_state(std::make_unique<automa::Dogfight>(services, *player, 1899)); }
 					if (ImGui::Button("Exit to Main Menu")) { game_state->set_current_state(std::make_unique<automa::MainMenu>(services, *player, *m_context)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
@@ -367,6 +369,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Text("Total Seconds Passed: %.2f", services.ticker.total_seconds_passed.count());
 					ImGui::Text("Seconds Passed In-Game: %.2f", services.ticker.in_game_seconds_passed.count());
 					ImGui::Text("Milliseconds Passed: %.0f", services.ticker.total_milliseconds_passed.count());
+					ImGui::Text("Total Ticks: %if", services.ticker.ticks);
 					ImGui::Text("Ticks Per Frame: %.2f", services.ticker.ticks_per_frame);
 					ImGui::Text("Frames Per Second: %.2f", services.ticker.fps);
 					ImGui::Text("Average Frame Time: %.4fms", average_frame_time);

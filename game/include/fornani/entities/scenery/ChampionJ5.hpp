@@ -11,7 +11,7 @@
 namespace fornani {
 
 enum class ChampionJ5State : std::uint8_t { flying, land, grounded, take_off };
-enum class ChampionJ5Flags : std::uint8_t { interactable, landed };
+enum class ChampionJ5Flags : std::uint8_t { interactable, landed, controlled };
 
 class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
   public:
@@ -19,6 +19,7 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 	void update(automa::ServiceProvider& svc, world::Map& map);
 	void render(sf::RenderWindow& win, sf::Vector2f cam);
 	void set_target(sf::Vector2f to) { m_target = to; }
+	void set_position(sf::Vector2f to) { get_collider().physics.position = to; }
 	void set_channel(int to) { p_animatable.set_channel(to); }
 
 	fsm::StateFunction state_function = std::bind(&ChampionJ5::update_flying, this);
@@ -29,12 +30,16 @@ class ChampionJ5 : public Mobile, public StateMachine<ChampionJ5State> {
 
 	util::BitFlags<ChampionJ5Flags> flags{};
 
-	[[nodiscard]] auto get_drivers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{10.f, -32.f}; }
-	[[nodiscard]] auto get_passengers_seat() const -> sf::Vector2f { return get_global_center() + sf::Vector2f{-8.f, -26.f}; }
+	[[nodiscard]] auto get_drivers_seat() const -> sf::Vector2f;
+	[[nodiscard]] auto get_passengers_seat() const -> sf::Vector2f;
+	[[nodiscard]] auto get_position() const -> sf::Vector2f { return get_collider().get_position(); }
 	[[nodiscard]] auto is_close_to_target(float const distance) const -> bool { return (get_collider().physics.position - m_target).length() < distance; }
 
   private:
 	bool change_state(ChampionJ5State next, anim::Parameters params);
+	float get_y_offset() const;
+
+	void debug();
 
   private:
 	Animatable m_propeller;

@@ -1,6 +1,7 @@
 nani_add_sources(
         ControlsMenu.cpp
         CreditsMenu.cpp
+        Dogfight.cpp
         Dojo.cpp
         FileMenu.cpp
         Intro.cpp

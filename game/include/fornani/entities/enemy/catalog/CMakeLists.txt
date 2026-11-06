@@ -9,6 +9,7 @@ nani_add_headers(
         Crow.hpp
         Demolisher.hpp
         Demon.hpp
+        DogfightHulmet.hpp
         DumpsterDiver.hpp
         Eyebit.hpp
         Eyebot.hpp

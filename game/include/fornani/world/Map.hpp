@@ -20,7 +20,7 @@
 #include <fornani/graphics/CameraController.hpp>
 #include <fornani/graphics/DayNightShifter.hpp>
 #include <fornani/graphics/Scenery.hpp>
-#include <fornani/graphics/Weather.hpp>
+#include <fornani/graphics/WeatherSpecifications.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/particle/Effect.hpp>
 #include <fornani/particle/Emitter.hpp>
@@ -57,6 +57,11 @@ namespace fornani::gui {
 class Portrait;
 class InventoryWindow;
 } // namespace fornani::gui
+
+namespace fornani::vfx {
+class Weather;
+struct WeatherSpecifications;
+} // namespace fornani::vfx
 
 namespace fornani::world {
 
@@ -128,7 +133,7 @@ class Map {
 	void spawn_frame_effect(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, sf::Vector2f vel = {}, int channel = 0, float scale = 1.f);
 	void spawn_emitter(automa::ServiceProvider& svc, std::string_view tag, sf::Vector2f pos, Direction dir, sf::Vector2f dim = {16.f, 16.f}, sf::Color color = colors::nani_white, int channel = 0);
 	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0, bool stun = false);
-	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false, bool effect = true);
+	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false, bool effect = true, bool anywhere = false);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
 
 	void reveal_npc(std::string_view label);
@@ -310,7 +315,7 @@ class Map {
 
 	// weather
 	std::optional<vfx::WeatherSpecifications> m_weather_specs{};
-	std::optional<std::unique_ptr<vfx::Weather>> m_weather{};
+	std::unique_ptr<vfx::Weather> m_weather{};
 	std::vector<SurfacePoint> m_surface_points{};
 
 	FlatShader m_flat_shader;

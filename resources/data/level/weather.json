@@ -4,12 +4,30 @@
     "density": 1,
     "effect": "raindrop",
     "framerate": 8,
-    "type": "rain"
+    "type": "rain",
+    "layers": [
+      { "parallax": 0.8, "render_order": 2 },
+      { "parallax": 0.9, "render_order": 2 },
+      { "parallax": 1.0, "render_order": 1 },
+      { "parallax": 1.1, "render_order": 0 }
+    ],
+    "frames": 16
   },
   "snow": {
     "density": 1,
     "parallax_factor": 0.1,
     "framerate": 0,
-    "type": "snow"
+    "type": "snow",
+    "layers": [
+      { "parallax": 0.75, "render_order": 2 },
+      { "parallax": 0.8, "render_order": 2 },
+      { "parallax": 0.85, "render_order": 2 },
+      { "parallax": 0.9, "render_order": 2 },
+      { "parallax": 0.95, "render_order": 2 },
+      { "parallax": 1.0, "render_order": 1 },
+      { "parallax": 1.1, "render_order": 0 },
+      { "parallax": 1.2, "render_order": 0 }
+    ],
+    "frames": 1
   }
 }

@@ -12,6 +12,15 @@ struct ThrustParameters {
 	float damping{0.999f};
 	float arrival_radius{60.f};
 };
+
+struct PursuitParameters {
+	float trailing_distance{100.f};
+	float prediction_time{0.5f};
+	float stiffness{0.0001f};
+	float damping{0.01f};
+	float max_force{0.0001f};
+};
+
 } // namespace fornani
 
 namespace fornani::automa {
@@ -31,6 +40,7 @@ class SteeringBehavior {
 	void spring_seek(components::PhysicsComponent& physics, sf::Vector2f point, float stiffness, float damping);
 	void thrust_seek(components::PhysicsComponent& physics, sf::Vector2f point, ThrustParameters params);
 	void arrive(components::PhysicsComponent& physics, sf::Vector2f point, ThrustParameters params);
+	void pursue(components::PhysicsComponent& physics, sf::Vector2f target_position, sf::Vector2f target_velocity, sf::Vector2f target_forward, PursuitParameters const& params);
 
 	void evade(PhysicsComponent& physics, sf::Vector2f point, float strength = 0.01f, float max_force = 8.f);
 	void render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Vector2f cam);

@@ -19,5 +19,6 @@ nani_add_sources(
         TextureUpdater.cpp
         Transition.cpp
         Tutorial.cpp
+        WeatherSpecifications.cpp
 )
 add_subdirectory(rewards)

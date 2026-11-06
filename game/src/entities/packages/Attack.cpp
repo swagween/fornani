@@ -50,6 +50,7 @@ bool Attack::poison_player(player::Player& player, float multiplier) {
 	if (!hit.active()) { return false; }
 	if (!hit.within_bounds(player.hurtbox)) { return false; }
 	player.add_toxicity(multiplier);
+	return true;
 }
 
 void Attack::cancel_projectiles(automa::ServiceProvider& svc, world::Map& map, arms::Team team, float freezeframe) {

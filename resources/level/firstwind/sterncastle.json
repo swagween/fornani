@@ -150,11 +150,7 @@
     "special_drop_id": 0,
     "use_template": false,
     "weather": {
-      "ambience": "rain",
       "chance": 0.5,
-      "density": 2,
-      "effect": "raindrop",
-      "framerate": 8,
       "type": "rain"
     }
   },
@@ -6817,7 +6813,7 @@
         0,
         0,
         0,
-        447,
+        464,
         465,
         466,
         467,

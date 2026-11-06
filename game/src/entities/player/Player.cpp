@@ -197,6 +197,8 @@ void Player::update(world::Map& map) {
 
 	if (!collider.has_value()) { return; }
 
+	if (has_flag_set(PlayerFlags::dogfight)) { set_direction(Direction{LR::left}); }
+
 	// item use logic
 	handle_item_logic();
 
@@ -389,6 +391,11 @@ void Player::update(world::Map& map) {
 	}
 	update_direction();
 	controller.update(*m_services, map, *this);
+	if (has_flag_set(PlayerFlags::dogfight)) {
+		set_direction(Direction{LR::left});
+		controller.set_direction(Direction{LR::left});
+		controller.set_last_requested_direction(Direction{LR::left});
+	}
 	if (get_collider().hit_ceiling_ramp()) { controller.flush_ability(); }
 	if (m_animation_machine.is_state(AnimState::between_push) || m_animation_machine.is_state(AnimState::push)) { controller.set_crouching(false); }
 	controller.is_crouching() ? get_collider().flags.movement.set(shape::Movement::crouching) : get_collider().flags.movement.reset(shape::Movement::crouching);
@@ -715,6 +722,7 @@ void Player::give_bonus_health(int amount) {
 void Player::set_invincible(int time) { health.set_invincible(time); }
 
 void Player::turn() {
+	if (has_flag_set(PlayerFlags::dogfight)) { return; }
 	auto to_dir = get_actual_direction().right() ? SimpleDirection{LR::left} : SimpleDirection{LR::right};
 	controller.set_direction(Direction{to_dir});
 }
@@ -863,6 +871,11 @@ void Player::set_sleeping(bool on_floor) {
 	}
 }
 
+void Player::set_dogfight() {
+	m_animation_machine.force(AnimState::dogfight, "dogfight");
+	m_animation_machine.state_function = std::bind(&PlayerAnimation::update_dogfight, &m_animation_machine);
+}
+
 void Player::stall_idle_timer() { m_animation_machine.idle_timer.start(); }
 
 void Player::flat_shade(sf::Color color) {
@@ -964,6 +977,10 @@ void Player::freeze_position() {
 void Player::shake_sprite() { m_sprite_shake.start(); }
 
 void Player::update_direction() {
+	if (has_flag_set(PlayerFlags::dogfight)) {
+		set_direction(Direction{LR::left});
+		return;
+	}
 	directions.movement.lnr = get_collider().physics.apparent_velocity().x > 0.f ? LNR::right : LNR::left;
 	if (controller.facing_left()) {
 		anchor_point = {get_collider().physics.position.x + get_collider().bounding_box.get_dimensions().x / 2 - ANCHOR_BUFFER, get_collider().physics.position.y + get_collider().bounding_box.get_dimensions().y / 2};
@@ -1038,6 +1055,7 @@ void Player::update_weapon(world::Map& map) {
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		hotbar->has(weapon->get_tag()) ? weapon->set_hotbar() : weapon->set_reserved();
 		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
+		if (has_flag_set(PlayerFlags::dogfight)) { dir = Direction{LR::left}; }
 		weapon->update(*m_services, map, dir);
 		weapon->set_position(m_weapon_socket);
 		weapon->set_firing_direction(dir);
@@ -1054,6 +1072,7 @@ void Player::update_weapon_simple() {
 	if (!hotbar) { return; }
 	for (auto& weapon : arsenal.value().get_loadout()) {
 		auto dir = controller.is_wallsliding() ? controller.direction.flipped() : controller.direction;
+		if (has_flag_set(PlayerFlags::dogfight)) { dir = Direction{LR::left}; }
 		weapon->tick();
 		weapon->set_position(m_weapon_socket);
 		weapon->set_orientation(dir);
