@@ -2,6 +2,7 @@
 #include <fornani/automa/StateManager.hpp>
 #include <fornani/automa/states/ControlsMenu.hpp>
 #include <fornani/automa/states/CreditsMenu.hpp>
+#include <fornani/automa/states/Dogfight.hpp>
 #include <fornani/automa/states/Dojo.hpp>
 #include <fornani/automa/states/FileMenu.hpp>
 #include <fornani/automa/states/Intro.hpp>
@@ -108,7 +109,11 @@ void StateManager::process_state(ServiceProvider& svc, player::Player& player, f
 				get_current_state().reload(svc, svc.state_controller.next_state);
 			} else {
 				if (get_current_state().is(StateType::menu)) { svc.soundboard.play_sound("load_game"); }
-				set_current_state(std::make_unique<Dojo>(svc, player, svc.state_controller.next_state));
+				if (svc.state_controller.next_state == dogfight_id_v) {
+					set_current_state(std::make_unique<Dogfight>(svc, player, dogfight_id_v));
+				} else {
+					set_current_state(std::make_unique<Dojo>(svc, player, svc.state_controller.next_state));
+				}
 			}
 		}
 	}

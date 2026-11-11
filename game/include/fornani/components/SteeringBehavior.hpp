@@ -19,6 +19,10 @@ struct PursuitParameters {
 	float stiffness{0.0001f};
 	float damping{0.01f};
 	float max_force{0.0001f};
+	float wander_strength{0.0005f};
+	float wander_radius{60.f};
+	float wander_speed{1.f};
+	float dead_zone{60.f};
 };
 
 } // namespace fornani
@@ -50,8 +54,9 @@ class SteeringBehavior {
 
   private:
 	float wander_displacement{};
-	sf::Vector2f wander{};
 	float wander_radius{};
+	sf::Vector2f m_wander_offset{};
+	sf::Vector2f m_wander_target{};
 };
 
 } // namespace fornani::components

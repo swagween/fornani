@@ -112,6 +112,38 @@
       ]
     }
   ],
+  "player_health": [
+    {
+      "label": "start",
+      "path": [
+        {
+          "position": [0, 300]
+        }
+      ]
+    },
+    {
+      "label": "in",
+      "path": [
+        {
+          "position": [0, 300]
+        },
+        {
+          "position": [0, 220]
+        }
+      ]
+    },
+    {
+      "label": "out",
+      "path": [
+        {
+          "position": [0, 220]
+        },
+        {
+          "position": [0, 300]
+        }
+      ]
+    }
+  ],
   "health_increase_case": [
     {
       "label": "in",

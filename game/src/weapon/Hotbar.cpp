@@ -10,7 +10,7 @@ void Hotbar::switch_weapon(automa::ServiceProvider& svc, int next) {
 	if (next == 0 || m_tags.size() == 0) { return; }
 	previous = selection.get();
 	selection.modulate(next);
-	svc.soundboard.flags.player.set(audio::Player::arms_switch);
+	svc.soundboard.play_sound("arms_switch");
 }
 
 void Hotbar::set_selection(std::string_view tag) {

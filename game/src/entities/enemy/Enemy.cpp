@@ -319,7 +319,9 @@ void Enemy::update(automa::ServiceProvider& svc, world::Map& map, player::Player
 
 void Enemy::post_update(automa::ServiceProvider& svc, world::Map& map, player::Player& player, bool tick) {
 	Mobile::post_update(svc, map, player, !flags.general.test(GeneralFlags::no_tick));
-	if (m_effects_overlay && !flags.general.test(GeneralFlags::no_tick)) { m_effects_overlay->tick(); }
+	if (m_effects_overlay) {
+		if (!flags.general.test(GeneralFlags::no_tick) || m_effects_overlay->has_animation("basic")) { m_effects_overlay->tick(); }
+	}
 	handle_player_collision(player);
 }
 

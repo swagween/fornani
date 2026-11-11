@@ -81,6 +81,12 @@
     "framerate": 12,
     "dimensions": [63, 63]
   },
+  "exhaust_kestrel": {
+    "frame_count": 4,
+    "framerate": 16,
+    "dimensions": [24, 24],
+    "y_reflection": true
+  },
   "lens_flare": {
     "frame_count": 5,
     "framerate": 16,
@@ -222,6 +228,19 @@
     "framerate": 90,
     "dimensions": [8, 8],
     "x_reflection": true
+  },
+  "smoke": {
+    "frame_count": 5,
+    "framerate": 90,
+    "dimensions": [16, 16],
+    "x_reflection": true
+  },
+  "air_trail": {
+    "frame_count": 4,
+    "framerate": 40,
+    "dimensions": [8, 8],
+    "x_reflection": true,
+    "y_reflection": true
   },
   "drop_collect": {
     "frame_count": 4,

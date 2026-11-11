@@ -76,6 +76,13 @@ Direction Caution::projectile_detected(world::Map& map, shape::Shape& zone, arms
 	return ret;
 }
 
+std::optional<sf::Vector2f> Caution::incoming_projectile(world::Map& map, shape::Shape& zone, arms::Team friendly_fire) {
+	for (auto& proj : map.active_projectiles) {
+		if (proj.get_collider().collides_with(zone) && proj.get_team() != friendly_fire) { return proj.get_collider().get_global_center(); }
+	}
+	return std::nullopt;
+}
+
 bool Caution::detected_step(world::Map& map, shape::Collider& collider, Direction const& direction, sf::Vector2f offset, int vision) {
 	auto buffer = sf::Vector2f{collider.dimensions.x, 0.f};
 	testers.left = collider.get_center() - (buffer + sf::Vector2f{offset.x, -offset.y});

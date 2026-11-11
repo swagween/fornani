@@ -66,7 +66,7 @@ struct WeatherSpecifications;
 namespace fornani::world {
 
 enum class LevelState : std::uint8_t { camera_shake, spawn_enemy };
-enum class MapState : std::uint8_t { unobscure };
+enum class MapState : std::uint8_t { unobscure, has_middleground, no_collision };
 enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
 enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic, cold };
 
@@ -141,6 +141,7 @@ class Map {
 	void generate_collidable_layer(bool live = false);
 	void generate_layer_textures(automa::ServiceProvider& svc);
 	void set_water_level(float const to) { m_target_water_level = to; }
+	void set_no_collision(bool const to) { to ? flags.map_state.set(MapState::no_collision) : flags.map_state.reset(MapState::no_collision); }
 
 	void register_collider(std::unique_ptr<shape::ICollider> collider);
 	void unregister_collider(shape::ICollider* collider);

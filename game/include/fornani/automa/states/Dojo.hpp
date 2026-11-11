@@ -12,8 +12,6 @@
 
 namespace fornani::automa {
 
-enum class GameplayFlags : std::uint8_t { game_over, transitioning, open_vendor, give_item, death_console_launched, console_running, remove_item, health_increase_exit, open_builder, open_air_travel };
-
 class Dojo final : public GameplayState {
   public:
 	Dojo(ServiceProvider& svc, player::Player& player, int room_number);
@@ -21,6 +19,7 @@ class Dojo final : public GameplayState {
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void reload(ServiceProvider& svc, int target_state) override;
+	void handle_player_death(ServiceProvider& svc, player::Player& player) override;
 
 	void acquire_item(ServiceProvider& svc, std::string_view tag);
 	void remove_item(ServiceProvider& svc, std::string_view tag);
@@ -41,7 +40,6 @@ class Dojo final : public GameplayState {
 	void add_map_marker(ServiceProvider& svc, int room_id, int type, int questline);
 	bool check_for_vendor(ServiceProvider& svc);
 	void read_item(int id);
-	void handle_player_death(ServiceProvider& svc, player::Player& player);
 	void handle_health_increase(ServiceProvider& svc, player::Player& player);
 	void handle_ability_acquisition(ServiceProvider& svc, player::Player& player, std::string_view label);
 	void handle_transition();
@@ -55,8 +53,6 @@ class Dojo final : public GameplayState {
 	bool show_colliders{false};
 
   private:
-	util::BitFlags<GameplayFlags> m_flags{};
-
 	int m_dialog_id{};
 	std::string m_item_tag{};
 

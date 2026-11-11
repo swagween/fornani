@@ -49,10 +49,8 @@ void SteeringBehavior::inertial_seek(components::PhysicsComponent& physics, sf::
 	float distance = std::sqrt(toTarget.x * toTarget.x + toTarget.y * toTarget.y);
 	if (distance < constants::tiny_value) { return; }
 
-	// Normalize
 	sf::Vector2f desired = toTarget / distance;
 
-	// Scale speed based on distance
 	float speed = max_speed;
 	if (distance < 100.f) speed *= (distance / 100.f);
 
@@ -60,7 +58,6 @@ void SteeringBehavior::inertial_seek(components::PhysicsComponent& physics, sf::
 
 	sf::Vector2f steering = desired - physics.velocity;
 
-	// Clamp force
 	float mag = std::sqrt(steering.x * steering.x + steering.y * steering.y);
 	if (mag > max_force) steering = (steering / mag) * max_force;
 
@@ -98,7 +95,7 @@ void SteeringBehavior::thrust_seek(components::PhysicsComponent& physics, sf::Ve
 
 	float alignment = util::dot(forward, desired_dir);
 
-	// Allow thrust while turning, but favor forward alignment.
+	// allow thrust while turning but favor forward vec
 	float alignment_scale = std::clamp((alignment + 0.2f) / 1.2f, 0.f, 1.f);
 
 	float thrust_scale = 1.f;
@@ -118,8 +115,6 @@ void SteeringBehavior::arrive(components::PhysicsComponent& physics, sf::Vector2
 
 	sf::Vector2f desired_dir = to_target / distance;
 
-	// Speed we can afford to have at this distance and still stop on the target.
-	// The 0.8 margin keeps braking inside what the thrust can actually deliver.
 	float brake_decel = params.thrust_power * 0.8f;
 	float braking_speed = std::sqrt(2.f * brake_decel * distance);
 	float desired_speed = std::min(10.f, braking_speed);
@@ -127,7 +122,7 @@ void SteeringBehavior::arrive(components::PhysicsComponent& physics, sf::Vector2
 	sf::Vector2f desired_velocity = desired_dir * desired_speed;
 	sf::Vector2f steering = desired_velocity - physics.velocity;
 
-	// Thrust is limited, so clamp the correction
+	// thrust is limited, clamp the correction
 	float steering_length = steering.length();
 	if (steering_length > params.thrust_power) { steering *= params.thrust_power / steering_length; }
 
@@ -144,11 +139,13 @@ void SteeringBehavior::pursue(components::PhysicsComponent& physics, sf::Vector2
 	auto error = trailing_point - position;
 	auto const distance = std::hypot(error.x, error.y);
 
-	if (distance < 60.f) { error = {}; }
+	if (distance < params.dead_zone) { error = {}; }
 
 	auto force = error * params.stiffness + (target_velocity - velocity) * params.damping;
-	auto const magnitude = std::hypot(force.x, force.y);
+	auto const wander = calculate_random_walk(physics, params.wander_strength, params.wander_radius);
+	force += wander;
 
+	auto const magnitude = std::hypot(force.x, force.y);
 	if (magnitude > params.max_force) { force *= params.max_force / magnitude; }
 
 	physics.apply_force(force);
@@ -170,7 +167,7 @@ void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 	wander_circle.setOutlineColor(colors::goldenrod);
 	wander_circle.setFillColor(sf::Color::Transparent);
 	wander_circle.setOutlineThickness(-2);
-	wander_circle.setPosition(wander - cam);
+	wander_circle.setPosition(m_wander_offset - cam);
 	win.draw(wander_circle);
 	wander_circle.setRadius(wander_radius);
 	wander_circle.setOrigin({wander_radius, wander_radius});
@@ -181,13 +178,13 @@ void SteeringBehavior::render(automa::ServiceProvider& svc, sf::RenderWindow& wi
 }
 
 sf::Vector2f SteeringBehavior::calculate_random_walk(PhysicsComponent& physics, float dampen, float radius) {
-	wander = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
+	m_wander_offset = physics.position + util::unit(physics.velocity) * (radius + radius / 3.f);
 	wander_radius = radius;
 	wander_displacement += random::range_float(-0.08f, 0.08f);
 	float const theta = wander_displacement + ::std::atan2(physics.velocity.y, physics.velocity.x);
 	float const x = radius * ::std::cos(theta);
 	float const y = radius * ::std::sin(theta);
-	auto const target = wander + sf::Vector2f{x, y};
+	auto const target = m_wander_offset + sf::Vector2f{x, y};
 	auto const steering = util::unit(target - physics.position) * dampen;
 	return steering;
 }

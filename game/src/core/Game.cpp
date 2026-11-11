@@ -313,7 +313,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 					ImGui::Checkbox("Limit Framerate", &limit_framerate);
 					ImGui::InputInt("Frame Limit", &frame_limit);
 					limit_framerate ? services.window->get().setFramerateLimit(frame_limit) : services.window->get().setFramerateLimit(0);
-					if (ImGui::Button("Dogfight")) { game_state->set_current_state(std::make_unique<automa::Dogfight>(services, *player, 1899)); }
+					if (ImGui::Button("Dogfight")) { game_state->set_current_state(std::make_unique<automa::Dogfight>(services, *player, automa::dogfight_id_v)); }
 					if (ImGui::Button("Exit to Main Menu")) { game_state->set_current_state(std::make_unique<automa::MainMenu>(services, *player, *m_context)); }
 					ImGui::Text("In Game? %s", services.in_game() ? "Yes" : "No");
 					ImGui::Text("debug mode: %s", services.debug_mode() ? "Enabled" : "Disabled");
@@ -346,7 +346,10 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 				if (ImGui::BeginTabItem("Camera")) {
 					ImGui::Text("Target Position: (%.2f, %.2f)", services.camera_controller.get_position().x, services.camera_controller.get_position().y);
 					ImGui::Text("Actual Position: (%.2f, %.2f)", player->get_actual_camera_position().x, player->get_actual_camera_position().y);
+					ImGui::Text("Player Camera Position: (%.2f, %.2f)", player->get_camera_position().x, player->get_camera_position().y);
 					ImGui::Text("Camera state: %s", services.camera_controller.is_free() ? "free" : "constrained");
+					if (auto const anpos = services.camera_controller.get_anchor_position()) { ImGui::Text("Anchor Position: (%.2f, %.2f)", anpos->x, anpos->y); }
+					ImGui::Text("Anchor weight: %.3f", services.camera_controller.get_anchor_weight());
 					static int freq = 6;
 					static float ener = 2.4f;
 					static int time = 900;

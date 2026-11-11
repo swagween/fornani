@@ -27,6 +27,9 @@ class DogfightHulmet final : public Enemy, public StateMachine<DogfightHulmetSta
   private:
 	entity::WeaponPackage m_turret;
 	components::SteeringBehavior m_steering{};
+	util::Cooldown m_recharge;
+	util::Cooldown m_fire;
+	util::Cooldown m_rounds;
 
 	bool m_init{};
 

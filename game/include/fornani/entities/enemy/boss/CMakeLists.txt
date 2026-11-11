@@ -1,4 +1,5 @@
 nani_add_headers(
+  DogfightNimbus.hpp
         GrandMastiff.hpp
         Haunch.hpp
   Henchman.hpp

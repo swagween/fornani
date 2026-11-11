@@ -515,6 +515,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 		collider.register_chunks(*this);
 		collider.update(svc);
 		if (collider.has_attribute(shape::ColliderAttributes::fixed) && !collider.has_trait(shape::ColliderTrait::platform)) { continue; }
+		if (flags.map_state.test(MapState::no_collision)) { continue; }
 		for (auto chunk : collider.get_chunks()) {
 			for (auto& other_ptr : m_chunks[chunk]) {
 				if (!other_ptr) { continue; }
@@ -524,7 +525,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 				++debug::collision_checks;
 			}
 		}
-		if (!collider.has_attribute(shape::ColliderAttributes::fixed)) { collider.detect_map_collision(*this); }
+		if (!collider.has_attribute(shape::ColliderAttributes::fixed) && flags.map_state.test(MapState::has_middleground)) { collider.detect_map_collision(*this); }
 	}
 
 	for (auto& enemy : enemy_catalog.enemies) { enemy->post_update(svc, *this, *player); }
@@ -790,7 +791,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWindow& win, std::optional<LightShader>& shader, sf::Vector2f cam) {
 
-	if (debug::is_production()) {
+	if (!debug::is_greyblock()) {
 		background->render(svc, win, cam);
 		if (m_weather) { m_weather->render(svc, win, cam, 2); }
 		for (auto& layer : scenery_layers) {
@@ -1038,6 +1039,7 @@ void Map::generate_collidable_layer(bool live) {
 	auto const has_materials = get_biome_properties()["tile_materials"].is_array();
 	auto const& materials = get_biome_properties()["tile_materials"].as_array();
 	for (auto& cell : get_middleground()->grid.cells) {
+		if (cell.value > 0) { flags.map_state.set(MapState::has_middleground); }
 		auto chunk_id = cell.get_chunk_id();
 		get_middleground()->grid.check_neighbors(cell.one_d_index);
 		if (live) { continue; }

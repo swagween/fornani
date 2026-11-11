@@ -9,6 +9,7 @@ namespace fornani::enemy {
 Boss::Boss(automa::ServiceProvider& svc, world::Map& map, std::string_view label) : Enemy{svc, map, label}, p_health_bar{svc, label}, p_services{&svc}, p_map{&map} {
 	svc.events.start_battle_event.attach_to(slot, &Boss::start_battle, this);
 	flags.general.set(GeneralFlags::boss);
+	if (auto const& lbl = svc.data.enemy[label]["metadata"]["health_label"]) { p_health_bar.set_label(svc, lbl.as_string_view()); }
 }
 
 void Boss::update(automa::ServiceProvider& svc, world::Map& map, player::Player& player) {

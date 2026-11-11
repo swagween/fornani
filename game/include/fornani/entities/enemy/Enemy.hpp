@@ -162,6 +162,7 @@ class Enemy : public Mobile {
 	void set_special_event(bool to = true) { to ? flags.state.set(StateFlags::special_event) : flags.state.reset(StateFlags::special_event); }
 	void respond_to_damage();
 	void set_disappeared(bool const to);
+	void set_reference_point(sf::Vector2f const to) { p_reference_point = to; }
 
 	[[nodiscard]] auto is_hostile() const -> bool { return flags.state.test(StateFlags::hostile); }
 	[[nodiscard]] auto is_alert() const -> bool { return flags.state.test(StateFlags::alert); }
@@ -232,6 +233,7 @@ class Enemy : public Mobile {
 	util::Cooldown m_weakness;
 	int afterlife{200};
 	sf::Vector2f m_death_position{};
+	sf::Vector2f p_reference_point{};
 
 	util::Cooldown hurt_effect{};
 	util::Cooldown hurt_flash_effect{};

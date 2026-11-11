@@ -1,4 +1,5 @@
 nani_add_sources(
+  DogfightNimbus.cpp
   GrandMastiff.cpp
   Haunch.cpp
   Henchman.cpp

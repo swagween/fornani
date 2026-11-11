@@ -15,6 +15,7 @@ enum class UDLR : std::uint8_t { up, down, left, right };
 enum class Inter : std::uint8_t { north, south, east, west, northeast, northwest, southeast, southwest };
 enum class HV : std::uint8_t { horizontal, vertical };
 enum class RotationType : std::uint8_t { clockwise, counterclockwise };
+enum class ScreenEdge : std::uint8_t { top, bottom };
 
 enum class DirectionFlags : std::uint8_t { locked };
 

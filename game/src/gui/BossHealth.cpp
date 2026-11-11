@@ -5,33 +5,37 @@
 
 namespace fornani::gui {
 
-BossHealth::BossHealth(automa::ServiceProvider& svc, std::string_view label)
-	: HealthBar{svc, colors::red}, m_label{svc.text.fonts.title.font}, m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, "boss_health", 128, util::InterpolationType::quadratic} {
-	m_label.setString(label.data());
+constexpr auto hb_border_v = 32.f;
+
+BossHealth::BossHealth(automa::ServiceProvider& svc, std::string_view label, BossHealthParameters params)
+	: HealthBar{svc, params.color}, m_label{svc.text.fonts.title.font}, m_path{svc.finder, std::filesystem::path{"/data/gui/console_paths.json"}, params.path, 128, util::InterpolationType::quadratic} {
+
 	m_label.setCharacterSize(svc.text.fonts.title.glyph_size);
-	m_label.setFillColor(colors::red);
+	m_label.setFillColor(params.color);
+	set_label(svc, label);
 
 	p_taken.setFillColor(colors::goldenrod);
 	p_backdrop.setFillColor(colors::ui_black);
 	p_backdrop.setOutlineThickness(-2.f);
-	p_backdrop.setOutlineColor(colors::red);
+	p_backdrop.setOutlineColor(params.color);
 
-	auto const border_v = 32.f;
+	m_label.setPosition({hb_border_v, hb_border_v});
+	m_path.set_section("start");
+}
+
+void BossHealth::set_label(automa::ServiceProvider& svc, std::string_view to) {
+	m_label.setString(std::string{to});
 	auto const label_buffer_v = 4.f;
 	auto const bar_height_v = 18.f;
 
 	auto label_offset = sf::Vector2f{m_label.getLocalBounds().size.x + label_buffer_v * 2.f, 0.f};
 	auto scale_up = label_buffer_v * 2.f;
 
-	p_current.setSize(sf::Vector2f{svc.window->f_screen_dimensions().x - border_v * 2.f, bar_height_v} - label_offset);
-	p_taken.setSize(sf::Vector2f{svc.window->f_screen_dimensions().x - border_v * 2.f, bar_height_v} - label_offset);
-	p_backdrop.setSize(sf::Vector2f{svc.window->f_screen_dimensions().x - border_v * 2.f + scale_up, bar_height_v + scale_up});
+	p_current.setSize(sf::Vector2f{svc.window->f_screen_dimensions().x - hb_border_v * 2.f, bar_height_v} - label_offset);
+	p_taken.setSize(sf::Vector2f{svc.window->f_screen_dimensions().x - hb_border_v * 2.f, bar_height_v} - label_offset);
+	p_backdrop.setSize(sf::Vector2f{svc.window->f_screen_dimensions().x - hb_border_v * 2.f + scale_up, bar_height_v + scale_up});
 
-	p_bar_size = sf::Vector2f{svc.window->f_screen_dimensions().x - border_v * 2.f, bar_height_v} - label_offset;
-
-	m_label.setPosition({border_v, border_v});
-
-	m_path.set_section("start");
+	p_bar_size = sf::Vector2f{svc.window->f_screen_dimensions().x - hb_border_v * 2.f, bar_height_v} - label_offset;
 }
 
 void BossHealth::update(float const percentage) {

@@ -931,6 +931,8 @@ auto Player::get_kick_damage() const -> float { return has_item_equipped("shoe_s
 
 auto Player::get_arm_strength() const -> float { return has_item_equipped("can_of_beans") ? 2.f : 1.f; }
 
+auto Player::has_magnet() const -> bool { return has_item_equipped("magnet") || has_flag_set(player::PlayerFlags::dogfight); }
+
 void Player::set_position(sf::Vector2f new_pos, bool centered) {
 	sf::Vector2f offset{};
 	offset.x = centered ? get_collider().dimensions.x * 0.5f : 0.f;
@@ -1112,6 +1114,7 @@ void Player::walk() {
 void Player::hurt(float amount, bool force) {
 	if (health.is_dead()) { return; }
 	if (is_intangible()) { return; }
+	if (has_flag_set(PlayerFlags::dogfight)) { return; }
 	if (!health.invincible() || force) {
 		auto const effects = !has_flag_set(PlayerFlags::no_hurt_effects);
 		m_hurt_cooldown.start();
@@ -1573,6 +1576,7 @@ auto Player::abilities_disabled() const -> bool {
 
 auto Player::can_dash_kick() const -> bool {
 	if (abilities_disabled()) { return false; }
+	if (has_flag_set(PlayerFlags::dogfight)) { return false; }
 	if (!catalog.inventory.has_item("forest_token")) { return false; }
 	if (has_flag_set(PlayerFlags::dash_kick)) { return false; }
 	return true;
@@ -1580,6 +1584,7 @@ auto Player::can_dash_kick() const -> bool {
 
 bool Player::can_dash() const {
 	if (abilities_disabled()) { return false; }
+	if (has_flag_set(PlayerFlags::dogfight)) { return false; }
 	if (!catalog.inventory.has_item("old_ivory_amulet")) { return false; }
 	if (grounded() && (!has_item_equipped("pixie_dust") || controller.is_dashing())) { return false; }
 	if (m_ability_usage.dash.get_count() > 0) {
@@ -1591,11 +1596,13 @@ bool Player::can_dash() const {
 
 bool Player::can_omnidirectional_dash() const {
 	if (abilities_disabled()) { return false; }
+	if (has_flag_set(PlayerFlags::dogfight)) { return false; }
 	return catalog.inventory.has_item("ancient_periapt");
 }
 
 bool Player::can_doublejump() const {
 	if (abilities_disabled()) { return false; }
+	if (has_flag_set(PlayerFlags::dogfight)) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }
 	if (m_ability_usage.doublejump.get_count() > 0) { return false; }
@@ -1624,6 +1631,7 @@ bool Player::can_slide() const {
 
 bool Player::can_jump() const {
 	if (abilities_disabled()) { return false; }
+	if (has_flag_set(PlayerFlags::dogfight)) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (m_animation_machine.is_state(AnimState::sleep)) { return false; }
 	if (m_animation_machine.is_state(AnimState::unconscious)) { return false; }

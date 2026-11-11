@@ -2578,9 +2578,9 @@
       "id": 51
     },
     "physical": {
-      "dimensions": [60, 60],
+      "dimensions": [70, 90],
       "sprite_dimensions": [88, 64],
-      "offset": [0, -13]
+      "offset": [0, 0]
     },
     "visual": {
       "effects_overlay": {
@@ -2593,8 +2593,8 @@
       "base_hp": 70,
       "base_damage": 1.0,
       "speed": 5.0,
-      "loot_multiplier": 2.0,
-      "drop_range": [5, 8],
+      "loot_multiplier": 1.0,
+      "drop_range": [0, 0],
       "rare_drop_id": 0,
       "respawn_distance": 1,
       "team": 1
@@ -2604,7 +2604,39 @@
       "gravity": false,
       "map_collision": false,
       "background": true,
-      "sturdy": false
+      "sturdy": false,
+      "no_tick": true
+    }
+  },
+  "dogfight_nimbus": {
+    "metadata": {
+      "name": "Dogfight Nimbus",
+      "health_label": "nimbus",
+      "id": 51
+    },
+    "physical": {
+      "dimensions": [100, 60],
+      "sprite_dimensions": [140, 80],
+      "alert_range": [500.0, 100.0],
+      "offset": [0, 0]
+    },
+    "attributes": {
+      "base_hp": 500,
+      "base_damage": 1.0,
+      "speed": 5.0,
+      "loot_multiplier": 1.0,
+      "drop_range": [0, 0],
+      "rare_drop_id": 0,
+      "respawn_distance": 1,
+      "team": 1
+    },
+    "general": {
+      "mobile": true,
+      "gravity": false,
+      "map_collision": false,
+      "background": true,
+      "sturdy": false,
+      "no_tick": true
     }
   }
 }

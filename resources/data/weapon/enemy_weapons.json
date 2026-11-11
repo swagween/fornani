@@ -1698,9 +1698,10 @@
         "stock": [0, 0]
       },
       "spray": {
-        "dimensions": [8.0, 8.0],
-        "type": "guardian",
-        "color": "guardian"
+        "type": "rpg_2"
+      },
+      "secondary_spray": {
+        "type": "rpg"
       }
     },
     "gameplay": {
@@ -1716,22 +1717,22 @@
     "class_package": {
       "projectile": {
         "type": 0,
-        "dimensions": [16.0, 16.0],
-        "radius": 6.0,
+        "dimensions": [18.0, 18.0],
+        "radius": 8.0,
         "attributes": {
           "base_damage": 1,
           "lifespan": 800,
           "lifespan_variance": 0,
-          "speed": 20.0,
+          "speed": 40.0,
           "variance": 0.5,
           "stun_multiplier": 0.0,
           "knockback": 0.0,
           "acceleration_factor": 0.0,
-          "dampen_factor": 0.999,
-          "dampen_variance": 0.002,
+          "dampen_factor": 0.9996,
+          "dampen_variance": 0.0001,
           "omnidirectional": true,
           "explode_on_impact": true,
-          "gravity": 6.0
+          "gravity": 0.0
         },
         "visual": {
           "effect_type": 2
@@ -1743,9 +1744,73 @@
         },
         "explosion": {
           "tag": "explosion",
-          "emitter": "guardian",
           "radius": 48.0,
-          "channel": 4
+          "channel": 3
+        }
+      }
+    }
+  },
+  "aerial_missile": {
+    "metadata": {},
+    "visual": {
+      "texture_lookup": 0,
+      "dimensions": [0, 0],
+      "offsets": {
+        "global": [0.0, 0.0],
+        "barrel": [0.0, 0.0],
+        "stock": [0, 0]
+      },
+      "spray": {
+        "type": "rpg_2"
+      },
+      "secondary_spray": {
+        "type": "rpg"
+      }
+    },
+    "gameplay": {
+      "attributes": {
+        "automatic": false,
+        "ammo": 4,
+        "reload": 160,
+        "cooldown_time": 50,
+        "recoil": 2.0
+      }
+    },
+    "audio": { "shoot": 5 },
+    "class_package": {
+      "projectile": {
+        "type": 0,
+        "dimensions": [28.0, 14.0],
+        "radius": 15.0,
+        "attributes": {
+          "base_damage": 3,
+          "lifespan": 1000,
+          "lifespan_variance": 0,
+          "speed": 10.0,
+          "variance": 0.5,
+          "stun_multiplier": 0.0,
+          "knockback": 0.0,
+          "acceleration_factor": 2.0,
+          "dampen_factor": 0.0,
+          "dampen_variance": 0.0,
+          "omnidirectional": true,
+          "explode_on_impact": true,
+          "gravity": 0.0
+        },
+        "visual": {
+          "effect_type": 2,
+          "travel_emitters": [{ "tag": "missile_travel", "frequency": 20 }]
+        },
+        "animation": {
+          "num_sprites": 1,
+          "num_frames": 3,
+          "framerate": 18
+        },
+        "explosion": {
+          "tag": "explosion",
+          "radius": 46.0,
+          "channel": 3,
+          "volatility": 4
         }
       }
     }

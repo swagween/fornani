@@ -15,6 +15,7 @@
 namespace fornani::automa {
 
 enum class GameplayStateFlags : std::uint8_t { early_tick_return, transitioned_in };
+enum class GameplayFlags : std::uint8_t { game_over, transitioning, open_vendor, give_item, death_console_launched, console_running, remove_item, health_increase_exit, open_builder, open_air_travel };
 
 class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
   public:
@@ -24,6 +25,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	virtual void render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] sf::RenderWindow& win);
 	void reload(ServiceProvider& svc, int target_state) override;
 	std::optional<std::reference_wrapper<world::Map>> get_map() override { return m_map.value(); }
+	virtual void handle_player_death(ServiceProvider& svc, player::Player& player) {}
 
   protected:
 	virtual void pause(ServiceProvider& svc);
@@ -31,6 +33,7 @@ class GameplayState : public GameState, public Flaggable<GameplayStateFlags> {
 	void play_song_by_id(int id);
 
   protected:
+	util::BitFlags<GameplayFlags> p_flags{};
 	Renderer p_renderer{};
 	std::optional<Palette> m_palette{};
 	std::optional<LightShader> p_entity_shader{};

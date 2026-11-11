@@ -107,7 +107,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		}
 	}
 
-	if (m_flags.consume(GameplayFlags::give_item)) {
+	if (p_flags.consume(GameplayFlags::give_item)) {
 		player->give_item(m_item_tag, 1);
 		if (!p_context.console) {
 			p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "chest", gui::OutputType::no_skip);
@@ -125,7 +125,7 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint());
 	}
 
-	if (m_flags.consume(GameplayFlags::remove_item)) {
+	if (p_flags.consume(GameplayFlags::remove_item)) {
 		auto item = player->catalog.inventory.find_item(m_item_tag);
 		if (item == nullptr) {
 			NANI_LOG_ERROR(m_logger, "Tried to remove an item that wasn't there!");
@@ -151,12 +151,12 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 
 	player->set_flag(player::PlayerFlags::console_open, p_context.console.has_value());
 	if (p_context.console) {
-		m_flags.set(GameplayFlags::console_running);
+		p_flags.set(GameplayFlags::console_running);
 		if (p_context.console.value()->was_response_created() && !p_context.console.value()->has_nani_portrait()) {
 			player->wardrobe_widget.update(*player);
 			p_context.console.value()->set_nani_sprite(player->wardrobe_widget.get_sprite());
 		}
-	} else if (m_flags.consume(GameplayFlags::console_running)) {
+	} else if (p_flags.consume(GameplayFlags::console_running)) {
 		auto to_set = p_inventory_window || p_dialog ? input::ActionSet::Menu : input::ActionSet::Platformer;
 		svc.input_system.set_action_set(to_set);
 	}
@@ -166,9 +166,9 @@ void Dojo::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (p_reward_sequence.value()->flags.consume(graphics::RewardSequenceFlags::health_get)) { hud.spawn_effect(svc, "bonus_heart", hud.get_hearts_endpoint(), {}, 1); }
 		if (p_reward_sequence.value()->is_done()) {
 			p_context.transition.end();
-			m_flags.set(GameplayFlags::health_increase_exit);
+			p_flags.set(GameplayFlags::health_increase_exit);
 		}
-		if (p_context.transition.is(graphics::TransitionState::inactive) && m_flags.consume(GameplayFlags::health_increase_exit)) {
+		if (p_context.transition.is(graphics::TransitionState::inactive) && p_flags.consume(GameplayFlags::health_increase_exit)) {
 			if (p_reward_sequence.value()->flags.test(graphics::RewardSequenceFlags::console_after_exit)) {
 				if (auto rs_label = p_reward_sequence.value()->get_label()) { p_context.console.emplace(std::make_unique<gui::Console>(svc, svc.text.item["abilities"], *rs_label, gui::OutputType::no_skip)); }
 			}
@@ -236,7 +236,7 @@ void Dojo::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (p_world_shader) {
 		m_map->render_background(p_renderer, svc, win, p_world_shader, cam);
 		for (auto& cutscene : p_context.cutscene_catalog.cutscenes) { cutscene->render(win, cam); }
-		if (debug::is_production()) {
+		if (!debug::is_greyblock()) {
 			p_entity_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 			p_entity_shader->finalize(svc.data.biomes["properties"][m_map->get_biome_string()]["max_light"].as<float>());
 			auto ent_sprite = sf::Sprite{m_map->m_entity_texture.getTexture()};
@@ -317,7 +317,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 	GameplayState::reload(svc, target_state);
 
 	set_flag(GameplayStateFlags::transitioned_in, false);
-	m_flags.reset(GameplayFlags::transitioning);
+	p_flags.reset(GameplayFlags::transitioning);
 	p_context.transition.set(graphics::TransitionState::black);
 	p_context.transition.hang();
 
@@ -364,7 +364,7 @@ void Dojo::reload(ServiceProvider& svc, int target_state) {
 		m_inspect_hint->start();
 	}
 
-	m_flags.reset(GameplayFlags::death_console_launched);
+	p_flags.reset(GameplayFlags::death_console_launched);
 	svc.state_controller.actions.reset(Actions::save_loaded);
 
 	if (m_map->is_cold()) { p_vignette_shader.emplace(svc.finder, svc.window->u_screen_dimensions()); }
@@ -374,12 +374,12 @@ void Dojo::acquire_item_from_console(ServiceProvider& svc, int id) { acquire_ite
 
 void Dojo::acquire_item(ServiceProvider& svc, std::string_view tag) {
 	m_item_tag = tag.data();
-	m_flags.set(GameplayFlags::give_item);
+	p_flags.set(GameplayFlags::give_item);
 }
 
 void Dojo::remove_item(ServiceProvider& svc, std::string_view tag) {
 	m_item_tag = std::string(tag);
-	m_flags.set(GameplayFlags::remove_item);
+	p_flags.set(GameplayFlags::remove_item);
 }
 
 void Dojo::acquire_gun_from_console(ServiceProvider& svc, int id) {
@@ -429,17 +429,17 @@ void Dojo::use_item(ServiceProvider& svc, int id) {
 }
 
 void Dojo::open_vendor(ServiceProvider& svc, int id) {
-	m_flags.set(GameplayFlags::open_vendor);
+	p_flags.set(GameplayFlags::open_vendor);
 	m_dialog_id = id;
 }
 
 void Dojo::open_builder(ServiceProvider& svc, int id) {
-	m_flags.set(GameplayFlags::open_builder);
+	p_flags.set(GameplayFlags::open_builder);
 	m_dialog_id = id;
 }
 
 void Dojo::open_air_travel(ServiceProvider& svc, int id) {
-	m_flags.set(GameplayFlags::open_air_travel);
+	p_flags.set(GameplayFlags::open_air_travel);
 	m_dialog_id = id;
 }
 
@@ -457,7 +457,7 @@ void Dojo::add_map_marker(ServiceProvider& svc, int room_id, int type, int quest
 
 bool Dojo::check_for_vendor(ServiceProvider& svc) {
 	if (p_context.console) { return false; }
-	if (m_flags.test(GameplayFlags::open_vendor) || m_flags.test(GameplayFlags::open_builder) || m_flags.test(GameplayFlags::open_air_travel)) {
+	if (p_flags.test(GameplayFlags::open_vendor) || p_flags.test(GameplayFlags::open_builder) || p_flags.test(GameplayFlags::open_air_travel)) {
 		if (p_context.transition.is(graphics::TransitionState::inactive)) {
 			p_context.transition.start();
 			NANI_LOG_DEBUG(m_logger, "Dialog Started");
@@ -465,17 +465,17 @@ bool Dojo::check_for_vendor(ServiceProvider& svc) {
 		if (p_context.transition.is(graphics::TransitionState::black)) {
 			p_context.transition.end();
 			NANI_LOG_DEBUG(m_logger, "Dialog Opened");
-			if (m_flags.test(GameplayFlags::open_vendor)) {
+			if (p_flags.test(GameplayFlags::open_vendor)) {
 				p_dialog = std::make_unique<gui::VendorDialog>(svc, *m_map, *player, m_dialog_id);
-				m_flags.reset(GameplayFlags::open_vendor);
+				p_flags.reset(GameplayFlags::open_vendor);
 			}
-			if (m_flags.test(GameplayFlags::open_builder)) {
+			if (p_flags.test(GameplayFlags::open_builder)) {
 				p_dialog = std::make_unique<gui::BuilderDialog>(svc, *m_map, *player, m_dialog_id);
-				m_flags.reset(GameplayFlags::open_builder);
+				p_flags.reset(GameplayFlags::open_builder);
 			}
-			if (m_flags.test(GameplayFlags::open_air_travel)) {
+			if (p_flags.test(GameplayFlags::open_air_travel)) {
 				p_dialog = std::make_unique<gui::AirTravelDialog>(svc, *m_map, *player, m_dialog_id);
-				m_flags.reset(GameplayFlags::open_air_travel);
+				p_flags.reset(GameplayFlags::open_air_travel);
 			}
 			svc.input_system.set_action_set(input::ActionSet::Menu);
 			svc.soundboard.flags.console.set(audio::Console::menu_open);
@@ -518,11 +518,11 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 	if (!player.is_dead()) { return; }
 
 	// check if player died
-	if (!m_flags.test(GameplayFlags::game_over) && player.is_death_complete()) {
-		m_flags.set(GameplayFlags::death_console_launched);
+	if (!p_flags.test(GameplayFlags::game_over) && player.is_death_complete()) {
+		p_flags.set(GameplayFlags::death_console_launched);
 		svc.app_flags.reset(automa::AppFlags::in_game);
 		p_context.console = std::make_unique<gui::Console>(svc, svc.text.basic, "death", gui::OutputType::no_exit, static_cast<int>(player.get_i_death_type()));
-		m_flags.set(GameplayFlags::game_over);
+		p_flags.set(GameplayFlags::game_over);
 		svc.music_player.load(svc.finder, "mortem");
 		svc.music_player.play_looped();
 		svc.soundboard.turn_off();
@@ -530,12 +530,12 @@ void Dojo::handle_player_death(ServiceProvider& svc, player::Player& player) {
 		svc.stats.player.death_count.update();
 	}
 
-	if (!p_context.console && m_flags.test(GameplayFlags::game_over)) {
-		if (!m_flags.test(GameplayFlags::transitioning)) { p_context.transition.start(); }
-		m_flags.set(GameplayFlags::transitioning);
+	if (!p_context.console && p_flags.test(GameplayFlags::game_over)) {
+		if (!p_flags.test(GameplayFlags::transitioning)) { p_context.transition.start(); }
+		p_flags.set(GameplayFlags::transitioning);
 		if (p_context.transition.is(graphics::TransitionState::black) && !svc.state_controller.actions.test(automa::Actions::player_death)) {
 			svc.state_controller.actions.set(automa::Actions::player_death);
-			m_flags.reset(GameplayFlags::game_over);
+			p_flags.reset(GameplayFlags::game_over);
 		}
 	}
 }

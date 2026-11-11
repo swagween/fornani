@@ -27,7 +27,17 @@
     "suite": [
       [
         {
-          "messages": ["You died.", "You got crushed.", "You drowned.", "You got eaten.", "You fell into the gas giant.", "You fell into the abyss.", "You got annihilated.", "You froze to death."]
+          "messages": [
+            "You died.",
+            "You got crushed.",
+            "You drowned.",
+            "You got eaten.",
+            "You fell into the gas giant.",
+            "You fell into the abyss.",
+            "You got annihilated.",
+            "You froze to death.",
+            "You were shot down."
+          ]
         },
         {
           "message": "Would you like to retry?",

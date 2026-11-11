@@ -113,7 +113,7 @@ struct HurtEffect {
 	float damage;
 };
 
-enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated, frozen };
+enum class PlayerDeathType : std::uint8_t { normal, crushed, drowned, swallowed, fallen, abyss, annihilated, frozen, shot_down };
 enum class PlayerFlags : std::uint8_t {
 	killed,
 	dir_switch,
@@ -282,6 +282,7 @@ class Player final : public Mobile, public Flaggable<PlayerFlags> {
 	[[nodiscard]] auto get_arm_strength() const -> float;
 	[[nodiscard]] auto get_hurt_effect() const -> HurtEffect const& { return m_hurt_effect; }
 	[[nodiscard]] auto get_chill() const -> float { return counters.chill.get(); }
+	[[nodiscard]] auto has_magnet() const -> bool;
 
 	void set_desired_direction(SimpleDirection to) { directions.desired = Direction{to}; }
 

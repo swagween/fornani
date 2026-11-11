@@ -1,10 +1,14 @@
 
 #include <fornani/entities/scenery/ChampionJ5.hpp>
 #include <fornani/service/ServiceProvider.hpp>
+#include <fornani/weapon/Projectile.hpp>
+#include <fornani/world/Map.hpp>
 
 namespace fornani {
 
-ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map) : Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.027f, .418f, .99f, 600.f} {
+ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map)
+	: Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.027f, .418f, .99f, 600.f},
+	  m_health_bar{svc, "championj5", gui::BossHealthParameters{colors::green, "player_health"}}, m_health{12.f}, m_hurtbox{{40.f, 25.f}}, m_flat_shader{svc.finder}, m_hit{100} {
 	p_animatable.push_and_set_animation("flying", {0, 1, 24, -1});
 	p_animatable.push_animation("land", {1, 4, 24, 0});
 	p_animatable.push_animation("grounded", {5, 1, 24, -1});
@@ -32,11 +36,18 @@ void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 	m_propeller.tick();
 	get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
 	get_collider().set_flag(shape::ColliderFlags::simple);
+
+	m_health_bar.update(m_health.get_normalized());
+	m_hit.update();
+
+	m_hurtbox.set_position(get_collider().get_position() + sf::Vector2f{-20.f, -10.f});
+
 	if (m_propeller.is_animation("spinning")) {
 		auto max_vel = 8.f;
 		auto t = std::clamp(get_collider().physics.velocity.lengthSquared() / max_vel, 0.f, 1.f);
 		auto pitch = std::lerp(0.5f, 1.1f, get_collider().physics.velocity.lengthSquared());
 		svc.soundboard.repeat_sound("champion_j5_propeller", 977, get_collider().get_center(), pitch);
+		m_propeller.set_framerate(get_collider().physics.actual_speed() > 2.f ? 6 : 12);
 	}
 
 	if (flags.test(ChampionJ5Flags::interactable)) {
@@ -57,13 +68,38 @@ void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 		if (is_close_to_target(4.f) && flags.test(ChampionJ5Flags::interactable)) { request(ChampionJ5State::land); }
 	}
 
+	// shading
+	auto color = colors::transparent;
+	if (m_hit.running()) {
+		auto flash_rate = 20;
+		auto r = colors::ui_white;
+		r.a = 180;
+		auto b = colors::fucshia;
+		b.a = 180;
+		color = (m_hit.get() / flash_rate) % 2 == 0 ? r : b;
+	}
+	m_flat_shader.finalize(color);
+
 	state_function = state_function();
 
 	if (is_state(ChampionJ5State::flying)) {
 		p_animatable.set_frame(0);
-		auto const factor = 0.5f;
-		if (get_collider().physics.velocity.y < -factor) { p_animatable.set_frame(8); }
-		if (get_collider().physics.velocity.y > factor) { p_animatable.set_frame(9); }
+		auto const factor = 0.75f;
+		auto const trail = svc.ticker.every_x_ticks(8);
+		if (get_collider().physics.velocity.y < -factor) {
+			p_animatable.set_frame(8);
+			/*if (trail) {
+				map.spawn_effect(svc, "air_trail", get_collider().get_bottom());
+				map.spawn_effect(svc, "air_trail", get_collider().get_bottom() + sf::Vector2f{40.f, 8.f});
+			}*/
+		}
+		if (get_collider().physics.velocity.y > factor) {
+			p_animatable.set_frame(9);
+			/*if (trail) {
+				map.spawn_effect(svc, "air_trail", get_collider().get_bottom());
+				map.spawn_effect(svc, "air_trail", get_collider().get_bottom() + sf::Vector2f{40.f, -20.f});
+			}*/
+		}
 	}
 }
 
@@ -72,8 +108,34 @@ void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	m_propeller.set_position(drawpos - cam);
 	win.draw(m_propeller);
 	p_animatable.set_position(drawpos - cam);
-	win.draw(p_animatable);
+	auto const mode = LightBlendMode::additive;
+	m_flat_shader.submit(win, p_animatable.get_sprite(), mode);
+
 	// debug();
+}
+
+void ChampionJ5::gui_render(sf::RenderWindow& win) {
+	if (!flags.test(ChampionJ5Flags::battle)) { return; }
+	m_health_bar.render(win);
+}
+
+void ChampionJ5::on_hit(arms::Projectile& proj, world::Map& map) {
+	if (!flags.test(ChampionJ5Flags::battle)) { return; }
+	if (proj.get_team() == arms::Team::nani) { return; }
+	if (proj.get_collider().collides_with(m_hurtbox)) {
+		m_services->ticker.freeze_frame(0.5f);
+		m_services->camera_controller.shake(2, 0.05f, 200, 50);
+		m_health.inflict(proj.get_damage(), true, false);
+		m_services->soundboard.play_sound("clean_impact");
+		m_hit.start();
+		proj.handle_successful_hit(*m_services, map);
+	}
+}
+
+void ChampionJ5::set_battle(bool const to) {
+	to ? flags.set(ChampionJ5Flags::battle) : flags.reset(ChampionJ5Flags::battle);
+	if (to) { m_health_bar.bring_in(); }
+	m_health.refill();
 }
 
 fsm::StateFunction ChampionJ5::update_flying() {
@@ -129,6 +191,8 @@ void ChampionJ5::debug() {
 		auto const actual_velocity = physics.actual_velocity();
 		auto const apparent_velocity = physics.apparent_velocity();
 		auto const apparent_acceleration = physics.apparent_acceleration();
+
+		ImGui::Text("Health:      %.1f", m_health.get_normalized());
 
 		ImGui::SeparatorText("State");
 

@@ -70,9 +70,12 @@ void Trial::frame_update(ServiceProvider& svc) {}
 
 void Trial::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (!m_map) { return; }
-	p_renderer.begin(win, player->get_camera_position());
-	m_map->render_background(p_renderer, svc, win, p_world_shader, player->get_camera_position());
-	m_map->render(p_renderer, svc, win, p_world_shader, player->get_camera_position());
+
+	auto const cam = player->get_actual_camera_position();
+
+	p_renderer.begin(win, cam);
+	m_map->render_background(p_renderer, svc, win, p_world_shader, cam);
+	m_map->render(p_renderer, svc, win, p_world_shader, cam);
 	GameplayState::render(svc, win);
 }
 

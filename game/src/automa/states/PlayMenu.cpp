@@ -12,7 +12,6 @@ void PlayMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		if (current_selection.get() == 0) {
 			svc.state_controller.submenu = MenuType::file_select;
 			svc.state_controller.actions.set(Actions::trigger_submenu);
-			svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 		}
 		if (current_selection.get() == 1) {
 			svc.state_controller.submenu = MenuType::trials;

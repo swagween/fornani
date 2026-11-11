@@ -24,9 +24,10 @@ void HUD::update(automa::ServiceProvider& svc, player::Player& player) {
 
 void HUD::render(automa::ServiceProvider& svc, player::Player& player, sf::RenderWindow& win) {
 	auto sign = -1.f;
-	hearts.render(svc, player, win, m_position);
+	auto const dogfight = player.has_flag_set(player::PlayerFlags::dogfight);
+	if (!dogfight) { hearts.render(svc, player, win, m_position); }
 	auto offset = m_position + sign * hearts.get_offset();
-	orbs.render(svc, player, win, offset);
+	if (!dogfight) { orbs.render(svc, player, win, offset); }
 	offset += sign * orbs.get_offset();
 	ammo.render(svc, player, win, offset);
 	offset += sign * ammo.HUDAmmo::get_offset();

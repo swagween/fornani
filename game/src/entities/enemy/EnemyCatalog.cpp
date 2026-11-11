@@ -1,5 +1,6 @@
 
 #include <fornani/entities/enemy/EnemyCatalog.hpp>
+#include <fornani/entities/enemy/boss/DogfightNimbus.hpp>
 #include <fornani/entities/enemy/boss/GrandMastiff.hpp>
 #include <fornani/entities/enemy/boss/Haunch.hpp>
 #include <fornani/entities/enemy/boss/Henchman.hpp>
@@ -106,6 +107,7 @@ EnemyCatalog::EnemyCatalog(automa::ServiceProvider& svc) {
 	EnemyRegistry::register_factory(49, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Geyser>(svc, map, p.variant); });
 	EnemyRegistry::register_factory(50, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<Spewer>(svc, map); });
 	EnemyRegistry::register_factory(51, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<DogfightHulmet>(svc, map); });
+	EnemyRegistry::register_factory(52, [](auto& svc, auto& map, auto&, EnemyParameters const& p) { return std::make_unique<DogfightNimbus>(svc, map); });
 }
 
 void EnemyCatalog::update() {

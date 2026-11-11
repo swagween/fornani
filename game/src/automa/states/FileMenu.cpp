@@ -24,6 +24,8 @@ FileMenu::FileMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx
 	refresh(svc);
 	player.force_animation(player::AnimState::run, "run", [](player::PlayerAnimation& anim) { return anim.update_run(); });
 	player.set_direction(Direction{UND::neutral, LNR::left});
+
+	svc.soundboard.play_sound("menu_next");
 }
 
 void FileMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
