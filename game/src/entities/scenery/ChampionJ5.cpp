@@ -8,7 +8,7 @@ namespace fornani {
 
 ChampionJ5::ChampionJ5(automa::ServiceProvider& svc, world::Map& map)
 	: Mobile{svc, "champion_j5_body", {80, 60}}, m_services{&svc}, m_propeller{svc, "champion_j5_propeller", {80, 60}}, m_thrust{0.027f, .418f, .99f, 600.f},
-	  m_health_bar{svc, "championj5", gui::BossHealthParameters{colors::green, "player_health"}}, m_health{12.f}, m_hurtbox{{40.f, 25.f}}, m_flat_shader{svc.finder}, m_hit{100} {
+	  m_health_bar{svc, "championj5", gui::BossHealthParameters{colors::green, "player_health"}}, m_health{12.f}, m_hurtbox{{40.f, 25.f}}, m_flat_shader{svc.finder}, m_hit{60} {
 	p_animatable.push_and_set_animation("flying", {0, 1, 24, -1});
 	p_animatable.push_animation("land", {1, 4, 24, 0});
 	p_animatable.push_animation("grounded", {5, 1, 24, -1});
@@ -73,9 +73,7 @@ void ChampionJ5::update(automa::ServiceProvider& svc, world::Map& map) {
 	if (m_hit.running()) {
 		auto flash_rate = 20;
 		auto r = colors::ui_white;
-		r.a = 180;
-		auto b = colors::fucshia;
-		b.a = 180;
+		auto b = colors::black;
 		color = (m_hit.get() / flash_rate) % 2 == 0 ? r : b;
 	}
 	m_flat_shader.finalize(color);
@@ -108,7 +106,7 @@ void ChampionJ5::render(sf::RenderWindow& win, sf::Vector2f cam) {
 	m_propeller.set_position(drawpos - cam);
 	win.draw(m_propeller);
 	p_animatable.set_position(drawpos - cam);
-	auto const mode = LightBlendMode::additive;
+	auto const mode = LightBlendMode::normal;
 	m_flat_shader.submit(win, p_animatable.get_sprite(), mode);
 
 	// debug();

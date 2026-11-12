@@ -64,6 +64,7 @@
 #include <fornani/weapon/Weapon.hpp>
 #include <fornani/world/Breakable.hpp>
 #include <fornani/world/Checkpoint.hpp>
+#include <fornani/world/FallingBlock.hpp>
 #include <fornani/world/Incinerite.hpp>
 #include <fornani/world/Layer.hpp>
 #include <fornani/world/Map.hpp>
@@ -499,6 +500,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
 	std::erase_if(m_explosions, [](auto const& e) { return e.is_done(); });
+	std::erase_if(falling_blocks, [&](auto const& fb) { return fb->is_gone(*this); });
 	enemy_catalog.update();
 
 	manage_projectiles(svc);
@@ -543,6 +545,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 
 	for (auto& laser : lasers) { laser.update(svc, *player, *this); }
 	for (auto& m : mines) { m->update(svc, *this, *player); }
+	for (auto& fb : falling_blocks) { fb->update(svc, *this, *player); }
 	for (auto& exp : m_explosions) { exp.update(svc, *player, *this); }
 	for (auto& loot : active_loot) { loot.update(svc, *this, *player); }
 	for (auto& chest : chests) { chest->update(svc, *this, context.console, *player); }
@@ -634,6 +637,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 			if (!n->is_background()) { n->render(win, cam); }
 		}
 	}
+	for (auto& fb : falling_blocks) { fb->render(win, cam); }
 
 	for (auto& enemy : enemy_catalog.enemies) {
 		if (enemy->is_background()) {
@@ -756,19 +760,6 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		if (props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(win, m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
 	}
 	if (m_attributes.properties.test(MapProperties::timer)) { svc.world_timer.render(win, sf::Vector2f{32.f, 32.f}); }
-
-	if (debug::is_debug()) {
-		center_box.setPosition({});
-		center_box.setFillColor(sf::Color(80, 80, 80, 60));
-		win.draw(center_box);
-		center_box.setPosition(svc.window->f_screen_dimensions() * 0.5f);
-		win.draw(center_box);
-		center_box.setFillColor(sf::Color(100, 100, 100, 60));
-		center_box.setPosition({svc.window->f_screen_dimensions().x * 0.5f, 0.f});
-		win.draw(center_box);
-		center_box.setPosition({0.f, svc.window->f_screen_dimensions().y * 0.5f});
-		win.draw(center_box);
-	}
 
 	if (debug::is_greyblock() || debug::is_debug()) { get_middleground()->grid.render(win, cam); }
 	if (debug::is_debug()) {
@@ -990,6 +981,8 @@ void Map::spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treas
 	chests.back()->get_collider().physics.velocity = vel;
 	chests.back()->set_attribute(entity::ChestAttributes::mythic, treasure.mythic);
 }
+
+void Map::spawn_falling_block(automa::ServiceProvider& svc, sf::Vector2f position) { falling_blocks.push_back(std::make_unique<FallingBlock>(svc, *this, position)); }
 
 void Map::reveal_npc(std::string_view label) {
 	if (!m_entities) {
@@ -1296,6 +1289,7 @@ void Map::clear() {
 	// animators.clear();
 	effects.clear();
 	frame_effects.clear();
+	falling_blocks.clear();
 	for (auto& scenery : scenery_layers) { scenery.clear(); }
 	lasers.clear();
 	spawners.clear();

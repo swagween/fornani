@@ -407,6 +407,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						ImGui::Indent();
 						for (auto& loot : map->get().active_loot) { ImGui::Text("Loot Size: %i", loot.get_size()); }
 						ImGui::Text("Active Projectiles: %i", map->get().active_projectiles.size());
+						ImGui::Text("Active Falling Blocks: %i", map->get().falling_blocks.size());
 						ImGui::Text("Active Emitters: %i", map->get().get_active_emitters_size());
 						ImGui::Separator();
 						ImGui::Text("Registered Colliders: %i", map->get().num_colliders());

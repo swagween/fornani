@@ -4,6 +4,7 @@ nani_add_sources(
         Camera.cpp
         CameraAnchor.cpp
         Checkpoint.cpp
+        FallingBlock.cpp
         Grid.cpp
         HazardMap.cpp
         Incinerite.cpp

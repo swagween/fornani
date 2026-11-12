@@ -65,6 +65,8 @@ struct WeatherSpecifications;
 
 namespace fornani::world {
 
+class FallingBlock;
+
 enum class LevelState : std::uint8_t { camera_shake, spawn_enemy };
 enum class MapState : std::uint8_t { unobscure, has_middleground, no_collision };
 enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
@@ -135,6 +137,7 @@ class Map {
 	void spawn_explosion(automa::ServiceProvider& svc, std::string_view tag, std::string_view emitter, arms::Team team, sf::Vector2f pos, float radius, int channel, int volatility = 0, bool stun = false);
 	void spawn_enemy(int id, sf::Vector2f pos, int variant = 0, bool allow_proximity_to_player = false, bool effect = true, bool anywhere = false);
 	void spawn_chest(automa::ServiceProvider& svc, enemy::Treasure const& treasure, sf::Vector2f pos, sf::Vector2f vel = {});
+	void spawn_falling_block(automa::ServiceProvider& svc, sf::Vector2f position);
 
 	void reveal_npc(std::string_view label);
 	void manage_projectiles(automa::ServiceProvider& svc);
@@ -352,6 +355,7 @@ class Map {
 
   public:
 	enemy::EnemyCatalog enemy_catalog;
+	std::vector<std::unique_ptr<FallingBlock>> falling_blocks{};
 	std::vector<std::unique_ptr<Breakable>> breakables{};
 	std::vector<std::unique_ptr<Platform>> platforms{};
 	std::vector<std::unique_ptr<SwitchBlock>> switch_blocks{};

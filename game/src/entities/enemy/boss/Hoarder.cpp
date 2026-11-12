@@ -24,7 +24,7 @@ Hoarder::Hoarder(automa::ServiceProvider& svc, world::Map& map) : Boss(svc, map,
 								 {"present", {9, 1, fr * 3, 4}},
 								 {"hop_on_bike", {10, 1, fr, 0}},
 								 {"ride_bike", {11, 2, fr, 3}},
-								 {"tantrum", {13, 2, fr, 3}},
+								 {"tantrum", {13, 2, fr * 2, 3}},
 								 {"die", {21, 2, fr, -1, true}},
 								 {"run", {23, 4, fr, -1}},
 								 {"laugh", {27, 2, fr, 3}},
@@ -239,6 +239,7 @@ fsm::StateFunction Hoarder::update_ride_bike() {
 
 fsm::StateFunction Hoarder::update_tantrum() {
 	p_state.actual = HoarderState::tantrum;
+	if (p_services->ticker.every_x_ticks(30)) { p_map->spawn_falling_block(*p_services, get_collider().get_center() + sf::Vector2f{random::range_float(-700.f, 700.f), -600.f}); }
 	if (p_animatable.animation.just_started()) {}
 	if (p_animatable.animation.is_complete()) {
 		request(HoarderState::get_up);
