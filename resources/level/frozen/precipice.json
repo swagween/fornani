@@ -88,7 +88,8 @@
     "weather": {
       "chance": 1,
       "type": "snow"
-    }
+    },
+    "zone_id": 0
   },
   "tile": {
     "animated": [

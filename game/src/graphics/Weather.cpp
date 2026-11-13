@@ -19,11 +19,14 @@ Weather::Weather(automa::ServiceProvider& svc, world::Map& map, std::string_view
 		m_layers.push_back(WeatherLayer{
 			.parallax = in_layer["parallax"].as<float>(), .seed = fornani::random::range_float(0.f, 2.f * std::numbers::pi_v<float>), .render_order = in_layer["render_order"].as<std::size_t>(), .loop{in_data["frames"].as<int>()}});
 		auto& layer = m_layers.back();
+		// layer.position.y = random::range_float(0.f, 256.f);
 		for (int i = 0; i < in_data["frames"].as<int>(); ++i) {
 			layer.textures.push_back(sf::RenderTexture{});
 			auto& frame = layer.textures.back();
 			auto sprite = sf::Sprite{svc.assets.get_texture(tex)};
 			sprite.setTextureRect(sf::IntRect{{0, 256 * static_cast<int>(i)}, {256, 256}});
+			if (in_data["x_reflection"].as_bool() && random::coin_flip()) { sprite.scale({-1.f, 1.f}); }
+			if (in_data["y_reflection"].as_bool() && random::coin_flip()) { sprite.scale({1.f, -1.f}); }
 
 			auto u_dimensions = sf::Vector2u{256, 256};
 			if (!frame.resize(u_dimensions)) { NANI_LOG_WARN(m_logger, "Failed to resize weather texture"); }
@@ -47,7 +50,7 @@ void Weather::update(automa::ServiceProvider& svc, world::Map& map) {
 			layer.position.x = 20.f + 8.f * std::sin(svc.ticker.in_game_seconds_passed.count() + layer.seed);
 			auto factor = l == 0 ? -0.01f : l == 1 ? -0.05f : 0.02f;
 			layer.position.x += factor * layer.parallax;
-			layer.position.y += 0.15f * layer.parallax;
+			layer.position.y += m_parameters.speed * layer.parallax;
 			auto wrap = [](float value) { return std::fmod(std::fmod(value, 512.f) + 512.f, 512.f); };
 
 			layer.position.x = wrap(layer.position.x);
@@ -77,6 +80,7 @@ WeatherParameters::WeatherParameters(dj::Json const& in) {
 	density = in["density"].as<int>();
 	framerate = in["framerate"].as<int>();
 	parallax_factor = in["parallax_factor"].as<float>();
+	speed = in["speed"].as<float>();
 	if (in["effect"]) { effect.emplace(in["effect"].as_string()); }
 	if (in["ambience"]) { ambience.emplace(in["ambience"].as_string()); }
 }

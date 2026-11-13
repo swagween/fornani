@@ -28,6 +28,8 @@
       { "parallax": 1.1, "render_order": 0 },
       { "parallax": 1.2, "render_order": 0 }
     ],
-    "frames": 1
+    "frames": 1,
+    "x_reflection": true,
+    "speed": 0.35
   }
 }

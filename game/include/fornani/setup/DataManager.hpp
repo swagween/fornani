@@ -49,6 +49,19 @@ struct MapPinRecord {
 	auto operator==(MapPinRecord const& pin) const -> bool { return (pin.position - position).length() < constants::tiny_value && pin.type == type; }
 };
 
+struct ZoneState {
+	using underlying_type = std::uint8_t;
+	ZoneState(underlying_type const id, underlying_type const state) : id{id}, state{state} {}
+	ZoneState(dj::Json const& in) : id{in["id"].as<underlying_type>()}, state{in["state"].as<underlying_type>()} {}
+	void serialize(dj::Json& out) {
+		out["id"] = id;
+		out["state"] = state;
+	}
+	underlying_type id{};
+	underlying_type state{};
+	auto operator==(ZoneState const&) const -> bool = default;
+};
+
 class DataManager final {
 
   public:
@@ -99,6 +112,7 @@ class DataManager final {
 	void register_enemy(std::string_view tag);
 	void add_map_pin(int type, sf::Vector2f position);
 	void remove_map_pin(int type, sf::Vector2f position);
+	void set_zone_state(ZoneState::underlying_type const id, ZoneState::underlying_type const state);
 
 	bool is_duplicate_room(int id) const;
 	bool is_door_unlocked(std::string_view tag) const;
@@ -128,6 +142,7 @@ class DataManager final {
 	[[nodiscard]] std::unordered_map<std::string, int> const& loot_register() const noexcept { return m_loot; }
 	[[nodiscard]] Register<EnemyRecord>& get_bestiary() noexcept { return m_bestiary; }
 	[[nodiscard]] auto get_number_of_boss_victories(std::string_view label) const -> int;
+	[[nodiscard]] auto get_zone_state(ZoneState::underlying_type const id) const -> ZoneState::underlying_type;
 
 	int get_room_index(int id);
 	int get_npc_location(int npc_id);
@@ -215,6 +230,7 @@ class DataManager final {
 	Register<std::string> unlocked_doors{};
 	Register<EnemyRecord> m_bestiary{};
 	Register<MapPinRecord> m_map_pins{};
+	Register<ZoneState> m_zone_states{};
 	Register<int> activated_switches{};
 	Register<int> m_room_ids{};
 	Register<DestructibleRecord> destructible_states{};

@@ -98,6 +98,12 @@
     "framerate": 16,
     "dimensions": [64, 64]
   },
+  "big_steam": {
+    "frame_count": 8,
+    "framerate": 40,
+    "dimensions": [64, 64],
+    "x_reflection": true
+  },
   "giga_flare": {
     "frame_count": 9,
     "framerate": 16,

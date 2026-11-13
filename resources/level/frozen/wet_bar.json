@@ -32,6 +32,19 @@
         ],
         "source_id": 1902
       }
+    ],
+    "save_point": [
+      {
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 1902,
+        "position": [
+          14,
+          8
+        ]
+      }
     ]
   },
   "meta": {
@@ -58,7 +71,7 @@
       32,
       16
     ],
-    "interior": false,
+    "interior": true,
     "metagrid": [
       139,
       24
@@ -72,7 +85,7 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
-      "interior": false,
+      "interior": true,
       "lighting": true,
       "timer": false,
       "toxic": false
@@ -86,7 +99,8 @@
     "weather": {
       "chance": 1,
       "type": "snow"
-    }
+    },
+    "zone_id": 1
   },
   "tile": {
     "animated": [

@@ -300,6 +300,7 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	save["map_data"]["fallen_enemies"] = dj::Json::empty_array();
 	save["discovered_rooms"] = dj::Json::empty_array();
 	save["unlocked_doors"] = dj::Json::empty_array();
+	save["zone_states"] = dj::Json::empty_array();
 	save["opened_chests"] = dj::Json::empty_array();
 	save["activated_switches"] = dj::Json::empty_array();
 	save["destroyed_blocks"] = dj::Json::empty_array();
@@ -319,6 +320,11 @@ void DataManager::save_progress(player::Player& player, int save_point_id) {
 	}
 	for (auto& room : discovered_rooms) { save["discovered_rooms"].push_back(room); }
 	for (auto& door : unlocked_doors) { save["unlocked_doors"].push_back(door); }
+	for (auto& zone : m_zone_states) {
+		auto record = dj::Json{};
+		zone.serialize(record);
+		save["zone_states"].push_back(record);
+	}
 	for (auto& chest : opened_chests) { save["opened_chests"].push_back(chest); }
 	for (auto const room : player.visit_history.get_list()) { save["visit_history"].push_back(room); }
 	for (auto& s : activated_switches) { save["activated_switches"].push_back(s); }
@@ -610,6 +616,14 @@ void DataManager::add_map_pin(int type, sf::Vector2f position) { m_map_pins.add(
 
 void DataManager::remove_map_pin(int type, sf::Vector2f position) { m_map_pins.remove({type, position}); }
 
+void DataManager::set_zone_state(ZoneState::underlying_type const id, ZoneState::underlying_type const state) {
+	if (auto it = m_zone_states.find_if([id](auto const& zone) { return zone.id == id; }); it != m_zone_states.end()) {
+		it->state = state;
+	} else {
+		m_zone_states.add(ZoneState{id, state});
+	}
+}
+
 bool data::DataManager::is_duplicate_room(int id) const {
 	for (auto& json : map_jsons) {
 		if (json.id == id) { return true; }
@@ -732,6 +746,11 @@ auto DataManager::get_number_of_boss_victories(std::string_view label) const -> 
 	return save["boss_victories"][label]["count"].as<int>();
 }
 
+[[nodiscard]] auto DataManager::get_zone_state(ZoneState::underlying_type const id) const -> ZoneState::underlying_type {
+	auto const it = m_zone_states.find_if([id](auto const& zone) { return zone.id == id; });
+	return it != m_zone_states.end() ? it->state : 0U;
+}
+
 auto DataManager::get_room_index(int id) -> int {
 	auto const it = std::ranges::find(m_room_ids, id);
 	return static_cast<int>(std::ranges::distance(m_room_ids.begin(), it));
@@ -815,6 +834,7 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 
 	discovered_rooms.clear();
 	unlocked_doors.clear();
+	m_zone_states.clear();
 	opened_chests.clear();
 	destructible_states.clear();
 	activated_switches.clear();
@@ -843,6 +863,9 @@ bool DataManager::load_save_json(fs::path const& path, player::Player& player, b
 
 	auto const& unlocked_doors_data = save["unlocked_doors"].as_array();
 	for (auto const& door : unlocked_doors_data) { unlocked_doors.add(door.as_string()); }
+
+	auto const& zone_states_data = save["zone_states"].as_array();
+	for (auto const& zone : zone_states_data) { m_zone_states.add(ZoneState{zone}); }
 
 	auto const& opened_chests_data = save["opened_chests"].as_array();
 	for (auto const& chest : opened_chests_data) { opened_chests.add(chest.as<std::uint64_t>()); }

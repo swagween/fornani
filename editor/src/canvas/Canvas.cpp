@@ -147,6 +147,7 @@ bool Canvas::load(fornani::automa::ServiceProvider& svc, fornani::ResourceFinder
 	m_use_template = meta["use_template"].as_bool();
 	m_attributes = m_use_template ? fornani::world::MapAttributes{t_meta} : fornani::world::MapAttributes{meta};
 	room_id = meta["room_id"].as<int>();
+	zone_id = meta["zone_id"].as<fornani::data::ZoneState::underlying_type>();
 	metagrid_coordinates.x = meta["metagrid"][0].as<int>();
 	metagrid_coordinates.y = meta["metagrid"][1].as<int>();
 	dimensions.x = meta["dimensions"][0].as<int>();
@@ -217,6 +218,7 @@ bool Canvas::save(fornani::ResourceFinder& finder, std::string const& region, st
 
 	// metadata
 	metadata["meta"]["room_id"] = room_id;
+	metadata["meta"]["zone_id"] = zone_id;
 	metadata["meta"]["metagrid"][0] = metagrid_coordinates.x;
 	metadata["meta"]["metagrid"][1] = metagrid_coordinates.y;
 	metadata["meta"]["dimensions"][0] = dimensions.x;

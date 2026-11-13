@@ -42,6 +42,20 @@ class Register {
 
 	void clear() { items.clear(); }
 
+	[[nodiscard]] auto find(T const& value) -> iterator { return std::find(items.begin(), items.end(), value); }
+
+	[[nodiscard]] auto find(T const& value) const -> const_iterator { return std::find(items.begin(), items.end(), value); }
+
+	template <typename Predicate>
+	[[nodiscard]] auto find_if(Predicate&& predicate) -> iterator {
+		return std::find_if(items.begin(), items.end(), std::forward<Predicate>(predicate));
+	}
+
+	template <typename Predicate>
+	[[nodiscard]] auto find_if(Predicate&& predicate) const -> const_iterator {
+		return std::find_if(items.begin(), items.end(), std::forward<Predicate>(predicate));
+	}
+
 	friend bool operator==(Register const& a, Register const& b) {
 		if (a.items.size() != b.items.size()) return false;
 		for (std::size_t i = 0; i < a.items.size(); ++i)

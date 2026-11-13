@@ -266,6 +266,7 @@ void Collider::detect_map_collision(world::Map& map) {
 			if (index >= grid.cells.size() || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable()) { continue; }
+			if (cell.get_material() == world::TileMaterial::ice && !map.is_frozen()) { continue; }
 			// if (has_flag_set(ColliderFlags::on_ramp) && !cell.is_ramp()) { continue; }
 			if (cell.ramp_adjacent() && cell.covered()) { continue; }
 			cell.collision_check = true;

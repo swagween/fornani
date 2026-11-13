@@ -400,6 +400,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						if (ImGui::Button("Reveal World in MiniMap")) {
 							for (auto const& entry : services.data.map_table["rooms"].as_array()) { services.data.reveal_room(entry["room_id"].as<int>()); }
 						}
+						if (ImGui::Button("Warm up")) { map->get().set_warmed_up(true); }
+						if (ImGui::Button("Freeze")) { map->get().set_warmed_up(false); }
 						ImGui::Separator();
 						map->get().debug();
 						ImGui::SeparatorText("Entities");

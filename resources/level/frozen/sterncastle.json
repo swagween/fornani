@@ -56,6 +56,32 @@
         ],
         "source_id": 1900
       }
+    ],
+    "water": [
+      {
+        "dimensions": [
+          19,
+          4
+        ],
+        "id": 0,
+        "position": [
+          19,
+          12
+        ],
+        "type": 0
+      },
+      {
+        "dimensions": [
+          10,
+          4
+        ],
+        "id": 0,
+        "position": [
+          13,
+          26
+        ],
+        "type": 0
+      }
     ]
   },
   "meta": {
@@ -110,7 +136,8 @@
     "weather": {
       "chance": 1,
       "type": "snow"
-    }
+    },
+    "zone_id": 1
   },
   "tile": {
     "animated": [

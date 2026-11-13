@@ -65,6 +65,9 @@ void GameplayState::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		svc.input_system.cancel_mouse();
 	}
 
+	if (p_world_shader) { p_world_shader->set_darken(m_map->get_darken_factor()); }
+	if (p_entity_shader) { p_entity_shader->set_darken(m_map->get_darken_factor()); }
+
 	GameState::tick_update(svc, engine);
 }
 
@@ -128,8 +131,8 @@ void GameplayState::reload(ServiceProvider& svc, int target_state) {
 	svc.camera_controller.constrain();
 
 	if (m_map->has_property(world::MapProperties::lighting)) { m_palette.emplace(m_map->get_biome_string(), svc.finder); }
-	p_world_shader->set_darken(m_map->darken_factor);
-	p_entity_shader->set_darken(m_map->darken_factor);
+	p_world_shader->set_darken(m_map->get_darken_factor());
+	p_entity_shader->set_darken(m_map->get_darken_factor());
 	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 	p_gui_shader->set_texture_size(svc.window->f_screen_dimensions() * 3.f); // 3 is the number of screen-sized "cells" in the inventory window
 	svc.app_flags.reset(automa::AppFlags::custom_map_start);

@@ -1101,6 +1101,8 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::EndChild();
 			ImGui::PopStyleVar();
 			ImGui::SeparatorText("Settings");
+			auto zone_id = static_cast<int>(map.zone_id);
+			if (ImGui::InputInt("Zone ID", &zone_id)) { map.zone_id = static_cast<decltype(map.zone_id)>(std::max(0, zone_id)); }
 			if (ImGui::BeginTabBar("##globset")) {
 				if (ImGui::BeginTabItem("Canvas")) {
 					if (ImGui::BeginTabBar("##gensettings")) {
@@ -1160,6 +1162,7 @@ void Editor::gui_render(sf::RenderWindow& win) {
 			ImGui::RadioButton("file 3", &e, 2);
 			ImGui::SeparatorText("Info");
 			ImGui::Text("ID: %u", map.room_id);
+			ImGui::Text("Zone ID: %u", map.zone_id);
 			ImGui::Text("Name: %s", p_services->finder.paths.room_name.c_str());
 			ImGui::Text("Music: %s", map.get_attributes().music.c_str());
 			ImGui::Text("Ambience: %s", map.get_attributes().ambience.c_str());

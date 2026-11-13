@@ -9,7 +9,7 @@
 namespace fornani {
 
 enum class WaterType : std::uint8_t { normal, curative, toxic };
-enum class WaterFlags : std::uint8_t { splashed, touched };
+enum class WaterFlags : std::uint8_t { splashed, touched, frozen };
 
 class Water : public Entity, public Flaggable<WaterFlags> {
   public:
@@ -37,6 +37,8 @@ class Water : public Entity, public Flaggable<WaterFlags> {
 	sf::Vector2f m_level{};
 
 	WaterType m_type{};
+
+	float m_opacity{1.f};
 
 	std::optional<vfx::Sparkler> m_sparkler{};
 };

@@ -50,7 +50,8 @@
         [190, 255, 233],
         [255, 248, 172]
       ],
-      "cold": true
+      "cold": true,
+      "door_shift": true
     },
     "greatwing": {
       "ambience": { "interior": "industrial", "exterior": "firstwind" },

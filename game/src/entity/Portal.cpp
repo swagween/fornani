@@ -120,6 +120,8 @@ void Portal::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 		if (!m_attributes.test(PortalAttributes::already_open) && !is_large() && m_render_state != PortalRenderState::open) { svc.soundboard.flags.world.set(audio::World::door_open); }
 		m_render_state = PortalRenderState::open;
 	}
+	// frozen doors
+	if (map.get_biome_properties()["door_shift"].as_bool()) { channel = map.is_frozen() ? 0 : 1; }
 	auto lookup = sf::IntRect({static_cast<int>(m_render_state) * constants::i_cell_resolution + 64 * channel, map.get_style_id() * constants::i_cell_resolution * 2}, {constants::i_cell_resolution, constants::i_cell_resolution * 2});
 	p_animatable.set_texture_rect(lookup);
 

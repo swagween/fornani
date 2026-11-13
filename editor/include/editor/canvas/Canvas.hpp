@@ -171,6 +171,7 @@ class Canvas {
 	int m_status{};
 
 	std::uint32_t room_id{};
+	std::uint8_t zone_id{};
 
 	bool m_use_template{};
 

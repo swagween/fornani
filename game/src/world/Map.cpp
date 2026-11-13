@@ -402,6 +402,18 @@ void Map::unserialize(automa::ServiceProvider& svc, int room_number, bool live) 
 	if (!m_static_entity_texture.resize(u_dim)) { NANI_LOG_WARN(m_logger, "Failed to resize static entity texture!"); }
 	m_static_entity_texture.clear(colors::transparent);
 	if (get_biome_properties()["cold"].as_bool()) { m_attributes.properties.set(MapProperties::cold); }
+	if (is_cold() && m_attributes.properties.test(MapProperties::interior)) {
+		m_attributes.properties.set(MapProperties::temperature_shift);
+		m_temperature_shift.emplace(1200);
+		m_temperature_shift->start();
+	}
+
+	// zone logic
+	m_zone_id = meta["zone_id"].as<data::ZoneState::underlying_type>();
+	if (svc.data.get_zone_state(m_zone_id) == 1U) {
+		flags.map_state.set(MapState::warmed_up);
+		if (m_temperature_shift) { m_temperature_shift->cancel(); }
+	}
 
 	generate_collidable_layer(live);
 }
@@ -439,6 +451,9 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 
 	// water level
 	m_water_level = std::lerp(m_water_level, m_target_water_level, 0.001f);
+
+	// temperature
+	if (m_temperature_shift) { flags.map_state.test(MapState::warmed_up) ? m_temperature_shift->update() : m_temperature_shift->reverse(); }
 
 	// camera effects
 	if (svc.ticker.every_second() && m_attributes.shake_properties.shaking) {
@@ -591,7 +606,7 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 		shader->finalize(biome["max_light"].as<float>());
 		std::array<sf::Color, 3> qualifying_colors{Color{biome["qualifying_sparkle_colors"][0]}, Color{biome["qualifying_sparkle_colors"][1]}, Color{biome["qualifying_sparkle_colors"][2]}};
 		std::array<sf::Color, 3> sparkle_colors{Color{biome["sparkle_colors"][0]}, Color{biome["sparkle_colors"][1]}, Color{biome["sparkle_colors"][2]}};
-		shader->set_sparkle(is_cold(), svc.assets.get_texture("sparkle_noise"), svc.assets.get_texture("diagonal_mask"), 1.0f, colors::white, qualifying_colors, sparkle_colors, cam);
+		shader->set_sparkle(is_frozen(), svc.assets.get_texture("sparkle_noise"), svc.assets.get_texture("diagonal_mask"), 1.0f, colors::white, qualifying_colors, sparkle_colors, cam);
 	}
 
 	if (m_entities) {
@@ -687,13 +702,14 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 
 	sf::RenderTarget& target = win;
 
+	auto const layer_flags = LayerRenderFlags{false, m_attributes.properties.test(MapProperties::day_night_shift), m_temperature_shift ? m_temperature_shift->get_normalized() : -1.f};
 	for (auto [i, layer] : std::views::enumerate(get_layers())) {
 		if (use_shader && !layer->ignore_lighting()) {
 			shader->set_texture_size(real_dimensions / constants::f_scale_factor);
 			shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
-			layer->render(svc, target, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+			layer->render(svc, target, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, layer_flags);
 		} else {
-			layer->render(svc, target, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, false, m_attributes.properties.test(MapProperties::day_night_shift));
+			layer->render(svc, target, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, layer_flags);
 		}
 
 		if (i == m_middleground) {
@@ -797,6 +813,7 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 			if (!props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(win, m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
 		}
 
+		auto const layer_flags = LayerRenderFlags{true, m_attributes.properties.test(MapProperties::day_night_shift), m_temperature_shift ? m_temperature_shift->get_normalized() : -1.f};
 		for (auto [i, layer] : std::views::enumerate(get_layers())) {
 			if (i == 1) {
 				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather->render(svc, win, cam, 1); }
@@ -814,9 +831,9 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 			}
 			if (m_attributes.properties.test(MapProperties::lighting) && m_palette && shader && !layer->ignore_lighting()) {
 				shader->finalize(svc.data.biomes["properties"][get_biome_string()]["max_light"].as<float>());
-				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true);
+				layer->render(svc, win, shader.value(), m_palette.value(), m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, layer_flags);
 			} else {
-				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, true, m_attributes.properties.test(MapProperties::day_night_shift));
+				layer->render(svc, win, m_camera_effects.shifter, cooldowns.fade_obscured.get_normalized(), cam, layer_flags);
 			}
 		}
 
@@ -1068,7 +1085,7 @@ void Map::generate_collidable_layer(bool live) {
 
 void Map::generate_layer_textures(automa::ServiceProvider& svc) {
 	auto const& texture = svc.assets.get_tileset(std::string{get_biome_string()});
-	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(texture, m_attributes.properties.test(MapProperties::day_night_shift)); }
+	for (auto& layer : svc.data.get_layers(room_id)) { layer->generate_textures(texture, m_attributes.properties.test(MapProperties::day_night_shift), is_cold()); }
 	m_tileset_image = texture.copyToImage();
 	auto const size = texture.getSize();
 
@@ -1166,6 +1183,7 @@ bool Map::check_cell_collision_circle(shape::CircleCollider& collider, bool coll
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable() || cell.is_cage()) { continue; }
 			if (cell.is_platform() && !collide_with_platforms) { continue; }
+			if (cell.get_material() == TileMaterial::ice && !is_frozen()) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return true; }
 		}
@@ -1194,6 +1212,7 @@ bool Map::overlaps_corner(components::CircleSensor& sensor, LR dir) {
 			if (!cell.is_collidable()) { continue; }
 			if (cell.is_platform()) { continue; }
 			if (cell.is_ramp()) { continue; }
+			if (cell.get_material() == TileMaterial::ice && !is_frozen()) { continue; }
 			if (below_cell.is_solid()) { continue; }
 			if (below_cell.is_ramp()) { continue; }
 			auto& left_cell = grid.get_cell(left_index);
@@ -1220,6 +1239,7 @@ sf::Vector2i Map::get_circle_collision_result(shape::CircleCollider& collider, b
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable()) { continue; }
 			if (cell.is_platform() && !collide_with_platforms) { continue; }
+			if (cell.get_material() == TileMaterial::ice && !is_frozen()) { continue; }
 			cell.collision_check = true;
 			if (collider.collides_with(cell.bounding_box)) { return collider.get_collision_result(cell.bounding_box); }
 		}
@@ -1241,6 +1261,7 @@ void Map::handle_cell_collision(shape::CircleCollider& collider) {
 			if (index >= dimensions.x * dimensions.y || index < 0) { continue; }
 			auto& cell = grid.get_cell(static_cast<int>(index));
 			if (!cell.is_collidable() || cell.is_cage()) { continue; }
+			if (cell.get_material() == TileMaterial::ice && !is_frozen()) { continue; }
 			if (cell.is_platform() && (world::is_above_platform(cell, collider.get_radius() + collider.get_global_center().y) || collider.physics.actual_velocity().y < 0.f)) { continue; }
 			cell.collision_check = true;
 			collider.handle_map_collision(cell);
@@ -1435,6 +1456,7 @@ std::optional<float> Map::get_middleground_surface_y(float x, float y, float upw
 		if (index >= dimensions.x * dimensions.y || index < 0) { break; }
 		auto& cell = grid.get_cell(static_cast<int>(index));
 		if (!cell.is_collidable()) { continue; }
+		if (cell.get_material() == TileMaterial::ice && !is_frozen()) { continue; }
 		if (!cell.exposed) { continue; }
 		auto const candidate = cell.bounding_box.get_surface_y(x);
 		if (!candidate) { continue; }
@@ -1498,6 +1520,10 @@ auto Map::get_biome_properties() const -> dj::Json const& { return m_services->d
 auto Map::is_toxic() const -> bool { return (get_style_id() == 7 && !is_interior()) || has_property(MapProperties::toxic); }
 
 auto Map::get_ambience_balance() const -> float { return ambience_balance.get(); }
+
+auto Map::is_frozen() const -> bool { return get_temperature() > 0.5f && is_cold(); }
+
+auto Map::get_darken_factor() const -> float { return darken_factor; }
 
 dj::Json const& Map::get_json_data(automa::ServiceProvider& svc) const {
 	auto rid = room_id;
@@ -1580,6 +1606,11 @@ void Map::sound_impact() {
 	m_services->ambience_player.set_balance(0.f);
 	m_services->music_player.set_balance(1.f);
 	m_services->music_player.update();
+}
+
+void Map::set_warmed_up(bool const to) {
+	to ? flags.map_state.set(MapState::warmed_up) : flags.map_state.reset(MapState::warmed_up);
+	m_services->data.set_zone_state(m_zone_id, to ? 1U : 0U);
 }
 
 } // namespace fornani::world

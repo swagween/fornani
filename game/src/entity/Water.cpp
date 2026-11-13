@@ -64,9 +64,37 @@ void Water::expose() {
 }
 
 void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
+	auto const froze = map.is_cold() && map.get_temperature() > 0.99f;
+	if (has_flag_set(WaterFlags::frozen) && !froze) { svc.soundboard.play_sound("water_steam"); }
+	set_flag(WaterFlags::frozen, froze);
+	auto const next_opacity = 1.f - map.get_temperature();
+	if (next_opacity > m_opacity) {
+		if (map.get_temperature() > 0.3f && map.get_temperature() < 0.6f && svc.ticker.every_x_ticks(10)) {
+			auto const p = get_bounding_box().get_position();
+			auto const d = get_bounding_box().get_dimensions();
+			if (random::percent_chance(20)) {
+				auto const spawn_pos = sf::Vector2f{random::range_float(p.x, p.x + d.x), random::range_float(p.y, p.y + d.y)};
+				map.spawn_effect(svc, "big_steam", spawn_pos, {0.f, -0.3f});
+			}
+		}
+	}
+	m_opacity = next_opacity;
+	if (has_flag_set(WaterFlags::frozen)) { return; }
 	m_replenish_cooldown.update();
 	if (m_sparkler) { m_sparkler->update(svc); }
-	// if (m_type == WaterType::toxic) { svc.soundboard.repeat_sound("bubbling_liquid", 1U, m_bounding_box.get_center()); }
+
+	if (m_type == WaterType::toxic) {
+		auto const player_position = player.get_position();
+		auto const& vertices = get_bounding_box().vertices;
+		auto const min_x = std::min(vertices[0].x, vertices[2].x);
+		auto const max_x = std::max(vertices[0].x, vertices[2].x);
+		auto const min_y = std::min(vertices[0].y, vertices[2].y);
+		auto const max_y = std::max(vertices[0].y, vertices[2].y);
+
+		auto const sound_position = sf::Vector2f{std::clamp(player_position.x, min_x, max_x), std::clamp(player_position.y, min_y, max_y)};
+
+		svc.soundboard.repeat_sound("bubbling_liquid", 1U, sound_position);
+	}
 	if (m_bounding_box.contains_point(player.get_collider().get_bottom())) {
 		if (!has_flag_set(WaterFlags::touched)) {
 			m_replenish_cooldown.start();
@@ -112,6 +140,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 }
 
 void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
+	if (has_flag_set(WaterFlags::frozen)) { return; }
 	highlighted ? drawbox.setFillColor(sf::Color{60, 255, 120, 180}) : drawbox.setFillColor(sf::Color{60, 255, 120, 80});
 	Entity::render(win, cam, size);
 	if (!m_editor) {
@@ -122,24 +151,30 @@ void Water::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	if (m_editor) { return; }
 	auto sprite = sf::Sprite{m_texture.getTexture()};
 
-	auto const offset = sf::Vector2f{0.f, -6.f};
+	auto const offset = sf::Vector2f{0.f, -6.f * m_opacity};
 	auto phase = m_wave_timer.get();
 	auto wrapped = std::fmod(phase, 2.f * std::numbers::pi);
 	auto const shift_multiplier = 2.f;
 	m_wave_shift.x = m_type == WaterType::toxic ? 0.f : std::cos(wrapped);
 	m_wave_shift.y = std::sin(2.f * wrapped) + 2.f;
+	m_wave_shift *= m_opacity;
 	if (phase >= 2.f * std::numbers::pi) { m_wave_timer.reset(); }
 	auto const final_position = sf::Vector2f{m_bounding_box.get_position().x + m_wave_shift.x * 3.f, m_bounding_box.get_position().y + m_wave_shift.y * shift_multiplier};
+
+	auto const color = sf::Color{255, 255, 255, static_cast<std::uint8_t>(m_opacity * 255.f)};
+	auto states = sf::RenderStates{};
+	states.blendMode = sf::BlendAlpha;
 
 	sprite.setTextureRect(sf::IntRect{{}, sf::Vector2i{get_world_dimensions() * 0.5f}});
 	sprite.setScale(constants::f_scale_vec);
 	sprite.setPosition(final_position - cam + sf::Vector2f{0.f, 2.f} + m_wave_shift + offset);
-	win.draw(sprite);
+	win.draw(sprite, states);
 	auto surface_sprite = sf::Sprite{m_surface_texture.getTexture()};
 	surface_sprite.setTextureRect(sf::IntRect{{}, sf::Vector2i{static_cast<int>(get_world_dimensions().x * 0.5f), 32}});
 	surface_sprite.setScale(constants::f_scale_vec);
 	surface_sprite.setPosition(final_position + m_wave_shift - cam + offset);
-	win.draw(surface_sprite);
+	surface_sprite.setColor(color);
+	win.draw(surface_sprite, states);
 	if (m_sparkler) { m_sparkler->render(win, cam); }
 }
 

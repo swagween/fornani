@@ -63,7 +63,7 @@ void Dogfight::init(ServiceProvider& svc, player::Player& player) {
 
 	p_world_shader = LightShader(svc.finder);
 	svc.a11y.set_action_ctx_bar_enabled(false);
-	p_world_shader->set_darken(m_map->darken_factor);
+	p_world_shader->set_darken(m_map->get_darken_factor());
 	p_world_shader->set_texture_size(m_map->real_dimensions / constants::f_scale_factor);
 	p_entity_shader = LightShader(svc.finder);
 

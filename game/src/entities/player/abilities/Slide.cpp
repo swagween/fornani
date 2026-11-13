@@ -41,7 +41,7 @@ void Slide::update(shape::Collider& collider, PlayerController& controller) {
 		fail();
 	}
 	if (m_services->ticker.every_x_ticks(12)) {
-		if (m_map->is_cold()) {
+		if (m_map->is_frozen()) {
 			m_map->spawn_emitter(*m_services, "frost", collider.jumpbox.get_position(), Direction(UND::up), collider.jumpbox.get_dimensions(), colors::white, random::range(0, 7));
 		} else {
 			auto tag = super ? "super_slide" : "slide";

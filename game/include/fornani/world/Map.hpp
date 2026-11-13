@@ -68,9 +68,9 @@ namespace fornani::world {
 class FallingBlock;
 
 enum class LevelState : std::uint8_t { camera_shake, spawn_enemy };
-enum class MapState : std::uint8_t { unobscure, has_middleground, no_collision };
+enum class MapState : std::uint8_t { unobscure, has_middleground, no_collision, warmed_up };
 enum class LayerProperties : std::uint8_t { has_obscuring_layer, has_reverse_obscuring_layer };
-enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic, cold };
+enum class MapProperties : std::uint8_t { minimap, environmental_randomness, day_night_shift, timer, lighting, interior, toxic, cold, temperature_shift };
 
 struct EnemySpawn {
 	sf::Vector2f pos{};
@@ -168,6 +168,7 @@ class Map {
 	void set_balance(float const to, audio::BalanceTarget const target);
 	void update_balance(automa::ServiceProvider& svc);
 	void sound_impact();
+	void set_warmed_up(bool const to = true);
 	std::vector<std::unique_ptr<world::Layer>>& get_layers();
 	std::unique_ptr<world::Layer>& get_middleground();
 	std::unique_ptr<world::Layer>& get_obscuring_layer();
@@ -218,6 +219,9 @@ class Map {
 	[[nodiscard]] auto get_effect_channel() const -> int;
 	[[nodiscard]] auto get_biome_properties() const -> dj::Json const&;
 	[[nodiscard]] auto get_water_level() const -> float { return m_water_level; }
+	[[nodiscard]] auto get_temperature() const -> float { return m_temperature_shift ? m_temperature_shift->get_normalized() : 1.f; }
+	[[nodiscard]] auto is_frozen() const -> bool;
+	[[nodiscard]] auto get_darken_factor() const -> float;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;
 
@@ -322,11 +326,15 @@ class Map {
 	std::unique_ptr<vfx::Weather> m_weather{};
 	std::vector<SurfacePoint> m_surface_points{};
 
+	// temperature
+	std::optional<util::Cooldown> m_temperature_shift{};
+
 	FlatShader m_flat_shader;
 	std::optional<Palette> m_palette{};
 	int abyss_distance{512};
 	sf::Vector2f m_player_start{};
 
+	std::uint8_t m_zone_id{};
 	Biome m_biome{};
 	struct {
 		std::string room{};

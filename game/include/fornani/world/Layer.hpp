@@ -33,6 +33,12 @@ struct AnimatedLayerTexture {
 	std::array<sf::RenderTexture, 6> frames{};
 };
 
+struct LayerRenderFlags {
+	bool is_bg = false;
+	bool day_night_shift = false;
+	std::optional<float> temp_shift{};
+};
+
 class Layer {
   public:
 	friend class Map;
@@ -66,10 +72,9 @@ class Layer {
 	Grid grid;
 
   private:
-	void generate_textures(sf::Texture const& tex, bool day_night_shift);
-	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false, bool sparkle = false) const;
-	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, bool is_bg = false, bool day_night_shift = false,
-				bool sparkle = false) const;
+	void generate_textures(sf::Texture const& tex, bool day_night_shift, bool temp);
+	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, LayerRenderFlags flags = {}) const;
+	void render(automa::ServiceProvider& svc, sf::RenderTarget& win, LightShader& shader, Palette& palette, graphics::DayNightShifter& shifter, float fade, sf::Vector2f cam, LayerRenderFlags flags = {}) const;
 	std::uint8_t m_render_order{};
 	LayerType m_type{};
 	LayerTexture m_texture{};

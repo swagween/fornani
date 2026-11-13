@@ -15,6 +15,7 @@ struct WeatherParameters {
 	int density{1};
 	int framerate{8};
 	float parallax_factor{0.05f};
+	float speed{0.15f};
 	std::optional<std::string> effect{};
 	std::optional<std::string> ambience{};
 };

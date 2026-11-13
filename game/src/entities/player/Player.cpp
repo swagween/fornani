@@ -231,7 +231,7 @@ void Player::update(world::Map& map) {
 	}
 
 	// chill
-	if (!is_dead()) { map.is_cold() ? add_chill(0.0002f) : add_chill(-0.0005f); }
+	if (!is_dead()) { map.is_frozen() ? add_chill(0.0002f) : add_chill(-0.0005f); }
 	if (counters.chill.get() < 0.f) { counters.chill.reset(); }
 	if (counters.chill.get() >= 1.f) {
 		set_flag(PlayerFlags::frozen);
@@ -341,7 +341,7 @@ void Player::update(world::Map& map) {
 		auto freq = controller.wallslide_slowdown.get_quadratic_normalized() * 80.f;
 		if (m_services->ticker.every_x_ticks(std::clamp(static_cast<int>(freq), 24, 80))) {
 			auto const wpos = get_collider().get_center() + sf::Vector2f{12.f * controller.direction.as_float(), -8.f};
-			if (map.is_cold()) {
+			if (map.is_frozen()) {
 				map.spawn_emitter(*m_services, "frost", wpos, Direction(UND::up), get_collider().jumpbox.get_dimensions(), colors::white, random::range(0, 7));
 			} else {
 				map.effects.push_back(entity::Effect(*m_services, "wallslide", wpos, get_collider().physics.apparent_velocity() * 0.3f));
@@ -350,7 +350,7 @@ void Player::update(world::Map& map) {
 	}
 	if ((controller.is_rolling() || m_animation_machine.is_state(AnimState::turn_slide)) && !has_flag_set(PlayerFlags::cutscene)) {
 		if (m_services->ticker.every_x_ticks(24)) {
-			if (map.is_cold()) {
+			if (map.is_frozen()) {
 				map.spawn_emitter(*m_services, "frost", get_collider().jumpbox.get_position(), Direction(UND::up), get_collider().jumpbox.get_dimensions(), colors::white, random::range(0, 7));
 			} else {
 				map.effects.push_back(entity::Effect(*m_services, "roll", get_collider().get_center(), sf::Vector2f{get_collider().physics.apparent_velocity().x * 0.1f, 0.f}));
@@ -358,7 +358,7 @@ void Player::update(world::Map& map) {
 		}
 	}
 	if (m_animation_machine.is_state(AnimState::turn_slide) && (p_animatable.animation.get_frame_count() > 2 && p_animatable.animation.get_frame_count() < 6)) { m_services->soundboard.repeat_sound("nani_turn_slide"); }
-	if (map.is_cold() && !is_dead()) {
+	if (map.is_frozen() && !is_dead()) {
 		if (m_services->ticker.every_x_ticks(180)) { map.spawn_effect(*m_services, "breath", get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 8.f, -6.f}, {directions.actual.as_float() * 0.2f, -0.1f}); }
 		if (m_services->ticker.every_x_ticks(200)) { map.spawn_effect(*m_services, "breath", get_collider().get_center() + sf::Vector2f{directions.actual.as_float() * 8.f, -2.f}, {directions.actual.as_float() * 0.1f, -0.1f}); }
 	}
