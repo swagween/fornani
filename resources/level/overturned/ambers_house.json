@@ -214,7 +214,7 @@
     },
     "special_drop_id": 0,
     "use_template": false,
-    "weather": null
+    "zone_id": 0
   },
   "tile": {
     "animated": [

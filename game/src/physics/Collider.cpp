@@ -10,6 +10,7 @@ namespace fornani::shape {
 
 constexpr auto slidebox_height_v = 10.f;
 constexpr auto headbox_height_v = 6.f;
+constexpr auto jumpbox_offset_v = 0.f;
 
 Collider::Collider() : ICollider{{default_dim, default_dim}}, m_ricochet{20} {
 	dimensions = sf::Vector2f{default_dim, default_dim};
@@ -23,7 +24,7 @@ Collider::Collider() : ICollider{{default_dim, default_dim}}, m_ricochet{20} {
 Collider::Collider(sf::Vector2f dim, sf::Vector2f hbx_offset) : ICollider{dim}, dimensions(dim), hurtbox_offset(hbx_offset), m_ricochet{20} {
 	bounding_box.set_dimensions(dim);
 	headbox.set_dimensions(sf::Vector2f(dim.x, headbox_height_v));
-	jumpbox.set_dimensions(sf::Vector2f(dim.x, default_jumpbox_height));
+	jumpbox.set_dimensions(sf::Vector2f(dim.x + jumpbox_offset_v * 2.f, default_jumpbox_height));
 	slidebox.set_dimensions(sf::Vector2f(dim.x + 2.f, slidebox_height_v));
 	hurtbox.set_dimensions(sf::Vector2f(dim.x - 8.f, dim.y - 8.f + hurtbox_offset.y));
 	sync_components();
@@ -47,7 +48,7 @@ void Collider::sync_components() {
 	predictive_horizontal.set_position(sf::Vector2f{physics.position.x - horizontal_detector_buffer + physics.apparent_velocity().x, physics.position.y + horizontal_detector_buffer});
 	predictive_combined.set_position(sf::Vector2f{physics.position.x + physics.apparent_velocity().x, physics.position.y + physics.apparent_velocity().y});
 	headbox.set_position(sf::Vector2f{physics.position.x, physics.position.y - headbox_height_v});
-	jumpbox.set_position(sf::Vector2f{physics.position.x, physics.position.y + dimensions.y});
+	jumpbox.set_position(sf::Vector2f{physics.position.x - jumpbox_offset_v, physics.position.y + dimensions.y});
 	slidebox.set_position(sf::Vector2f{physics.position.x - 1.f, physics.position.y + dimensions.y - 2.f});
 	hurtbox.set_position(sf::Vector2f(physics.position.x + (dimensions.x * 0.5f) - (hurtbox.get_dimensions().x * 0.5f), physics.position.y + (dimensions.y * 0.5f) - (hurtbox.get_dimensions().y * 0.5f) - (hurtbox_offset.y * 0.5f)));
 	vertical.set_position(sf::Vector2f{physics.position.x + dimensions.x * 0.5f - 0.5f, physics.position.y + depth_buffer});
@@ -184,15 +185,15 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			auto positive_input = to_the_right ? cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x) : cell.get_height_at(physics.position.x + dimensions.x - cell.get_position().x);
 			if (tile.is_negative_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, cell.get_height_at(physics.position.x - cell.get_position().x)); }
 			if (tile.is_positive_ramp()) { maximum_ramp_height = std::max(maximum_ramp_height, positive_input); }
-			if (!is_swimming()) {
+			if (!is_swimming() && flags.external_state.test(ExternalState::grounded)) {
 				physics.position.y = cell.get_position().y + cell.get_dimensions().y - maximum_ramp_height - dimensions.y;
 				set_flag(ColliderFlags::on_ramp);
 			} else if (jumpbox.SAT(cell)) {
 				physics.velocity.y += -0.01f;
 			}
-			if ((physics.apparent_velocity().x >= 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x <= 0.f && tile.is_positive_ramp())) { flags.perma_state.set(PermaFlags::downhill); }
+			if ((physics.apparent_velocity().x >= 0.f && tile.is_negative_ramp()) || (physics.apparent_velocity().x <= 0.f && tile.is_positive_ramp())) { flags.external_state.set(ExternalState::downhill); }
 		} else if (flags.state.test(State::on_flat_surface)) {
-			flags.perma_state.reset(PermaFlags::downhill);
+			flags.external_state.reset(ExternalState::downhill);
 		}
 	}
 	if (!is_ramp && jumpbox.SAT(cell) && !tile.covered()) { flags.state.set(State::on_flat_surface); }
@@ -209,7 +210,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.external_state.set(ExternalState::world_grounded);
-			flags.perma_state.set(PermaFlags::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
 			set_flag(ColliderFlags::on_ice, tile.get_material() == world::TileMaterial::ice);
@@ -224,7 +224,6 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 			flags.state.set(State::grounded);
 			flags.state.set(State::world_grounded);
 			flags.external_state.set(ExternalState::world_grounded);
-			flags.perma_state.set(PermaFlags::world_grounded);
 			flags.state.set(State::is_any_jump_collision);
 			flags.external_state.set(ExternalState::grounded);
 			set_flag(ColliderFlags::on_ice, tile.get_material() == world::TileMaterial::ice);
@@ -246,8 +245,8 @@ void Collider::handle_map_collision(world::Tile const& tile) {
 void Collider::detect_map_collision(world::Map& map) {
 	if (has_attribute(ColliderAttributes::no_map_collision)) { return; }
 	flags.external_state.reset(ExternalState::on_ramp);
+	flags.external_state.reset(ExternalState::downhill);
 	flags.external_state.reset(ExternalState::tile_debug_flag);
-	flags.perma_state = {};
 	flags.state.reset(State::tickwise_ramp_collision);
 	set_flag(ColliderFlags::on_ramp, false);
 
@@ -559,7 +558,7 @@ void Collider::update(automa::ServiceProvider& svc) {
 		if (!flags.general.test(General::no_move)) { has_flag_set(ColliderFlags::simple) ? physics.simple_update(has_flag_set(ColliderFlags::gravity)) : physics.update(svc); }
 	}
 	sync_components();
-	physics.gravity = flags.state.test(State::grounded) ? 0.0f : stats.GRAV;
+	physics.gravity = flags.external_state.test(ExternalState::grounded) ? 0.0f : stats.GRAV;
 }
 
 void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
@@ -631,7 +630,7 @@ void Collider::render(sf::RenderWindow& win, sf::Vector2f cam) {
 		box.setPosition(slidebox.get_position() - cam);
 		flags.external_state.test(ExternalState::slide_grounded) ? box.setFillColor(sf::Color{0, 255, 100, 80}) : box.setFillColor(sf::Color::Transparent);
 		box.setOutlineColor(sf::Color::Blue);
-		win.draw(box);
+		// win.draw(box);
 
 		// draw vicinity
 		box.setSize(sf::Vector2f{p_vicinity.get_dimensions()});

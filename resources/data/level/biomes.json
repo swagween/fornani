@@ -108,7 +108,7 @@
       "haze_highlight": [210, 241, 68],
       "haze_shadow": [29, 204, 129],
       "max_light": 3.0,
-      "effect_channel": 6,
+      "effect_channel": 0,
       "defaults": {
         "background": "bright_slime",
         "music": "hellions"

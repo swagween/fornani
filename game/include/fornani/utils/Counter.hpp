@@ -30,8 +30,9 @@ class FloatCounter {
 	FloatCounter(float const interval = default_interval) : m_interval{interval} {}
 	constexpr void reset() { m_value = 0.f; }
 	constexpr void set_cycle_point(float const to) { m_cycle_point = to; }
+	constexpr void set_maximum(float const to) { m_maximum = to; }
 	constexpr void update(float amount) noexcept {
-		m_value += amount;
+		m_value = std::clamp(m_value + amount, 0.f, m_maximum);
 		if (m_value >= m_cycle_point) { m_value -= m_cycle_point; }
 	}
 	constexpr void update() noexcept { update(m_interval); }
@@ -48,6 +49,7 @@ class FloatCounter {
   private:
 	float m_value{};
 	float m_interval{};
+	float m_maximum{std::numeric_limits<float>::max()};
 	float m_cycle_point{std::numeric_limits<float>::max()};
 };
 

@@ -45,6 +45,8 @@ class HelpText {
 	bool background{};
 	sf::Vector2f position{};
 	sf::Vector2f bg_offset{2.f, 2.f};
+	std::size_t m_key_start{};
+	std::size_t m_key_end{};
 };
 
 } // namespace fornani::graphics

@@ -290,6 +290,7 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 	m_disappear.update();
 	if (m_disappear.is_almost_complete()) { hide(); }
 
+	if (!context.console.has_value() && m_state.test(NPCState::talking)) { svc.camera_controller.constrain(); }
 	m_state.reset(NPCState::talking);
 	if (context.console.has_value()) {
 		if (context.console.value()->get_speaker() == p_stable_id) { m_state.set(NPCState::talking); }
@@ -318,14 +319,6 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 
 	if (!overlap) { m_state.set(NPCState::player_walked_away); }
 
-	if (!has_flag_set(NPCFlags::custom_camera)) {
-		if (m_state.test(NPCState::talking)) {
-			svc.camera_controller.free();
-		} else if (!has_flag_set(NPCFlags::cutscene) && overlap) {
-			svc.camera_controller.constrain();
-		}
-	}
-
 	if (has_flag_set(NPCFlags::random_walk) && !has_flag_set(NPCFlags::custom_requests)) {
 		if (svc.ticker.every_second()) {
 			if (random::percent_chance(m_walk_chance)) {
@@ -341,7 +334,10 @@ void NPC::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]]
 		request(NPCAnimationState::turn);
 	}
 
-	if (!context.console.has_value()) { m_state.reset(NPCState::talking); }
+	// camera controls
+	if (!has_flag_set(NPCFlags::custom_camera)) {
+		if (m_state.test(NPCState::talking)) { svc.camera_controller.free(); }
+	}
 
 	if (!has_flag_set(NPCFlags::no_animation) && !has_flag_set(NPCFlags::custom_animation_control)) { state_function = std::move(state_function()); }
 	if (is_hidden()) { return; }

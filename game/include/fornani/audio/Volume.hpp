@@ -10,6 +10,8 @@ constexpr auto default_base_volume_v = 0.5; // fornani defaults all sound produc
 
 class Volume {
   public:
+	Volume() = default;
+	Volume(double const base) : m_base_multiplier{base}, m_dynamic_multiplier{1.0} {}
 	constexpr void set_dynamic(double const to) { m_dynamic_multiplier = std::clamp(to, 0.0, 1.0); }
 	constexpr void set_base(double const to) { m_base_multiplier = std::clamp(to, 0.0, 1.0); }
 	constexpr void adjust_dynamic(double const delta) { set_dynamic(m_dynamic_multiplier + delta); }
@@ -21,7 +23,7 @@ class Volume {
 
   private:
 	double m_base_multiplier{default_base_volume_v};
-	double m_dynamic_multiplier{1.f};
+	double m_dynamic_multiplier{1.0};
 };
 
 } // namespace fornani

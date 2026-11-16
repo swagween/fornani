@@ -302,9 +302,123 @@
     },
     {
       "folder": "frozen",
+      "label": "afterdeck.json",
+      "region": "frozen",
+      "room_id": 1913
+    },
+    {
+      "folder": "frozen",
+      "label": "atrium.json",
+      "region": "frozen",
+      "room_id": 1911
+    },
+    {
+      "folder": "frozen",
+      "label": "bridge.json",
+      "region": "frozen",
+      "room_id": 1922
+    },
+    {
+      "folder": "frozen",
+      "label": "captains_quarters.json",
+      "region": "frozen",
+      "room_id": 1923
+    },
+    {
+      "folder": "frozen",
+      "label": "cellar.json",
+      "region": "frozen",
+      "room_id": 1912
+    },
+    {
+      "folder": "frozen",
+      "label": "cliff.json",
+      "region": "frozen",
+      "room_id": 1907
+    },
+    {
+      "folder": "frozen",
+      "label": "closet.json",
+      "region": "frozen",
+      "room_id": 1905
+    },
+    {
+      "folder": "frozen",
+      "label": "concourse.json",
+      "region": "frozen",
+      "room_id": 1919
+    },
+    {
+      "folder": "frozen",
+      "label": "control_room.json",
+      "region": "frozen",
+      "room_id": 1921
+    },
+    {
+      "folder": "frozen",
+      "label": "corridor.json",
+      "region": "frozen",
+      "room_id": 1916
+    },
+    {
+      "folder": "frozen",
+      "label": "couloir.json",
+      "region": "frozen",
+      "room_id": 1926
+    },
+    {
+      "folder": "frozen",
+      "label": "crows_nest.json",
+      "region": "frozen",
+      "room_id": 1925
+    },
+    {
+      "folder": "frozen",
+      "label": "dining_room.json",
+      "region": "frozen",
+      "room_id": 1918
+    },
+    {
+      "folder": "frozen",
+      "label": "engine.json",
+      "region": "frozen",
+      "room_id": 1908
+    },
+    {
+      "folder": "frozen",
+      "label": "foredeck.json",
+      "region": "frozen",
+      "room_id": 1909
+    },
+    {
+      "folder": "frozen",
+      "label": "gallery.json",
+      "region": "frozen",
+      "room_id": 1910
+    },
+    {
+      "folder": "frozen",
       "label": "hallway.json",
       "region": "frozen",
       "room_id": 1901
+    },
+    {
+      "folder": "frozen",
+      "label": "kitchen.json",
+      "region": "frozen",
+      "room_id": 1914
+    },
+    {
+      "folder": "frozen",
+      "label": "ladder.json",
+      "region": "frozen",
+      "room_id": 1924
+    },
+    {
+      "folder": "frozen",
+      "label": "parlor.json",
+      "region": "frozen",
+      "room_id": 1904
     },
     {
       "folder": "frozen",
@@ -314,9 +428,33 @@
     },
     {
       "folder": "frozen",
+      "label": "rear_observatory.json",
+      "region": "frozen",
+      "room_id": 1915
+    },
+    {
+      "folder": "frozen",
+      "label": "sentrum.json",
+      "region": "frozen",
+      "room_id": 1920
+    },
+    {
+      "folder": "frozen",
+      "label": "stair.json",
+      "region": "frozen",
+      "room_id": 1906
+    },
+    {
+      "folder": "frozen",
       "label": "sterncastle.json",
       "region": "frozen",
       "room_id": 1900
+    },
+    {
+      "folder": "frozen",
+      "label": "wetbar.json",
+      "region": "frozen",
+      "room_id": 1917
     },
     {
       "folder": "frozen",

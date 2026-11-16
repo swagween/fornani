@@ -245,7 +245,6 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -256,13 +255,10 @@
     "special_drop_id": 0,
     "use_template": false,
     "weather": {
-      "ambience": "rain",
       "chance": 0.5,
-      "density": 1,
-      "effect": "raindrop",
-      "framerate": 8,
       "type": "rain"
-    }
+    },
+    "zone_id": 0
   },
   "tile": {
     "animated": [

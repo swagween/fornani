@@ -30,6 +30,7 @@
     ],
     "frames": 1,
     "x_reflection": true,
+    "y_reflection": true,
     "speed": 0.35
   }
 }

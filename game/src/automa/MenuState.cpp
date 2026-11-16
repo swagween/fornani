@@ -45,12 +45,12 @@ void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine
 	if (p_back_button) { p_back_button->update(svc.input_system); }
 	svc.input_system.process_gamepad_disconnection();
 	for (auto& option : options) { option.update(current_selection.get(), p_option_justification); }
-	if (svc.input_system.menu_move(input::MoveDirection::down) && m_input_authorized) {
+	if (svc.input_system.menu_move(input::MoveDirection::down, input::DigitalActionQueryType::repeat) && m_input_authorized) {
 		current_selection.modulate(1);
 		svc.input_system.cancel_mouse();
 		svc.soundboard.play_sound("menu_shift");
 	}
-	if (svc.input_system.menu_move(input::MoveDirection::up) && m_input_authorized) {
+	if (svc.input_system.menu_move(input::MoveDirection::up, input::DigitalActionQueryType::repeat) && m_input_authorized) {
 		current_selection.modulate(-1);
 		svc.input_system.cancel_mouse();
 		svc.soundboard.play_sound("menu_shift");
@@ -61,7 +61,7 @@ void MenuState::tick_update([[maybe_unused]] ServiceProvider& svc, capo::IEngine
 		svc.state_controller.actions.set(Actions::exit_submenu);
 		svc.soundboard.play_sound("menu_back");
 	}
-	if (svc.input_system.is_mouse_active()) {
+	if (svc.input_system.is_mouse_active() && m_input_authorized) {
 		m_flags.reset(MenuStateFlags::option_hovered);
 		for (auto [i, option] : std::views::enumerate(options)) {
 			if (option.label.getGlobalBounds().contains(svc.input_system.get_mouse_position())) {

@@ -404,6 +404,12 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						if (ImGui::Button("Freeze")) { map->get().set_warmed_up(false); }
 						ImGui::Separator();
 						map->get().debug();
+						ImGui::Separator();
+						ImGui::Text("Room ID: %i", map->get().room_id);
+						ImGui::Text("Zone ID: %u", map->get().get_zone_id());
+						ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
+						ImGui::Text("Zone State: %u", services.data.get_zone_state(map->get().get_zone_id()));
+						ImGui::Separator();
 						ImGui::SeparatorText("Entities");
 						ImGui::Text("Active Loot: %i", map->get().active_loot.size());
 						ImGui::Indent();
@@ -429,14 +435,13 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("[%s]", chunk);
 							}
 						}
-						ImGui::SeparatorText("World Loot");
-						for (auto const& entry : services.data.loot_register()) { ImGui::Text("%i of %s", entry.second, entry.first.c_str()); }
+						if (ImGui::CollapsingHeader("World Loot")) {
+							for (auto const& entry : services.data.loot_register()) { ImGui::Text("%i of %s", entry.second, entry.first.c_str()); }
+						}
+						if (ImGui::CollapsingHeader("Opened Chests")) {
+							for (auto const& c : services.data.opened_chests) { ImGui::Text("%llu", c); }
+						}
 					}
-					ImGui::Separator();
-					ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
-					ImGui::Separator();
-					for (auto const& c : services.data.opened_chests) { ImGui::Text("%llu", c); }
-					ImGui::Separator();
 					ImGui::EndTabItem();
 				}
 				if (ImGui::BeginTabItem("Data")) {
@@ -669,7 +674,8 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Ability Direction: %s", player->controller.get_ability_direction().print().c_str());
 								ImGui::Separator();
 								ImGui::Text("Grounded? %s", player->grounded() ? "Yes" : "No");
-								ImGui::Text("World Grounded? %s", player->get_collider().perma_grounded() ? "Yes" : "No");
+								ImGui::Text("Slide Grounded? %s", player->get_collider().slide_grounded() ? "Yes" : "No");
+								ImGui::Text("Perma Grounded? %s", player->get_collider().perma_grounded() ? "Yes" : "No");
 								ImGui::Text("On Water Surface? %s", player->on_water_surface() ? "Yes" : "No");
 								ImGui::Text("Horizontal Movement: %f", player->controller.horizontal_movement());
 								ImGui::Text("Push Time: %i", player->cooldowns.push.get());
@@ -687,14 +693,6 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Separator();
 								ImGui::SliderFloat("Antenna Force", &player->physics_stats.antenna_force, 0.1f, 3.f);
 								ImGui::SliderFloat("Antenna Friction", &player->physics_stats.antenna_friction, 0.8f, 1.f);
-								ImGui::SeparatorText("Collision");
-								ImGui::Text("MTV vertical: (%.2f, %.2f)", player->get_collider().mtv_snapshot.vertical.x, player->get_collider().mtv_snapshot.vertical.y);
-								ImGui::Text("MTV horizontal: (%.2f, %.2f)", player->get_collider().mtv_snapshot.horizontal.x, player->get_collider().mtv_snapshot.horizontal.y);
-								ImGui::Text("MTV combined: (%.2f, %.2f)", player->get_collider().mtv_snapshot.combined.x, player->get_collider().mtv_snapshot.combined.y);
-								ImGui::Text("MTV actual: (%.2f, %.2f)", player->get_collider().mtv_snapshot.actual.x, player->get_collider().mtv_snapshot.actual.y);
-								ImGui::Text("Has Head Collision? %s", player->get_collider().flags.external_state.test(shape::ExternalState::head_collision) ? "Yes" : "No");
-								ImGui::Text("Has Left Collision? %s", player->get_collider().flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
-								ImGui::Text("Has Right Collision? %s", player->get_collider().flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
 								ImGui::Separator();
 								ImGui::Text("Stunned? %s", player->is_stunned() ? "Yes" : "No");
 								if (ImGui::Button("Stun")) { player->stun(); }
@@ -769,7 +767,25 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 								ImGui::Text("Death type: %i", player->get_i_death_type());
 								ImGui::EndTabItem();
 							}
-
+							if (ImGui::BeginTabItem("Collision")) {
+								ImGui::Text("On Ramp? %s", player->get_collider().on_ramp() ? "Yes" : "No");
+								ImGui::Text("Grounded? %s", player->grounded() ? "Yes" : "No");
+								ImGui::Text("Slide Grounded? %s", player->get_collider().slide_grounded() ? "Yes" : "No");
+								ImGui::Text("Perma Grounded? %s", player->get_collider().perma_grounded() ? "Yes" : "No");
+								ImGui::Separator();
+								ImGui::Text("Slide Grounded %s", player->get_collider().flags.external_state.test(shape::ExternalState::slide_grounded) ? "Yes" : "No");
+								ImGui::Text("World Grounded %s", player->get_collider().flags.external_state.test(shape::ExternalState::world_grounded) ? "Yes" : "No");
+								ImGui::Text("Grounded %s", player->get_collider().flags.external_state.test(shape::ExternalState::grounded) ? "Yes" : "No");
+								ImGui::Separator();
+								ImGui::Text("MTV vertical: (%.2f, %.2f)", player->get_collider().mtv_snapshot.vertical.x, player->get_collider().mtv_snapshot.vertical.y);
+								ImGui::Text("MTV horizontal: (%.2f, %.2f)", player->get_collider().mtv_snapshot.horizontal.x, player->get_collider().mtv_snapshot.horizontal.y);
+								ImGui::Text("MTV combined: (%.2f, %.2f)", player->get_collider().mtv_snapshot.combined.x, player->get_collider().mtv_snapshot.combined.y);
+								ImGui::Text("MTV actual: (%.2f, %.2f)", player->get_collider().mtv_snapshot.actual.x, player->get_collider().mtv_snapshot.actual.y);
+								ImGui::Text("Has Head Collision? %s", player->get_collider().flags.external_state.test(shape::ExternalState::head_collision) ? "Yes" : "No");
+								ImGui::Text("Has Left Collision? %s", player->get_collider().flags.collision.test(shape::Collision::has_left_collision) ? "Yes" : "No");
+								ImGui::Text("Has Right Collision? %s", player->get_collider().flags.collision.test(shape::Collision::has_right_collision) ? "Yes" : "No");
+								ImGui::EndTabItem();
+							}
 							if (ImGui::BeginTabItem("Inventory")) {
 								if (ImGui::Button("Give All Items")) {
 									for (auto const& i : services.data.item.as_array()) { player->give_item(i["tag"].as_string(), 1); }

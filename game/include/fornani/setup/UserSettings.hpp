@@ -19,7 +19,7 @@ class UserSettings {
 	void set_user_controls(input::InputSystem& input);
 	void save_user_settings(automa::ServiceProvider& svc);
 	void save_user_controls(automa::ServiceProvider& svc);
-	void reset_user_controls(automa::ServiceProvider& svc);
+	void reset_user_controls(automa::ServiceProvider& svc, bool wasd = false);
 	void serialize_control_binding(std::string_view action, std::string_view binding, bool primary = true);
 	void set_theme(std::string_view to);
 	void set_language(std::string_view to);

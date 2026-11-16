@@ -33,7 +33,7 @@
       },
       {
         "channel": 0,
-        "depth": 0.10000000149011612,
+        "depth": -0.10000000149011612,
         "dimensions": [
           1,
           1
@@ -365,7 +365,8 @@
       "darken_factor": 5
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "zone_id": 0
   },
   "tile": {
     "animated": [

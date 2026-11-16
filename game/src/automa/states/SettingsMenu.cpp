@@ -12,9 +12,9 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, AppCont
 														   .fullscreen = options.at(static_cast<int>(SettingsToggles::fullscreen)).label,
 														   .military_time = options.at(static_cast<int>(SettingsToggles::military_time)).label,
 														   .language = options.at(static_cast<int>(SettingsToggles::language)).label},
-	  music_label{options.at(static_cast<int>(SettingsToggles::music)).label}, ambience_label{options.at(static_cast<int>(SettingsToggles::ambience)).label}, sfx_label{options.at(static_cast<int>(SettingsToggles::sfx)).label},
-	  toggle_options{.enabled{svc.text.fonts.title.font}, .disabled{svc.text.fonts.title.font}}, sliders{.music_volume{svc.text.fonts.title.font}, .ambience_volume{svc.text.fonts.title.font}, .sfx_volume{svc.text.fonts.title.font}},
-	  m_adjustment{80} {
+	  master_label{options.at(static_cast<int>(SettingsToggles::master)).label}, music_label{options.at(static_cast<int>(SettingsToggles::music)).label}, ambience_label{options.at(static_cast<int>(SettingsToggles::ambience)).label},
+	  sfx_label{options.at(static_cast<int>(SettingsToggles::sfx)).label}, toggle_options{.enabled{svc.text.fonts.title.font}, .disabled{svc.text.fonts.title.font}},
+	  sliders{.master_volume{svc.text.fonts.title.font}, .music_volume{svc.text.fonts.title.font}, .ambience_volume{svc.text.fonts.title.font}, .sfx_volume{svc.text.fonts.title.font}}, m_adjustment{80} {
 	m_parent_menu = MenuType::options;
 	toggle_options.enabled.setString(svc.data.gui_text["settings"]["enabled"].as_string());
 	toggle_options.disabled.setString(svc.data.gui_text["settings"]["disabled"].as_string());
@@ -23,6 +23,7 @@ SettingsMenu::SettingsMenu(ServiceProvider& svc, player::Player& player, AppCont
 	options.at(static_cast<int>(SettingsToggles::autosprint)).label.setString(toggleables.autosprint.getString() + (svc.input_system.is_autosprint_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::tutorial)).label.setString(toggleables.tutorial.getString() + (svc.tutorial() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
 	options.at(static_cast<int>(SettingsToggles::gamepad)).label.setString(toggleables.gamepad.getString() + (svc.input_system.is_gamepad_input_enabled() ? toggle_options.enabled.getString() : toggle_options.disabled.getString()));
+	options.at(static_cast<int>(SettingsToggles::master)).label.setString(master_label.getString() + std::to_string(static_cast<int>(svc.mixer.volume.get_base() * 100.0)) + "%");
 	options.at(static_cast<int>(SettingsToggles::music)).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.volume.get_base() * 100.0)) + "%");
 	options.at(static_cast<int>(SettingsToggles::ambience)).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.volume.get_base() * 100.0)) + "%");
 	options.at(static_cast<int>(SettingsToggles::sfx)).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.volume.get_base() * 100.0)) + "%");
@@ -76,6 +77,7 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			case static_cast<int>(SettingsToggles::autosprint): svc.input_system.set_setting(input::InputSystemSettings::auto_sprint, !svc.input_system.is_autosprint_enabled()); break;
 			case static_cast<int>(SettingsToggles::tutorial): svc.toggle_tutorial(); break;
 			case static_cast<int>(SettingsToggles::gamepad): svc.input_system.set_setting(input::InputSystemSettings::gamepad_input_enabled, !svc.input_system.is_gamepad_input_enabled()); break;
+			case static_cast<int>(SettingsToggles::master): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::music): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::ambience): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
 			case static_cast<int>(SettingsToggles::sfx): m_mode = adjust_mode() ? SettingsMenuMode::ready : SettingsMenuMode ::adjust; break;
@@ -120,6 +122,12 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		auto const adjust_right = right_pressed || (right && update_volume);
 		auto const final_delta = adjust_left ? -delta : adjust_right ? delta : 0.0;
 		auto const adjusted = (adjust_left || adjust_right);
+		if (is(SettingsToggles::master)) {
+			if (adjusted && !svc.mixer.volume.at_range()) { svc.soundboard.play_sound("menu_tick"); }
+			svc.mixer.volume.adjust_base(final_delta);
+			svc.music_player.adjust_volume(0.0);
+			svc.ambience_player.volume.adjust_base(0.0);
+		}
 		if (is(SettingsToggles::music)) {
 			if (adjusted && !svc.music_player.volume.at_range()) { svc.soundboard.play_sound("menu_tick"); }
 			svc.music_player.adjust_volume(final_delta);
@@ -138,10 +146,18 @@ void SettingsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 void SettingsMenu::frame_update(ServiceProvider& svc) {}
 
 void SettingsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
-	auto index = is(SettingsToggles::music) ? static_cast<int>(SettingsToggles::music) : is(SettingsToggles::ambience) ? static_cast<int>(SettingsToggles::ambience) : static_cast<int>(SettingsToggles::sfx);
+	auto index = static_cast<int>(SettingsToggles::sfx);
+	if (is(SettingsToggles::master)) {
+		index = static_cast<int>(SettingsToggles::master);
+	} else if (is(SettingsToggles::music)) {
+		index = static_cast<int>(SettingsToggles::music);
+	} else if (is(SettingsToggles::ambience)) {
+		index = static_cast<int>(SettingsToggles::ambience);
+	}
 
 	adjust_mode() ? options.at(index).label.setFillColor(p_app_context->settings.get_theme().activated_text_color) : options.at(index).label.setFillColor(options.at(index).label.getFillColor());
 	MenuState::render(svc, win);
+	if (is(SettingsToggles::master)) { options.at(index).label.setString(master_label.getString() + std::to_string(static_cast<int>(svc.mixer.volume.get_base() * 100.0)) + "%"); }
 	if (is(SettingsToggles::music)) { options.at(index).label.setString(music_label.getString() + std::to_string(static_cast<int>(svc.music_player.volume.get_base() * 100.0)) + "%"); }
 	if (is(SettingsToggles::ambience)) { options.at(index).label.setString(ambience_label.getString() + std::to_string(static_cast<int>(svc.ambience_player.volume.get_base() * 100.0)) + "%"); }
 	if (is(SettingsToggles::sfx)) { options.at(index).label.setString(sfx_label.getString() + std::to_string(static_cast<int>(svc.soundboard.volume.get_base() * 100.0)) + "%"); }

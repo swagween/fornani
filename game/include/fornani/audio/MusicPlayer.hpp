@@ -2,6 +2,7 @@
 #pragma once
 
 #include <fornani/audio/Balance.hpp>
+#include <fornani/audio/SoundMixer.hpp>
 #include <fornani/audio/Volume.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/setup/ResourceFinder.hpp>
@@ -20,7 +21,7 @@ constexpr auto hi_pass_v = 500.f;
 class MusicPlayer {
   public:
 	friend class Ambience;
-	explicit MusicPlayer(capo::IEngine& audio_engine);
+	explicit MusicPlayer(capo::IEngine& audio_engine, SoundMixer& mixer);
 	void quick_play(ResourceFinder const& finder, std::string_view song_name);
 	void load(ResourceFinder const& finder, std::string_view song_name);
 	void load(std::string_view path);
@@ -65,6 +66,8 @@ class MusicPlayer {
 	float m_balance{};
 
 	std::unordered_map<int, std::string> m_name_from_id{};
+
+	SoundMixer* m_mixer;
 
 	io::Logger m_logger{"Audio"};
 };

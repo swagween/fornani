@@ -7,7 +7,7 @@
 
 namespace fornani::automa {
 
-enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, music, ambience, sfx, fullscreen, military_time, language };
+enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, master, music, ambience, sfx, fullscreen, military_time, language };
 enum class SettingsMenuMode : std::uint8_t { ready, adjust };
 
 class SettingsMenu final : public MenuState {
@@ -41,11 +41,13 @@ class SettingsMenu final : public MenuState {
 	} toggleables;
 
 	struct {
+		sf::Text master_volume;
 		sf::Text music_volume;
 		sf::Text ambience_volume;
 		sf::Text sfx_volume;
 	} sliders;
 
+	sf::Text master_label;
 	sf::Text music_label;
 	sf::Text ambience_label;
 	sf::Text sfx_label;

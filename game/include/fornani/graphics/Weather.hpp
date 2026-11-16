@@ -41,6 +41,8 @@ class Weather {
 	WeatherParameters m_parameters;
 	std::vector<WeatherLayer> m_layers{};
 	sf::IntRect m_rect{};
+	float m_scale;
+	float dimension{};
 
 	io::Logger m_logger{"Weather"};
 };

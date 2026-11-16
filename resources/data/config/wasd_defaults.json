@@ -1,0 +1,81 @@
+{
+  "controls": {
+    "up": {
+      "primary_key": "W"
+    },
+    "down": {
+      "primary_key": "S"
+    },
+    "left": {
+      "primary_key": "A"
+    },
+    "right": {
+      "primary_key": "D"
+    },
+    "jump": {
+      "primary_key": "Space"
+    },
+    "shoot": {
+      "primary_key": "Up"
+    },
+    "sprint": {
+      "primary_key": "LShift"
+    },
+    "crouch": {
+      "primary_key": "S"
+    },
+    "slide": {
+      "primary_key": "S"
+    },
+    "dash": {
+      "primary_key": "C"
+    },
+    "inspect": {
+      "primary_key": "F"
+    },
+    "tab_left": {
+      "primary_key": "1"
+    },
+    "tab_right": {
+      "primary_key": "2"
+    },
+    "pause": {
+      "primary_key": "Esc"
+    },
+    "inventory": {
+      "primary_key": "I"
+    },
+    "menu_left": {
+      "primary_key": "A"
+    },
+    "menu_right": {
+      "primary_key": "D"
+    },
+    "menu_up": {
+      "primary_key": "W"
+    },
+    "menu_down": {
+      "primary_key": "S"
+    },
+    "menu_select": {
+      "primary_key": "F"
+    },
+    "menu_back": {
+      "primary_key": "Esc",
+      "secondary_key": "Esc"
+    },
+    "menu_close": {
+      "primary_key": "I",
+      "secondary_key": "Esc"
+    },
+    "menu_tab_left": {
+      "primary_key": "1"
+    },
+    "menu_tab_right": {
+      "primary_key": "2"
+    },
+    "menu_confirm": {
+      "primary_key": "Enter"
+    }
+  }
+}

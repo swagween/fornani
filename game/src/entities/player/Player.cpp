@@ -45,6 +45,7 @@ Player::Player(automa::ServiceProvider& svc)
 	svc.events.give_bonus_health_event.attach_to(slot, &Player::give_bonus_health, this);
 
 	m_attributes.stun_time = 512;
+	counters.chill.set_maximum(1.f);
 }
 
 void Player::serialize(dj::Json& out) const {
@@ -248,6 +249,12 @@ void Player::update(world::Map& map) {
 	}
 	if (counters.chill.get() > 0.3f) { m_services->soundboard.repeat_sound("ice_cracks"); }
 	p_animatable.animation.framerate_multiplier = 1.f + counters.chill.get();
+	if (m_death_type) {
+		if (*m_death_type == PlayerDeathType::frozen && is_swimming()) {
+			get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+			freeze_position();
+		}
+	}
 
 	// laser logic
 	if (consume_flag(PlayerFlags::laser_collision)) {
@@ -1261,6 +1268,10 @@ void Player::knock_over() {
 	m_services->soundboard.play_sound("nani_hurt");
 }
 
+void Player::freeze_solid() {
+	if (!is_dead()) { add_chill(0.1f); }
+}
+
 bool Player::grounded() const { return get_collider().flags.external_state.test(shape::ExternalState::grounded); }
 
 bool Player::fire_weapon() {
@@ -1602,6 +1613,7 @@ bool Player::can_omnidirectional_dash() const {
 
 bool Player::can_doublejump() const {
 	if (abilities_disabled()) { return false; }
+	if (is_swimming()) { return false; }
 	if (has_flag_set(PlayerFlags::dogfight)) { return false; }
 	if (controller.is_wallsliding()) { return false; }
 	if (grounded()) { return false; }

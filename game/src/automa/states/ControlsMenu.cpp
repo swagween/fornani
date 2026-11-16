@@ -10,21 +10,19 @@ namespace fornani::automa {
 constexpr std::array<std::string_view, 2> tabs = {"controls_platformer", "controls_menu"};
 constexpr std::array<std::string_view, 2> tab_id_prefixes = {"", "menu_"};
 
-ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx)
-	: MenuState(svc, player, ctx, "controls_platformer"), instruction(svc.text.fonts.title.font), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
+constexpr auto number_of_extra_control_options_v = 3;
+
+ControlsMenu::ControlsMenu(ServiceProvider& svc, player::Player& player, AppContext& ctx) : MenuState(svc, player, ctx, "controls_platformer"), m_current_tab{tabs.size()}, m_scene{"controls_platformer"} {
 	m_parent_menu = MenuType::options;
+	spacing = 20.f;
 	change_scene(svc, m_scene);
-	instruction.setLineSpacing(1.5f);
-	instruction.setLetterSpacing(1.f);
-	instruction.setCharacterSize(options.at(current_selection.get()).label.getCharacterSize());
-	instruction.setPosition({svc.window->i_screen_dimensions().x * 0.5f - instruction.getLocalBounds().getCenter().x, svc.window->i_screen_dimensions().y - 120.f});
-	instruction.setFillColor(colors::dark_grey);
 	loading.start(2);
 
 	debug.setFillColor(sf::Color::Transparent);
 	debug.setSize({2.f, svc.window->f_screen_dimensions().y});
 	debug.setOutlineColor(colors::blue);
 	debug.setOutlineThickness(-1);
+
 	refresh_controls(svc);
 }
 
@@ -36,12 +34,14 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 	binding_mode ? flags.reset(GameStateFlags::ready) : flags.set(GameStateFlags::ready);
 
 	// reset gamepad settings color
-	options.at(options.size() - 2).selectable = svc.input_system.is_gamepad();
+	options.at(options.size() - number_of_extra_control_options_v).selectable = svc.input_system.is_gamepad();
 
 	for (auto& option : options) {
 		option.flagged = current_selection.get() == option.index && option_is_selected;
 		option.update(current_selection.get());
 	}
+
+	if (m_helptext) { m_helptext->update(); }
 
 	static auto action_to_bind = std::optional<input::DigitalAction>{};
 	static auto last_key_pressed = std::optional<sf::Keyboard::Scancode>{};
@@ -59,8 +59,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			if (svc.input_system.has_forbidden_duplicate_binding()) {
 				svc.soundboard.flags.menu.set(audio::Menu::error);
 			} else {
-				binding_mode = false;
-				option_is_selected = false;
+				exit_binding_mode();
 				svc.soundboard.flags.menu.set(audio::Menu::forward_switch);
 				if (action_to_bind) {
 					bool primary = true; // TODO: maybe implement secondary bindings later
@@ -72,8 +71,7 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 			}
 		}
 		if (svc.input_system.get_last_key_pressed() == sf::Keyboard::Scancode::Escape) {
-			binding_mode = false;
-			option_is_selected = false;
+			exit_binding_mode();
 			svc.soundboard.flags.menu.set(audio::Menu::backward_switch);
 			refresh_controls(svc);
 		}
@@ -94,11 +92,11 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		while (!options.at(current_selection.get()).selectable && current_selection.get() != this_selection) { current_selection.modulate(1); }
 		option_is_selected = false;
 	}
-	if (svc.input_system.menu_move(input::MoveDirection::left) && option_is_selected && current_selection.get() == 0) {
+	if ((svc.input_system.menu_move(input::MoveDirection::left) && current_selection.get() == 0) || svc.input_system.digital(input::DigitalAction::menu_tab_left).triggered) {
 		m_current_tab.modulate(-1);
 		change_scene(svc, tabs[m_current_tab.get()]);
 	}
-	if (svc.input_system.menu_move(input::MoveDirection::right) && option_is_selected && current_selection.get() == 0) {
+	if ((svc.input_system.menu_move(input::MoveDirection::right) && current_selection.get() == 0) || svc.input_system.digital(input::DigitalAction::menu_tab_right).triggered) {
 		m_current_tab.modulate(1);
 		change_scene(svc, tabs[m_current_tab.get()]);
 	}
@@ -107,20 +105,21 @@ void ControlsMenu::tick_update(ServiceProvider& svc, capo::IEngine& engine) {
 		// Gamepad settings should be second to last option
 		if (current_selection.get() == 0) {
 			option_is_selected = !option_is_selected;
-		} else if (current_selection.get() == options.size() - 2) {
+		} else if (current_selection.get() == options.size() - 3) {
 			svc.input_system.open_bindings_overlay();
-		}
-		// Reset to default should be last option
-		else if (current_selection.get() == options.size() - 1) {
+		} else if (current_selection.get() == options.size() - 2) { // WASD defaults
+			restore_defaults(svc, true);
+			refresh_controls(svc);
+		} else if (current_selection.get() == options.size() - 1) { // defaults
 			restore_defaults(svc);
 			refresh_controls(svc);
 		} else {
 			option_is_selected = !option_is_selected;
-			binding_mode = true;
+			enter_binding_mode();
 			refresh_controls(svc);
 			action_to_bind.reset();
 			auto& control = control_list.at(current_selection.get());
-			control.setString("Press a key (Enter to confirm)");
+			control.setString(svc.data.gui_text["controls"]["binding_prompt"].as_string());
 			auto id = std::string(tab_id_prefixes.at(m_current_tab.get())) + std::string(options.at(current_selection.get()).label.getString());
 			action_to_bind = input::action_from_string(id);
 			control.setOrigin({control.getLocalBounds().size.x, control.getLocalBounds().getCenter().y});
@@ -137,15 +136,15 @@ void ControlsMenu::render(ServiceProvider& svc, sf::RenderWindow& win) {
 	if (loading.is_complete()) {
 		for (auto& option : options) { win.draw(option.label); }
 		for (auto& control : control_list) { win.draw(control); }
-		win.draw(instruction);
+		if (m_helptext) { m_helptext->render(win); }
 	}
 }
 
 void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 	std::size_t ctr{0};
-	for (auto& option : options) {
+	for (auto [i, option] : std::views::enumerate(options)) {
 		option.update(current_selection.get());
-		if (ctr > 0 && ctr < options.size() - 2) {
+		if (ctr > 0 && ctr < options.size() - number_of_extra_control_options_v) {
 			auto current_tab = std::distance(tabs.begin(), std::find(tabs.begin(), tabs.end(), m_scene));
 			auto id = current_tab > 0 ? std::string{tab_id_prefixes.at(current_tab)} + std::string{option.label.getString()} : std::string{option.label.getString()};
 			auto action = input::action_from_string(id);
@@ -160,12 +159,13 @@ void ControlsMenu::refresh_controls(ServiceProvider& svc) {
 			control.setOrigin(control.getLocalBounds().getCenter());
 			option.selectable = !svc.input_system.is_gamepad();
 		}
+		option.selectable = binding_mode ? i == current_selection.get() : true;
 		++ctr;
 	}
 }
 
-void ControlsMenu::restore_defaults(ServiceProvider& svc) {
-	p_app_context->settings.reset_user_controls(svc);
+void ControlsMenu::restore_defaults(ServiceProvider& svc, bool wasd) {
+	p_app_context->settings.reset_user_controls(svc, wasd);
 	p_app_context->settings.save_user_controls(svc);
 	p_app_context->settings.set_user_controls(svc.input_system);
 }
@@ -180,7 +180,7 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 	top_buffer = svc.data.menu["config"][to_change_to]["top_buffer"].as<float>();
 	int ctr{};
 	for (auto& option : options) {
-		if (ctr == 0 || ctr >= options.size() - 2) {
+		if (ctr == 0 || ctr >= options.size() - number_of_extra_control_options_v) {
 			// Show tab selector, gamepad settings & reset to default in middle of screen
 			option.position.x = svc.window->i_screen_dimensions().x * 0.5f;
 		} else {
@@ -194,6 +194,17 @@ void ControlsMenu::change_scene(ServiceProvider& svc, std::string_view to_change
 		++ctr;
 	}
 	refresh_controls(svc);
+}
+
+void ControlsMenu::enter_binding_mode() {
+	m_helptext.emplace(*p_services, p_services->data.gui_text["controls"]["confirm_begin"].as_string(), fornani::input::DigitalAction::menu_confirm, p_services->data.gui_text["controls"]["confirm_end"].as_string(), 1);
+	binding_mode = true;
+}
+
+void ControlsMenu::exit_binding_mode() {
+	m_helptext.reset();
+	binding_mode = false;
+	option_is_selected = false;
 }
 
 } // namespace fornani::automa

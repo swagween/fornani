@@ -4,6 +4,7 @@
 #include <SFML/Graphics.hpp>
 #include <capo/engine.hpp>
 #include <fornani/audio/Sound.hpp>
+#include <fornani/audio/SoundMixer.hpp>
 #include <fornani/audio/Volume.hpp>
 #include <fornani/io/Logger.hpp>
 #include <fornani/utils/BitFlags.hpp>

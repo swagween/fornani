@@ -59,7 +59,8 @@ enum class ExternalState : std::uint8_t {
 	ceiling_ramp_hit,
 	roll_collision,
 	slide_grounded,
-	head_collision
+	head_collision,
+	downhill
 };
 
 enum class PermaFlags : std::uint8_t { world_grounded, downhill };
@@ -137,7 +138,7 @@ class Collider : public ICollider {
 	[[nodiscard]] auto world_grounded() const -> bool { return flags.state.test(State::world_grounded) && !is_swimming(); }
 	[[nodiscard]] auto external_world_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded); }
 	[[nodiscard]] auto jumped_into() -> bool { return flags.external_state.consume(ExternalState::jumped_into); }
-	[[nodiscard]] auto perma_grounded() const -> bool { return flags.perma_state.test(PermaFlags::world_grounded) && !is_swimming(); }
+	[[nodiscard]] auto perma_grounded() const -> bool { return flags.external_state.test(ExternalState::world_grounded) && !is_swimming(); }
 	[[nodiscard]] auto dash_was_canceled() const -> bool { return flags.dash.test(Dash::dash_cancel_collision); }
 	[[nodiscard]] auto crushed() const -> bool { return collision_depths ? collision_depths.value().crushed() : false; }
 	[[nodiscard]] auto get_center() const -> sf::Vector2f { return physics.position + dimensions * 0.5f; }
@@ -155,7 +156,7 @@ class Collider : public ICollider {
 	[[nodiscard]] auto right() const -> float { return bounding_box.right(); }
 	[[nodiscard]] auto top() const -> float { return bounding_box.top(); }
 	[[nodiscard]] auto bottom() const -> float { return bounding_box.bottom(); }
-	[[nodiscard]] auto downhill() const -> bool { return flags.perma_state.test(PermaFlags::downhill); }
+	[[nodiscard]] auto downhill() const -> bool { return flags.external_state.test(ExternalState::downhill); }
 	[[nodiscard]] auto hit_ceiling_ramp() const -> bool { return flags.external_state.test(ExternalState::ceiling_ramp_hit); }
 	[[nodiscard]] auto get_direction() const -> Direction { return m_direction; }
 	[[nodiscard]] auto can_wallslide() const -> bool { return !flags.state.test(State::no_wallslide); }
@@ -181,7 +182,6 @@ class Collider : public ICollider {
 		util::BitFlags<General> general{};
 		util::BitFlags<State> state{};
 		util::BitFlags<ExternalState> external_state{};
-		util::BitFlags<PermaFlags> perma_state{};
 		util::BitFlags<Animation> animation{};
 		util::BitFlags<Collision> collision{};
 		util::BitFlags<Movement> movement{};

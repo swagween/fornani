@@ -187,6 +187,7 @@ class Map {
 	std::optional<float> get_middleground_surface_y(float x, float y, float upward_search_range, float downward_search_range);
 
 	[[nodiscard]] auto get_style_id() const -> int { return m_biome.get_id(); }
+	[[nodiscard]] auto get_zone_id() const -> std::uint8_t { return m_zone_id; }
 	[[nodiscard]] auto get_special_drop_id() const -> int { return m_attributes.special_drop_id; }
 	[[nodiscard]] auto get_chunk_id_from_position(sf::Vector2f pos) const -> std::uint8_t;
 	[[nodiscard]] auto get_chunk_dimensions() const -> sf::Vector2u { return dimensions / constants::u32_chunk_size; };
@@ -221,6 +222,7 @@ class Map {
 	[[nodiscard]] auto get_water_level() const -> float { return m_water_level; }
 	[[nodiscard]] auto get_temperature() const -> float { return m_temperature_shift ? m_temperature_shift->get_normalized() : 1.f; }
 	[[nodiscard]] auto is_frozen() const -> bool;
+	[[nodiscard]] auto is_warmed_up() const -> bool { return flags.map_state.test(MapState::warmed_up); }
 	[[nodiscard]] auto get_darken_factor() const -> float;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;

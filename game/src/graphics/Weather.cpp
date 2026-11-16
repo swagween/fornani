@@ -7,10 +7,12 @@
 
 namespace fornani::vfx {
 
-Weather::Weather(automa::ServiceProvider& svc, world::Map& map, std::string_view tag) : m_parameters{svc.data.weather[tag]} {
+Weather::Weather(automa::ServiceProvider& svc, world::Map& map, std::string_view tag) : m_parameters{svc.data.weather[tag]}, m_scale{3.f} {
 	m_rect = sf::IntRect{{}, sf::Vector2i{map.real_dimensions} * 3};
 	auto const tex = std::string{tag};
-	svc.assets.get_texture_modifiable(tex).setRepeated(true);
+	auto& texture = svc.assets.get_texture_modifiable(tex);
+	texture.setRepeated(true);
+	dimension = static_cast<float>(texture.getSize().x);
 	auto const p = m_parameters.parallax_factor;
 
 	auto const& in_data = svc.data.weather[tag];
@@ -19,17 +21,22 @@ Weather::Weather(automa::ServiceProvider& svc, world::Map& map, std::string_view
 		m_layers.push_back(WeatherLayer{
 			.parallax = in_layer["parallax"].as<float>(), .seed = fornani::random::range_float(0.f, 2.f * std::numbers::pi_v<float>), .render_order = in_layer["render_order"].as<std::size_t>(), .loop{in_data["frames"].as<int>()}});
 		auto& layer = m_layers.back();
-		// layer.position.y = random::range_float(0.f, 256.f);
+		layer.position.y = random::range_float(0.f, 256.f);
 		for (int i = 0; i < in_data["frames"].as<int>(); ++i) {
 			layer.textures.push_back(sf::RenderTexture{});
 			auto& frame = layer.textures.back();
 			auto sprite = sf::Sprite{svc.assets.get_texture(tex)};
-			sprite.setTextureRect(sf::IntRect{{0, 256 * static_cast<int>(i)}, {256, 256}});
-			if (in_data["x_reflection"].as_bool() && random::coin_flip()) { sprite.scale({-1.f, 1.f}); }
-			if (in_data["y_reflection"].as_bool() && random::coin_flip()) { sprite.scale({1.f, -1.f}); }
+			sprite.setTextureRect(sf::IntRect{{0, static_cast<int>(texture.getSize().x) * static_cast<int>(i)}, sf::Vector2i{texture.getSize()}});
+			if (in_data["x_reflection"].as_bool() && random::coin_flip()) {
+				sprite.scale({-1.f, 1.f});
+				sprite.setPosition({dimension, 0.f});
+			}
+			if (in_data["y_reflection"].as_bool() && random::coin_flip()) {
+				sprite.scale({1.f, -1.f});
+				sprite.move({0.f, dimension});
+			}
 
-			auto u_dimensions = sf::Vector2u{256, 256};
-			if (!frame.resize(u_dimensions)) { NANI_LOG_WARN(m_logger, "Failed to resize weather texture"); }
+			if (!frame.resize(texture.getSize())) { NANI_LOG_WARN(m_logger, "Failed to resize weather texture"); }
 			frame.clear(sf::Color::Transparent);
 
 			auto state = sf::RenderStates{sf::BlendNone};
@@ -44,14 +51,15 @@ Weather::Weather(automa::ServiceProvider& svc, world::Map& map, std::string_view
 void Weather::update(automa::ServiceProvider& svc, world::Map& map) {
 	for (auto [l, layer] : std::views::enumerate(m_layers)) {
 		if (m_parameters.framerate > 0) {
-			auto local_framerate = m_parameters.framerate + l * 8;
+			auto const local_framerate = m_parameters.framerate + l * 8;
 			if (svc.ticker.every_x_ticks(local_framerate)) { layer.loop.modulate(1); }
 		} else {
 			layer.position.x = 20.f + 8.f * std::sin(svc.ticker.in_game_seconds_passed.count() + layer.seed);
-			auto factor = l == 0 ? -0.01f : l == 1 ? -0.05f : 0.02f;
+			auto const factor = l == 0 ? -0.01f : l == 1 ? -0.05f : 0.02f;
 			layer.position.x += factor * layer.parallax;
 			layer.position.y += m_parameters.speed * layer.parallax;
-			auto wrap = [](float value) { return std::fmod(std::fmod(value, 512.f) + 512.f, 512.f); };
+			auto const size = dimension * m_scale;
+			auto wrap = [&](float value) { return std::fmod(std::fmod(value, size * layer.parallax) + size * layer.parallax, size * layer.parallax); };
 
 			layer.position.x = wrap(layer.position.x);
 			layer.position.y = wrap(layer.position.y);
@@ -67,9 +75,10 @@ void Weather::render(automa::ServiceProvider& svc, sf::RenderWindow& win, sf::Ve
 		for (auto i = 0; i < m_parameters.density; ++i) {
 			auto sprite = sf::Sprite{frame.getTexture()};
 			sprite.setTextureRect(m_rect);
-			auto buffer = sf::Vector2f{-512.f * layer + static_cast<float>(i) * 35.f, -512.f + static_cast<float>(i) * 65.f};
+			auto const size = dimension * m_scale;
+			auto buffer = sf::Vector2f{-size * layer + static_cast<float>(i) * 35.f, -size + static_cast<float>(i) * 65.f};
 			sprite.setPosition((buffer - cam) * l.parallax + l.position);
-			sprite.setScale(constants::f_scale_vec * l.parallax);
+			sprite.setScale(sf::Vector2f{m_scale, m_scale} * l.parallax);
 			win.draw(sprite);
 			++debug::draw_calls;
 		}

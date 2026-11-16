@@ -9,7 +9,7 @@ namespace fornani::audio {
 using namespace std::chrono_literals;
 constexpr auto global_volume_damp_v = 0.45f; // music is just too loud in general
 
-MusicPlayer::MusicPlayer(capo::IEngine& audio_engine) : m_jukebox{audio_engine}, m_ringtone{audio_engine} {
+MusicPlayer::MusicPlayer(capo::IEngine& audio_engine, SoundMixer& mixer) : m_jukebox{audio_engine}, m_ringtone{audio_engine}, m_mixer{&mixer} {
 	m_name_from_id.insert({0, "none"});
 	m_name_from_id.insert({1, "glitchified"});
 	m_name_from_id.insert({2, "bryns_turn"});
@@ -41,7 +41,7 @@ void MusicPlayer::load(ResourceFinder const& finder, std::string_view song_name)
 		return;
 	}
 	NANI_LOG_DEBUG(m_logger, "Loading song: {}", song_name);
-	m_jukebox.set_gain(static_cast<float>(volume.get()) * global_volume_damp_v);
+	m_jukebox.set_gain(static_cast<float>(m_mixer->mix(volume.get())) * global_volume_damp_v);
 	m_current_song = song_name;
 	auto path = std::filesystem::path{finder.resource_path() + "/audio/songs/" + song_name.data() + ".xm"};
 	m_jukebox.load_media(path);
@@ -108,7 +108,7 @@ void MusicPlayer::turn_on() { m_state = MusicPlayerState::on; }
 
 void MusicPlayer::adjust_volume(double delta) {
 	volume.adjust_base(delta);
-	m_jukebox.set_gain(static_cast<float>(volume.get()) * global_volume_damp_v);
+	m_jukebox.set_gain(static_cast<float>(m_mixer->mix(volume.get())) * global_volume_damp_v);
 }
 
 auto MusicPlayer::get_volume() const -> float { return m_jukebox.get_gain() / global_volume_damp_v; }

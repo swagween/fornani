@@ -33,7 +33,7 @@ void Application::launch(char** argv, bool demo, int room_id, std::filesystem::p
 
 	// load settings
 	m_context.settings.set_user_settings(game->get_services(), m_context.localization);
-	m_context.settings.reset_user_controls(game->get_services());
+	m_context.settings.set_user_controls(game->get_services().input_system);
 	game->set_file(m_file);
 
 	game->run(*m_engine, demo, room_id, levelpath, player_position);

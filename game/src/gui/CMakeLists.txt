@@ -16,6 +16,7 @@ nani_add_sources(
         PauseWindow.cpp
         Portrait.cpp
         InventorySelector.cpp
+        Slider.cpp
         StatusBar.cpp
         Tooltip.cpp
         WardrobeWidget.cpp

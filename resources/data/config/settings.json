@@ -2,6 +2,7 @@
 	"auto_sprint": true,
 	"keyboard": true,
 	"gamepad": true,
+	"master_volume": 1.0,
 	"music_volume": 0.5,
 	"ambience_volume": 0.5,
 	"sfx_volume": 0.5,

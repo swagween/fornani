@@ -4,5 +4,6 @@ nani_add_sources(
         Sound.cpp
         Soundboard.cpp
         SoundEffects.cpp
+        SoundMixer.cpp
         Volume.cpp
 )

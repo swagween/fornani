@@ -23,10 +23,11 @@
       "tab_right",
       "inventory",
       "gamepad settings",
-      "reset to default"
+      "set to WASD defaults",
+      "set to standard defaults"
     ],
-    "controls_menu": ["< menu >", "left", "right", "up", "down", "select", "back", "tab_left", "tab_right", "close", "gamepad settings", "reset to default"],
-    "settings": ["auto-sprint: ", "tutorial: ", "gamepad input: ", "music volume: ", "ambience volume: ", "sfx volume: ", "fullscreen: ", "military time: ", "language: "],
+    "controls_menu": ["< menu >", "left", "right", "up", "down", "select", "back", "tab_left", "tab_right", "close", "gamepad settings", "set to WASD defaults", "set to standard defaults"],
+    "settings": ["auto-sprint: ", "tutorial: ", "gamepad input: ", "master volume: ", "music volume: ", "ambience volume: ", "sfx volume: ", "fullscreen: ", "military time: ", "language: "],
     "credits": ["creator", "dev", "lib", "design", "visuals", "sound", "playtesters", "thanks"],
     "themes": ["classic", "night"]
   },

@@ -701,8 +701,8 @@ void Map::render(Renderer& renderer, automa::ServiceProvider& svc, sf::RenderWin
 	}
 
 	sf::RenderTarget& target = win;
-
-	auto const layer_flags = LayerRenderFlags{false, m_attributes.properties.test(MapProperties::day_night_shift), m_temperature_shift ? m_temperature_shift->get_normalized() : -1.f};
+	auto const layer_flags =
+		LayerRenderFlags{.is_bg = false, .day_night_shift = m_attributes.properties.test(MapProperties::day_night_shift), .temp_shift = m_temperature_shift ? std::optional<float>{m_temperature_shift->get_normalized()} : std::nullopt};
 	for (auto [i, layer] : std::views::enumerate(get_layers())) {
 		if (use_shader && !layer->ignore_lighting()) {
 			shader->set_texture_size(real_dimensions / constants::f_scale_factor);
@@ -812,8 +812,8 @@ void Map::render_background(Renderer& renderer, automa::ServiceProvider& svc, sf
 		for (auto const index : render_order) {
 			if (!props[index]->is_in_front()) { props[index]->is_light_shaded() ? props[index]->render(win, m_entity_texture, cam) : props[index]->flat_shade(win, cam, m_flat_shader); }
 		}
-
-		auto const layer_flags = LayerRenderFlags{true, m_attributes.properties.test(MapProperties::day_night_shift), m_temperature_shift ? m_temperature_shift->get_normalized() : -1.f};
+		auto const layer_flags =
+			LayerRenderFlags{.is_bg = true, .day_night_shift = m_attributes.properties.test(MapProperties::day_night_shift), .temp_shift = m_temperature_shift ? std::optional<float>{m_temperature_shift->get_normalized()} : std::nullopt};
 		for (auto [i, layer] : std::views::enumerate(get_layers())) {
 			if (i == 1) {
 				if (m_weather && !m_attributes.properties.test(MapProperties::interior)) { m_weather->render(svc, win, cam, 1); }

@@ -1,8 +1,9 @@
 
 #pragma once
 
-#include "fornani/automa/MenuState.hpp"
-#include "fornani/utils/Circuit.hpp"
+#include <fornani/automa/MenuState.hpp>
+#include <fornani/graphics/HelpText.hpp>
+#include <fornani/utils/Circuit.hpp>
 
 namespace fornani::automa {
 
@@ -14,16 +15,18 @@ class ControlsMenu final : public MenuState {
 	void frame_update(ServiceProvider& svc) override;
 	void render(ServiceProvider& svc, sf::RenderWindow& win) override;
 	void refresh_controls(ServiceProvider& svc);
-	void restore_defaults(ServiceProvider& svc);
+	void restore_defaults(ServiceProvider& svc, bool wasd = false);
 
   private:
 	void change_scene(ServiceProvider& svc, std::string_view scene); // FIXME this is a hack to work with GameState; eliminate options from GameState
+	void enter_binding_mode();
+	void exit_binding_mode();
 
 	std::string m_scene{};
 	float center_offset{320.f};
 	std::vector<sf::Text> control_list{};
 	util::Cooldown loading{};
-	sf::Text instruction;
+	std::optional<graphics::HelpText> m_helptext{};
 	bool option_is_selected{};
 	bool binding_mode{};
 	sf::RectangleShape debug{};

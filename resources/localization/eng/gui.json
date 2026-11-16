@@ -111,5 +111,6 @@
   "bestiary": {
     "fallen": "fallen: ",
     "lives_claimed": "lives claimed: "
-  }
+  },
+  "controls": { "binding_prompt": "<press a key>", "confirm_begin": "press ", "confirm_end": " to confirm binding" }
 }

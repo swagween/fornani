@@ -51,9 +51,10 @@ void UserSettings::set_user_settings(automa::ServiceProvider& svc, Localization&
 	svc.input_system.set_setting(input::InputSystemSettings::auto_sprint, m_settings["auto_sprint"].as_bool());
 	svc.set_tutorial(m_settings["tutorial"].as_bool());
 	svc.input_system.set_setting(input::InputSystemSettings::gamepad_input_enabled, m_settings["gamepad"].as_bool());
-	svc.music_player.volume.set_base(m_settings["music_volume"].as<double>());
-	svc.ambience_player.volume.set_base(m_settings["ambience_volume"].as<double>());
-	svc.soundboard.volume.set_base(m_settings["sfx_volume"].as<double>());
+	m_settings["master_volume"] ? svc.mixer.volume.set_base(m_settings["master_volume"].as<double>()) : svc.mixer.volume.set_base(1.0);
+	m_settings["music_volume"] ? svc.music_player.volume.set_base(m_settings["music_volume"].as<double>()) : svc.music_player.volume.set_base(default_base_volume_v);
+	m_settings["ambience_volume"] ? svc.ambience_player.volume.set_base(m_settings["ambience_volume"].as<double>()) : svc.ambience_player.volume.set_base(default_base_volume_v);
+	m_settings["sfx_volume"] ? svc.soundboard.volume.set_base(m_settings["sfx_volume"].as<double>()) : svc.soundboard.volume.set_base(default_base_volume_v);
 	svc.world_clock.set_military(m_settings["military_time"].as_bool());
 
 	localization.set_language(m_settings["language"].as_string());
@@ -72,6 +73,7 @@ void UserSettings::save_user_settings(automa::ServiceProvider& svc) {
 	m_settings["auto_sprint"] = svc.input_system.is_autosprint_enabled();
 	m_settings["tutorial"] = svc.tutorial();
 	m_settings["gamepad"] = svc.input_system.is_gamepad_input_enabled();
+	m_settings["master_volume"] = svc.mixer.volume.get_base();
 	m_settings["music_volume"] = svc.music_player.volume.get_base();
 	m_settings["ambience_volume"] = svc.ambience_player.volume.get_base();
 	m_settings["sfx_volume"] = svc.soundboard.volume.get_base();
@@ -84,9 +86,10 @@ void UserSettings::save_user_controls(automa::ServiceProvider& svc) {
 	if (!m_controls.to_file((svc.finder.paths.config / "controls.json").string())) { NANI_LOG_ERROR(m_logger, "Failed to save controls layout!"); }
 }
 
-void UserSettings::reset_user_controls(automa::ServiceProvider& svc) {
+void UserSettings::reset_user_controls(automa::ServiceProvider& svc, bool wasd) {
 	// control bindings
-	auto controls_result = dj::Json::from_file((svc.finder.resource_path() + "/data/config/defaults.json").c_str());
+	auto const file = wasd ? "/data/config/wasd_defaults.json" : "/data/config/defaults.json";
+	auto controls_result = dj::Json::from_file((svc.finder.resource_path() + file).c_str());
 	if (!controls_result) {
 		NANI_LOG_ERROR(m_logger, "Failed to reset controls layout!");
 		return;
