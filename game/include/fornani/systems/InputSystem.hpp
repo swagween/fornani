@@ -177,6 +177,7 @@ class InputSystem final : public Flaggable<InputSystemFlags> {
 	[[nodiscard]] auto get_mouse_position() const -> sf::Vector2f { return m_mouse.position; }
 	[[nodiscard]] auto left_clicked() const -> bool { return m_mouse.left_button.triggered; }
 	[[nodiscard]] auto right_clicked() const -> bool { return m_mouse.right_button.triggered; }
+	[[nodiscard]] auto get_mouse() const& -> MouseInput const& { return m_mouse; }
 	void cancel_mouse() { m_mouse_active.cancel(); }
 	void flush_mouse_input();
 

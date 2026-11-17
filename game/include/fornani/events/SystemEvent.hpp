@@ -15,6 +15,6 @@ struct NewFileEvent : Event<int> {};
 struct ReloadSaveEvent : Event<automa::ServiceProvider&, int> {};
 struct ReturnToMainMenuEvent : Event<> {};
 struct PauseEvent : Event<automa::ServiceProvider&> {};
-struct SetLangaugeEvent : Event<AppContext&, std::string_view> {};
+struct SetLanguageEvent : Event<AppContext&, std::string_view> {};
 
 } // namespace fornani

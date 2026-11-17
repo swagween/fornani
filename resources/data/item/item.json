@@ -1338,7 +1338,7 @@
     "actual_description": "A comprehensive map system that allows you to track all visited locations.",
     "unique": true,
     "build": {
-      "recipe": ["priorite", "pioneer_scrap", "brinium"],
+      "recipe": ["pioneer_scrap"],
       "craft_price": 200,
       "lookup": 5
     }

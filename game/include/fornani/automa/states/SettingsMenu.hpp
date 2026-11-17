@@ -3,12 +3,25 @@
 
 #include <fornani/automa/MenuState.hpp>
 #include <fornani/gui/MiniMenu.hpp>
+#include <fornani/gui/Slider.hpp>
 #include <fornani/utils/Cooldown.hpp>
 
 namespace fornani::automa {
 
 enum class SettingsToggles : std::uint8_t { autosprint, tutorial, gamepad, master, music, ambience, sfx, fullscreen, military_time, language };
 enum class SettingsMenuMode : std::uint8_t { ready, adjust };
+
+struct VolumeSetting {
+	sf::Text label;
+	gui::Slider slider;
+};
+
+struct VolumeSettings {
+	VolumeSetting master;
+	VolumeSetting music;
+	VolumeSetting ambience;
+	VolumeSetting sfx;
+};
 
 class SettingsMenu final : public MenuState {
   public:
@@ -21,7 +34,11 @@ class SettingsMenu final : public MenuState {
 	[[nodiscard]] auto adjust_mode() const -> bool { return m_mode == SettingsMenuMode::adjust; }
 
   private:
+	void adjust_volume(Volume& volume, double const amount, audio::Soundboard& soundboard);
+
 	[[nodiscard]] auto is(SettingsToggles toggle) const -> bool { return static_cast<SettingsToggles>(current_selection.get()) == toggle; }
+
+  private:
 	util::BitFlags<SettingsToggles> toggles{};
 	SettingsMenuMode m_mode{};
 	std::optional<std::string_view> m_lang{};
@@ -40,17 +57,7 @@ class SettingsMenu final : public MenuState {
 		sf::Text language;
 	} toggleables;
 
-	struct {
-		sf::Text master_volume;
-		sf::Text music_volume;
-		sf::Text ambience_volume;
-		sf::Text sfx_volume;
-	} sliders;
-
-	sf::Text master_label;
-	sf::Text music_label;
-	sf::Text ambience_label;
-	sf::Text sfx_label;
+	VolumeSettings volume_settings;
 
 	util::Cooldown m_adjustment;
 };

@@ -1523,6 +1523,8 @@ auto Map::get_ambience_balance() const -> float { return ambience_balance.get();
 
 auto Map::is_frozen() const -> bool { return get_temperature() > 0.5f && is_cold(); }
 
+auto Map::is_warmed_up() const -> bool { return flags.map_state.test(MapState::warmed_up) && is_cold(); }
+
 auto Map::get_darken_factor() const -> float { return darken_factor; }
 
 dj::Json const& Map::get_json_data(automa::ServiceProvider& svc) const {

@@ -222,7 +222,7 @@ class Map {
 	[[nodiscard]] auto get_water_level() const -> float { return m_water_level; }
 	[[nodiscard]] auto get_temperature() const -> float { return m_temperature_shift ? m_temperature_shift->get_normalized() : 1.f; }
 	[[nodiscard]] auto is_frozen() const -> bool;
-	[[nodiscard]] auto is_warmed_up() const -> bool { return flags.map_state.test(MapState::warmed_up); }
+	[[nodiscard]] auto is_warmed_up() const -> bool;
 	[[nodiscard]] auto get_darken_factor() const -> float;
 
 	dj::Json const& get_json_data(automa::ServiceProvider& svc) const;

@@ -38,7 +38,7 @@ Pushable::Pushable(automa::ServiceProvider& svc, Map& map, sf::Vector2f position
 	get_collider().vert_threshold = 0.1f;
 
 	get_collider().set_attribute(shape::ColliderAttributes::sturdy);
-	get_collider().set_flag(shape::ColliderFlags::custom_properties);
+	// get_collider().set_flag(shape::ColliderFlags::custom_properties);
 	get_collider().set_trait(shape::ColliderTrait::block);
 	get_collider().set_trait(shape::ColliderTrait::pushable);
 	get_collider().set_exclusion_target(shape::ColliderTrait::particle);

@@ -20,6 +20,7 @@ class Volume {
 	constexpr [[nodiscard]] auto get() const -> double { return m_base_multiplier * m_dynamic_multiplier; }
 	constexpr [[nodiscard]] auto get_base() const -> double { return m_base_multiplier; }
 	constexpr [[nodiscard]] auto at_range() const -> bool { return m_base_multiplier < constants::tiny_value || m_base_multiplier > 1.0 - constants::tiny_value; }
+	constexpr [[nodiscard]] auto as_i_percent() const -> int { return static_cast<int>(m_base_multiplier * 100.0); }
 
   private:
 	double m_base_multiplier{default_base_volume_v};

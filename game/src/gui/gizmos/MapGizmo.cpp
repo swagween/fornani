@@ -56,7 +56,7 @@ MapGizmo::MapGizmo(automa::ServiceProvider& svc, world::Map& map, player::Player
 	if (svc.quest_table.get_quest_progression("map_markers", Subquest{"mimic_farm", 212}) == 1) { m_minimap->add_quest_marker(QuestMarkerType::main, 212); }
 
 	auto const oor = !comprehensive && map.get_biome_string() != "firstwind";
-	if (oor || !map.is_minimap()) { m_minimap->set_flag(MiniMapFlags::out_of_range); }
+	m_minimap->set_flag(MiniMapFlags::out_of_range, oor || !map.is_minimap());
 }
 
 void MapGizmo::update(automa::ServiceProvider& svc, [[maybe_unused]] player::Player& player, [[maybe_unused]] world::Map& map, sf::Vector2f position) {

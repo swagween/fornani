@@ -19,7 +19,7 @@ static double average_frame_time{};
 
 Game::Game(char** argv, WindowManager& window, AppContext& context, capo::IEngine& audio_engine) : m_context{&context}, services(argv, context, window, audio_engine), m_screencap_timer{8} {
 	m_loading_screen.emplace(services);
-	services.events.set_langauge_event.attach_to(m_slot, &Game::set_language, this);
+	services.events.set_language_event.attach_to(m_slot, &Game::set_language, this);
 }
 
 void Game::run(capo::IEngine& audio_engine, bool demo, int room_id, std::filesystem::path levelpath, sf::Vector2f player_position) {
@@ -273,7 +273,8 @@ void Game::draw_wallpaper() {
 void Game::set_language(AppContext& context, std::string_view label) {
 	m_context->localization.set_language(label);
 	m_context->settings.set_language(label);
-	game_state->get_current_state().get_context().console = std::make_unique<gui::Console>(services, services.text.basic, "set_language", gui::OutputType::gradual);
+	services.notifications.push_notification(services, services.data.gui_text["notifications"]["set_language"].as_string());
+	// game_state->get_current_state().get_context().console = std::make_unique<gui::Console>(services, services.text.basic, "set_language", gui::OutputType::gradual);
 }
 
 void Game::playtester_portal(sf::RenderWindow& window) {

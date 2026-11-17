@@ -3,32 +3,17 @@
     "responses": [
       [
         {
-          "codes": [
-            [
-              1,
-              1
-            ]
-          ],
+          "codes": [[1, 1]],
           "message": "I was held hostage by Skycorps."
         },
         {
-          "codes": [
-            [
-              1,
-              2
-            ]
-          ],
+          "codes": [[1, 2]],
           "message": "You know, just... my usual thing."
         }
       ],
       [
         {
-          "codes": [
-            [
-              1,
-              3
-            ]
-          ],
+          "codes": [[1, 3]],
           "message": "Where can I find my dad?"
         }
       ]
@@ -36,12 +21,7 @@
     "suite": [
       [
         {
-          "codes": [
-            [
-              1,
-              0
-            ]
-          ],
+          "codes": [[1, 0]],
           "message": "Ho, there! If it isn't Nani Ba come to pay us another visit. Where have you been?"
         }
       ],
@@ -51,15 +31,8 @@
         },
         {
           "codes": [
-            [
-              1,
-              1
-            ],
-            [
-              13,
-              26,
-              406
-            ]
+            [1, 1],
+            [13, 26, 406]
           ],
           "message": "Say, if you haven't paid your dad a visit yet, I'm sure he'd be thrilled to see you."
         }
@@ -70,17 +43,10 @@
         },
         {
           "codes": [
-            [
-              1,
-              1
-            ],
-            [
-              13,
-              26,
-              406
-            ]
+            [1, 1],
+            [13, 26, 406]
           ],
-          "message": "Anyhow, if you haven't payed your dad a visit yet, I'm sure he'd be thrilled to see you."
+          "message": "Anyhow, if you haven't paid your dad a visit yet, I'm sure he'd be thrilled to see you."
         }
       ],
       [
@@ -95,10 +61,7 @@
     "suite": [
       [
         {
-          "messages": [
-            "What can I do for ya?",
-            "Everything alright?"
-          ]
+          "messages": ["What can I do for ya?", "Everything alright?"]
         }
       ],
       [

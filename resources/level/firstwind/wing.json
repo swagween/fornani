@@ -293,7 +293,8 @@
     "weather": {
       "chance": 1,
       "type": "rain"
-    }
+    },
+    "zone_id": 0
   },
   "tile": {
     "animated": [

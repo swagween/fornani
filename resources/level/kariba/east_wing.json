@@ -243,7 +243,6 @@
       "environmental_randomness": false,
       "interior": true,
       "lighting": true,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -253,7 +252,7 @@
     },
     "special_drop_id": 0,
     "use_template": false,
-    "weather": null
+    "zone_id": 0
   },
   "tile": {
     "animated": [

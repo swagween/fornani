@@ -63,6 +63,7 @@ void DayNightShifter::render(automa::ServiceProvider& svc, sf::RenderTarget& win
 
 auto DayNightShifter::get_temperature_alpha(int ctr, float temp, std::uint8_t native_alpha) const -> std::optional<std::uint8_t> {
 	if (ctr != 0 && ctr != 1) { return std::nullopt; }
+	if (temp == -1.f) { return std::nullopt; }
 
 	float const blend = std::clamp(temp, 0.f, 1.f);
 	float const alpha = ctr == 0 ? std::lerp(0.f, static_cast<float>(native_alpha), blend)	// twilight

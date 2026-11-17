@@ -67,7 +67,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	auto const froze = map.is_cold() && map.get_temperature() > 0.99f;
 	if (has_flag_set(WaterFlags::frozen) && !froze) { svc.soundboard.play_sound("water_steam"); }
 	set_flag(WaterFlags::frozen, froze);
-	auto const next_opacity = 1.f - map.get_temperature();
+	auto const next_opacity = map.is_cold() ? 1.f - map.get_temperature() : 1.f;
 	if (next_opacity > m_opacity) {
 		if (map.get_temperature() > 0.3f && map.get_temperature() < 0.6f && svc.ticker.every_x_ticks(10)) {
 			auto const p = get_bounding_box().get_position();
@@ -82,7 +82,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	auto const player_submerged = m_bounding_box.contains_point(player.get_collider().get_top() + sf::Vector2f{0.f, -2.f});
 	if (player_submerged) {
 		player.get_collider().set_flag(shape::ColliderFlags::on_ice, false);
-		if (map.get_temperature() > 0.4f && !map.is_warmed_up()) { player.freeze_solid(); }
+		if (map.get_temperature() > 0.4f && !map.is_warmed_up() && map.is_cold()) { player.freeze_solid(); }
 	}
 	if (player_submerged) {
 		player.get_collider().set_flag(shape::ColliderFlags::submerged);

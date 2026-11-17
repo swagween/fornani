@@ -5,7 +5,7 @@
         "activate_on_contact": true,
         "already_open": false,
         "channel": 0,
-        "destination_id": 116,
+        "destination_id": 1116,
         "dimensions": [
           1,
           2
@@ -68,7 +68,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "zone_id": 0
   },
   "tile": {
     "animated": [

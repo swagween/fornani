@@ -18,6 +18,7 @@ Intro::Intro(ServiceProvider& svc, player::Player& player, int room_number)
 
 	player.reset_flags();
 	svc.world_clock.set_rng(WorldClockInterval::day, 0.9f);
+	svc.world_clock.set_time(9, 30);
 	m_map->clear();
 	m_map->load(svc, p_context, room_number);
 	p_context.transition.set_duration(400);

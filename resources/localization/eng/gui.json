@@ -80,7 +80,8 @@
     "add_postcard": "Added postcard to album.",
     "already_here": "You are already here.",
     "no_matching_extensions": "You do not have any available extensions that match this fixture.",
-    "no_available_extensions": "All extensions of this type are currently in use elsewhere."
+    "no_available_extensions": "All extensions of this type are currently in use elsewhere.",
+    "set_language": "Language setting will take effect on relaunch."
   },
   "locations": {
     "firstwind": "- Firstwind Airship - ",

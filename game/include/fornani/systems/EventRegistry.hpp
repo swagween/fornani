@@ -57,7 +57,7 @@ struct EventRegistry {
 	ReloadSaveEvent reload_save_event{};
 	ReturnToMainMenuEvent return_to_main_menu_event{};
 	PauseEvent pause_event{};
-	SetLangaugeEvent set_langauge_event{};
+	SetLanguageEvent set_language_event{};
 };
 
 } // namespace fornani

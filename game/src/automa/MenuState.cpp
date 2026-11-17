@@ -15,6 +15,7 @@ MenuState::MenuState(ServiceProvider& svc, player::Player& player, AppContext& c
 	p_backdrop.setSize(svc.window->get_f_display_dimensions());
 
 	top_buffer = svc.data.menu["config"][tag]["top_buffer"].as<float>();
+	if (svc.data.menu["config"][tag]["spacing"]) { spacing = svc.data.menu["config"][tag]["spacing"].as<float>(); }
 	int ctr{};
 	for (auto& option : options) {
 		option.position = {svc.window->i_screen_dimensions().x * 0.5f, top_buffer + ctr * spacing};
@@ -91,6 +92,7 @@ void MenuState::render([[maybe_unused]] ServiceProvider& svc, [[maybe_unused]] s
 	for (auto& dot : m_dot_indicators) { win.draw(dot.rect); }
 	for (auto& option : options) { win.draw(option.label); }
 	if (p_back_button && svc.input_system.is_mouse_active()) { p_back_button->render(win); }
+	svc.notifications.render(win);
 }
 
 void MenuState::set_theme(ServiceProvider& svc, std::string_view theme) { p_app_context->settings.set_theme(theme); }

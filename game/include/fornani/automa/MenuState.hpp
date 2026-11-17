@@ -34,6 +34,9 @@ class MenuState : public GameState {
 	[[nodiscard]] auto went_back(input::InputSystem& input) const -> bool;
 
   protected:
+	void set_hovered(bool const to) { to ? m_flags.set(MenuStateFlags::option_hovered) : m_flags.reset(MenuStateFlags::option_hovered); }
+
+  protected:
 	std::vector<Option> options{};
 	std::optional<gui::Button> p_back_button{};
 	util::Circuit current_selection{1};
