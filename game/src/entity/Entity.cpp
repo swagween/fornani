@@ -36,21 +36,29 @@ void Entity::unserialize(dj::Json const& in) {
 }
 
 void Entity::expose() {
-	static int w = IWorldPositionable::m_dimensions.x;
-	static int h = IWorldPositionable::m_dimensions.y;
-	static int x = IWorldPositionable::get_grid_position().x;
-	static int y = IWorldPositionable::get_grid_position().y;
+	auto position = get_grid_position();
+	auto x = position.x;
+	auto y = position.y;
+	auto w = static_cast<int>(m_dimensions.x);
+	auto h = static_cast<int>(m_dimensions.y);
+
 	ImGui::Text("Category: %s", m_label.c_str());
 	ImGui::Separator();
 	ImGui::InputInt("Entity ID", &m_id);
-	ImGui::Text("Position: (%i, %i)", get_grid_position().x, get_grid_position().y);
-	ImGui::InputInt("X", &x);
-	ImGui::InputInt("Y", &y);
+	ImGui::Text("Position: (%i, %i)", position.x, position.y);
+
+	auto position_changed = ImGui::InputInt("X", &x);
+	position_changed |= ImGui::InputInt("Y", &y);
+
+	if (position_changed) { set_grid_position(sf::Vector2u{static_cast<std::uint32_t>(std::max(0, x)), static_cast<std::uint32_t>(std::max(0, y))}); }
+
 	ImGui::Separator();
-	ImGui::InputInt("Width", &w);
-	ImGui::InputInt("Height", &h);
-	set_grid_dimensions(sf::Vector2u{static_cast<std::uint32_t>(w), static_cast<std::uint32_t>(h)});
-	set_grid_position(sf::Vector2u{static_cast<std::uint32_t>(x), static_cast<std::uint32_t>(y)});
+
+	auto dimensions_changed = ImGui::InputInt("Width", &w);
+	dimensions_changed |= ImGui::InputInt("Height", &h);
+
+	if (dimensions_changed) { set_grid_dimensions(sf::Vector2u{static_cast<std::uint32_t>(std::max(0, w)), static_cast<std::uint32_t>(std::max(0, h))}); }
+
 	ImGui::Text("Quest Contingencies");
 	static char tag_buffer[256] = "";
 	static int requirement{};

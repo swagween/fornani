@@ -109,10 +109,8 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
-      "hidden": true,
       "interior": true,
       "lighting": false,
-      "sky_limit": 0,
       "timer": false,
       "toxic": false
     },
@@ -122,7 +120,7 @@
     },
     "special_drop_id": 0,
     "use_template": false,
-    "weather": null
+    "zone_id": 0
   },
   "tile": {
     "animated": [
@@ -1363,11 +1361,11 @@
         96,
         56,
         104,
-        105,
-        106,
+        107,
+        108,
         104,
-        105,
-        106,
+        107,
+        108,
         107,
         108,
         56,

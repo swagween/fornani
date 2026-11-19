@@ -1,5 +1,7 @@
 {
-  "entities": null,
+  "entities": {
+    "portals": null
+  },
   "meta": {
     "ambience": "",
     "background": "",
@@ -38,7 +40,8 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
-      "interior": false,
+      "hidden": false,
+      "interior": true,
       "lighting": false,
       "timer": false,
       "toxic": false
@@ -49,6 +52,7 @@
     },
     "special_drop_id": 0,
     "use_template": false,
+    "weather": null,
     "zone_id": 0
   },
   "tile": {

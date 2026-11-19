@@ -39,7 +39,7 @@
       "day_night_shift": false,
       "environmental_randomness": false,
       "hidden": false,
-      "interior": false,
+      "interior": true,
       "lighting": false,
       "timer": false,
       "toxic": false

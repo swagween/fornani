@@ -30,7 +30,8 @@
         "background": "woods",
         "music": "whispering_island",
         "ambience": "overturned"
-      }
+      },
+      "max_light": 4.0
     },
     "pioneer": {
       "black": [16, 8, 28],

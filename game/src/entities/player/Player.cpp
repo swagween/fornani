@@ -826,6 +826,7 @@ void Player::update_sprite() {
 
 void Player::handle_turning() {
 	if (has_flag_set(PlayerFlags::no_turn)) { return; }
+	if (m_animation_machine.is_state(AnimState::sharp_turn) || m_animation_machine.is_state(AnimState::turn)) { return; }
 	if (directions.desired != directions.actual) {
 		if (has_collider()) {
 			std::abs(get_collider().physics.velocity.x) > thresholds.quick_turn ? m_animation_machine.request(AnimState::sharp_turn) : m_animation_machine.request(AnimState::turn);

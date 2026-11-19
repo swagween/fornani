@@ -171,7 +171,8 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "zone_id": 0
   },
   "tile": {
     "animated": [
@@ -25980,7 +25981,7 @@
         0,
         0,
         0,
-        106,
+        108,
         100,
         96,
         96,

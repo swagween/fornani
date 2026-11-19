@@ -154,7 +154,7 @@
       "source": 0,
       "type": 0
     },
-    "development_status": 0,
+    "development_status": 1,
     "dimensions": [
       144,
       48
@@ -173,6 +173,7 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "hidden": null,
       "interior": false,
       "lighting": false,
       "timer": false,
@@ -183,7 +184,9 @@
       "darken_factor": 0
     },
     "special_drop_id": 0,
-    "use_template": false
+    "use_template": false,
+    "weather": null,
+    "zone_id": 0
   },
   "tile": {
     "animated": [
@@ -11812,7 +11815,7 @@
         102,
         103,
         104,
-        105,
+        107,
         109,
         110,
         111,

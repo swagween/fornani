@@ -33,6 +33,8 @@ class Meatsquash final : public Enemy, public StateMachine<MeatsquashState>, pub
 		entity::Attack bite{};
 	} attacks{};
 
+	bool m_init = true;
+
 	automa::ServiceProvider* m_services;
 	world::Map* m_map;
 };

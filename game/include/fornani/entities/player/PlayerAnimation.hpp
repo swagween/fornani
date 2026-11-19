@@ -91,6 +91,7 @@ class PlayerAnimation : public StateMachine<AnimState> {
 	fsm::StateFunction update_idle();
 	fsm::StateFunction update_turn();
 	fsm::StateFunction update_sharp_turn();
+	fsm::StateFunction update_start_sprint();
 	fsm::StateFunction update_sprint();
 	fsm::StateFunction update_shield();
 	fsm::StateFunction update_between_push();

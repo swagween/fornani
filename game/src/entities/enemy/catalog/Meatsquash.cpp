@@ -33,6 +33,11 @@ void Meatsquash::update(automa::ServiceProvider& svc, world::Map& map, player::P
 	}
 	Enemy::update(svc, map, player);
 
+	if (m_init) {
+		get_collider().physics.position.y += 20.f;
+		m_init = false;
+	}
+
 	auto bite_offset = sf::Vector2f{0.f, -98.f};
 	attacks.bite.set_position(get_collider().get_center() + bite_offset);
 	attacks.bite.update();

@@ -22,6 +22,7 @@ PlayerAnimation::PlayerAnimation(Player& plr) : m_player(&plr), state_function{s
 									 {"corner_flip", {175, 6, 5 * nani_animation_rate_v, 0}},
 									 {"suspend", {30, 3, 7 * nani_animation_rate_v, -1}},
 									 {"fall", {62, 4, 5 * nani_animation_rate_v, -1}},
+									 {"start_sprint", {19, 1, 6 * nani_animation_rate_v, 0}},
 									 {"stop", {74, 2, 6 * nani_animation_rate_v, 0}},
 									 {"land", {56, 2, 5 * nani_animation_rate_v, 0, false, true}},
 									 {"inspect", {37, 2, 7 * nani_animation_rate_v, -1, true}},
@@ -119,7 +120,7 @@ fsm::StateFunction PlayerAnimation::update_idle() {
 	if (change_state(AnimState::dash, get_params("dash"))) { return PA_BIND(update_dash); }
 	if (change_state(AnimState::dash_up, get_params("dash_up"))) { return PA_BIND(update_dash_up); }
 	if (change_state(AnimState::dash_down, get_params("dash_down"))) { return PA_BIND(update_dash_down); }
-	if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
+	if (change_state(AnimState::sprint, get_params("start_sprint"))) { return PA_BIND(update_start_sprint); }
 	if (change_state(AnimState::slide, get_params("slide"))) { return PA_BIND(update_slide); }
 	if (change_state(AnimState::roll, get_params("roll"))) { return PA_BIND(update_roll); }
 	if (change_state(AnimState::suspend, get_params("suspend"))) { return PA_BIND(update_suspend); }
@@ -334,6 +335,16 @@ fsm::StateFunction PlayerAnimation::update_sharp_turn() {
 	}
 
 	return PA_BIND(update_sharp_turn);
+}
+
+fsm::StateFunction PlayerAnimation::update_start_sprint() {
+	m_player->p_animatable.animation.label = "start_sprint";
+	p_state.actual = AnimState::sprint;
+	if (m_player->p_animatable.animation.complete()) {
+		request(AnimState::sprint);
+		if (change_state(AnimState::sprint, get_params("sprint"))) { return PA_BIND(update_sprint); }
+	}
+	return PA_BIND(update_start_sprint);
 }
 
 fsm::StateFunction PlayerAnimation::update_rise() {

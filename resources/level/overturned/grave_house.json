@@ -42,11 +42,6 @@
     "ambience": "none",
     "background": "",
     "biome": "overturned",
-    "border_color": [
-      0,
-      0,
-      0
-    ],
     "camera_effects": {
       "shake": {
         "dampen_factor": 0,
@@ -69,7 +64,7 @@
     ],
     "interior": true,
     "metagrid": [
-      61,
+      60,
       17
     ],
     "minimap": true,
@@ -81,9 +76,11 @@
     "properties": {
       "day_night_shift": true,
       "environmental_randomness": false,
+      "hidden": false,
       "interior": true,
       "lighting": false,
-      "timer": false
+      "timer": false,
+      "toxic": false
     },
     "room_id": 413,
     "shader": {
@@ -91,7 +88,8 @@
     },
     "special_drop_id": 0,
     "use_template": false,
-    "weather": null
+    "weather": null,
+    "zone_id": 0
   },
   "tile": {
     "animated": [
@@ -1349,11 +1347,11 @@
         96,
         96,
         104,
-        105,
-        106,
+        107,
+        108,
         104,
-        105,
-        106,
+        107,
+        108,
         107,
         108,
         96,

@@ -1108,6 +1108,21 @@
       }
     ]
   },
+  "concourse_sign385022344232987": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "^ Pioneer Station"
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "console385022343643148": {
     "series": [
       {
@@ -2252,6 +2267,21 @@
       }
     ]
   },
+  "memories385022344495116": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "A surge of memories comes rushing back to you as you regard the bedroom where you grew up."
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "moms_grave0": {
     "series": [
       {
@@ -2532,6 +2562,21 @@
           [
             {
               "message": "- Otto's Emporium -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "station_house385022344036361": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 1,
+        "suite": [
+          [
+            {
+              "message": "- Pioneer Station House -"
             }
           ]
         ]
