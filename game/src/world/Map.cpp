@@ -511,7 +511,7 @@ void Map::update(automa::ServiceProvider& svc, SceneContext& context) {
 	std::erase_if(active_emitters, [](auto const& p) { return p->done(); });
 	std::erase_if(effects, [](auto& e) { return e.done(); });
 	std::erase_if(frame_effects, [](auto& e) { return e.done(); });
-	std::erase_if(lasers, [](auto const& l) { return l.is_complete(); });
+	std::erase_if(lasers, [&](auto const& l) { return l.is_complete() || (l.get_type() == LaserType::steam && is_frozen()); });
 	std::erase_if(incinerite_blocks, [](auto const& i) { return i->is_destroyed(); });
 	std::erase_if(breakables, [](auto const& b) { return b->is_destroyed(); });
 	std::erase_if(m_explosions, [](auto const& e) { return e.is_done(); });

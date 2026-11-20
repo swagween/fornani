@@ -20,7 +20,10 @@ Effect::Effect(automa::ServiceProvider& svc, std::string const& label, sf::Vecto
 		if (scale == -1.f) { m_transform.set(SpriteTransform::horizontal); }
 	}
 	center();
-	set_parameters({0, svc.data.effect[label]["frame_count"].as<int>(), svc.data.effect[label]["framerate"].as<int>(), 0});
+	auto framerate = svc.data.effect[label]["framerate"].as<int>();
+	auto const fvar = svc.data.effect[label]["framerate_variance"].as<int>();
+	if (fvar > 0) { framerate += random::range(-fvar, fvar); }
+	set_parameters({0, svc.data.effect[label]["frame_count"].as<int>(), framerate, 0});
 	physics = components::PhysicsComponent({0.99f, 0.99f}, 1.f);
 	physics.position = pos;
 	physics.velocity = vel;

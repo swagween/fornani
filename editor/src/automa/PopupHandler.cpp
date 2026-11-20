@@ -673,7 +673,7 @@ void PopupHandler::launch(fornani::automa::ServiceProvider& svc, fornani::Resour
 		static int type{};
 		static int pattern{};
 		static int hv{};
-		static char const* types[3] = {"laser", "projectile", "stun"};
+		static char const* types[4] = {"laser", "projectile", "stun", "steam"};
 		static char const* patterns[4] = {"constant", "repeater", "triggerable", "opportunistic"};
 		static char const* dirs[4] = {"up", "down", "left", "right"};
 		static float delay{1.f};

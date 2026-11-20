@@ -42,7 +42,7 @@ void Turret::init(automa::ServiceProvider& svc) {
 		m_weapon.emplace(std::make_unique<arms::Weapon>(svc, "stungun", true));
 		m_weapon.value()->set_team(arms::Team::skycorps);
 	}
-	auto label = m_type == TurretType::laser ? "turrets_laser" : "turrets_projectile";
+	auto label = m_type == TurretType::laser ? "turrets_laser" : m_type == TurretType::steam ? "turrets_steam" : "turrets_projectile";
 	p_animatable.set_texture(svc.assets.get_texture(label));
 }
 
@@ -84,20 +84,33 @@ void Turret::expose() {
 
 void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused]] world::Map& map, [[maybe_unused]] SceneContext& context, [[maybe_unused]] player::Player& player) {
 	Entity::update(svc, map, context, player);
-	m_firing.update();
-	m_rate.update();
+
+	if (!has_flag_set(TurretFlags::disabled)) {
+		m_firing.update();
+		m_rate.update();
+	}
 	m_shoot.update();
 	m_load.update();
 
-	if (m_type == TurretType::laser) { p_animatable.set_rotation(sf::degrees(m_direction.as_degrees())); }
+	auto turned_on = false;
+	if (m_type == TurretType::steam) {
+		if (has_flag_set(TurretFlags::disabled) && !map.is_frozen()) { turned_on = true; }
+		set_flag(TurretFlags::disabled, map.is_frozen());
+	}
+
+	if (m_type == TurretType::laser || m_type == TurretType::steam) { p_animatable.set_rotation(sf::degrees(m_direction.as_degrees())); }
 	auto attributes = util::BitFlags<world::LaserAttributes>{};
 	if (m_pattern == TurretPattern::constant) { attributes.set(world::LaserAttributes::infinite); }
 	auto target = player.get_collider().get_center() - get_position();
 
-	if (m_type == TurretType::laser && m_load.is_complete()) {
+	if ((m_type == TurretType::laser || m_type == TurretType::steam) && m_load.is_complete()) {
 		if (m_firing.running() || m_pattern == TurretPattern::constant) {
-			svc.soundboard.repeat_sound("laser_hum", get_handle(), get_global_center());
-			svc.soundboard.repeat_sound("deep_laser_hum", get_handle(), get_global_center());
+			if (m_type == TurretType::laser) {
+				svc.soundboard.repeat_sound("laser_hum", get_handle(), get_global_center());
+				svc.soundboard.repeat_sound("deep_laser_hum", get_handle(), get_global_center());
+			} else if (m_type == TurretType::steam) {
+				if (!has_flag_set(TurretFlags::disabled)) { svc.soundboard.repeat_sound("steam_jet", get_handle(), get_global_center()); }
+			}
 		}
 	}
 	if (m_type == TurretType::projectile || m_type == TurretType::stun) {
@@ -115,7 +128,6 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			svc.soundboard.play_sound("turret_shot", get_global_center());
 		}
 	}
-
 	if (m_rate.just_started() && m_firing.is_complete()) {
 		if (m_type == TurretType::stun) {
 			if (m_weapon) {
@@ -124,6 +136,11 @@ void Turret::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unuse
 			}
 		}
 		if (m_type == TurretType::laser) { map.spawn_laser(svc, *this, get_position(), world::LaserType::turret, attributes, m_direction, m_settings.duration, 64, 0.75f); }
+		if (m_type == TurretType::steam) { map.spawn_laser(svc, *this, get_position(), world::LaserType::steam, attributes, m_direction, m_settings.duration, 64, 0.75f); }
+		m_firing.start();
+	}
+	if (m_type == TurretType::steam && turned_on) {
+		map.spawn_laser(svc, *this, get_position(), world::LaserType::steam, attributes, m_direction, m_settings.duration, 64, 0.75f);
 		m_firing.start();
 	}
 }
@@ -135,7 +152,7 @@ void Turret::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
 	Entity::render(win, cam, size);
 	if (m_editor) { return; }
 	p_animatable.center();
-	win.draw(p_animatable);
+	if (m_type != TurretType::steam) { win.draw(p_animatable); }
 }
 
 auto Turret::get_position() const -> sf::Vector2f { return m_position + get_local_center() + get_offset(); }

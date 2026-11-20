@@ -82,7 +82,7 @@ void Water::update([[maybe_unused]] automa::ServiceProvider& svc, [[maybe_unused
 	auto const player_submerged = m_bounding_box.contains_point(player.get_collider().get_top() + sf::Vector2f{0.f, -2.f});
 	if (player_submerged) {
 		player.get_collider().set_flag(shape::ColliderFlags::on_ice, false);
-		if (map.get_temperature() > 0.4f && !map.is_warmed_up() && map.is_cold()) { player.freeze_solid(); }
+		if (map.get_temperature() > 0.35f && !map.is_warmed_up()) { player.freeze_solid(); }
 	}
 	if (player_submerged) {
 		player.get_collider().set_flag(shape::ColliderFlags::submerged);

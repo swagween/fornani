@@ -10,7 +10,7 @@
 namespace fornani::world {
 
 Laser::Laser(automa::ServiceProvider& svc, Map& map, sf::Vector2f position, LaserType type, util::BitFlags<LaserAttributes> attributes, CardinalDirection direction, int active, int cooldown, float size)
-	: m_type{type}, m_attributes{attributes}, m_direction{direction}, m_active{active}, m_cooldown{cooldown}, m_size{size}, m_breadth{constants::f_cell_size}, m_spawn_point{position} {
+	: m_type{type}, m_attributes{attributes}, m_direction{direction}, m_active{active}, m_cooldown{cooldown}, m_size{size}, m_breadth{type == LaserType::steam ? 48.f : constants::f_cell_size}, m_spawn_point{position} {
 	m_drawbox.setFillColor(colors::ui_white);
 	m_hitbox.set_position(position);
 	fire();
@@ -66,22 +66,29 @@ void Laser::update(automa::ServiceProvider& svc, player::Player& player, Map& ma
 	}
 
 	// calculate laser end and spawn an effect there
-	if (svc.ticker.every_x_ticks(18)) {
+	auto const rate = m_type == LaserType::steam ? 30 : 18;
+	if (svc.ticker.every_x_ticks(rate)) {
 		m_pulse.modulate(1);
 		for (auto i = 0; i < 3; ++i) {
 			auto randh = random::range_float(-6.f, 6.f);
 			auto randw = random::range_float(-20.f * m_size, 20.f * m_size);
 			auto rand_offset = m_direction.left() || m_direction.right() ? sf::Vector2f{randh, randw} : sf::Vector2f{randw, randh};
-			map.spawn_effect(svc, "laser_hit", calculate_end_point() + rand_offset);
+			m_type == LaserType::steam ? map.spawn_effect(svc, "small_fast_steam", calculate_end_point() + rand_offset) : map.spawn_effect(svc, "laser_hit", calculate_end_point() + rand_offset);
 		}
 	}
 
 	m_direction.as_hv() == HV::horizontal ? m_drawbox.setOrigin({0.f, (m_breadth - constants::f_cell_size) * m_size * 0.5f}) : m_drawbox.setOrigin({(m_breadth - constants::f_cell_size) * m_size * 0.5f, 0.f});
 	m_breadth = is_active() ? constants::f_cell_size * m_size + 4.f * m_pulse.get() : util::round_to_nearest(constants::f_cell_size * m_size * m_cooldown.get_quadratic_normalized(), 4.f);
 	is_active() ? m_drawbox.setFillColor(colors::ui_white) : m_cooldown.get_normalized() > 0.6f ? m_drawbox.setFillColor(colors::goldenrod) : m_drawbox.setFillColor(colors::dark_goldenrod);
+
 	if (player.hurtbox.overlaps(m_hitbox) && is_active() && m_team != arms::Team::nani && !player.is_intangible()) {
-		if (!player.invincible()) { player.set_flag(player::PlayerFlags::laser_collision); }
+		if (!player.is_intangible()) { player.set_flag(player::PlayerFlags::laser_collision); }
 		player.hurt();
+	}
+
+	if (m_type == LaserType::steam) {
+		if (svc.ticker.every_x_ticks(60)) { map.spawn_effect(svc, "small_steam", m_spawn_point, m_direction.as_vector() * 0.1f); }
+		is_active() ? m_drawbox.setFillColor(sf::Color{255, 255, 255, 128}) : m_cooldown.get_normalized() > 0.6f ? m_drawbox.setFillColor(sf::Color{255, 255, 255, 80}) : m_drawbox.setFillColor(sf::Color{255, 255, 255, 40});
 	}
 }
 
@@ -105,7 +112,9 @@ sf::Vector2f Laser::calculate_size(Map& map) {
 		auto step = constants::f_cell_size * m_direction.as_vector();
 		axis += constants::f_cell_size;
 		current += step;
-		if (map.get_cell_at_position(current).is_solid() || !map.within_bounds(current)) {
+		auto const& cell = map.get_cell_at_position(current);
+		auto const solid_cell_found = cell.is_solid() && !(cell.get_material() == TileMaterial::ice && !map.is_frozen());
+		if (solid_cell_found || !map.within_bounds(current)) {
 			auto& part = m_direction.as_hv() == HV::horizontal ? current.x : current.y;
 			auto mod = constants::f_cell_size - std::fmod(part, constants::f_cell_size);
 			axis += m_direction.right() || m_direction.down() ? -constants::f_cell_size + mod : -mod;

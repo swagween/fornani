@@ -104,6 +104,19 @@
     "dimensions": [64, 64],
     "x_reflection": true
   },
+  "small_steam": {
+    "frame_count": 5,
+    "framerate": 40,
+    "dimensions": [32, 32],
+    "x_reflection": true
+  },
+  "small_fast_steam": {
+    "frame_count": 5,
+    "framerate": 20,
+    "framerate_variance": 4,
+    "dimensions": [32, 32],
+    "x_reflection": true
+  },
   "giga_flare": {
     "frame_count": 9,
     "framerate": 16,

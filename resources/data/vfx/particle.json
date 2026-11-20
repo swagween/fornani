@@ -1316,15 +1316,37 @@
     "friction": 0.998,
     "elasticity": 0.95,
     "gravity": -0.6,
-    "lifespan": 1000,
+    "lifespan": 500,
     "lifespan_variance": 0,
     "dimensions": [32, 32],
     "animated": true,
     "colliding": false,
     "animation": {
       "lookup": 0,
-      "duration": 8,
-      "framerate": 48,
+      "duration": 5,
+      "framerate": 80,
+      "loop": 0
+    }
+  },
+
+  "steam_jet": {
+    "load": 12,
+    "rate": 2.0,
+    "expulsion": 60.0,
+    "expulsion_variance": 0.2,
+    "cone": 0.08,
+    "friction": 0.998,
+    "elasticity": 0.95,
+    "gravity": -0.6,
+    "lifespan": 500,
+    "lifespan_variance": 0,
+    "dimensions": [32, 32],
+    "animated": true,
+    "colliding": true,
+    "animation": {
+      "lookup": 0,
+      "duration": 5,
+      "framerate": 80,
       "loop": 0
     }
   },

@@ -410,6 +410,7 @@ void Game::playtester_portal(sf::RenderWindow& window) {
 						ImGui::Text("Zone ID: %u", map->get().get_zone_id());
 						ImGui::Text("Save Point ID: %i", services.state_controller.save_point_id);
 						ImGui::Text("Zone State: %u", services.data.get_zone_state(map->get().get_zone_id()));
+						ImGui::Text("Temperature: %.2f", map->get().get_temperature());
 						ImGui::Separator();
 						ImGui::SeparatorText("Entities");
 						ImGui::Text("Active Loot: %i", map->get().active_loot.size());

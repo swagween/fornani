@@ -151,7 +151,8 @@ enum class PlayerFlags : std::uint8_t {
 	laser_collision,
 	no_hurt_effects,
 	frozen,
-	dogfight
+	dogfight,
+	encased
 };
 enum class Triggers : std::uint8_t { hurt };
 

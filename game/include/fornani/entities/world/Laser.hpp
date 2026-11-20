@@ -25,7 +25,7 @@ namespace world {
 
 class Map;
 
-enum class LaserType : std::uint8_t { turret, magic };
+enum class LaserType : std::uint8_t { turret, magic, steam };
 enum class LaserAttributes : std::uint8_t { transcendent, infinite, player, no_collision };
 
 class Laser {
@@ -40,6 +40,7 @@ class Laser {
 	[[nodiscard]] auto is(LaserType const test) const -> bool { return m_type == test; }
 	[[nodiscard]] auto is_active() const -> bool { return m_active.running(); }
 	[[nodiscard]] auto is_complete() const -> bool { return m_cooldown.is_almost_complete(); }
+	[[nodiscard]] auto get_type() const -> LaserType { return m_type; }
 
   private:
 	std::optional<Turret*> m_parent{};

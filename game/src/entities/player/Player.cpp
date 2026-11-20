@@ -239,7 +239,6 @@ void Player::update(world::Map& map) {
 		set_flag(PlayerFlags::no_hurt_effects);
 		hurt(max_damage_v, true);
 		m_death_type.emplace(PlayerDeathType::frozen);
-		counters.chill.set(0.8f);
 	}
 	auto ccolor = colors::ice_blue;
 	if (counters.chill.running()) {
@@ -250,17 +249,18 @@ void Player::update(world::Map& map) {
 	if (counters.chill.get() > 0.3f) { m_services->soundboard.repeat_sound("ice_cracks"); }
 	p_animatable.animation.framerate_multiplier = 1.f + counters.chill.get();
 	if (m_death_type) {
-		if (*m_death_type == PlayerDeathType::frozen && is_swimming()) {
-			get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
-			freeze_position();
-		}
+		if (*m_death_type == PlayerDeathType::frozen && is_swimming()) { set_flag(PlayerFlags::encased); }
+	}
+	if (has_flag_set(PlayerFlags::encased)) {
+		get_collider().set_attribute(shape::ColliderAttributes::no_map_collision);
+		freeze_position();
+		add_chill(0.1f);
 	}
 
 	// laser logic
 	if (consume_flag(PlayerFlags::laser_collision)) {
 		clear_impulses();
 		controller.flush_ability();
-		m_services->soundboard.play_sound("stun");
 		get_collider().physics.zero_x();
 	}
 
@@ -1270,7 +1270,13 @@ void Player::knock_over() {
 }
 
 void Player::freeze_solid() {
-	if (!is_dead()) { add_chill(0.1f); }
+	if (!is_dead()) {
+		set_flag(PlayerFlags::frozen);
+		set_flag(PlayerFlags::no_hurt_effects);
+		hurt(max_damage_v, true);
+		m_death_type.emplace(PlayerDeathType::frozen);
+		set_flag(PlayerFlags::encased);
+	}
 }
 
 bool Player::grounded() const { return get_collider().flags.external_state.test(shape::ExternalState::grounded); }
@@ -1323,6 +1329,7 @@ void Player::start_over() {
 	set_flag(PlayerFlags::killed, false);
 	set_flag(PlayerFlags::cutscene, false);
 	set_flag(PlayerFlags::special_render, false);
+	set_flag(PlayerFlags::encased, false);
 	m_animation_machine.triggers.reset(AnimTriggers::end_death);
 	set_animation_flag(player::AnimTriggers::end_death, false);
 	m_animation_machine.post_death.cancel();
