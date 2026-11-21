@@ -2339,6 +2339,36 @@
       }
     ]
   },
+  "observatory_log_10": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "[Captain's Log]: \"Lately, Caroline and I spend hours here every day. I think she misses home... Some days she swears to me she can still see Grand Island peeking over the sea of clouds.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "observatory_log_20": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "[Captain's Log]: \"Carise has fallen ill again. Mary Ann thinks it's the altitude, but I suspect it's the cold. We approach the north-east side of Pixiote, which is eternally encased in snow.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
   "outpost385022343708708": {
     "series": [
       {
@@ -2577,6 +2607,66 @@
           [
             {
               "message": "- Pioneer Station House -"
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "study_log_10": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "[Captain's Log]: \"I have done my fair share of research on the native tribespeople. They are not to be trifled with. Everyone knows what happened to the first Pioneers who dared tread on their land...\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "study_log_1385022343839754": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "[Captain's Log]: \"I have done my fair share of research on the native tribespeople. They are not to be trifled with. Everyone knows what happened to the first Pioneers who dared tread on their land...\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "study_log_20": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "[Captain's Log]: \"I don't intend to take up arms agains them. I merely want to continue what MacGregor started and create a small, peaceful colony from which I can conduct my studies.\""
+            }
+          ]
+        ]
+      }
+    ]
+  },
+  "study_log_2385022344101898": {
+    "series": [
+      {
+        "hide_portrait": true,
+        "output": 0,
+        "suite": [
+          [
+            {
+              "message": "[Captain's Log]: \"I don't intend to take up arms agains them. I merely want to continue what MacGregor started and create a small, peaceful colony from which I can conduct my studies.\""
             }
           ]
         ]

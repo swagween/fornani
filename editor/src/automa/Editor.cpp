@@ -1123,7 +1123,9 @@ void Editor::gui_render(sf::RenderWindow& win) {
 					window_flags = ImGuiWindowFlags_None;
 					if (ImGui::BeginTabBar("##prf")) {
 						if (ImGui::BeginTabItem("Visual")) {
-							ImGui::Checkbox("Show Entities", &map.flags.show_entities);
+							if (ImGui::Checkbox("Show Entities", &map.flags.show_entities)) {
+								if (current_tool->type == ToolType::entity_editor) { current_tool = std::move(std::make_unique<Brush>()); }
+							}
 							ImGui::Checkbox("Show Background", &map.flags.show_background);
 							ImGui::Checkbox("Show Grid (Tab)", &map.flags.show_grid);
 							ImGui::Checkbox("Show All Layers (Shift)", &map.flags.show_all_layers);

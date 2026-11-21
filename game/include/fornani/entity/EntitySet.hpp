@@ -42,7 +42,8 @@ class EntitySet {
 	void clear();
 	bool has_entity_at(sf::Vector2u pos, bool highlighted_only = false) const;
 	bool has_entity_at(sf::Vector2i pos, bool highlighted_only = false) const;
-	bool overlaps(Entity& other) const;
+	bool overlaps(Entity& other, bool strict = false) const;
+	[[nodiscard]] auto get_entity_at(sf::Vector2u const pos) const -> Entity const*;
 
 	struct {
 		sf::Vector2<std::uint32_t> player_start{};

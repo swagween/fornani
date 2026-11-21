@@ -452,6 +452,12 @@
     },
     {
       "folder": "frozen",
+      "label": "study.json",
+      "region": "frozen",
+      "room_id": 1927
+    },
+    {
+      "folder": "frozen",
       "label": "wetbar.json",
       "region": "frozen",
       "room_id": 1917

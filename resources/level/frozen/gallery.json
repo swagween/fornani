@@ -34,6 +34,23 @@
           8
         ],
         "source_id": 1910
+      },
+      {
+        "activate_on_contact": false,
+        "already_open": false,
+        "channel": 0,
+        "destination_id": 1909,
+        "dimensions": [
+          1,
+          1
+        ],
+        "id": 0,
+        "locked": false,
+        "position": [
+          47,
+          28
+        ],
+        "source_id": 1910
       }
     ]
   },
@@ -61,7 +78,7 @@
       80,
       48
     ],
-    "interior": false,
+    "interior": true,
     "metagrid": [
       139,
       22
@@ -75,7 +92,6 @@
     "properties": {
       "day_night_shift": false,
       "environmental_randomness": false,
-      "hidden": false,
       "interior": true,
       "lighting": false,
       "timer": false,
@@ -87,7 +103,6 @@
     },
     "special_drop_id": 0,
     "use_template": false,
-    "weather": null,
     "zone_id": 0
   },
   "tile": {

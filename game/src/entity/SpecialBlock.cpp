@@ -69,6 +69,7 @@ auto SpecialBlock::ignore_updates() const -> bool { return false; }
 void SpecialBlock::expose() { Entity::expose(); }
 
 void SpecialBlock::render(sf::RenderWindow& win, sf::Vector2f cam, float size) {
+	highlighted ? drawbox.setFillColor(sf::Color{250, 10, 250, 80}) : drawbox.setFillColor(sf::Color{250, 10, 250, 10});
 	Entity::render(win, cam, size);
 	if (debug::is_production()) { return; }
 	if (!m_editor) { return; }

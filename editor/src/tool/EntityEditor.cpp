@@ -90,7 +90,8 @@ void EntityEditor::update(Canvas& canvas) {
 		if (ent_type == EntityType::player_placer) {
 			if (active) { canvas.entities.variables.player_start = scaled_position(); }
 		} else if (current_entity && active) {
-			if (!canvas.entities.overlaps(*current_entity.value())) {
+			auto const forbidden_overlap = canvas.entities.overlaps(*current_entity.value(), true);
+			if (!forbidden_overlap) {
 				auto repeat = current_entity.value()->repeatable && !current_entity.value()->moved;
 				auto clone = current_entity.value()->clone();
 				current_entity.value()->highlighted = false;

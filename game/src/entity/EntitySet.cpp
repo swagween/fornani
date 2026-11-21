@@ -145,14 +145,26 @@ bool EntitySet::has_entity_at(sf::Vector2i pos, bool highlighted_only) const {
 	return false;
 }
 
-bool EntitySet::overlaps(Entity& other) const {
+bool EntitySet::overlaps(Entity& other, bool strict) const {
 	if (other.stackable) { return false; }
+	if (strict) {
+		auto existing = get_entity_at(sf::Vector2u{other.get_grid_position()});
+		if (existing) { return existing->get_grid_dimensions() == other.get_grid_dimensions(); }
+		return false;
+	}
 	for (auto i{0}; i < other.get_grid_dimensions().x; ++i) {
 		for (auto j{0}; j < other.get_grid_dimensions().y; ++j) {
 			if (has_entity_at(other.get_grid_position() + sf::Vector2i{i, j})) { return true; }
 		}
 	}
 	return false;
+}
+
+auto EntitySet::get_entity_at(sf::Vector2u const pos) const -> Entity const* {
+	for (auto& s : variables.entities) {
+		if (s->contains_point(pos)) { return s.get(); }
+	}
+	return nullptr;
 }
 
 } // namespace fornani

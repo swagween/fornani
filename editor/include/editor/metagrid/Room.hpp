@@ -41,6 +41,7 @@ class Room : public fornani::Flaggable<RoomFlags> {
 	[[nodiscard]] auto get_label() const -> std::string { return m_label.getString(); }
 	[[nodiscard]] auto get_biome() const -> std::string { return m_biome.getString(); }
 	[[nodiscard]] auto get_music() const -> std::string { return m_data->metadata["meta"]["music"].as_string(); }
+	[[nodiscard]] auto get_zone() const -> int { return m_data->metadata["meta"]["zone_id"].as<int>(); }
 	fornani::data::MapData& get_data() { return *m_data; }
 
 	fornani::ID id;
